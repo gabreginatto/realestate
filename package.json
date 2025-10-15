@@ -1,0 +1,19 @@
+{
+  "name": "realestate",
+  "version": "1.0.0",
+  "description": "A comprehensive web scraping and data aggregation system for collecting real estate listings from multiple sources and storing them in a centralized database.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.56.0"
+  }
+}

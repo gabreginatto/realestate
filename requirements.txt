@@ -1,0 +1,59 @@
+# Web Scraping
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+scrapy>=2.11.0
+selenium>=4.15.0
+playwright>=1.40.0
+
+# Data Processing
+pandas>=2.1.0
+numpy>=1.24.0
+
+# Database Drivers
+psycopg2-binary>=2.9.0  # PostgreSQL
+pymongo>=4.6.0          # MongoDB
+sqlalchemy>=2.0.0       # ORM
+
+# Utilities
+python-dotenv>=1.0.0    # Environment variables
+pytz>=2023.3            # Timezone handling
+dateparser>=1.1.0       # Date parsing
+
+# Scheduling
+apscheduler>=3.10.0     # Task scheduling
+celery>=5.3.0           # Distributed task queue (optional)
+redis>=5.0.0            # Celery backend (optional)
+
+# HTTP and APIs
+httpx>=0.25.0           # Modern HTTP client
+aiohttp>=3.9.0          # Async HTTP
+fastapi>=0.104.0        # API framework (optional)
+uvicorn>=0.24.0         # ASGI server (optional)
+
+# Logging and Monitoring
+loguru>=0.7.0           # Enhanced logging
+sentry-sdk>=1.38.0      # Error tracking (optional)
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+responses>=0.24.0       # Mock HTTP responses
+
+# Code Quality
+black>=23.12.0          # Code formatter
+flake8>=6.1.0           # Linting
+mypy>=1.7.0             # Type checking
+isort>=5.13.0           # Import sorting
+
+# Data Validation
+pydantic>=2.5.0         # Data validation
+marshmallow>=3.20.0     # Serialization (alternative)
+
+# Image Processing (optional)
+pillow>=10.1.0          # Image manipulation
+imagehash>=4.3.0        # Image comparison
+
+# Rate Limiting
+ratelimit>=2.2.0
