@@ -1,0 +1,557 @@
+{
+  "generated_at": "2025-10-15T21:47:46.311Z",
+  "approach": "Smart filtering (Area → Price → Beds → AI)",
+  "total_viva_listings": 70,
+  "listings_with_candidates": 32,
+  "api_calls_made": 32,
+  "api_calls_saved": 38,
+  "total_matches": 0,
+  "skip_reasons": {
+    "noArea": 0,
+    "noAreaMatches": 1,
+    "tooManyCandidates": 37,
+    "noStrongCandidates": 0,
+    "queued": 32
+  },
+  "skipped_details": {
+    "noArea": [],
+    "noAreaMatches": [
+      {
+        "code": "12752",
+        "price": "R$ 17.300.000,00",
+        "area": 1279,
+        "bucket": 1250,
+        "specs": {
+          "dormitorios": 6,
+          "suites": 6,
+          "banheiros": 6,
+          "vagas": null,
+          "area_construida": "1279m²",
+          "area_total": "940m²"
+        }
+      }
+    ],
+    "tooManyCandidates": [
+      {
+        "code": "17266",
+        "price": "R$ 5.300.000,00",
+        "area": 400,
+        "candidatesCount": 9,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 4,
+          "area_construida": "400m²",
+          "area_total": "610m²"
+        }
+      },
+      {
+        "code": "8748",
+        "price": "R$ 5.400.000,00",
+        "area": 500,
+        "candidatesCount": 6,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 4,
+          "vagas": 2,
+          "area_construida": "500m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "14138",
+        "price": "R$ 5.650.000,00",
+        "area": 400,
+        "candidatesCount": 10,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 2,
+          "banheiros": 4,
+          "vagas": 2,
+          "area_construida": "400m²",
+          "area_total": "640m²"
+        }
+      },
+      {
+        "code": "17697",
+        "price": "R$ 5.990.000,00",
+        "area": 362,
+        "candidatesCount": 9,
+        "specs": {
+          "dormitorios": 3,
+          "suites": 3,
+          "banheiros": 4,
+          "vagas": 4,
+          "area_construida": "362m²",
+          "area_total": "611.3m²"
+        }
+      },
+      {
+        "code": "17378",
+        "price": "R$ 6.290.000,00",
+        "area": 314,
+        "candidatesCount": 6,
+        "specs": {
+          "dormitorios": 3,
+          "suites": 1,
+          "banheiros": 3,
+          "vagas": 6,
+          "area_construida": "314m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "12441",
+        "price": "R$ 6.300.000,00",
+        "area": 500,
+        "candidatesCount": 9,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 4,
+          "vagas": 2,
+          "area_construida": "500m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "8527",
+        "price": "R$ 6.400.000,00",
+        "area": 420,
+        "candidatesCount": 12,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 4,
+          "vagas": null,
+          "area_construida": "420m²",
+          "area_total": "575m²"
+        }
+      },
+      {
+        "code": "12252",
+        "price": "R$ 6.500.000,00",
+        "area": 451.2,
+        "candidatesCount": 10,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 7,
+          "vagas": 6,
+          "area_construida": "451.2m²",
+          "area_total": "595m²"
+        }
+      },
+      {
+        "code": "17388",
+        "price": "R$ 6.500.000,00",
+        "area": 344,
+        "candidatesCount": 8,
+        "specs": {
+          "dormitorios": 3,
+          "suites": 1,
+          "banheiros": 3,
+          "vagas": 5,
+          "area_construida": "344m²",
+          "area_total": "588m²"
+        }
+      },
+      {
+        "code": "8989",
+        "price": "R$ 6.600.000,00",
+        "area": 367,
+        "candidatesCount": 12,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 2,
+          "banheiros": 7,
+          "vagas": 6,
+          "area_construida": "367m²",
+          "area_total": "700m²"
+        }
+      },
+      {
+        "code": "17316",
+        "price": "R$ 6.700.000,00",
+        "area": 554.3,
+        "candidatesCount": 7,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 4,
+          "area_construida": "554.3m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "16113",
+        "price": "R$ 6.920.000,00",
+        "area": 520,
+        "candidatesCount": 8,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 1,
+          "banheiros": 3,
+          "vagas": 6,
+          "area_construida": "520m²",
+          "area_total": "650m²"
+        }
+      },
+      {
+        "code": "17279",
+        "price": "R$ 7.000.000,00",
+        "area": 350,
+        "candidatesCount": 8,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 3,
+          "banheiros": 4,
+          "vagas": 4,
+          "area_construida": "350m²",
+          "area_total": "732m²"
+        }
+      },
+      {
+        "code": "16872",
+        "price": "R$ 7.300.000,00",
+        "area": 410,
+        "candidatesCount": 9,
+        "specs": {
+          "dormitorios": 3,
+          "suites": 1,
+          "banheiros": 4,
+          "vagas": 4,
+          "area_construida": "410m²",
+          "area_total": "890m²"
+        }
+      },
+      {
+        "code": "8177",
+        "price": "R$ 7.400.000,00",
+        "area": 426,
+        "candidatesCount": 8,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 2,
+          "banheiros": 2,
+          "vagas": 4,
+          "area_construida": "426m²",
+          "area_total": "575m²"
+        }
+      },
+      {
+        "code": "8682",
+        "price": "R$ 7.800.000,00",
+        "area": 685.24,
+        "candidatesCount": 6,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 10,
+          "vagas": 3,
+          "area_construida": "685.24m²",
+          "area_total": "1234.3m²"
+        }
+      },
+      {
+        "code": "17722",
+        "price": "R$ 7.890.000,00",
+        "area": 665,
+        "candidatesCount": 6,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 8,
+          "area_construida": "665m²",
+          "area_total": "1165m²"
+        }
+      },
+      {
+        "code": "12814",
+        "price": "R$ 7.900.000,00",
+        "area": 498,
+        "candidatesCount": 8,
+        "specs": {
+          "dormitorios": 5,
+          "suites": 5,
+          "banheiros": 6,
+          "vagas": 4,
+          "area_construida": "498m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "1230",
+        "price": "R$ 7.900.000,00",
+        "area": 520,
+        "candidatesCount": 7,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 7,
+          "vagas": 6,
+          "area_construida": "520m²",
+          "area_total": "640m²"
+        }
+      },
+      {
+        "code": "17465",
+        "price": "R$ 8.000.000,00",
+        "area": 500,
+        "candidatesCount": 6,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": null,
+          "area_construida": "500m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "15008",
+        "price": "R$ 8.000.000,00",
+        "area": 580,
+        "candidatesCount": 7,
+        "specs": {
+          "dormitorios": 3,
+          "suites": 3,
+          "banheiros": 4,
+          "vagas": 6,
+          "area_construida": "580m²",
+          "area_total": "600m²"
+        }
+      },
+      {
+        "code": "17654",
+        "price": "R$ 8.500.000,00",
+        "area": 400,
+        "candidatesCount": 9,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 6,
+          "vagas": 4,
+          "area_construida": "400m²",
+          "area_total": "880m²"
+        }
+      },
+      {
+        "code": "14184",
+        "price": "R$ 8.500.000,00",
+        "area": 490,
+        "candidatesCount": 8,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 6,
+          "area_construida": "490m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "14533",
+        "price": "R$ 9.000.000,00",
+        "area": 600,
+        "candidatesCount": 9,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 4,
+          "area_construida": "600m²",
+          "area_total": "810m²"
+        }
+      },
+      {
+        "code": "13572",
+        "price": "R$ 9.050.000,00",
+        "area": 640,
+        "candidatesCount": 9,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 4,
+          "area_construida": "640m²",
+          "area_total": "640m²"
+        }
+      },
+      {
+        "code": "1034",
+        "price": "R$ 9.500.000,00",
+        "area": 523.57,
+        "candidatesCount": 6,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 4,
+          "vagas": 3,
+          "area_construida": "523.57m²",
+          "area_total": "571.67m²"
+        }
+      },
+      {
+        "code": "4657",
+        "price": "R$ 9.500.000,00",
+        "area": 500,
+        "candidatesCount": 6,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 4,
+          "area_construida": "500m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "16117",
+        "price": "R$ 11.000.000,00",
+        "area": 600,
+        "candidatesCount": 9,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 6,
+          "vagas": 3,
+          "area_construida": "600m²",
+          "area_total": "706m²"
+        }
+      },
+      {
+        "code": "16448",
+        "price": "R$ 11.000.000,00",
+        "area": 582,
+        "candidatesCount": 9,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 4,
+          "vagas": 3,
+          "area_construida": "582m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "16882",
+        "price": "R$ 13.000.000,00",
+        "area": 552,
+        "candidatesCount": 9,
+        "specs": {
+          "dormitorios": 5,
+          "suites": 3,
+          "banheiros": 4,
+          "vagas": 6,
+          "area_construida": "552m²",
+          "area_total": "1574m²"
+        }
+      },
+      {
+        "code": "16892",
+        "price": "R$ 13.000.000,00",
+        "area": 600,
+        "candidatesCount": 8,
+        "specs": {
+          "dormitorios": 5,
+          "suites": 5,
+          "banheiros": 6,
+          "vagas": 9,
+          "area_construida": "600m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "16528",
+        "price": "R$ 14.000.000,00",
+        "area": 646,
+        "candidatesCount": 6,
+        "specs": {
+          "dormitorios": 5,
+          "suites": 5,
+          "banheiros": 5,
+          "vagas": null,
+          "area_construida": "646m²",
+          "area_total": "591m²"
+        }
+      },
+      {
+        "code": "17660",
+        "price": "R$ 16.500.000,00",
+        "area": 680,
+        "candidatesCount": 6,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 4,
+          "area_construida": "680m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "17670",
+        "price": "R$ 17.500.000,00",
+        "area": 610,
+        "candidatesCount": 22,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 5,
+          "area_construida": "610m²",
+          "area_total": "560m²"
+        }
+      },
+      {
+        "code": "12484",
+        "price": "R$ 18.000.000,00",
+        "area": 700,
+        "candidatesCount": 6,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 4,
+          "vagas": null,
+          "area_construida": "700m²",
+          "area_total": "800m²"
+        }
+      },
+      {
+        "code": "16356",
+        "price": "R$ 18.000.000,00",
+        "area": 628.81,
+        "candidatesCount": 22,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 4,
+          "vagas": 8,
+          "area_construida": "628.81m²",
+          "area_total": "673.62m²"
+        }
+      },
+      {
+        "code": "15335",
+        "price": "R$ 28.000.000,00",
+        "area": 750,
+        "candidatesCount": 10,
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 7,
+          "vagas": 4,
+          "area_construida": "750m²",
+          "area_total": "800m²"
+        }
+      }
+    ],
+    "noStrongCandidates": []
+  },
+  "matches": []
+}
