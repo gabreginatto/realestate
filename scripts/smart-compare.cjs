@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require('fs');
 
@@ -8,7 +9,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 const vivaData = require('../data/vivaprimeimoveis/listings/all-listings.json');
 const coelhoData = require('../data/coelhodafonseca/listings/all-listings.json');
 
-console.log('\n🧠 SMART COMPARISON v2 (Multi-Block Index + Composite Scoring)\n');
+console.log('\n🧠 SMART COMPARISON v3 (Multi-Block Index + Adaptive Filters + Suite Matching)\n');
 console.log(`Vivaprimeimoveis: ${vivaData.total_listings} listings`);
 console.log(`Coelho da Fonseca: ${coelhoData.total_listings} listings\n`);
 
@@ -333,22 +334,33 @@ vivaN.forEach((v, idx) => {
     return;
   }
 
-  // 2) Tighten with quick numeric tolerances
+  // 2) Tighten with adaptive tolerances (stricter for larger properties)
+  const areaTolerance = (v.built && v.built >= 300) ? 0.12 : 0.18; // 12% for ≥300m², 18% for smaller
   const tightened = candidateIndices.filter(i => {
     const c = coelhoN[i];
-    const areaOK = v.built == null || c.built == null || Math.abs(v.built - c.built) / Math.max(v.built, c.built) <= 0.18;
+    const areaOK = v.built == null || c.built == null || Math.abs(v.built - c.built) / Math.max(v.built, c.built) <= areaTolerance;
     const ppm2OK = v.pricePerM2 == null || c.pricePerM2 == null || Math.abs(v.pricePerM2 - c.pricePerM2) / Math.max(v.pricePerM2, c.pricePerM2) <= 0.30;
     return areaOK && ppm2OK;
   });
-  console.log(`  After numeric filters: ${tightened.length} candidates`);
+  console.log(`  After numeric filters (area ≤${(areaTolerance*100).toFixed(0)}%): ${tightened.length} candidates`);
 
-  // 3) Score & sort
-  const scored = tightened
+  // 3) Filter by suite count (±1 tolerance) - eliminates obvious mismatches
+  const suiteFiltered = tightened.filter(i => {
+    const c = coelhoN[i];
+    if (v.suites == null || c.suites == null) return true; // keep if either side missing
+    return Math.abs(v.suites - c.suites) <= 1;
+  });
+  if (suiteFiltered.length < tightened.length) {
+    console.log(`  After suite filter (±1): ${suiteFiltered.length} candidates (removed ${tightened.length - suiteFiltered.length} suite mismatches)`);
+  }
+
+  // 4) Score & sort (using suite-filtered candidates)
+  const scored = suiteFiltered
     .map(i => ({ i, s: scorePair(v, coelhoN[i]) }))
     .filter(x => x.s >= 0) // drop hard rejections
     .sort((a, b) => b.s - a.s);
 
-  console.log(`  After scoring: ${scored.length} candidates (removed ${tightened.length - scored.length} hard rejects)`);
+  console.log(`  After scoring: ${scored.length} candidates (removed ${suiteFiltered.length - scored.length} hard rejects)`);
 
   if (scored.length === 0) {
     console.log(`  ✗ No strong candidates after scoring\n`);
@@ -360,7 +372,7 @@ vivaN.forEach((v, idx) => {
       specs: v.raw.detailedData?.specs
     });
   } else {
-    // 4) Pick Top-K for AI
+    // 5) Pick Top-K for AI
     const top = scored.slice(0, K);
     const topScores = top.map(t => t.s.toFixed(3)).join(', ');
     console.log(`  ✓ Top ${top.length} candidates (scores: ${topScores}) → queuing for AI\n`);
@@ -428,6 +440,7 @@ console.log(`\n`);
 console.log('🤖 STEP 3: Using AI for final verification...\n');
 
 const finalMatches = [];
+const apiRejected = []; // Track ghost listings (API analyzed but no match)
 
 for (const item of allCandidates) {
   const viva = item.viva;
@@ -483,6 +496,23 @@ If no strong match (confidence < 0.75), return: []`;
         });
       } else {
         console.log(`  ✗ No confident matches`);
+        // Track this as an API-rejected listing
+        apiRejected.push({
+          viva: {
+            code: viva.propertyCode,
+            url: viva.url,
+            price: viva.price,
+            specs: viva.detailedData.specs
+          },
+          candidates: candidates.map(c => ({
+            code: c.propertyCode,
+            url: c.url,
+            price: c.price,
+            features: c.features,
+            description: c.description
+          })),
+          candidateScores: item._scored
+        });
       }
     }
   } catch (e) {
@@ -507,14 +537,16 @@ finalMatches.forEach(m => {
 const outputFile = 'data/smart-matches.json';
 fs.writeFileSync(outputFile, JSON.stringify({
   generated_at: new Date().toISOString(),
-  approach: 'Multi-block indexing + Composite scoring + Top-K selection (v2)',
+  approach: 'Multi-block indexing + Adaptive filters + Suite matching + Top-K selection (v3)',
   total_viva_listings: vivaData.total_listings,
   listings_with_candidates: allCandidates.length,
   api_calls_made: allCandidates.length,
   api_calls_saved: vivaData.total_listings - allCandidates.length,
   total_matches: finalMatches.length,
+  api_rejected_count: apiRejected.length,
   skip_reasons: skipReasons,
   skipped_details: skippedListings,
+  api_rejected: apiRejected,
   matches: finalMatches.map(m => ({
     ...m,
     // Include deterministic scores if available (from _scored)
@@ -523,4 +555,8 @@ fs.writeFileSync(outputFile, JSON.stringify({
 }, null, 2));
 
 console.log(`💾 Saved to: ${outputFile}\n`);
+console.log(`📊 Breakdown:`);
+console.log(`   ✓ Matches: ${finalMatches.length}`);
+console.log(`   ✗ API rejected: ${apiRejected.length}`);
+console.log(`   ✗ No strong candidates: ${skipReasons.noStrongCandidates}`);
 })();
