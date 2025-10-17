@@ -7,12 +7,12 @@ const mkdir = promisify(fs.mkdir);
 const exists = promisify(fs.exists);
 
 /**
- * Mosaic Module - Phase 2 (Improved)
+ * Mosaic Module - Phase 2
  *
  * Handles:
  * 1. Image downloading and caching
- * 2. Smart image selection for mosaics (9 best photos with 2-3 pool photos prioritized)
- * 3. 3×3 mosaic generation (900x900px)
+ * 2. Smart image selection for mosaics (6 best photos)
+ * 3. 3×2 mosaic generation (900x600px)
  */
 
 // ============================================
@@ -104,29 +104,17 @@ async function downloadAndCache(listing, side) {
 // ============================================
 
 /**
- * Detects if an image is likely a pool photo based on filename patterns
- * @param {string} filepath - Path to image file
- * @returns {boolean}
- */
-function isLikelyPoolPhoto(filepath) {
-  const filename = path.basename(filepath).toLowerCase();
-  const poolKeywords = ['piscina', 'pool', 'swimming', 'deck', 'outdoor', 'exterior', 'area-externa'];
-  return poolKeywords.some(keyword => filename.includes(keyword));
-}
-
-/**
- * Selects 9 diverse, high-quality images for mosaic with pool photo prioritization
+ * Selects 6 diverse, high-quality images for mosaic
  * @param {Array<string>} imagePaths - Array of local file paths
- * @param {number} maxN - Maximum images to select (default 9)
- * @param {number} minPoolPhotos - Minimum pool photos to include (default 2)
+ * @param {number} maxN - Maximum images to select (default 6)
  * @returns {Array<string>} - Array of selected file paths
  */
-async function selectForMosaic(imagePaths, maxN = 9, minPoolPhotos = 2) {
+async function selectForMosaic(imagePaths, maxN = 6) {
   if (imagePaths.length === 0) {
     return [];
   }
 
-  // If we have maxN or fewer, return all
+  // If we have 6 or fewer, return all
   if (imagePaths.length <= maxN) {
     return imagePaths;
   }
@@ -135,10 +123,8 @@ async function selectForMosaic(imagePaths, maxN = 9, minPoolPhotos = 2) {
   // - Position (prefer earlier images - usually best photos)
   // - File size (prefer larger = higher quality)
   // - Dimensions (prefer larger resolutions)
-  // - Pool photo bonus
 
   const scored = [];
-  const poolPhotos = [];
 
   for (let i = 0; i < imagePaths.length; i++) {
     const filepath = imagePaths[i];
@@ -146,48 +132,49 @@ async function selectForMosaic(imagePaths, maxN = 9, minPoolPhotos = 2) {
     try {
       const stats = fs.statSync(filepath);
       const metadata = await sharp(filepath).metadata();
-      const isPool = isLikelyPoolPhoto(filepath);
 
       // Scoring algorithm
       const positionScore = (imagePaths.length - i) / imagePaths.length; // Earlier = higher
       const sizeScore = Math.min(stats.size / (500 * 1024), 1); // Normalize to 500KB max
       const resolutionScore = Math.min((metadata.width * metadata.height) / (2000 * 1500), 1); // Normalize to 3MP
-      const poolBonus = isPool ? 0.3 : 0; // Boost pool photos
 
-      const totalScore = (positionScore * 0.4) + (sizeScore * 0.2) + (resolutionScore * 0.2) + poolBonus;
+      const totalScore = (positionScore * 0.5) + (sizeScore * 0.25) + (resolutionScore * 0.25);
 
-      const scoredItem = {
+      scored.push({
         path: filepath,
         score: totalScore,
-        index: i,
-        isPool: isPool
-      };
-
-      scored.push(scoredItem);
-
-      if (isPool) {
-        poolPhotos.push(scoredItem);
-      }
+        index: i
+      });
     } catch (error) {
       console.log(`    ⚠️  Could not analyze ${filepath}: ${error.message}`);
     }
   }
 
-  // Sort all images by score (descending)
+  // Sort by score (descending)
   scored.sort((a, b) => b.score - a.score);
 
+  // Select top N, but ensure they're distributed across the set
+  // Take top 2, then distribute the rest
   const selected = [];
 
-  // Step 1: Ensure we have 2-3 pool photos if available
-  const poolPhotosToInclude = Math.min(minPoolPhotos + 1, poolPhotos.length);
-  const sortedPoolPhotos = poolPhotos.sort((a, b) => b.score - a.score);
-
-  for (let i = 0; i < poolPhotosToInclude && i < sortedPoolPhotos.length; i++) {
-    selected.push(sortedPoolPhotos[i].path);
+  // Always include top 2 highest scored
+  selected.push(scored[0].path);
+  if (scored.length > 1) {
+    selected.push(scored[1].path);
   }
 
-  // Step 2: Fill remaining slots with highest scored non-pool or remaining images
-  for (let i = 0; i < scored.length && selected.length < maxN; i++) {
+  // For remaining slots, pick evenly distributed images from top 20%
+  const topN = Math.ceil(scored.length * 0.2);
+  const candidates = scored.slice(2, topN);
+
+  const step = Math.max(1, Math.floor(candidates.length / (maxN - 2)));
+
+  for (let i = 0; i < candidates.length && selected.length < maxN; i += step) {
+    selected.push(candidates[i].path);
+  }
+
+  // If still need more, fill from remaining top scored
+  for (let i = 2; i < scored.length && selected.length < maxN; i++) {
     if (!selected.includes(scored[i].path)) {
       selected.push(scored[i].path);
     }
@@ -201,8 +188,8 @@ async function selectForMosaic(imagePaths, maxN = 9, minPoolPhotos = 2) {
 // ============================================
 
 /**
- * Creates a 3×3 mosaic from 9 images
- * @param {Array<string>} imagePaths - Array of 9 image file paths
+ * Creates a 3×2 mosaic from 6 images
+ * @param {Array<string>} imagePaths - Array of 6 image file paths
  * @param {string} outputPath - Where to save the mosaic
  * @param {Object} options - Mosaic options
  * @returns {string} - Path to generated mosaic
@@ -211,24 +198,23 @@ async function makeMosaic(imagePaths, outputPath, options = {}) {
   const {
     cellWidth = 300,
     cellHeight = 300,
-    rows = 3,
+    rows = 2,
     cols = 3
   } = options;
 
   const totalWidth = cellWidth * cols;
   const totalHeight = cellHeight * rows;
-  const totalCells = rows * cols;
 
-  // Ensure we have exactly 9 images (fill with black if needed)
+  // Ensure we have exactly 6 images (fill with black if needed)
   const images = [...imagePaths];
-  while (images.length < totalCells) {
+  while (images.length < 6) {
     images.push(null); // Will be replaced with black square
   }
 
   // Process each image: resize and crop to fit cell
   const processedImages = [];
 
-  for (let i = 0; i < totalCells; i++) {
+  for (let i = 0; i < 6; i++) {
     if (images[i] === null || !fs.existsSync(images[i])) {
       // Create black square
       const black = await sharp({
@@ -257,7 +243,7 @@ async function makeMosaic(imagePaths, outputPath, options = {}) {
     }
   }
 
-  // Create composite with all 9 images in 3×3 grid
+  // Create composite with all 6 images in 3×2 grid
   const composites = [];
 
   for (let row = 0; row < rows; row++) {
@@ -310,8 +296,8 @@ async function generateMosaicForListing(listing, side) {
     return { mosaicPath: null, stats: { error: 'No images' } };
   }
 
-  // 2. Select 9 best images (including 2-3 pool photos if available)
-  const selectedPaths = await selectForMosaic(cachedPaths, 9, 2);
+  // 2. Select 6 best images
+  const selectedPaths = await selectForMosaic(cachedPaths, 6);
   console.log(`  ✅ Selected ${selectedPaths.length} images for mosaic`);
 
   // 3. Check if mosaic already exists
