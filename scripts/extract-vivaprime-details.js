@@ -1,27 +1,6 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
 const path = require('path');
-const https = require('https');
-const http = require('http');
-
-// Helper to download image
-function downloadImage(url, filepath) {
-  return new Promise((resolve, reject) => {
-    const protocol = url.startsWith('https') ? https : http;
-    const file = fs.createWriteStream(filepath);
-
-    protocol.get(url, (response) => {
-      response.pipe(file);
-      file.on('finish', () => {
-        file.close();
-        resolve();
-      });
-    }).on('error', (err) => {
-      fs.unlink(filepath, () => {});
-      reject(err);
-    });
-  });
-}
 
 (async () => {
   console.log('\n🔍 Starting Vivaprime detail extraction...\n');
@@ -34,12 +13,6 @@ function downloadImage(url, filepath) {
 
   const browser = await chromium.launch({ headless: false });
   const page = await browser.newPage();
-
-  // Create images directory
-  const imagesDir = path.join(process.cwd(), 'data', 'vivaprimeimoveis', 'images');
-  if (!fs.existsSync(imagesDir)) {
-    fs.mkdirSync(imagesDir, { recursive: true });
-  }
 
   const allListings = inputData.listings;
 
@@ -206,86 +179,68 @@ function downloadImage(url, filepath) {
         console.log(`  ⚠️  Could not extract specs: ${e.message}`);
       }
 
-      // Download images
-      let image1Path = '';
-      let image2Path = '';
+      // Extract all image URLs (don't download - mosaic module will handle that)
+      const imageUrls = [];
 
       try {
-        // Find images
-        const imageSelectors = [
-          'img[src*="vivaprimeimoveis"]',
-          'img[alt*="Casa"]',
-          'img[alt*="Imóvel"]',
-          '.gallery img',
-          '[class*="foto"] img',
-          '[class*="image"] img'
-        ];
+        // Find all images
+        const images = page.locator('img');
+        const imageCount = await images.count();
 
-        let images = null;
-        for (const selector of imageSelectors) {
-          images = page.locator(selector);
-          const count = await images.count();
-          if (count > 0) {
-            console.log(`  📸 Found ${count} images with selector: ${selector}`);
-            break;
-          }
-        }
+        console.log(`  📸 Found ${imageCount} total images`);
 
-        if (images && await images.count() > 0) {
-          // Download first image
-          const img1 = images.nth(0);
-          let img1Src = await img1.getAttribute('src');
+        for (let imgIdx = 0; imgIdx < imageCount; imgIdx++) {
+          const img = images.nth(imgIdx);
+          let imgSrc = await img.getAttribute('src');
 
           // Handle data-src lazy loading
-          if (!img1Src || img1Src.includes('data:image')) {
-            img1Src = await img1.getAttribute('data-src');
+          if (!imgSrc || imgSrc.includes('data:image')) {
+            imgSrc = await img.getAttribute('data-src');
           }
 
-          if (img1Src) {
-            const img1Url = img1Src.startsWith('http') ? img1Src : `https://www.vivaprimeimoveis.com.br${img1Src}`;
-            const img1Filename = `${listing.propertyCode}_1.jpg`;
-            image1Path = path.join(imagesDir, img1Filename);
-
-            console.log(`  ⬇️  Downloading image 1...`);
-            await downloadImage(img1Url, image1Path);
-            console.log(`  ✅ Image 1 saved`);
-          }
-
-          // Download second image if available
-          if (await images.count() > 1) {
-            const img2 = images.nth(1);
-            let img2Src = await img2.getAttribute('src');
-
-            if (!img2Src || img2Src.includes('data:image')) {
-              img2Src = await img2.getAttribute('data-src');
+          if (imgSrc && !imgSrc.includes('data:image')) {
+            // Convert to absolute URL
+            let imgUrl = imgSrc;
+            if (!imgUrl.startsWith('http')) {
+              if (imgUrl.startsWith('//')) {
+                imgUrl = 'https:' + imgUrl;
+              } else if (imgUrl.startsWith('/')) {
+                imgUrl = 'https://www.vivaprimeimoveis.com.br' + imgUrl;
+              } else {
+                imgUrl = 'https://www.vivaprimeimoveis.com.br/' + imgUrl;
+              }
             }
 
-            if (img2Src) {
-              const img2Url = img2Src.startsWith('http') ? img2Src : `https://www.vivaprimeimoveis.com.br${img2Src}`;
-              const img2Filename = `${listing.propertyCode}_2.jpg`;
-              image2Path = path.join(imagesDir, img2Filename);
+            // Filter: Only include THIS property's images (not related listings)
+            // Property images follow pattern: /fotos/{propertyCode}/
+            const propertyImagePattern = `/fotos/${listing.propertyCode}/`;
 
-              console.log(`  ⬇️  Downloading image 2...`);
-              await downloadImage(img2Url, image2Path);
-              console.log(`  ✅ Image 2 saved`);
+            if (imgUrl.includes(propertyImagePattern)) {
+              // Get image dimensions to filter out thumbnails/icons
+              const width = await img.evaluate(el => el.naturalWidth || el.width);
+              const height = await img.evaluate(el => el.naturalHeight || el.height);
+
+              // Only include larger images (property photos, not tiny icons)
+              if (width >= 400 && height >= 400 && !imageUrls.includes(imgUrl)) {
+                imageUrls.push(imgUrl);
+              }
             }
           }
-        } else {
-          console.log(`  ⚠️  No images found`);
         }
+
+        console.log(`  ✅ Collected ${imageUrls.length} property image URLs`);
       } catch (e) {
-        console.log(`  ❌ Error downloading images: ${e.message}`);
+        console.log(`  ❌ Error collecting image URLs: ${e.message}`);
       }
 
       // Add detailed data to listing
       listing.price = price;
+      listing.images = imageUrls; // Store image URLs in listing root
       listing.detailedData = {
         title: title.trim(),
         description: description.trim(),
         specs,
-        features,
-        image1Path,
-        image2Path
+        features
       };
 
     } catch (error) {
@@ -315,18 +270,20 @@ function downloadImage(url, filepath) {
   fs.writeFileSync(outputFile, JSON.stringify(completeData, null, 2));
 
   console.log(`\n\n✅ Processing complete!`);
-  console.log(`💾 Saved to: ${outputFile}`);
-  console.log(`📸 Images saved to: ${imagesDir}\n`);
+  console.log(`💾 Saved to: ${outputFile}\n`);
 
   // Summary
   const withPrice = allListings.filter(l => l.price && l.price.includes('R$')).length;
-  const withImages = allListings.filter(l => l.detailedData?.image1Path).length;
+  const withImages = allListings.filter(l => l.images && l.images.length > 0).length;
   const withErrors = allListings.filter(l => l.detailedData?.error).length;
+  const totalImages = allListings.reduce((sum, l) => sum + (l.images?.length || 0), 0);
+  const avgImagesPerListing = withImages > 0 ? (totalImages / withImages).toFixed(1) : 0;
 
   console.log('📊 SUMMARY:');
   console.log(`   Total listings: ${allListings.length}`);
   console.log(`   With price: ${withPrice}`);
-  console.log(`   With images: ${withImages}`);
+  console.log(`   With images: ${withImages} (avg ${avgImagesPerListing} images/listing)`);
+  console.log(`   Total image URLs: ${totalImages}`);
   console.log(`   With errors: ${withErrors}\n`);
 
   process.exit(0);

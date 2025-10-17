@@ -1,0 +1,81 @@
+{
+  "generated_at": "2025-10-17T01:46:58.924Z",
+  "improved_prompt_used": true,
+  "total_pairs": 4,
+  "now_matches": 2,
+  "still_rejected": 2,
+  "errors": 0,
+  "results": [
+    {
+      "viva": "12252",
+      "coelho": "681867",
+      "original_issue": "User says pool format is the same, Gemini rejected",
+      "new_assessment": {
+        "match": false,
+        "confidence": 0.9,
+        "reason": "The architectural styles of the two properties are significantly different. Image 1 depicts a house with arched doorways and a simpler facade, while image 2 shows a property with balconies and a more complex layout. Furthermore, Image 2 features a pool, which is not visible in Image 1.",
+        "pool_shape_match": "Image 1: no pool visible. Image 2: Irregular shaped pool.",
+        "key_structural_features": [
+          "Facade structure",
+          "Window arrangements"
+        ],
+        "error": false,
+        "attempt": 1
+      }
+    },
+    {
+      "viva": "16117",
+      "coelho": "628299",
+      "original_issue": "User says same pool with grass and tiles, Gemini rejected",
+      "new_assessment": {
+        "match": true,
+        "confidence": 0.95,
+        "reason": "Both properties feature the same rectangular pool shape and position relative to the house. They also share similar exterior architectural details, including the covered outdoor area with the same style of ceiling. The structure of the house and garage also matches between the images.",
+        "pool_shape_match": "Both images show a rectangular pool with a similar position relative to the house.",
+        "key_structural_features": [
+          "Rectangular pool",
+          "Covered outdoor area",
+          "House and garage structure"
+        ],
+        "error": false,
+        "attempt": 1
+      }
+    },
+    {
+      "viva": "7597",
+      "coelho": "358601",
+      "original_issue": "API error - needs retry",
+      "new_assessment": {
+        "match": true,
+        "confidence": 1,
+        "reason": "Both mosaics depict the same property. The rectangular pool with a fountain and surrounding wooden deck is visible in both. The unique curved balcony and pergola structure with a wooden deck are also clearly present in both image sets.",
+        "pool_shape_match": "Both images show a rectangular pool with a fountain and a surrounding wooden deck.",
+        "key_structural_features": [
+          "Curved Balcony",
+          "Pergola with wooden deck",
+          "Rectangular Pool"
+        ],
+        "error": false,
+        "attempt": 1
+      }
+    },
+    {
+      "viva": "6930",
+      "coelho": "395513",
+      "original_issue": "User says staircase is the same, Gemini rejected",
+      "new_assessment": {
+        "match": false,
+        "confidence": 0.95,
+        "reason": "The architectural style and features are different. Image 1 shows a house with flat roofs and a facade with long horizontal windows on top, while Image 2 features arched windows and a visible staircase with wooden railings, which are structural differences. The roof style and window shapes are distinctly different.",
+        "pool_shape_match": "no pool visible",
+        "key_structural_features": [
+          "roof style",
+          "window shapes",
+          "presence of a grand staircase"
+        ],
+        "error": false,
+        "attempt": 1
+      }
+    }
+  ]
+}

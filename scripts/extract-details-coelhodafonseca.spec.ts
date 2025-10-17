@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as https from 'https';
-import * as http from 'http';
 
 /**
  * Coelho da Fonseca - Detail Extraction Script
@@ -10,28 +8,9 @@ import * as http from 'http';
  * This script:
  * 1. Reads URLs from collected-urls.json
  * 2. Visits each listing detail page
- * 3. Extracts complete property data
- * 4. Downloads the first 2 images for each property
+ * 3. Extracts complete property data (including ALL image URLs)
+ * 4. Stores image URLs in listing.images array (mosaic module will handle downloading)
  */
-
-// Helper function to download image
-async function downloadImage(url: string, filepath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const protocol = url.startsWith('https') ? https : http;
-    const file = fs.createWriteStream(filepath);
-
-    protocol.get(url, (response) => {
-      response.pipe(file);
-      file.on('finish', () => {
-        file.close();
-        resolve();
-      });
-    }).on('error', (err) => {
-      fs.unlink(filepath, () => {});
-      reject(err);
-    });
-  });
-}
 
 test('Extract details from all collected listings', async ({ page }) => {
   test.setTimeout(1200000); // 20 minutes for processing all listings
@@ -47,12 +26,6 @@ test('Extract details from all collected listings', async ({ page }) => {
   const allListings = inputData.listings;
 
   console.log(`\n🚀 Starting detail extraction for ${allListings.length} listings\n`);
-
-  // Create images directory
-  const imagesDir = path.join(process.cwd(), 'data', 'coelhodafonseca', 'images');
-  if (!fs.existsSync(imagesDir)) {
-    fs.mkdirSync(imagesDir, { recursive: true });
-  }
 
   // Visit each listing detail page
   for (let i = 0; i < allListings.length; i++) {
@@ -103,54 +76,65 @@ test('Extract details from all collected listings', async ({ page }) => {
         console.log('  ⚠️  No amenities found');
       }
 
-      // Extract and download images
-      let image1Path = '';
-      let image2Path = '';
+      // Extract all image URLs (don't download - mosaic module will handle that)
+      const imageUrls: string[] = [];
 
       try {
-        const images = page.locator('img[src*="coelhodafonseca"], img[alt*="Casa"], img[src*="imoveis"]');
+        // Use specific gallery selectors to avoid picking up thumbnails/related listings
+        const images = page.locator('.slider-photos-detail img, .swiper-slide img, [class*="gallery"] img');
         const imageCount = await images.count();
 
-        console.log(`  📸 Images: ${imageCount} found`);
+        console.log(`  📸 Found ${imageCount} images in gallery`);
 
-        // Download first image
-        if (imageCount > 0) {
-          const img1 = images.nth(0);
-          const img1Src = await img1.getAttribute('src');
-          if (img1Src) {
-            const img1Url = img1Src.startsWith('http') ? img1Src : `https://www.coelhodafonseca.com.br${img1Src}`;
-            const img1Filename = `${listing.propertyCode}_1.jpg`;
-            image1Path = path.join(imagesDir, img1Filename);
+        // Collect all gallery image URLs
+        for (let imgIdx = 0; imgIdx < imageCount; imgIdx++) {
+          const img = images.nth(imgIdx);
+          let imgSrc = await img.getAttribute('src');
 
-            await downloadImage(img1Url, image1Path);
-            console.log(`  ⬇️  Downloaded image 1`);
+          // Handle data-src lazy loading
+          if (!imgSrc || imgSrc.includes('data:image')) {
+            imgSrc = await img.getAttribute('data-src');
+          }
+
+          if (imgSrc && !imgSrc.includes('data:image') && !imgSrc.includes('loader')) {
+            // Convert to absolute URL
+            let imgUrl = imgSrc;
+            if (!imgUrl.startsWith('http')) {
+              if (imgUrl.startsWith('//')) {
+                imgUrl = 'https:' + imgUrl;
+              } else if (imgUrl.startsWith('/')) {
+                imgUrl = 'https://www.coelhodafonseca.com.br' + imgUrl;
+              } else {
+                imgUrl = 'https://www.coelhodafonseca.com.br/' + imgUrl;
+              }
+            }
+
+            // Filter: Only include images from static.coelhodafonseca.com.br (property photos)
+            // and ensure they're large enough (not thumbnails)
+            if (imgUrl.includes('static.coelhodafonseca.com.br')) {
+              // Get image dimensions to filter out thumbnails/icons
+              const width = await img.evaluate((el: any) => el.naturalWidth || el.width);
+              const height = await img.evaluate((el: any) => el.naturalHeight || el.height);
+
+              // Only include larger images (property photos, not tiny icons)
+              if (width >= 300 && height >= 300 && !imageUrls.includes(imgUrl)) {
+                imageUrls.push(imgUrl);
+              }
+            }
           }
         }
 
-        // Download second image
-        if (imageCount > 1) {
-          const img2 = images.nth(1);
-          const img2Src = await img2.getAttribute('src');
-          if (img2Src) {
-            const img2Url = img2Src.startsWith('http') ? img2Src : `https://www.coelhodafonseca.com.br${img2Src}`;
-            const img2Filename = `${listing.propertyCode}_2.jpg`;
-            image2Path = path.join(imagesDir, img2Filename);
-
-            await downloadImage(img2Url, image2Path);
-            console.log(`  ⬇️  Downloaded image 2`);
-          }
-        }
+        console.log(`  ✅ Collected ${imageUrls.length} property image URLs`);
       } catch (e) {
         console.log(`  ❌ Image error: ${e}`);
       }
 
       // Add detailed data to listing
+      listing.images = imageUrls; // Store image URLs in listing root
       listing.detailedData = {
         title: title.trim(),
         fullDescription: fullDescription.trim(),
-        amenities,
-        image1Path,
-        image2Path
+        amenities
       };
 
       console.log(`  ✅ Complete`);
@@ -194,9 +178,13 @@ test('Extract details from all collected listings', async ({ page }) => {
 
   console.log(`\n💾 Complete data saved to: ${outputFile}`);
 
-  // Count images
-  const imageFiles = fs.readdirSync(imagesDir).filter(f => f.endsWith('.jpg'));
-  console.log(`📸 Total images downloaded: ${imageFiles.length}`);
+  // Count image URLs collected
+  const withImages = allListings.filter((l: any) => l.images && l.images.length > 0).length;
+  const totalImageUrls = allListings.reduce((sum: number, l: any) => sum + (l.images?.length || 0), 0);
+  const avgImages = withImages > 0 ? (totalImageUrls / withImages).toFixed(1) : '0';
+
+  console.log(`📸 Listings with images: ${withImages}/${allListings.length}`);
+  console.log(`📸 Total image URLs collected: ${totalImageUrls} (avg ${avgImages} per listing)`);
 
   expect(allListings.length).toBeGreaterThan(0);
   console.log(`\n✅ All done!\n`);
