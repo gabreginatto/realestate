@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const fs = require('fs');
+const path = require('path');
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
@@ -9,9 +10,171 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 const vivaData = require('../data/vivaprimeimoveis/listings/all-listings.json');
 const coelhoData = require('../data/coelhodafonseca/listings/all-listings.json');
 
-console.log('\n🧠 SMART COMPARISON v3 (Multi-Block Index + Adaptive Filters + Suite Matching)\n');
+console.log('\n🧠 SMART COMPARISON v5 (Multi-Block Index + Mosaic Visual Verification)\n');
 console.log(`Vivaprimeimoveis: ${vivaData.total_listings} listings`);
 console.log(`Coelho da Fonseca: ${coelhoData.total_listings} listings\n`);
+
+// ============================================================================
+// MOSAIC VISUAL VERIFICATION HELPERS
+// ============================================================================
+
+/**
+ * Convert image file to base64
+ */
+function imageToBase64(imagePath) {
+  const imageBuffer = fs.readFileSync(imagePath);
+  return imageBuffer.toString('base64');
+}
+
+/**
+ * Get geometric-focused prompt for visual comparison
+ */
+function getGeometricPrompt(vivaCode, coelhoCode) {
+  return `You are a real estate property comparison expert. I am showing you two photo mosaics (3x2 grids of 6 photos each) of two properties listed on different real estate websites.
+
+Your task: Determine if these two mosaics show THE SAME PROPERTY or DIFFERENT PROPERTIES.
+
+IMAGE 1: Property mosaic from VIVA Prime Imóveis (code: ${vivaCode})
+IMAGE 2: Property mosaic from Coelho da Fonseca (code: ${coelhoCode})
+
+CRITICAL: Focus on GEOMETRIC SHAPES and STRUCTURAL FEATURES, NOT surface details like colors or materials.
+
+Look for these SHAPE-BASED features:
+
+1. **POOL SHAPE & LAYOUT**:
+   - What is the exact SHAPE of the pool? (rectangular, L-shaped, circular, kidney-shaped, etc.)
+   - What is the pool's POSITION relative to the house?
+   - What SURROUNDS the pool? (deck shape, patio layout, grass areas)
+   - Are there STEPS or LEDGES within the pool? Where are they positioned?
+
+2. **ARCHITECTURAL GEOMETRY**:
+   - What is the SHAPE of the roof? (flat, gabled, hipped, multi-level)
+   - What is the LAYOUT of windows? (count, positioning, grouping patterns)
+   - What is the SHAPE of doors, archways, or entryways?
+   - Are there BALCONIES or TERRACES? What are their shapes and positions?
+
+3. **DISTINCTIVE STRUCTURAL FEATURES**:
+   - STAIRCASE SHAPE: Internal or external stairs - what is their shape, direction, railing pattern?
+   - COLUMNS or PILLARS: Where are they? What shape?
+   - OUTDOOR STRUCTURES: Pergolas, gazebos, outdoor kitchens - what are their shapes?
+   - COURTYARD or PATIO: What is the layout pattern?
+
+4. **SPATIAL RELATIONSHIPS**:
+   - How is the pool positioned relative to the house entrance?
+   - What is the LAYOUT of the backyard/outdoor area?
+   - Where are outdoor living areas positioned relative to the pool?
+
+IGNORE these surface-level details:
+- ❌ Paint colors or wall finishes (white vs beige, red brick vs painted)
+- ❌ Tile colors in pools (blue vs white tiles)
+- ❌ Furniture colors or styles
+- ❌ Landscaping colors (different plants, grass vs gravel)
+- ❌ Interior decoration or finishes
+
+FOCUS on these structural matches:
+- ✅ Pool has the SAME SHAPE (even if tile color differs)
+- ✅ Stairs have the SAME GEOMETRY (even if material/color differs)
+- ✅ Windows are in the SAME POSITIONS (even if frame color differs)
+- ✅ Outdoor structures have the SAME LAYOUT (even if furniture/decor differs)
+
+Respond in JSON format:
+{
+  "match": true/false,
+  "confidence": 0.0-1.0,
+  "reason": "Brief explanation focusing on GEOMETRIC comparisons (2-3 sentences)",
+  "key_matching_shapes": ["list of specific geometric features that match"] or null if no match
+}
+
+Be LESS strict than before. If the GEOMETRIC SHAPES match, consider it the same property even if colors/materials differ.`;
+}
+
+/**
+ * Compare two mosaics using visual AI verification
+ */
+async function compareMosaics(vivaCode, coelhoCode, retries = 2) {
+  const vivaMosaicPath = path.join(process.cwd(), 'data', 'mosaics', 'viva', `${vivaCode}.png`);
+  const coelhoMosaicPath = path.join(process.cwd(), 'data', 'mosaics', 'coelho', `${coelhoCode}.png`);
+
+  // Check if both mosaics exist
+  if (!fs.existsSync(vivaMosaicPath) || !fs.existsSync(coelhoMosaicPath)) {
+    return {
+      match: false,
+      confidence: 0,
+      reason: 'Mosaic file(s) not found',
+      error: true
+    };
+  }
+
+  // Convert images to base64
+  const vivaBase64 = imageToBase64(vivaMosaicPath);
+  const coelhoBase64 = imageToBase64(coelhoMosaicPath);
+
+  const prompt = getGeometricPrompt(vivaCode, coelhoCode);
+
+  // Retry logic for API errors
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const result = await model.generateContent([
+        prompt,
+        {
+          inlineData: {
+            mimeType: 'image/png',
+            data: vivaBase64
+          }
+        },
+        {
+          inlineData: {
+            mimeType: 'image/png',
+            data: coelhoBase64
+          }
+        }
+      ]);
+
+      const responseText = result.response.text();
+
+      // Extract JSON from response
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        if (attempt < retries) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          continue;
+        }
+        return {
+          match: false,
+          confidence: 0,
+          reason: 'Failed to parse Gemini response',
+          error: true
+        };
+      }
+
+      const parsed = JSON.parse(jsonMatch[0]);
+      return {
+        ...parsed,
+        error: false
+      };
+
+    } catch (error) {
+      // If rate limit, wait longer
+      if ((error.message.includes('429') || error.message.includes('quota')) && attempt < retries) {
+        console.log(`      Rate limit hit, waiting 30 seconds...`);
+        await new Promise(resolve => setTimeout(resolve, 30000));
+        continue;
+      }
+
+      // If last attempt, return error
+      if (attempt === retries) {
+        return {
+          match: false,
+          confidence: 0,
+          reason: `API error: ${error.message}`,
+          error: true
+        };
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+  }
+}
 
 // ============================================================================
 // NORMALIZATION & TOKEN HELPERS
@@ -435,11 +598,11 @@ if (skipReasons.noStrongCandidates > 0) {
 
 console.log(`\n`);
 
-// Step 3: Use AI only for final candidates
+// Step 3 & 4: Use AI for text-based verification, then mosaic visual verification
 (async () => {
-console.log('🤖 STEP 3: Using AI for final verification...\n');
+console.log('🤖 STEP 3: Using AI for text-based verification...\n');
 
-const finalMatches = [];
+const textMatches = []; // Matches from text-based AI
 const apiRejected = []; // Track ghost listings (API analyzed but no match)
 
 for (const item of allCandidates) {
@@ -475,9 +638,9 @@ If no strong match (confidence < 0.75), return: []`;
       if (matches.length > 0) {
         matches.forEach(m => {
           const coelho = candidates[m.index];
-          console.log(`  ✓ MATCH FOUND: Coelho ${coelho.propertyCode} (${(m.confidence * 100).toFixed(0)}%) - ${m.reason}`);
+          console.log(`  ✓ TEXT MATCH: Coelho ${coelho.propertyCode} (${(m.confidence * 100).toFixed(0)}%) - ${m.reason}`);
 
-          finalMatches.push({
+          textMatches.push({
             viva: {
               code: viva.propertyCode,
               url: viva.url,
@@ -490,8 +653,8 @@ If no strong match (confidence < 0.75), return: []`;
               price: coelho.price,
               features: coelho.features
             },
-            confidence: m.confidence,
-            reason: m.reason
+            text_confidence: m.confidence,
+            text_reason: m.reason
           });
         });
       } else {
@@ -523,30 +686,118 @@ If no strong match (confidence < 0.75), return: []`;
 }
 
 console.log(`\n\n═══════════════════════════════════════════════════════════════\n`);
+console.log(`📊 TEXT-BASED VERIFICATION COMPLETE\n`);
+console.log(`Text matches found: ${textMatches.length}\n`);
+
+// ============================================================================
+// STEP 4: MOSAIC VISUAL VERIFICATION
+// ============================================================================
+
+console.log(`🖼️  STEP 4: Visual verification with mosaics...\n`);
+
+const finalMatches = []; // Confirmed after visual verification
+const visualRejected = []; // Rejected by visual verification (false positives)
+const visualErrors = []; // Could not verify visually (missing mosaics or errors)
+
+for (let i = 0; i < textMatches.length; i++) {
+  const match = textMatches[i];
+
+  console.log(`[${i + 1}/${textMatches.length}] Verifying VIVA ${match.viva.code} ↔ Coelho ${match.coelho.code}...`);
+
+  const visualResult = await compareMosaics(match.viva.code, match.coelho.code);
+
+  if (visualResult.error) {
+    console.log(`  ⚠️  Visual verification error: ${visualResult.reason}`);
+    visualErrors.push({
+      ...match,
+      visual_error: visualResult.reason
+    });
+    // Still include in final matches if text-based was confident
+    if (match.text_confidence >= 0.85) {
+      console.log(`  ✓ Including anyway (high text confidence: ${(match.text_confidence * 100).toFixed(0)}%)`);
+      finalMatches.push({
+        ...match,
+        visual_verified: false,
+        visual_error: visualResult.reason
+      });
+    }
+  } else if (visualResult.match) {
+    console.log(`  ✅ VISUAL MATCH CONFIRMED (${(visualResult.confidence * 100).toFixed(0)}%)`);
+    console.log(`     ${visualResult.reason}`);
+    if (visualResult.key_matching_shapes) {
+      console.log(`     Matching shapes: ${visualResult.key_matching_shapes.join(', ')}`);
+    }
+    finalMatches.push({
+      ...match,
+      visual_confidence: visualResult.confidence,
+      visual_reason: visualResult.reason,
+      key_matching_shapes: visualResult.key_matching_shapes,
+      visual_verified: true
+    });
+  } else {
+    console.log(`  ❌ VISUAL MISMATCH (${(visualResult.confidence * 100).toFixed(0)}%) - FALSE POSITIVE`);
+    console.log(`     ${visualResult.reason}`);
+    visualRejected.push({
+      ...match,
+      visual_confidence: visualResult.confidence,
+      visual_reason: visualResult.reason,
+      visual_verified: false
+    });
+  }
+
+  console.log();
+
+  // Rate limiting between visual comparisons
+  if (i < textMatches.length - 1) {
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+}
+
+console.log(`\n═══════════════════════════════════════════════════════════════\n`);
+console.log(`📊 VISUAL VERIFICATION SUMMARY\n`);
+console.log(`Text matches: ${textMatches.length}`);
+console.log(`✅ Visual confirmed: ${finalMatches.length}`);
+console.log(`❌ Visual rejected (false positives): ${visualRejected.length}`);
+console.log(`⚠️  Visual errors: ${visualErrors.length}\n`);
+
+console.log(`\n═══════════════════════════════════════════════════════════════\n`);
 console.log(`🎯 FINAL RESULTS:\n`);
 console.log(`Total matches found: ${finalMatches.length}\n`);
 
 finalMatches.forEach(m => {
-  console.log(`✓ Viva ${m.viva.code} ↔ Coelho ${m.coelho.code} (${(m.confidence * 100).toFixed(0)}%)`);
+  const displayConf = m.visual_verified ? m.visual_confidence : m.text_confidence;
+  const verifiedMark = m.visual_verified ? '🖼️ ' : '';
+  console.log(`✓ ${verifiedMark}Viva ${m.viva.code} ↔ Coelho ${m.coelho.code}`);
+  console.log(`  Text: ${(m.text_confidence * 100).toFixed(0)}% - ${m.text_reason}`);
+  if (m.visual_verified) {
+    console.log(`  Visual: ${(m.visual_confidence * 100).toFixed(0)}% - ${m.visual_reason}`);
+    if (m.key_matching_shapes) {
+      console.log(`  Matching shapes: ${m.key_matching_shapes.join(', ')}`);
+    }
+  }
   console.log(`  Viva: ${m.viva.price} - ${m.viva.url}`);
-  console.log(`  Coelho: ${m.coelho.price} - ${m.coelho.url}`);
-  console.log(`  Reason: ${m.reason}\n`);
+  console.log(`  Coelho: ${m.coelho.price} - ${m.coelho.url}\n`);
 });
 
 // Save results
 const outputFile = 'data/smart-matches.json';
 fs.writeFileSync(outputFile, JSON.stringify({
   generated_at: new Date().toISOString(),
-  approach: 'Multi-block indexing + Adaptive filters + Suite matching + Top-K selection (v3)',
+  approach: 'Multi-block indexing + Adaptive filters + Suite matching + Visual mosaic verification (v5)',
   total_viva_listings: vivaData.total_listings,
   listings_with_candidates: allCandidates.length,
-  api_calls_made: allCandidates.length,
-  api_calls_saved: vivaData.total_listings - allCandidates.length,
-  total_matches: finalMatches.length,
+  text_api_calls_made: allCandidates.length,
+  text_matches_found: textMatches.length,
+  visual_api_calls_made: textMatches.length,
+  visual_verified_matches: finalMatches.filter(m => m.visual_verified).length,
+  visual_rejected_false_positives: visualRejected.length,
+  visual_errors: visualErrors.length,
+  total_final_matches: finalMatches.length,
   api_rejected_count: apiRejected.length,
   skip_reasons: skipReasons,
   skipped_details: skippedListings,
   api_rejected: apiRejected,
+  visual_rejected: visualRejected,
   matches: finalMatches.map(m => ({
     ...m,
     // Include deterministic scores if available (from _scored)
@@ -556,7 +807,10 @@ fs.writeFileSync(outputFile, JSON.stringify({
 
 console.log(`💾 Saved to: ${outputFile}\n`);
 console.log(`📊 Breakdown:`);
-console.log(`   ✓ Matches: ${finalMatches.length}`);
+console.log(`   ✓ Final matches: ${finalMatches.length}`);
+console.log(`   ↳ Visual verified: ${finalMatches.filter(m => m.visual_verified).length}`);
+console.log(`   ↳ Text only (visual error): ${finalMatches.filter(m => !m.visual_verified).length}`);
+console.log(`   ✗ Visual rejected (false positives): ${visualRejected.length}`);
 console.log(`   ✗ API rejected: ${apiRejected.length}`);
 console.log(`   ✗ No strong candidates: ${skipReasons.noStrongCandidates}`);
 })();
