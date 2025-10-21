@@ -1,13 +1,14 @@
 // mosaic-module.js
 // -----------------------------------------------------------
-// 2x3 Mosaic builder (exterior-focused) with pool awareness
-// - Downloads & caches listing photos (keeps original ext)
-// - Scores images for exterior (sky/vegetation) & pool (blue/teal water)
-// - De-duplicates near-identicals via true 64-bit pHash (8x8) + hex Hamming
-// - Ensures quotas using score predicates (no array-membership bugs)
+// 2x3 Mosaic builder using fastdup-ranked images
+// - Uses the best 6 images from the fastdup selection process
+// - Loads pre-ranked images from selected_exteriors/{site}/{listing_id}/
+// - Images are already scored by fastdup (exterior, sharpness, brightness)
 // - Builds mosaics with letterbox ("contain") to preserve edges
-// - Parallelized scoring with a small concurrency limiter
-// - CLI flags to tweak grid, fit, thresholds, and quotas
+// - CLI flags to tweak grid, fit, cell size, and background
+//
+// IMPORTANT: The fastdup pipeline must be run first!
+// See PIPELINE.md for the complete image processing workflow.
 // -----------------------------------------------------------
 
 const axios = require('axios');
@@ -40,6 +41,7 @@ let RENDER_FIT = 'contain'; // 'contain' (letterbox) or 'cover'
 
 // Paths
 const MOSAIC_DIR = path.join(process.cwd(), 'data', 'mosaics');
+const FASTDUP_SELECTED_DIR = path.join(process.cwd(), 'selected_exteriors');
 
 // ---------------------- CLI Flags ----------------------------
 function parseFlags() {
@@ -175,6 +177,47 @@ async function downloadAndCache(listing, side) {
   }
   console.log(`  📁 ${side}/${code}: ${downloaded} downloaded, ${skipped} cached, ${failed} failed`);
   return localPaths;
+}
+
+// ------------------- Load from Fastdup Selection -----------
+async function loadFromFastdupSelection(listing, side, maxN = GRID_TILES()) {
+  const code = listing.propertyCode || listing.code || safeId(listing.url);
+
+  // Map 'viva' to 'vivaprimeimoveis' and 'coelho' to 'coelhodafonseca'
+  const siteDir = side === 'viva' ? 'vivaprimeimoveis' : 'coelhodafonseca';
+
+  const manifestPath = path.join(FASTDUP_SELECTED_DIR, siteDir, String(code), '_manifest.json');
+
+  if (!fs.existsSync(manifestPath)) {
+    console.log(`  ⚠️  No fastdup selection found at: ${manifestPath}`);
+    return [];
+  }
+
+  try {
+    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+
+    if (!manifest.selected || !Array.isArray(manifest.selected)) {
+      console.log(`  ⚠️  Invalid manifest format`);
+      return [];
+    }
+
+    // Sort by rank_score descending (best first)
+    const sorted = manifest.selected
+      .filter(item => item.filename && fs.existsSync(item.filename))
+      .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
+
+    // Take top N (6 for 2x3 grid)
+    const topN = sorted.slice(0, maxN);
+    const imagePaths = topN.map(item => item.filename);
+
+    console.log(`  ✅ Loaded ${imagePaths.length} top-ranked images from fastdup selection`);
+    console.log(`     (from ${manifest.selected_count} available in manifest)`);
+
+    return imagePaths;
+  } catch (err) {
+    console.log(`  ❌ Error reading manifest: ${err.message}`);
+    return [];
+  }
 }
 
 // ------------------- Content Scorers -----------------------
@@ -486,14 +529,15 @@ async function generateMosaicForListing(listing, side) {
   const code = listing.propertyCode || listing.code || safeId(listing.url);
   console.log(`\n🖼️  Processing ${side}/${code}...`);
 
-  const cachePaths = await downloadAndCache(listing, side);
-  if (!cachePaths.length) {
-    console.log('  ❌ No images available for mosaic');
-    return { mosaicPath: null, stats: { error: 'No images' } };
+  // Load top 6 images from fastdup selection (already ranked)
+  const selected = await loadFromFastdupSelection(listing, side, GRID_TILES());
+
+  if (!selected.length) {
+    console.log('  ❌ No images available from fastdup selection for mosaic');
+    return { mosaicPath: null, stats: { error: 'No fastdup images' } };
   }
 
-  const selected = await selectForMosaic(cachePaths, GRID_TILES());
-  console.log(`  ✅ Selected ${selected.length} images for mosaic`);
+  console.log(`  ✅ Using ${selected.length} top-ranked images from fastdup`);
 
   const outDir = path.join(MOSAIC_DIR, side);
   await ensureDir(outDir);
@@ -509,7 +553,7 @@ async function generateMosaicForListing(listing, side) {
 
   return {
     mosaicPath: outPath,
-    stats: { totalImages: cachePaths.length, selectedImages: selected.length, cached: false }
+    stats: { selectedImages: selected.length, cached: false, source: 'fastdup' }
   };
 }
 
@@ -560,6 +604,7 @@ async function generateMosaicsForAll(jsonPath, side) {
 // -------------------------- Exports ------------------------
 module.exports = {
   downloadAndCache,
+  loadFromFastdupSelection,
   selectForMosaic,
   makeMosaic,
   generateMosaicForListing,
@@ -573,17 +618,19 @@ if (require.main === module) {
     if (!arg || !['viva','coelho','both'].includes(arg)) {
       console.log(`
 Usage:
-  node mosaic-module.js viva   [--grid=2x3] [--fit=contain|cover] [--min-pools=2] [--min-ext=3] [--poolMin=0.5] [--extMin=0.4] [--outdoorMin=0.35] [--dupThresh=10] [--cellw=320] [--cellh=320] [--bg=245,245,245]
+  node mosaic-module.js viva   [--grid=2x3] [--fit=contain|cover] [--cellw=320] [--cellh=320] [--bg=245,245,245]
   node mosaic-module.js coelho [--grid=2x3] [--fit=contain|cover] ...
   node mosaic-module.js both   [--grid=2x3] ...
 
 Defaults:
-  grid=2x3, fit=contain, min-pools=2, min-ext=3, poolMin=0.50, extMin=0.40, outdoorMin=0.35, dupThresh=10, cellw=320, cellh=320, bg=255,255,255
+  grid=2x3, fit=contain, cellw=320, cellh=320, bg=255,255,255
 
 Notes:
-  - The script keeps original image extensions on download.
-  - pHash is true 64-bit (8x8) and Hamming threshold defaults to 10.
-  - Exterior-only bias: no fallback to interiors; if scarce, uses best-by-outdoor.
+  - This script now uses the top 6 ranked images from the fastdup selection process.
+  - Images are loaded from selected_exteriors/{site}/{listing_id}/ directory.
+  - The fastdup process must be run first (see PIPELINE.md for details).
+  - Image selection is based on fastdup's quality ranking (exterior score, sharpness, brightness).
+  - For a 2x3 grid, the top 6 best-ranked images are used automatically.
 `);
       process.exit(0);
     }
