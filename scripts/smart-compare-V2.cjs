@@ -593,12 +593,12 @@ function gatherCandidates(v) {
   const cKey = [v.beds ?? -1, v.featSig];
   (idxC.get(JSON.stringify(cKey)) || []).forEach(i => cand.add(i));
 
-  // E: NEW exact price index (±0.1% price variation)
+  // E: NEW exact price index (±5% price variation)
   if (v.price != null && v.built != null) {
     const priceVariations = [
       v.price,
-      Math.round(v.price * 1.001),
-      Math.round(v.price * 0.999)
+      Math.round(v.price * 1.05),  // +5%
+      Math.round(v.price * 0.95)   // -5%
     ];
     const builtVariations = [
       roundTo(v.built, 20),

@@ -154,9 +154,9 @@ For a listing at R$8,500,000 with 450m²:
 
 ```javascript
 const priceVariations = [
-  8500000,
-  Math.round(8500000 * 1.001),  // 8,508,500
-  Math.round(8500000 * 0.999)   // 8,491,500
+  8500000,                      // Exact
+  Math.round(8500000 * 1.05),  // 8,925,000 (+5%)
+  Math.round(8500000 * 0.95)   // 8,075,000 (-5%)
 ];
 
 const builtVariations = [
@@ -167,6 +167,8 @@ const builtVariations = [
 
 // Search all combinations (9 total index lookups)
 ```
+
+**Note:** We use ±5% price variation (not ±0.1%) because the same property may be listed at slightly different prices across real estate sites due to negotiation room, price changes over time, or different broker commissions.
 
 This creates a "fast path" - exact price matches are extremely likely to be correct.
 
