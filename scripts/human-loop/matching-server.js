@@ -204,7 +204,9 @@ function calculateDeltas(vivaListing, coelhoListing) {
   const vivaPrice = parseFloat(String(vivaListing.price || '0').replace(/[^0-9.]/g, ''));
   const coelhoPrice = parseFloat(String(coelhoListing.price || '0').replace(/[^0-9.]/g, ''));
 
-  const vivaArea = parseFloat(String(vivaListing.detailedData?.specs?.area_construida || '0').replace(/[^0-9.]/g, ''));
+  // Support both formats: detailedData.specs (old) or specs (new from smart-compare)
+  const vivaSpecs = vivaListing.detailedData?.specs || vivaListing.specs || {};
+  const vivaArea = parseFloat(String(vivaSpecs.area_construida || '0').replace(/[^0-9.]/g, ''));
   const coelhoArea = parseFloat(String(coelhoListing.features || '').match(/(\d+(?:[.,]\d+)?)\s*m²/)?.[1]?.replace(',', '.') || '0');
 
   const priceDelta = vivaPrice && coelhoPrice ? ((coelhoPrice - vivaPrice) / vivaPrice * 100) : null;
