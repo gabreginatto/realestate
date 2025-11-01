@@ -505,12 +505,14 @@ class MatcherApp {
             const { viva_code, viva, mosaic_path } = response;
 
             // Normalize viva listing for UI
+            // Support both formats: detailedData.specs (old) and specs (new)
+            const specs = viva.detailedData?.specs || viva.specs || {};
             const vivaListing = {
                 propertyCode: viva_code,
                 price: viva.price,
-                area: viva.detailedData?.specs?.area_construida || viva.area,
-                bedrooms: viva.detailedData?.specs?.bedrooms || viva.bedrooms,
-                suites: viva.detailedData?.specs?.suites || viva.suites,
+                area: specs.area_construida,
+                bedrooms: specs.dormitorios,
+                suites: specs.suites,
                 address: viva.address,
                 url: viva.url,
                 mosaicPath: mosaic_path
@@ -520,21 +522,29 @@ class MatcherApp {
             const candidatesResponse = await this.api.getCandidates(viva_code);
 
             // Normalize candidates for UI (backend returns { candidates: [...] })
-            const normalizedCandidates = (candidatesResponse?.candidates || []).map(item => ({
-                propertyCode: item.code,
-                price: item.candidate.price,
-                area: item.candidate.detailedData?.specs?.area_construida || item.candidate.area,
-                bedrooms: item.candidate.detailedData?.specs?.bedrooms || item.candidate.bedrooms,
-                suites: item.candidate.detailedData?.specs?.suites || item.candidate.suites,
-                mosaicPath: item.mosaic_path,
-                aiScore: item.ai_score,
-                priceDelta: item.deltas?.price_delta_pct,
-                areaDelta: item.deltas?.area_delta_pct,
-                priceViva: item.deltas?.price_viva,
-                priceCoelho: item.deltas?.price_coelho,
-                areaViva: item.deltas?.area_viva,
-                areaCoelho: item.deltas?.area_coelho
-            }));
+            const normalizedCandidates = (candidatesResponse?.candidates || []).map(item => {
+                // Extract area and bedroom info from features string
+                const features = item.candidate.features || '';
+                const areaMatch = features.match(/(\d+)\s*m²\s*constru[ií]da/i);
+                const bedsMatch = features.match(/(\d+)\s*dorm/i);
+                const suitesMatch = features.match(/(\d+)\s*su[ií]te/i);
+
+                return {
+                    propertyCode: item.code,
+                    price: item.candidate.price,
+                    area: areaMatch ? parseFloat(areaMatch[1]) : null,
+                    bedrooms: bedsMatch ? parseInt(bedsMatch[1]) : null,
+                    suites: suitesMatch ? parseInt(suitesMatch[1]) : null,
+                    mosaicPath: item.mosaic_path,
+                    aiScore: item.ai_score,
+                    priceDelta: item.deltas?.price_delta_pct,
+                    areaDelta: item.deltas?.area_delta_pct,
+                    priceViva: item.deltas?.price_viva,
+                    priceCoelho: item.deltas?.price_coelho,
+                    areaViva: item.deltas?.area_viva,
+                    areaCoelho: item.deltas?.area_coelho
+                };
+            });
 
             this.state.setCurrentListing(vivaListing);
             this.state.setCandidates(normalizedCandidates);
