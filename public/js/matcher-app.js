@@ -52,11 +52,29 @@ class MatcherState {
 // ===========================
 class MatcherAPI {
     constructor(baseURL = '') {
-        this.baseURL = baseURL;
+        this.baseURL = (baseURL || '').replace(/\/+$/, '');
+    }
+
+    resolveEndpoint(endpoint) {
+        if (/^https?:\/\//i.test(endpoint)) {
+            return endpoint;
+        }
+
+        const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+
+        if (!this.baseURL) {
+            return normalizedEndpoint;
+        }
+
+        if (normalizedEndpoint.startsWith(this.baseURL)) {
+            return normalizedEndpoint;
+        }
+
+        return `${this.baseURL}${normalizedEndpoint}`;
     }
 
     async request(endpoint, options = {}) {
-        const url = `${this.baseURL}${endpoint}`;
+        const url = this.resolveEndpoint(endpoint);
         const response = await fetch(url, {
             ...options,
             headers: {
@@ -409,7 +427,10 @@ class MatcherUI {
 class MatcherApp {
     constructor() {
         this.state = new MatcherState();
-        this.api = new MatcherAPI('/api');
+        const globalBase = typeof window !== 'undefined'
+            ? (window.__MATCHER_API_BASE__ ?? window.MATCHER_API_BASE ?? window.MATCHER_API_BASE_URL ?? '')
+            : '';
+        this.api = new MatcherAPI(globalBase);
         this.ui = new UI();
 
         this.init();
@@ -675,4 +696,8 @@ class MatcherApp {
 // ===========================
 const UI = MatcherUI; // Alias for consistency
 
-window.matcherApp = new MatcherApp();
+if (typeof window !== 'undefined') {
+    window.matcherApp = new MatcherApp();
+}
+
+export { MatcherAPI };
