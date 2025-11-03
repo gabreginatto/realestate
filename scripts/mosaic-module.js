@@ -186,7 +186,8 @@ async function loadFromFastdupSelection(listing, side, maxN = GRID_TILES()) {
   // Map 'viva' to 'vivaprimeimoveis' and 'coelho' to 'coelhodafonseca'
   const siteDir = side === 'viva' ? 'vivaprimeimoveis' : 'coelhodafonseca';
 
-  const manifestPath = path.join(FASTDUP_SELECTED_DIR, siteDir, String(code), '_manifest.json');
+  const selectionDir = path.join(FASTDUP_SELECTED_DIR, siteDir, String(code));
+  const manifestPath = path.join(selectionDir, '_manifest.json');
 
   if (!fs.existsSync(manifestPath)) {
     console.log(`  ⚠️  No fastdup selection found at: ${manifestPath}`);
@@ -203,12 +204,20 @@ async function loadFromFastdupSelection(listing, side, maxN = GRID_TILES()) {
 
     // Sort by rank_score descending (best first)
     const sorted = manifest.selected
-      .filter(item => item.filename && fs.existsSync(item.filename))
       .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
 
-    // Take top N (6 for 2x3 grid)
+    // Take top N and map to actual image paths in selected_exteriors folder
     const topN = sorted.slice(0, maxN);
-    const imagePaths = topN.map(item => item.filename);
+
+    // Get actual image files from the selected_exteriors directory
+    const imagePaths = topN
+      .map(item => {
+        // Extract just the filename from the manifest path
+        const filename = path.basename(item.filename);
+        // Build the actual path in selected_exteriors
+        return path.join(selectionDir, filename);
+      })
+      .filter(p => fs.existsSync(p));
 
     console.log(`  ✅ Loaded ${imagePaths.length} top-ranked images from fastdup selection`);
     console.log(`     (from ${manifest.selected_count} available in manifest)`);
