@@ -1,7 +1,7 @@
 // mosaic-module.js
 // -----------------------------------------------------------
-// 2x3 Mosaic builder using fastdup-ranked images
-// - Uses the best 6 images from the fastdup selection process
+// 2x4 Mosaic builder using fastdup-ranked images
+// - Uses the best 8 images from the fastdup selection process
 // - Loads pre-ranked images from selected_exteriors/{site}/{listing_id}/
 // - Images are already scored by fastdup (exterior, sharpness, brightness)
 // - Builds mosaics with letterbox ("contain") to preserve edges
@@ -20,7 +20,7 @@ const os = require('os');
 
 // ------------------------- Defaults --------------------------
 let GRID_ROWS = 2;
-let GRID_COLS = 3;
+let GRID_COLS = 4;
 let CELL_W = 320;
 let CELL_H = 320;
 const GRID_TILES = () => GRID_ROWS * GRID_COLS;
@@ -529,7 +529,7 @@ async function generateMosaicForListing(listing, side) {
   const code = listing.propertyCode || listing.code || safeId(listing.url);
   console.log(`\n🖼️  Processing ${side}/${code}...`);
 
-  // Load top 6 images from fastdup selection (already ranked)
+  // Load top 8 images from fastdup selection (already ranked)
   const selected = await loadFromFastdupSelection(listing, side, GRID_TILES());
 
   if (!selected.length) {
@@ -559,7 +559,7 @@ async function generateMosaicForListing(listing, side) {
 
 async function generateMosaicsForAll(jsonPath, side) {
   console.log(`\n${'='.repeat(60)}`);
-  console.log(`🚀 Generating mosaics for ${side.toUpperCase()}  (grid: ${GRID_ROWS}x${GRID_COLS}, fit: ${RENDER_FIT})`);
+  console.log(`🚀 Generating mosaics for ${side.toUpperCase()}  (grid: ${GRID_ROWS}x${GRID_COLS}, ${GRID_TILES()} images, fit: ${RENDER_FIT})`);
   console.log(`${'='.repeat(60)}\n`);
 
   const data = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
@@ -618,19 +618,19 @@ if (require.main === module) {
     if (!arg || !['viva','coelho','both'].includes(arg)) {
       console.log(`
 Usage:
-  node mosaic-module.js viva   [--grid=2x3] [--fit=contain|cover] [--cellw=320] [--cellh=320] [--bg=245,245,245]
-  node mosaic-module.js coelho [--grid=2x3] [--fit=contain|cover] ...
-  node mosaic-module.js both   [--grid=2x3] ...
+  node mosaic-module.js viva   [--grid=2x4] [--fit=contain|cover] [--cellw=320] [--cellh=320] [--bg=245,245,245]
+  node mosaic-module.js coelho [--grid=2x4] [--fit=contain|cover] ...
+  node mosaic-module.js both   [--grid=2x4] ...
 
 Defaults:
-  grid=2x3, fit=contain, cellw=320, cellh=320, bg=255,255,255
+  grid=2x4, fit=contain, cellw=320, cellh=320, bg=255,255,255
 
 Notes:
-  - This script now uses the top 6 ranked images from the fastdup selection process.
+  - This script now uses the top 8 ranked images from the fastdup selection process.
   - Images are loaded from selected_exteriors/{site}/{listing_id}/ directory.
   - The fastdup process must be run first (see PIPELINE.md for details).
   - Image selection is based on fastdup's quality ranking (exterior score, sharpness, brightness).
-  - For a 2x3 grid, the top 6 best-ranked images are used automatically.
+  - For a 2x4 grid, the top 8 best-ranked images are used automatically.
 `);
       process.exit(0);
     }
