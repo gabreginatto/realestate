@@ -448,82 +448,55 @@ async function downloadImage(url, filepath, redirectCount = 0) {
   // STEP 4: SELECT BEST 12 EXTERIOR IMAGES
   // ========================================
   console.log('\nSTEP 4: Selecting best 12 exterior images...\n');
-  console.log('Creating copies of image folders for processing...\n');
 
-  // Create processing directory (copy of original images)
-  const processDir = path.join(process.cwd(), 'data', 'vivaprimeimoveis', 'images_processed');
-  fs.mkdirSync(processDir, { recursive: true });
+  const { exec } = require('child_process');
+  const { promisify } = require('util');
+  const execPromise = promisify(exec);
 
-  // Copy all images to processing directory
-  console.log('📦 Copying images to processing directory...');
-  for (let i = 0; i < allListings.length; i++) {
-    const listing = allListings[i];
-    const sourceDir = path.join(imagesBaseDir, listing.propertyCode);
-    const destDir = path.join(processDir, listing.propertyCode);
-
-    if (fs.existsSync(sourceDir)) {
-      fs.mkdirSync(destDir, { recursive: true});
-
-      // Copy all files
-      const files = fs.readdirSync(sourceDir);
-      for (const file of files) {
-        const sourcePath = path.join(sourceDir, file);
-        const destPath = path.join(destDir, file);
-        fs.copyFileSync(sourcePath, destPath);
-      }
-      console.log(`  ✓ [${i + 1}/${allListings.length}] ${listing.propertyCode}: ${files.length} images copied`);
-    }
-  }
-
-  console.log('\n📸 Selecting best 12 exterior images per listing...\n');
-
-  const selectedDir = path.join(process.cwd(), 'selected_exteriors', 'vivaprimeimoveis');
-  fs.mkdirSync(selectedDir, { recursive: true});
+  // Run fastdup analysis directly on original images (read-only)
+  console.log('🔬 Running fastdup analysis on original images (read-only)...\n');
 
   try {
-    // Keep best 12 images per listing based on file size (as a proxy for quality)
-    let totalSelected = 0;
+    const { stdout, stderr } = await execPromise('python3 scripts/process-images-fastdup.py', {
+      cwd: process.cwd(),
+      timeout: 600000  // 10 minutes
+    });
 
-    for (let i = 0; i < allListings.length; i++) {
-      const listing = allListings[i];
-      const listingDir = path.join(processDir, listing.propertyCode);
-      const outputDir = path.join(selectedDir, listing.propertyCode);
+    if (stdout) console.log(stdout);
+    if (stderr) console.error(stderr);
 
-      if (!fs.existsSync(listingDir)) continue;
-
-      const images = fs.readdirSync(listingDir)
-        .filter(f => f.match(/\.(jpg|jpeg|png)$/i))
-        .map(f => {
-          const filepath = path.join(listingDir, f);
-          const stats = fs.statSync(filepath);
-          return { filename: f, filepath, size: stats.size };
-        })
-        .sort((a, b) => b.size - a.size);  // Sort by size descending
-
-      // Keep best 12 (or all if fewer than 12)
-      const toKeep = images.slice(0, Math.min(12, images.length));
-
-      fs.mkdirSync(outputDir, { recursive: true });
-
-      for (const img of toKeep) {
-        const destPath = path.join(outputDir, img.filename);
-        fs.copyFileSync(img.filepath, destPath);
-      }
-
-      totalSelected += toKeep.length;
-      console.log(`  ✓ [${i + 1}/${allListings.length}] ${listing.propertyCode}: Selected ${toKeep.length} images`);
-    }
-
-    console.log(`\n✅ Selected ${totalSelected} best exterior images total`);
-    console.log(`📁 Output directory: ${selectedDir}`);
-
+    console.log('\n✅ Fastdup analysis complete\n');
   } catch (error) {
-    console.log(`\n❌ Selection error: ${error.message}`);
+    console.log(`\n⚠️  Fastdup analysis error: ${error.message}`);
+    console.log('Continuing with exterior selection...\n');
+  }
+
+  // Run select_exteriors using Python script with HSV exterior detection
+  console.log('📸 Selecting best 12 exterior images per listing...\n');
+
+  try {
+    const { stdout, stderr } = await execPromise(
+      'python3 scripts/select_exteriors.py vivaprimeimoveis --cache-root data --work-root work_fastdup --out-root selected_exteriors --images-subdir images',
+      {
+        cwd: process.cwd(),
+        timeout: 600000  // 10 minutes
+      }
+    );
+
+    if (stdout) console.log(stdout);
+    if (stderr) console.error(stderr);
+
+    console.log('\n✅ Exterior selection complete\n');
+  } catch (error) {
+    console.log(`\n❌ Selection error: ${error.message}\n`);
   }
 
   // ========================================
   // FINAL SUMMARY
   // ========================================
+  const selectedDir = path.join(process.cwd(), 'selected_exteriors', 'vivaprimeimoveis');
+  const workDir = path.join(process.cwd(), 'work_fastdup');
+
   console.log('\n' + '='.repeat(60));
   console.log('✅ MASTER SCRAPER COMPLETE');
   console.log('='.repeat(60));
@@ -532,9 +505,11 @@ async function downloadImage(url, filepath, redirectCount = 0) {
   console.log(`Images downloaded: ${totalDownloaded}`);
   console.log(`Images cached: ${totalSkipped}`);
   console.log(`Images failed: ${totalFailed}`);
-  console.log(`\nOriginal images: ${imagesBaseDir}`);
-  console.log(`Processed images: ${processDir}`);
-  console.log(`Selected exteriors (12 best): ${selectedDir}`);
+  console.log(`\nData locations:`);
+  console.log(`  Listings JSON: ${path.join(process.cwd(), 'data', 'vivaprimeimoveis', 'listings')}`);
+  console.log(`  Original images: ${imagesBaseDir}`);
+  console.log(`  Fastdup analysis: ${workDir}`);
+  console.log(`  Selected exteriors (best 12): ${selectedDir}`);
   console.log('='.repeat(60) + '\n');
 
   process.exit(0);
