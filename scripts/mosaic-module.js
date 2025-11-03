@@ -187,44 +187,69 @@ async function loadFromFastdupSelection(listing, side, maxN = GRID_TILES()) {
   const siteDir = side === 'viva' ? 'vivaprimeimoveis' : 'coelhodafonseca';
 
   const selectionDir = path.join(FASTDUP_SELECTED_DIR, siteDir, String(code));
-  const manifestPath = path.join(selectionDir, '_manifest.json');
 
-  if (!fs.existsSync(manifestPath)) {
-    console.log(`  ⚠️  No fastdup selection found at: ${manifestPath}`);
+  if (!fs.existsSync(selectionDir)) {
+    console.log(`  ⚠️  No fastdup selection found at: ${selectionDir}`);
     return [];
   }
 
   try {
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+    // Read all image files directly from the directory (ignore manifest)
+    const imageExts = ['.jpg', '.jpeg', '.png', '.webp'];
+    const allFiles = fs.readdirSync(selectionDir);
 
-    if (!manifest.selected || !Array.isArray(manifest.selected)) {
-      console.log(`  ⚠️  Invalid manifest format`);
+    const imageFiles = allFiles
+      .filter(file => {
+        const ext = path.extname(file).toLowerCase();
+        return imageExts.includes(ext) && !file.startsWith('_');
+      })
+      .map(file => path.join(selectionDir, file));
+
+    if (imageFiles.length === 0) {
+      console.log(`  ⚠️  No images found in ${selectionDir}`);
       return [];
     }
 
-    // Sort by rank_score descending (best first)
-    const sorted = manifest.selected
-      .sort((a, b) => (b.rank_score || 0) - (a.rank_score || 0));
+    // Try to read manifest for ranking information
+    const manifestPath = path.join(selectionDir, '_manifest.json');
+    let rankedImages = imageFiles;
 
-    // Take top N and map to actual image paths in selected_exteriors folder
-    const topN = sorted.slice(0, maxN);
+    if (fs.existsSync(manifestPath)) {
+      try {
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
 
-    // Get actual image files from the selected_exteriors directory
-    const imagePaths = topN
-      .map(item => {
-        // Extract just the filename from the manifest path
-        const filename = path.basename(item.filename);
-        // Build the actual path in selected_exteriors
-        return path.join(selectionDir, filename);
-      })
-      .filter(p => fs.existsSync(p));
+        if (manifest.selected && Array.isArray(manifest.selected)) {
+          // Create a map of filename -> rank_score
+          const scoreMap = {};
+          manifest.selected.forEach(item => {
+            const filename = path.basename(item.filename);
+            scoreMap[filename] = item.rank_score || 0;
+          });
 
-    console.log(`  ✅ Loaded ${imagePaths.length} top-ranked images from fastdup selection`);
-    console.log(`     (from ${manifest.selected_count} available in manifest)`);
+          // Sort images by rank_score (if available)
+          rankedImages = imageFiles.sort((a, b) => {
+            const filenameA = path.basename(a);
+            const filenameB = path.basename(b);
+            const scoreA = scoreMap[filenameA] || 0;
+            const scoreB = scoreMap[filenameB] || 0;
+            return scoreB - scoreA; // Descending order (best first)
+          });
+        }
+      } catch (err) {
+        // If manifest is invalid, just use all images unsorted
+        console.log(`  ⚠️  Could not read manifest ranking, using all images`);
+      }
+    }
 
-    return imagePaths;
+    // Take top N images
+    const selectedImages = rankedImages.slice(0, maxN);
+
+    console.log(`  ✅ Loaded ${selectedImages.length} images from fastdup selection`);
+    console.log(`     (from ${imageFiles.length} total images available)`);
+
+    return selectedImages;
   } catch (err) {
-    console.log(`  ❌ Error reading manifest: ${err.message}`);
+    console.log(`  ❌ Error loading images: ${err.message}`);
     return [];
   }
 }

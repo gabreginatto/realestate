@@ -420,10 +420,33 @@ async function downloadImage(url, filepath, redirectCount = 0) {
   }
 
   // ========================================
+  // STEP 5: GENERATE MOSAICS
+  // ========================================
+  console.log('\nSTEP 5: Generating mosaics...\n');
+
+  try {
+    const { stdout, stderr } = await execPromise(
+      'node scripts/mosaic-module.js coelho',
+      {
+        cwd: process.cwd(),
+        timeout: 600000  // 10 minutes
+      }
+    );
+
+    if (stdout) console.log(stdout);
+    if (stderr) console.error(stderr);
+
+    console.log('\n✅ Mosaic generation complete\n');
+  } catch (error) {
+    console.log(`\n❌ Mosaic generation error: ${error.message}\n`);
+  }
+
+  // ========================================
   // FINAL SUMMARY
   // ========================================
   const selectedDir = path.join(process.cwd(), 'selected_exteriors', 'coelhodafonseca');
   const workDir = path.join(process.cwd(), 'work_fastdup');
+  const mosaicsDir = path.join(process.cwd(), 'data', 'mosaics', 'coelho');
 
   console.log('\n' + '='.repeat(60));
   console.log('✅ MASTER SCRAPER COMPLETE');
@@ -438,6 +461,7 @@ async function downloadImage(url, filepath, redirectCount = 0) {
   console.log(`  Original images: ${imagesBaseDir}`);
   console.log(`  Fastdup analysis: ${workDir}`);
   console.log(`  Selected exteriors (best 12): ${selectedDir}`);
+  console.log(`  Mosaics (2x4 grids): ${mosaicsDir}`);
   console.log('='.repeat(60) + '\n');
 
   process.exit(0);

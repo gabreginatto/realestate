@@ -198,16 +198,12 @@ def select_best_12(listing_dir, work_dir, site, listing_id, out_root, copy_mode=
     # Weights: exterior 50%, sharpness 35%, brightness 15%
     df["rank_score"] = 0.50 * df["ext_n"] + 0.35 * df["sharp_n"] + 0.15 * df["bright_n"]
 
-    # Within each cluster, pick the top 1 image by rank_score (de-redundancy)
-    representatives = (df.sort_values("rank_score", ascending=False)
-                      .groupby("cluster", dropna=False, as_index=False)
-                      .first())
-
-    representatives = representatives.sort_values("rank_score", ascending=False)
+    # Sort by rank_score descending (best first)
+    df_sorted = df.sort_values("rank_score", ascending=False)
 
     # Select best 12 (or all if fewer than 12)
-    num_to_keep = min(12, len(representatives))
-    chosen = representatives.head(num_to_keep).copy()
+    num_to_keep = min(12, len(df_sorted))
+    chosen = df_sorted.head(num_to_keep).copy()
 
     # Create output directory
     out_dir = os.path.join(out_root, site, listing_id)
