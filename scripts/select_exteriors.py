@@ -249,17 +249,20 @@ def run(
     work_root: str = typer.Option("work_fastdup", help="Fastdup work directory"),
     out_root: str = typer.Option("selected_exteriors", help="Output directory for selected images"),
     copy_mode: str = typer.Option("copy", help="'copy' or 'symlink'"),
+    images_subdir: str = typer.Option("", help="Subdirectory containing images (e.g., 'images')"),
 ):
     """
     Select best 12 exterior photos per listing for a single site.
 
     Example:
         python select_exteriors.py coelhodafonseca
-        python select_exteriors.py vivaprimeimoveis
+        python select_exteriors.py vivaprimeimoveis --images-subdir images
     """
     console.print(f"\n[bold cyan]Selecting best 12 exterior images for: {site}[/bold cyan]\n")
 
     cache_dir = os.path.join(cache_root, site)
+    if images_subdir:
+        cache_dir = os.path.join(cache_dir, images_subdir)
 
     if not os.path.exists(cache_dir):
         console.print(f"[red]Error: {cache_dir} does not exist![/red]")

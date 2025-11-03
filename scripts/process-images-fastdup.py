@@ -95,14 +95,14 @@ if __name__ == "__main__":
     # Process Coelho da Fonseca
     process_site(
         "coelhodafonseca",
-        "data/coelhodafonseca/images_processed",
+        "data/coelhodafonseca/images",
         "work_fastdup"
     )
 
     # Process Viva Prime Imóveis
     process_site(
         "vivaprimeimoveis",
-        "data/vivaprimeimoveis/images_processed",
+        "data/vivaprimeimoveis/images",
         "work_fastdup"
     )
 
