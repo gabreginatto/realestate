@@ -32,7 +32,7 @@ const DATA_ROOT = process.env.DATA_ROOT || path.join(__dirname, '../../data');
 const READ_ONLY = process.argv.includes('--read-only');
 const SESSION_NAME = process.env.SESSION_NAME || 'default';
 
-const SMART_MATCHES_FILE = path.join(DATA_ROOT, 'smart-matches.json');
+const SMART_MATCHES_FILE = path.join(DATA_ROOT, 'deterministic-matches.json');
 const MANUAL_MATCHES_FILE = path.join(DATA_ROOT, 'manual-matches.json');
 const AUDIT_LOG_FILE = path.join(DATA_ROOT, 'manual-matches.log.jsonl');
 const MOSAICS_DIR = path.join(__dirname, '../../data/mosaics');
@@ -71,15 +71,21 @@ function loadSmartMatches() {
   try {
     if (!fs.existsSync(SMART_MATCHES_FILE)) {
       console.error(`❌ Error: ${SMART_MATCHES_FILE} not found!`);
-      console.error('   Please run smart-compare first to generate candidate pairs.');
+      console.error('   Please run deterministic-matcher first to generate candidate pairs.');
       process.exit(1);
     }
 
     const data = JSON.parse(fs.readFileSync(SMART_MATCHES_FILE, 'utf-8'));
-    console.log(`✓ Loaded smart-matches.json: ${data.matches?.length || 0} Viva listings with candidates`);
-    return data;
+    // Convert deterministic-matches format to expected format
+    const matches = (data.candidate_pairs || []).map(pair => ({
+      viva: pair.viva,
+      coelhoCandidates: pair.candidates || [],
+      _scored: (pair.candidates || []).map(c => ({ code: c.code, score: c.score }))
+    }));
+    console.log(`✓ Loaded deterministic-matches.json: ${matches.length} Viva listings with candidates`);
+    return { matches };
   } catch (error) {
-    console.error(`❌ Error loading smart-matches.json: ${error.message}`);
+    console.error(`❌ Error loading deterministic-matches.json: ${error.message}`);
     process.exit(1);
   }
 }
@@ -201,13 +207,22 @@ function appendAuditLog(action, payload) {
 }
 
 function calculateDeltas(vivaListing, coelhoListing) {
-  const vivaPrice = parseFloat(String(vivaListing.price || '0').replace(/[^0-9.]/g, ''));
-  const coelhoPrice = parseFloat(String(coelhoListing.price || '0').replace(/[^0-9.]/g, ''));
+  // Parse Brazilian price format: R$ 4.900.000,00 -> 4900000
+  const parsePrice = (priceStr) => {
+    if (!priceStr) return 0;
+    // Remove R$, spaces, and convert comma to period, then remove periods used as thousands separators
+    return parseFloat(String(priceStr).replace(/R\$\s*/g, '').replace(/\./g, '').replace(/,/g, '.'));
+  };
 
-  // Support both formats: detailedData.specs (old) or specs (new from smart-compare)
-  const vivaSpecs = vivaListing.detailedData?.specs || vivaListing.specs || {};
-  const vivaArea = parseFloat(String(vivaSpecs.area_construida || '0').replace(/[^0-9.]/g, ''));
-  const coelhoArea = parseFloat(String(coelhoListing.features || '').match(/(\d+(?:[.,]\d+)?)\s*m²/)?.[1]?.replace(',', '.') || '0');
+  const vivaPrice = parsePrice(vivaListing.price);
+  const coelhoPrice = parsePrice(coelhoListing.price);
+
+  // Get area from viva listing (support multiple formats)
+  const vivaArea = vivaListing.built ||
+                   vivaListing.detailedData?.specs?.area_construida ||
+                   vivaListing.specs?.area_construida ||
+                   0;
+  const coelhoArea = coelhoListing.built || 0;
 
   const priceDelta = vivaPrice && coelhoPrice ? ((coelhoPrice - vivaPrice) / vivaPrice * 100) : null;
   const areaDelta = vivaArea && coelhoArea ? ((coelhoArea - vivaArea) / vivaArea * 100) : null;
@@ -229,7 +244,7 @@ function calculateDeltas(vivaListing, coelhoListing) {
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ type: ['application/json', 'application/json; charset=utf-8', 'application/json; charset=UTF-8'] }));
 app.use(express.static(path.join(__dirname, '../../public')));
 app.use('/mosaics', express.static(MOSAICS_DIR));
 
@@ -286,9 +301,15 @@ app.get('/api/candidates/:id', (req, res) => {
       const code = candidate.code || candidate.propertyCode;
       const scored = task.scored.find(s => s.code === code);
 
+      // Transform candidate data to include features string for frontend parsing
+      const transformedCandidate = {
+        ...candidate,
+        features: `${candidate.built || 0}m² construída, ${candidate.beds || 0} dorm, ${candidate.suites || 0} suíte`
+      };
+
       return {
         code,
-        candidate,
+        candidate: transformedCandidate,
         ai_score: scored?.score || null,
         deltas: calculateDeltas(task.viva, candidate),
         mosaic_path: `/mosaics/coelho/${code}.png`
@@ -329,9 +350,20 @@ app.get('/api/next', (req, res) => {
     });
   }
 
+  // Transform viva data to match frontend expectations
+  const viva = available.viva;
+  const transformedViva = {
+    ...viva,
+    specs: {
+      area_construida: viva.built,
+      dormitorios: viva.beds,
+      suites: viva.suites
+    }
+  };
+
   res.json({
     viva_code: available.viva_code,
-    viva: available.viva,
+    viva: transformedViva,
     remaining_candidates: available.remaining_candidates,
     mosaic_path: `/mosaics/viva/${available.viva_code}.png`
   });

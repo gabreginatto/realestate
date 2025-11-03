@@ -364,7 +364,14 @@ class MatcherUI {
 
     formatPrice(price) {
         if (!price) return '-';
-        const num = typeof price === 'string' ? parseFloat(price.replace(/[^0-9.]/g, '')) : price;
+        // Parse Brazilian price format: R$ 4.900.000,00 -> 4900000
+        let num;
+        if (typeof price === 'string') {
+            // Remove R$, spaces, periods (thousands separator), convert comma to period
+            num = parseFloat(price.replace(/R\$\s*/g, '').replace(/\./g, '').replace(/,/g, '.'));
+        } else {
+            num = price;
+        }
         if (isNaN(num)) return price;
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
@@ -386,6 +393,9 @@ class MatcherUI {
     }
 
     formatDelta(delta) {
+        if (delta === null || delta === undefined || isNaN(delta)) {
+            return '0.0%';
+        }
         const sign = delta > 0 ? '+' : '';
         return `${sign}${delta.toFixed(1)}%`;
     }
@@ -544,13 +554,15 @@ class MatcherApp {
 
             // Normalize candidates for UI (backend returns { candidates: [...] })
             const normalizedCandidates = (candidatesResponse?.candidates || []).map(item => {
+                console.log('Processing candidate:', item.code, item);
+
                 // Extract area and bedroom info from features string
                 const features = item.candidate.features || '';
                 const areaMatch = features.match(/(\d+)\s*m²\s*constru[ií]da/i);
                 const bedsMatch = features.match(/(\d+)\s*dorm/i);
                 const suitesMatch = features.match(/(\d+)\s*su[ií]te/i);
 
-                return {
+                const normalized = {
                     propertyCode: item.code,
                     price: item.candidate.price,
                     area: areaMatch ? parseFloat(areaMatch[1]) : null,
@@ -565,7 +577,12 @@ class MatcherApp {
                     areaViva: item.deltas?.area_viva,
                     areaCoelho: item.deltas?.area_coelho
                 };
+
+                console.log('Normalized candidate:', normalized);
+                return normalized;
             });
+
+            console.log('Total normalized candidates:', normalizedCandidates.length);
 
             this.state.setCurrentListing(vivaListing);
             this.state.setCandidates(normalizedCandidates);
