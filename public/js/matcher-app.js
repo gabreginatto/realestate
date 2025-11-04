@@ -301,61 +301,73 @@ class MatcherUI {
 
         card.innerHTML = `
             <div class="candidate-header">
-                <h3 class="candidate-id">Coelho #${candidate.propertyCode}</h3>
-                <span class="candidate-rank">#${rank}</span>
+                <h3 class="candidate-id">Coelho Candidate #${candidate.propertyCode}</h3>
+                <span class="candidate-rank">Match #${rank}</span>
             </div>
 
-            <div class="candidate-mosaic mosaic-wrapper">
-                <img src="${mosaicSrc}"
-                     alt="Candidate ${candidate.propertyCode}"
-                     class="mosaic-image clickable"
-                     data-code="${candidate.propertyCode}"
-                     data-site="coelho">
-                <div class="mosaic-overlay">Click to zoom</div>
-            </div>
+            <div class="candidate-content">
+                <!-- Candidate Mosaic (left side, same as Viva) -->
+                <div class="candidate-mosaic mosaic-wrapper">
+                    <img src="${mosaicSrc}"
+                         alt="Candidate ${candidate.propertyCode}"
+                         class="mosaic-image clickable"
+                         data-code="${candidate.propertyCode}"
+                         data-site="coelho">
+                    <div class="mosaic-overlay">Click to zoom</div>
+                </div>
 
-            <div class="candidate-stats">
-                <div class="stat-row">
-                    <span class="stat-label">Price:</span>
-                    <span>${this.formatPrice(candidate.price)}</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Delta:</span>
-                    <span class="delta ${this.getDeltaClass(priceDelta)}">${this.formatDelta(priceDelta)}</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Area:</span>
-                    <span>${candidate.area ? candidate.area + 'm²' : '-'}</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Delta:</span>
-                    <span class="delta ${this.getDeltaClass(areaDelta)}">${this.formatDelta(areaDelta)}</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Beds:</span>
-                    <span>${candidate.bedrooms || '-'}</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Suites:</span>
-                    <span>${candidate.suites || '-'}</span>
-                </div>
-            </div>
+                <!-- Candidate Metadata (right side, same structure as Viva) -->
+                <div class="metadata-panel">
+                    <h3>Property Details</h3>
+                    <div class="metadata-grid">
+                        <div class="metadata-item">
+                            <span class="label">Price:</span>
+                            <span class="value">${this.formatPrice(candidate.price)}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="label">Delta:</span>
+                            <span class="value delta ${this.getDeltaClass(priceDelta)}">${this.formatDelta(priceDelta)}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="label">Area:</span>
+                            <span class="value">${candidate.area ? candidate.area + 'm²' : '-'}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="label">Delta:</span>
+                            <span class="value delta ${this.getDeltaClass(areaDelta)}">${this.formatDelta(areaDelta)}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="label">Bedrooms:</span>
+                            <span class="value">${candidate.bedrooms || '-'}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="label">Suites:</span>
+                            <span class="value">${candidate.suites || '-'}</span>
+                        </div>
+                        ${candidate.aiScore ? `
+                            <div class="metadata-item">
+                                <span class="label">AI Score:</span>
+                                <span class="value">${(candidate.aiScore * 100).toFixed(0)}%</span>
+                            </div>
+                        ` : ''}
+                        ${candidate.url ? `
+                            <div class="metadata-item full-width">
+                                <span class="label">URL:</span>
+                                <a href="${candidate.url}" class="value link" target="_blank">View listing</a>
+                            </div>
+                        ` : ''}
+                    </div>
 
-            ${candidate.aiScore ? `
-                <div class="ai-score">
-                    <div>AI Confidence: ${(candidate.aiScore * 100).toFixed(0)}%</div>
-                    <div class="score-bar">
-                        <div class="score-fill" style="width: ${candidate.aiScore * 100}%"></div>
+                    <!-- Action buttons inside metadata panel -->
+                    <div class="candidate-actions" style="margin-top: 1.5rem;">
+                        <button class="btn btn-success match-btn"
+                                data-coelho-code="${candidate.propertyCode}"
+                                title="Confirm match (${rank})"
+                                style="width: 100%; padding: 0.75rem;">
+                            ✓ Match
+                        </button>
                     </div>
                 </div>
-            ` : ''}
-
-            <div class="candidate-actions">
-                <button class="btn btn-success btn-small match-btn"
-                        data-coelho-code="${candidate.propertyCode}"
-                        title="Confirm match (${rank})">
-                    ✓ Match
-                </button>
             </div>
         `;
 
@@ -568,6 +580,7 @@ class MatcherApp {
                     area: areaMatch ? parseFloat(areaMatch[1]) : null,
                     bedrooms: bedsMatch ? parseInt(bedsMatch[1]) : null,
                     suites: suitesMatch ? parseInt(suitesMatch[1]) : null,
+                    url: item.candidate.url,
                     mosaicPath: item.mosaic_path,
                     aiScore: item.ai_score,
                     priceDelta: item.deltas?.price_delta_pct,

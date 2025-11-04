@@ -286,21 +286,21 @@ body {
 }
 
 .candidates-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
 }
 
 .candidate-card {
     background: var(--bg-secondary);
     border-radius: 12px;
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
     box-shadow: var(--shadow);
     transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .candidate-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
 
@@ -308,42 +308,53 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
 }
 
 .candidate-id {
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.25rem;
 }
 
 .candidate-rank {
     background: var(--bg-tertiary);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.candidate-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-lg);
 }
 
 .candidate-mosaic {
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: 0;
 }
 
 .candidate-stats {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-xs);
-    margin-bottom: var(--spacing-sm);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
     font-size: 0.875rem;
 }
 
 .stat-row {
     display: flex;
     justify-content: space-between;
-    padding: 0.25rem 0;
+    padding: var(--spacing-xs) 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stat-row:last-child {
+    border-bottom: none;
 }
 
 .stat-label {
     color: var(--text-secondary);
+    font-weight: 600;
 }
 
 .delta {
@@ -755,7 +766,7 @@ kbd {
         grid-template-columns: 1fr;
     }
 
-    .candidates-grid {
+    .candidate-content {
         grid-template-columns: 1fr;
     }
 
@@ -768,12 +779,6 @@ kbd {
         flex-direction: column;
         align-items: stretch;
         gap: var(--spacing-sm);
-    }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-    .candidates-grid {
-        grid-template-columns: repeat(2, 1fr);
     }
 }
 
