@@ -27,6 +27,7 @@ const crypto = require('crypto');
 // CONFIGURATION
 // ============================================================================
 
+const HOST = process.env.HOST || '0.0.0.0';  // Bind to all interfaces for network access
 const PORT = process.env.MATCHING_PORT || process.argv.find(a => a.startsWith('--port='))?.split('=')[1] || 3000;
 const DATA_ROOT = process.env.DATA_ROOT || path.join(__dirname, '../../data');
 const READ_ONLY = process.argv.includes('--read-only');
@@ -556,6 +557,27 @@ app.get('/api/audit', (req, res) => {
 });
 
 // ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+function getLocalIP() {
+  const { networkInterfaces } = require('os');
+  const nets = networkInterfaces();
+
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      // Skip internal (i.e. 127.0.0.1) and non-IPv4 addresses
+      const familyV4Value = typeof net.family === 'string' ? 'IPv4' : 4;
+      if (net.family === familyV4Value && !net.internal) {
+        return net.address;
+      }
+    }
+  }
+
+  return 'localhost';
+}
+
+// ============================================================================
 // SERVER STARTUP
 // ============================================================================
 
@@ -565,6 +587,7 @@ console.log('=====================================\n');
 console.log(`Session: ${SESSION_NAME}`);
 console.log(`Data root: ${DATA_ROOT}`);
 console.log(`Port: ${PORT}`);
+console.log(`Host: ${HOST}`);
 console.log(`Read-only: ${READ_ONLY ? 'YES' : 'NO'}\n`);
 
 smartMatches = loadSmartMatches();
@@ -572,10 +595,20 @@ matchState = loadManualMatches();
 taskQueue = buildTaskQueue();
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`\n✅ Server running on http://localhost:${PORT}`);
-  console.log(`📊 Ready to review ${taskQueue.length} Viva listings\n`);
-  console.log(`Open http://localhost:${PORT}/matcher.html to start matching\n`);
+app.listen(PORT, HOST, () => {
+  const networkIP = getLocalIP();
+
+  console.log(`\n✅ Server running on:`);
+  console.log(`   Local:    http://localhost:${PORT}`);
+  if (networkIP !== 'localhost') {
+    console.log(`   Network:  http://${networkIP}:${PORT}`);
+  }
+  console.log(`\n📊 Ready to review ${taskQueue.length} Viva listings\n`);
+  console.log(`Desktop: http://localhost:${PORT}/matcher.html`);
+  if (networkIP !== 'localhost') {
+    console.log(`Mobile:  http://${networkIP}:${PORT}/matcher.html`);
+  }
+  console.log();
 
   if (READ_ONLY) {
     console.log('⚠️  READ-ONLY MODE: No changes will be saved\n');
