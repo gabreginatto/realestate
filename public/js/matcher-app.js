@@ -146,18 +146,24 @@ class MatcherAPI {
 class MatcherUI {
     constructor() {
         this.elements = this.cacheElements();
+        this.isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+        // Listen for viewport changes
+        window.matchMedia('(max-width: 768px)').addEventListener('change', (e) => {
+            this.isMobile = e.matches;
+        });
     }
 
     cacheElements() {
         return {
             // Header
-            sessionName: document.getElementById('session-name'),
             progressBadge: document.getElementById('progress-badge'),
             matchedCount: document.getElementById('matched-count'),
             skippedCount: document.getElementById('skipped-count'),
             progressFill: document.getElementById('progress-fill'),
             themeToggle: document.getElementById('theme-toggle'),
             helpBtn: document.getElementById('help-btn'),
+            undoBtn: document.getElementById('undo-btn'),
 
             // Viva Section
             vivaTitle: document.getElementById('viva-title'),
@@ -168,7 +174,6 @@ class MatcherUI {
             vivaSuites: document.getElementById('viva-suites'),
             vivaAddress: document.getElementById('viva-address'),
             vivaUrl: document.getElementById('viva-url'),
-            undoBtn: document.getElementById('undo-btn'),
 
             // Candidates Section
             candidateCount: document.getElementById('candidate-count'),
@@ -181,6 +186,10 @@ class MatcherUI {
             nextBtn: document.getElementById('next-btn'),
             currentIndex: document.getElementById('current-index'),
             totalCount: document.getElementById('total-count'),
+
+            // Mobile Bottom Bar
+            mobileSkipBtn: document.getElementById('mobile-skip-btn'),
+            mobileUndoBtn: document.getElementById('mobile-undo-btn'),
 
             // Modals
             lightbox: document.getElementById('lightbox'),
@@ -214,29 +223,62 @@ class MatcherUI {
     }
 
     updateSession(sessionInfo) {
-        const { session_name, stats } = sessionInfo;
-        this.elements.sessionName.textContent = `Session: ${session_name}`;
+        const { stats } = sessionInfo;
 
         const reviewed = stats.matched + stats.rejected + stats.skipped;
         const total = stats.total_viva_listings || 0;
 
-        this.elements.progressBadge.textContent = `${reviewed}/${total} reviewed`;
-        this.elements.matchedCount.textContent = `✓ ${stats.matched} matched`;
-        this.elements.skippedCount.textContent = `⊘ ${stats.skipped} skipped`;
+        // Update progress badge with animation
+        const newProgressText = `${reviewed}/${total}`;
+        if (this.elements.progressBadge.textContent !== newProgressText) {
+            this.elements.progressBadge.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                this.elements.progressBadge.style.transform = 'scale(1)';
+            }, 150);
+        }
+        this.elements.progressBadge.textContent = newProgressText;
 
+        // Update matched count with animation
+        const newMatchedText = `✓ ${stats.matched}`;
+        const matchedSpan = this.elements.matchedCount;
+        if (matchedSpan.textContent !== newMatchedText) {
+            matchedSpan.style.transform = 'scale(1.15)';
+            setTimeout(() => {
+                matchedSpan.style.transform = 'scale(1)';
+            }, 200);
+        }
+        matchedSpan.innerHTML = `<span aria-hidden="true">✓</span> ${stats.matched}`;
+
+        // Update skipped count
+        this.elements.skippedCount.innerHTML = `<span aria-hidden="true">⊘</span> ${stats.skipped}`;
+
+        // Update progress bar
         const progress = total > 0 ? (reviewed / total * 100) : 0;
         this.elements.progressFill.style.width = `${progress}%`;
+
+        // Update ARIA attributes
+        const progressBar = this.elements.progressFill.parentElement;
+        if (progressBar) {
+            progressBar.setAttribute('aria-valuenow', Math.round(progress));
+        }
     }
 
     renderVivaListing(listing) {
         if (!listing) return;
 
-        this.elements.vivaTitle.textContent = `VIVA Listing #${listing.propertyCode}`;
+        this.elements.vivaTitle.textContent = `Source #${listing.propertyCode}`;
 
         // Use mosaic path from backend if available
         const mosaicSrc = listing.mosaicPath || `/mosaics/vivaprimeimoveis/${listing.propertyCode}.png`;
+
+        // Show loading state while image loads
+        this.elements.vivaMosaic.style.opacity = '0.5';
+        this.elements.vivaMosaic.onload = () => {
+            this.elements.vivaMosaic.style.opacity = '1';
+        };
         this.elements.vivaMosaic.src = mosaicSrc;
         this.elements.vivaMosaic.dataset.code = listing.propertyCode;
+        this.elements.vivaMosaic.alt = `Property mosaic for listing ${listing.propertyCode}`;
 
         this.elements.vivaPrice.textContent = this.formatPrice(listing.price);
         this.elements.vivaArea.textContent = listing.area ? `${listing.area}m²` : '-';
@@ -287,6 +329,7 @@ class MatcherUI {
         const card = document.createElement('div');
         card.className = 'candidate-card';
         card.dataset.code = candidate.propertyCode;
+        card.setAttribute('role', 'listitem');
 
         // Use delta values from backend if available, otherwise calculate
         const priceDelta = candidate.priceDelta !== undefined
@@ -299,77 +342,93 @@ class MatcherUI {
         // Use mosaic path from backend
         const mosaicSrc = candidate.mosaicPath || `/mosaics/coelhodafonseca/${candidate.propertyCode}.png`;
 
+        // AI score badge color
+        const aiScoreDisplay = candidate.aiScore
+            ? `<div class="ai-score">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>AI Confidence</span>
+                        <span style="font-weight: 700;">${(candidate.aiScore * 100).toFixed(0)}%</span>
+                    </div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: ${candidate.aiScore * 100}%"></div>
+                    </div>
+                </div>`
+            : '';
+
         card.innerHTML = `
             <div class="candidate-header">
-                <h3 class="candidate-id">Coelho Candidate #${candidate.propertyCode}</h3>
-                <span class="candidate-rank">Match #${rank}</span>
+                <h3 class="candidate-id">Candidate #${candidate.propertyCode}</h3>
+                <span class="candidate-rank">#${rank}</span>
             </div>
 
             <div class="candidate-content">
-                <!-- Candidate Mosaic (left side, same as Viva) -->
+                <!-- Candidate Mosaic -->
                 <div class="candidate-mosaic mosaic-wrapper">
                     <img src="${mosaicSrc}"
-                         alt="Candidate ${candidate.propertyCode}"
+                         alt="Candidate property mosaic ${candidate.propertyCode}"
                          class="mosaic-image clickable"
                          data-code="${candidate.propertyCode}"
-                         data-site="coelho">
-                    <div class="mosaic-overlay">Click to zoom</div>
+                         data-site="coelho"
+                         loading="lazy"
+                         style="opacity: 0.5; transition: opacity 0.3s ease;">
+                    <div class="mosaic-overlay">Tap to zoom</div>
                 </div>
 
-                <!-- Candidate Metadata (right side, same structure as Viva) -->
+                <!-- Candidate Metadata -->
                 <div class="metadata-panel">
-                    <h3>Property Details</h3>
+                    ${aiScoreDisplay}
+                    <h3>Comparison</h3>
                     <div class="metadata-grid">
                         <div class="metadata-item">
-                            <span class="label">Price:</span>
+                            <span class="label">Price</span>
                             <span class="value">${this.formatPrice(candidate.price)}</span>
                         </div>
                         <div class="metadata-item">
-                            <span class="label">Delta:</span>
+                            <span class="label">Diff</span>
                             <span class="value delta ${this.getDeltaClass(priceDelta)}">${this.formatDelta(priceDelta)}</span>
                         </div>
                         <div class="metadata-item">
-                            <span class="label">Area:</span>
+                            <span class="label">Area</span>
                             <span class="value">${candidate.area ? candidate.area + 'm²' : '-'}</span>
                         </div>
                         <div class="metadata-item">
-                            <span class="label">Delta:</span>
+                            <span class="label">Diff</span>
                             <span class="value delta ${this.getDeltaClass(areaDelta)}">${this.formatDelta(areaDelta)}</span>
                         </div>
                         <div class="metadata-item">
-                            <span class="label">Bedrooms:</span>
+                            <span class="label">Beds</span>
                             <span class="value">${candidate.bedrooms || '-'}</span>
                         </div>
                         <div class="metadata-item">
-                            <span class="label">Suites:</span>
+                            <span class="label">Suites</span>
                             <span class="value">${candidate.suites || '-'}</span>
                         </div>
-                        ${candidate.aiScore ? `
-                            <div class="metadata-item">
-                                <span class="label">AI Score:</span>
-                                <span class="value">${(candidate.aiScore * 100).toFixed(0)}%</span>
-                            </div>
-                        ` : ''}
                         ${candidate.url ? `
                             <div class="metadata-item full-width">
-                                <span class="label">URL:</span>
-                                <a href="${candidate.url}" class="value link" target="_blank">View listing</a>
+                                <span class="label">Link</span>
+                                <a href="${candidate.url}" class="value link" target="_blank" rel="noopener">View listing →</a>
                             </div>
                         ` : ''}
                     </div>
 
-                    <!-- Action buttons inside metadata panel -->
-                    <div class="candidate-actions" style="margin-top: 1.5rem;">
-                        <button class="btn btn-success match-btn"
+                    <!-- Action button -->
+                    <div class="candidate-actions">
+                        <button class="btn btn-success btn-large match-btn"
                                 data-coelho-code="${candidate.propertyCode}"
-                                title="Confirm match (${rank})"
-                                style="width: 100%; padding: 0.75rem;">
-                            ✓ Match
+                                aria-label="Confirm match with candidate ${candidate.propertyCode}">
+                            <span aria-hidden="true">✓</span> Match
+                            <kbd style="margin-left: auto; opacity: 0.7; font-size: 0.75rem;">${rank}</kbd>
                         </button>
                     </div>
                 </div>
             </div>
         `;
+
+        // Handle image load
+        const img = card.querySelector('.mosaic-image');
+        img.onload = () => {
+            img.style.opacity = '1';
+        };
 
         return card;
     }
@@ -440,6 +499,17 @@ class MatcherUI {
 
     enableUndo(enabled = true) {
         this.elements.undoBtn.disabled = !enabled;
+        // Also update mobile undo button
+        if (this.elements.mobileUndoBtn) {
+            this.elements.mobileUndoBtn.disabled = !enabled;
+        }
+    }
+
+    // Haptic feedback for mobile (if supported)
+    vibrate(pattern = 10) {
+        if (this.isMobile && navigator.vibrate) {
+            navigator.vibrate(pattern);
+        }
     }
 }
 
@@ -473,12 +543,23 @@ class MatcherApp {
 
     setupEventListeners() {
         // Header controls
-        this.ui.elements.themeToggle.addEventListener('click', () => this.ui.toggleTheme());
+        this.ui.elements.themeToggle.addEventListener('click', () => {
+            this.ui.toggleTheme();
+            this.ui.vibrate(5);
+        });
         this.ui.elements.helpBtn.addEventListener('click', () => this.ui.showHelp());
         this.ui.elements.undoBtn.addEventListener('click', () => this.handleUndo());
 
-        // Skip button
+        // Skip buttons (desktop and mobile)
         this.ui.elements.skipBtn.addEventListener('click', () => this.skipListing());
+        if (this.ui.elements.mobileSkipBtn) {
+            this.ui.elements.mobileSkipBtn.addEventListener('click', () => this.skipListing());
+        }
+
+        // Mobile undo button
+        if (this.ui.elements.mobileUndoBtn) {
+            this.ui.elements.mobileUndoBtn.addEventListener('click', () => this.handleUndo());
+        }
 
         // Lightbox
         document.querySelector('.lightbox-close').addEventListener('click', () => this.ui.hideLightbox());
@@ -491,8 +572,9 @@ class MatcherApp {
             if (e.target.classList.contains('mosaic-image') && e.target.classList.contains('clickable')) {
                 const site = e.target.dataset.site;
                 const code = e.target.dataset.code;
-                const title = site === 'viva' ? `VIVA #${code}` : `Coelho #${code}`;
+                const title = site === 'viva' ? `Source #${code}` : `Candidate #${code}`;
                 this.ui.showLightbox(e.target.src, title);
+                this.ui.vibrate(5);
             }
 
             if (e.target.classList.contains('match-btn')) {
@@ -509,6 +591,13 @@ class MatcherApp {
             if (this.state.currentListing) {
                 e.preventDefault();
                 e.returnValue = '';
+            }
+        });
+
+        // Handle help modal click outside
+        this.ui.elements.helpModal.addEventListener('click', (e) => {
+            if (e.target === this.ui.elements.helpModal) {
+                this.ui.hideHelp();
             }
         });
     }
@@ -620,15 +709,19 @@ class MatcherApp {
         const timeSpent = this.state.getTimeSpent();
         const reviewer = this.state.reviewer;
 
+        // Haptic feedback for match confirmation
+        this.ui.vibrate([10, 50, 10]);
+
         try {
             this.ui.showLoading(true);
             await this.api.submitMatch(vivaCode, coelhoCode, timeSpent, reviewer);
-            this.ui.showToast(`Match confirmed: VIVA #${vivaCode} ↔ Coelho #${coelhoCode}`, 'success');
+            this.ui.showToast(`Match confirmed: #${vivaCode} ↔ #${coelhoCode}`, 'success');
             this.ui.enableUndo(true);
             await this.loadNextListing();
         } catch (error) {
             console.error('Failed to submit match:', error);
             this.ui.showToast('Failed to save match', 'error');
+            this.ui.vibrate(100); // Error feedback
         } finally {
             this.ui.showLoading(false);
         }
@@ -641,15 +734,19 @@ class MatcherApp {
         const timeSpent = this.state.getTimeSpent();
         const reviewer = this.state.reviewer;
 
+        // Light haptic feedback for skip
+        this.ui.vibrate(5);
+
         try {
             this.ui.showLoading(true);
             await this.api.skipListing(vivaCode, timeSpent, reviewer);
-            this.ui.showToast(`Skipped VIVA #${vivaCode}`, 'info');
+            this.ui.showToast(`Skipped #${vivaCode}`, 'info');
             this.ui.enableUndo(true);
             await this.loadNextListing();
         } catch (error) {
             console.error('Failed to skip listing:', error);
             this.ui.showToast('Failed to skip listing', 'error');
+            this.ui.vibrate(100); // Error feedback
         } finally {
             this.ui.showLoading(false);
         }

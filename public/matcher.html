@@ -2,27 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Property Matcher - Human-in-the-Loop Review</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Property Matcher</title>
     <link rel="stylesheet" href="/css/matcher.css">
+    <link rel="preconnect" href="/mosaics">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <h1>🏡 Property Matcher</h1>
+            <h1>
+                <span aria-hidden="true">🏡</span>
+                <span>Matcher</span>
+            </h1>
             <div class="header-stats">
-                <span id="session-name" class="stat-badge">Session: default</span>
-                <span id="progress-badge" class="stat-badge">0/0 reviewed</span>
-                <span id="matched-count" class="stat-badge success">✓ 0 matched</span>
-                <span id="skipped-count" class="stat-badge warning">⊘ 0 skipped</span>
+                <span id="progress-badge" class="stat-badge" title="Review progress">
+                    <span class="sr-only">Progress:</span>
+                    0/0
+                </span>
+                <span id="matched-count" class="stat-badge success" title="Confirmed matches">
+                    <span aria-hidden="true">✓</span> 0
+                </span>
+                <span id="skipped-count" class="stat-badge warning" title="Skipped listings">
+                    <span aria-hidden="true">⊘</span> 0
+                </span>
             </div>
             <div class="header-controls">
-                <button id="theme-toggle" class="icon-btn" title="Toggle dark mode">🌙</button>
-                <button id="help-btn" class="icon-btn" title="Show keyboard shortcuts">?</button>
+                <button id="undo-btn" class="icon-btn" disabled title="Undo last decision (U)" aria-label="Undo">
+                    ↶
+                </button>
+                <button id="theme-toggle" class="icon-btn" title="Toggle dark mode" aria-label="Toggle theme">
+                    🌙
+                </button>
+                <button id="help-btn" class="icon-btn" title="Keyboard shortcuts (?)" aria-label="Help">
+                    ?
+                </button>
             </div>
         </div>
-        <div class="progress-bar">
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
             <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
         </div>
     </header>
@@ -30,12 +52,9 @@
     <!-- Main Content -->
     <main class="main-content">
         <!-- Viva Listing Section -->
-        <section class="viva-section">
+        <section class="viva-section" aria-labelledby="viva-title">
             <div class="section-header">
                 <h2 id="viva-title">Loading...</h2>
-                <button id="undo-btn" class="btn btn-secondary" disabled title="Undo last decision (U)">
-                    ↶ Undo
-                </button>
             </div>
 
             <div class="listing-container">
@@ -43,38 +62,39 @@
                 <div class="mosaic-wrapper">
                     <img id="viva-mosaic"
                          class="mosaic-image clickable"
-                         alt="Viva Property Mosaic"
-                         data-site="viva">
-                    <div class="mosaic-overlay">Click to zoom</div>
+                         alt="Property images mosaic"
+                         data-site="viva"
+                         loading="eager">
+                    <div class="mosaic-overlay">Tap to zoom</div>
                 </div>
 
                 <!-- Viva Metadata -->
                 <div class="metadata-panel">
-                    <h3>Property Details</h3>
+                    <h3>Source Property</h3>
                     <div class="metadata-grid">
                         <div class="metadata-item">
-                            <span class="label">Price:</span>
+                            <span class="label">Price</span>
                             <span id="viva-price" class="value">-</span>
                         </div>
                         <div class="metadata-item">
-                            <span class="label">Area:</span>
+                            <span class="label">Area</span>
                             <span id="viva-area" class="value">-</span>
                         </div>
                         <div class="metadata-item">
-                            <span class="label">Bedrooms:</span>
+                            <span class="label">Beds</span>
                             <span id="viva-bedrooms" class="value">-</span>
                         </div>
                         <div class="metadata-item">
-                            <span class="label">Suites:</span>
+                            <span class="label">Suites</span>
                             <span id="viva-suites" class="value">-</span>
                         </div>
                         <div class="metadata-item full-width">
-                            <span class="label">Address:</span>
+                            <span class="label">Address</span>
                             <span id="viva-address" class="value">-</span>
                         </div>
                         <div class="metadata-item full-width">
-                            <span class="label">URL:</span>
-                            <a id="viva-url" class="value link" href="#" target="_blank">View listing</a>
+                            <span class="label">Link</span>
+                            <a id="viva-url" class="value link" href="#" target="_blank" rel="noopener">View original listing →</a>
                         </div>
                     </div>
                 </div>
@@ -82,37 +102,56 @@
         </section>
 
         <!-- Candidates Section -->
-        <section class="candidates-section">
+        <section class="candidates-section" aria-labelledby="candidates-heading">
             <div class="section-header">
-                <h2>Potential Matches (<span id="candidate-count">0</span> candidates)</h2>
+                <h2 id="candidates-heading">
+                    Candidates
+                    <span>(<span id="candidate-count">0</span>)</span>
+                </h2>
                 <button id="skip-btn" class="btn btn-warning" title="Skip - no matches found (S)">
-                    ⊘ Skip (No Match)
+                    ⊘ Skip
                 </button>
             </div>
 
-            <div id="candidates-grid" class="candidates-grid">
+            <div id="candidates-grid" class="candidates-grid" role="list">
                 <!-- Candidate cards will be inserted here dynamically -->
             </div>
 
             <div id="no-candidates" class="empty-state" style="display: none;">
-                <p>No candidates available for this listing</p>
-                <button class="btn btn-primary" onclick="window.matcherApp.skipListing()">Skip to Next</button>
+                <p>No candidates found for this property</p>
+                <button class="btn btn-primary btn-large" onclick="window.matcherApp.skipListing()">
+                    Skip to Next Property
+                </button>
             </div>
         </section>
 
-        <!-- Navigation -->
-        <nav class="navigation">
-            <button id="prev-btn" class="btn btn-secondary" disabled>
+        <!-- Desktop Navigation (hidden on mobile) -->
+        <nav class="navigation" aria-label="Listing navigation">
+            <button id="prev-btn" class="btn btn-secondary" disabled aria-label="Previous listing">
                 ← Previous
             </button>
             <div class="nav-info">
                 <span id="current-index">0</span> of <span id="total-count">0</span>
             </div>
-            <button id="next-btn" class="btn btn-primary">
+            <button id="next-btn" class="btn btn-primary" aria-label="Next listing">
                 Next →
             </button>
         </nav>
     </main>
+
+    <!-- Mobile Bottom Action Bar -->
+    <div class="bottom-bar" aria-label="Quick actions">
+        <div class="bottom-bar-content">
+            <div class="bottom-bar-actions">
+                <button id="mobile-skip-btn" class="btn btn-warning" title="Skip this listing">
+                    ⊘ Skip
+                </button>
+                <button id="mobile-undo-btn" class="btn btn-secondary" disabled title="Undo last action">
+                    ↶ Undo
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Lightbox Modal -->
     <div id="lightbox" class="lightbox" style="display: none;">
@@ -133,47 +172,41 @@
     </div>
 
     <!-- Help Modal -->
-    <div id="help-modal" class="modal" style="display: none;">
+    <div id="help-modal" class="modal" style="display: none;" role="dialog" aria-labelledby="help-title" aria-modal="true">
         <div class="modal-content">
-            <button class="modal-close" onclick="window.matcherApp.hideHelp()">&times;</button>
-            <h2>Keyboard Shortcuts</h2>
+            <button class="modal-close" onclick="window.matcherApp.hideHelp()" aria-label="Close help">&times;</button>
+            <h2 id="help-title">Quick Guide</h2>
+
+            <h3>Keyboard Shortcuts</h3>
             <div class="shortcuts-grid">
                 <div class="shortcut-item">
                     <kbd>1-9</kbd>
-                    <span>Select candidate #1-9 as match</span>
+                    <span>Select candidate as match</span>
                 </div>
                 <div class="shortcut-item">
                     <kbd>S</kbd>
-                    <span>Skip listing (no matches)</span>
+                    <span>Skip (no match found)</span>
                 </div>
                 <div class="shortcut-item">
                     <kbd>U</kbd>
                     <span>Undo last decision</span>
                 </div>
                 <div class="shortcut-item">
-                    <kbd>N</kbd>
-                    <span>Next listing</span>
-                </div>
-                <div class="shortcut-item">
-                    <kbd>P</kbd>
-                    <span>Previous listing</span>
-                </div>
-                <div class="shortcut-item">
                     <kbd>Esc</kbd>
-                    <span>Close lightbox/modal</span>
+                    <span>Close image/modal</span>
                 </div>
                 <div class="shortcut-item">
                     <kbd>?</kbd>
-                    <span>Show this help</span>
+                    <span>Toggle this help</span>
                 </div>
             </div>
-            <h3>How to Match</h3>
+
+            <h3>How to Match Properties</h3>
             <ol>
-                <li>Review the Viva property mosaic (top)</li>
-                <li>Compare with Coelho candidate mosaics (below)</li>
-                <li>Click "Match" on identical properties</li>
-                <li>Click "Skip" if none match</li>
-                <li>Use zoom to inspect details</li>
+                <li>Compare the source property images with candidates below</li>
+                <li>Tap any image to zoom and inspect details</li>
+                <li>Tap <strong>Match</strong> when you find the same property</li>
+                <li>Tap <strong>Skip</strong> if no candidate matches</li>
             </ol>
         </div>
     </div>
