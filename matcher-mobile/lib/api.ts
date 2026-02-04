@@ -19,7 +19,7 @@ import type {
 // Configuration
 // ============================================================================
 
-export const API_BASE_URL = 'http://localhost:3000';
+export const API_BASE_URL = 'https://property-matcher-376125120681.us-central1.run.app';
 
 // ============================================================================
 // Error Handling
@@ -55,7 +55,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 function normalizeVivaListing(
   viva: NextListingResponse['viva'],
-  mosaicPath: string
+  mosaicPath: string,
+  baseUrl: string = API_BASE_URL
 ): NormalizedVivaListing {
   const code = viva.propertyCode || viva.code || '';
   const specs = viva.specs || viva.detailedData?.specs || {};
@@ -68,12 +69,13 @@ function normalizeVivaListing(
     suites: specs.suites || viva.suites || 0,
     address: viva.address || '',
     url: viva.url || '',
-    mosaicPath,
+    mosaicPath: `${baseUrl}${mosaicPath}`,
   };
 }
 
 function normalizeCandidate(
-  candidateData: CandidatesResponse['candidates'][number]
+  candidateData: CandidatesResponse['candidates'][number],
+  baseUrl: string = API_BASE_URL
 ): NormalizedCandidate {
   const { code, candidate, ai_score, deltas, mosaic_path } = candidateData;
 
@@ -86,7 +88,7 @@ function normalizeCandidate(
     bedrooms: candidate.beds || candidate.bedrooms || 0,
     suites: candidate.suites || 0,
     url: candidate.url || '',
-    mosaicPath: mosaic_path,
+    mosaicPath: `${baseUrl}${mosaic_path}`,
     aiScore: ai_score,
     priceDelta: deltas.price_delta_pct,
     areaDelta: deltas.area_delta_pct,
@@ -137,7 +139,7 @@ export async function getCandidates(
   const data = await handleResponse<CandidatesResponse>(response);
 
   return {
-    candidates: data.candidates.map(normalizeCandidate),
+    candidates: data.candidates.map(c => normalizeCandidate(c, baseUrl)),
   };
 }
 

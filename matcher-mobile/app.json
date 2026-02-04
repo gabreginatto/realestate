@@ -30,10 +30,7 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router",
-      [
-        "expo-haptics"
-      ]
+      "expo-router"
     ],
     "experiments": {
       "typedRoutes": true
