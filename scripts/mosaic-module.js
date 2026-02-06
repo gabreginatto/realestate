@@ -42,6 +42,7 @@ let RENDER_FIT = 'contain'; // 'contain' (letterbox) or 'cover'
 // Paths
 const MOSAIC_DIR = path.join(process.cwd(), 'data', 'mosaics');
 const FASTDUP_SELECTED_DIR = path.join(process.cwd(), 'selected_exteriors');
+let ONLY_CODES_SET = null;
 
 // ---------------------- CLI Flags ----------------------------
 function parseFlags() {
@@ -79,12 +80,44 @@ function parseFlags() {
     const t = parseInt(flags.dupThresh, 10);
     if (Number.isFinite(t) && t >= 0 && t <= 64) global.DUP_THRESH_OVERRIDE = t;
   }
+
+  if (flags.onlyCodesFile) {
+    const raw = fs.readFileSync(String(flags.onlyCodesFile), 'utf-8');
+    const payload = JSON.parse(raw);
+    const key = flags.codesKey ? String(flags.codesKey) : '';
+    let codes = [];
+
+    if (Array.isArray(payload)) {
+      codes = payload;
+    } else if (payload && typeof payload === 'object') {
+      if (key) {
+        codes = payload[key] || [];
+      } else if (Array.isArray(payload.codes)) {
+        codes = payload.codes;
+      } else if (Array.isArray(payload.listing_codes)) {
+        codes = payload.listing_codes;
+      } else {
+        throw new Error(`Could not infer codes key from ${flags.onlyCodesFile}; pass --codesKey=...`);
+      }
+    } else {
+      throw new Error(`Unsupported JSON structure in ${flags.onlyCodesFile}`);
+    }
+
+    if (!Array.isArray(codes)) {
+      throw new Error(`Codes payload is not an array in ${flags.onlyCodesFile}`);
+    }
+    ONLY_CODES_SET = new Set(codes.map(c => String(c)).filter(Boolean));
+  }
+
   return flags;
 }
 
 // ----------------------- Utilities ---------------------------
 function safeId(val) {
   return String(val || '').replace(/[^\w.-]+/g, '_').slice(0, 64);
+}
+function getListingCode(listing) {
+  return String(listing.propertyCode || listing.code || safeId(listing.url));
 }
 async function ensureDir(p) {
   await fs.promises.mkdir(p, { recursive: true });
@@ -560,7 +593,7 @@ async function makeMosaic(imagePaths, outputPath, {
 
 // ---------------------- Main Workflow ----------------------
 async function generateMosaicForListing(listing, side) {
-  const code = listing.propertyCode || listing.code || safeId(listing.url);
+  const code = getListingCode(listing);
   console.log(`\n🖼️  Processing ${side}/${code}...`);
 
   // Load top 8 images from fastdup selection (already ranked)
@@ -597,8 +630,16 @@ async function generateMosaicsForAll(jsonPath, side) {
   console.log(`${'='.repeat(60)}\n`);
 
   const data = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
-  const listings = data.listings || [];
-  console.log(`📊 Total listings: ${listings.length}\n`);
+  const allListings = data.listings || [];
+  const listings = ONLY_CODES_SET
+    ? allListings.filter((listing) => ONLY_CODES_SET.has(getListingCode(listing)))
+    : allListings;
+  console.log(`📊 Total listings: ${allListings.length}`);
+  if (ONLY_CODES_SET) {
+    console.log(`📊 Filtered listings: ${listings.length} (incremental mode)\n`);
+  } else {
+    console.log('');
+  }
 
   const results = [];
   for (let i = 0; i < listings.length; i++) {
@@ -607,14 +648,14 @@ async function generateMosaicsForAll(jsonPath, side) {
     try {
       const r = await generateMosaicForListing(listing, side);
       results.push({
-        propertyCode: listing.propertyCode || listing.code || safeId(listing.url),
+        propertyCode: getListingCode(listing),
         success: !!r.mosaicPath,
         mosaicPath: r.mosaicPath,
         stats: r.stats
       });
     } catch (e) {
       console.log(`  ❌ Error: ${e.message}`);
-      results.push({ propertyCode: listing.propertyCode || listing.code || i + 1, success: false, error: e.message });
+      results.push({ propertyCode: getListingCode(listing) || i + 1, success: false, error: e.message });
     }
 
     if ((i + 1) % 10 === 0) {

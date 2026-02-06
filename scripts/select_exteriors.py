@@ -17,6 +17,35 @@ import typer
 app = typer.Typer()
 console = Console()
 
+def load_only_codes(only_codes_file: str = "", codes_key: str = ""):
+    """Load listing codes from a JSON list or object payload."""
+    if not only_codes_file:
+        return None
+
+    with open(only_codes_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    if isinstance(data, list):
+        codes = data
+    elif isinstance(data, dict):
+        if codes_key:
+            codes = data.get(codes_key, [])
+        elif "codes" in data:
+            codes = data.get("codes", [])
+        elif "listing_codes" in data:
+            codes = data.get("listing_codes", [])
+        else:
+            raise ValueError(
+                f"Could not infer codes list key in {only_codes_file}; use --codes-key"
+            )
+    else:
+        raise ValueError(f"Unsupported JSON structure in {only_codes_file}")
+
+    if not isinstance(codes, list):
+        raise ValueError(f"Codes payload is not a list in {only_codes_file}")
+
+    return {str(code) for code in codes if str(code).strip()}
+
 def list_images(root):
     """Find all image files in a directory."""
     exts = (".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tif", ".tiff")
@@ -246,6 +275,8 @@ def run(
     out_root: str = typer.Option("selected_exteriors", help="Output directory for selected images"),
     copy_mode: str = typer.Option("copy", help="'copy' or 'symlink'"),
     images_subdir: str = typer.Option("", help="Subdirectory containing images (e.g., 'images')"),
+    only_codes_file: str = typer.Option("", help="Path to JSON file containing listing codes to process"),
+    codes_key: str = typer.Option("", help="JSON key when --only-codes-file contains an object payload"),
 ):
     """
     Select best 12 exterior photos per listing for a single site.
@@ -266,6 +297,16 @@ def run(
 
     # Get all listing directories
     listings = sorted([d for d in pathlib.Path(cache_dir).iterdir() if d.is_dir()])
+
+    try:
+        only_codes = load_only_codes(only_codes_file, codes_key)
+    except Exception as exc:
+        console.print(f"[red]Error loading only-codes filter: {exc}[/red]")
+        raise typer.Exit(1)
+
+    if only_codes is not None:
+        listings = [d for d in listings if d.name in only_codes]
+        console.print(f"Filtered to {len(listings)} listings using only-codes filter")
 
     if not listings:
         console.print(f"[yellow]No listings found in {cache_dir}[/yellow]")

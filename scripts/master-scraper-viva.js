@@ -65,6 +65,7 @@ async function downloadImage(url, filepath, redirectCount = 0) {
 
   const browser = await chromium.launch({ headless: false });
   const page = await browser.newPage();
+  const skipPostProcessing = process.env.SKIP_POST_PROCESSING === 'true';
 
   // ========================================
   // STEP 1: COLLECT ALL LISTING URLS
@@ -444,73 +445,77 @@ async function downloadImage(url, filepath, redirectCount = 0) {
 
   await browser.close();
 
-  // ========================================
-  // STEP 4: SELECT BEST 12 EXTERIOR IMAGES
-  // ========================================
-  console.log('\nSTEP 4: Selecting best 12 exterior images...\n');
+  if (skipPostProcessing) {
+    console.log('\n⏭️  SKIP_POST_PROCESSING=true; skipping Step 4/5 (fastdup, exterior selection, mosaics)\n');
+  } else {
+    // ========================================
+    // STEP 4: SELECT BEST 12 EXTERIOR IMAGES
+    // ========================================
+    console.log('\nSTEP 4: Selecting best 12 exterior images...\n');
 
-  const { exec } = require('child_process');
-  const { promisify } = require('util');
-  const execPromise = promisify(exec);
+    const { exec } = require('child_process');
+    const { promisify } = require('util');
+    const execPromise = promisify(exec);
 
-  // Run fastdup analysis directly on original images (read-only)
-  console.log('🔬 Running fastdup analysis on original images (read-only)...\n');
+    // Run fastdup analysis directly on original images (read-only)
+    console.log('🔬 Running fastdup analysis on original images (read-only)...\n');
 
-  try {
-    const { stdout, stderr } = await execPromise('python3 scripts/process-images-fastdup.py', {
-      cwd: process.cwd(),
-      timeout: 600000  // 10 minutes
-    });
-
-    if (stdout) console.log(stdout);
-    if (stderr) console.error(stderr);
-
-    console.log('\n✅ Fastdup analysis complete\n');
-  } catch (error) {
-    console.log(`\n⚠️  Fastdup analysis error: ${error.message}`);
-    console.log('Continuing with exterior selection...\n');
-  }
-
-  // Run select_exteriors using Python script with HSV exterior detection
-  console.log('📸 Selecting best 12 exterior images per listing...\n');
-
-  try {
-    const { stdout, stderr } = await execPromise(
-      'python3 scripts/select_exteriors.py vivaprimeimoveis --cache-root data --work-root work_fastdup --out-root selected_exteriors --images-subdir images',
-      {
+    try {
+      const { stdout, stderr } = await execPromise('python3 scripts/process-images-fastdup.py', {
         cwd: process.cwd(),
         timeout: 600000  // 10 minutes
-      }
-    );
+      });
 
-    if (stdout) console.log(stdout);
-    if (stderr) console.error(stderr);
+      if (stdout) console.log(stdout);
+      if (stderr) console.error(stderr);
 
-    console.log('\n✅ Exterior selection complete\n');
-  } catch (error) {
-    console.log(`\n❌ Selection error: ${error.message}\n`);
-  }
+      console.log('\n✅ Fastdup analysis complete\n');
+    } catch (error) {
+      console.log(`\n⚠️  Fastdup analysis error: ${error.message}`);
+      console.log('Continuing with exterior selection...\n');
+    }
 
-  // ========================================
-  // STEP 5: GENERATE MOSAICS
-  // ========================================
-  console.log('\nSTEP 5: Generating mosaics...\n');
+    // Run select_exteriors using Python script with HSV exterior detection
+    console.log('📸 Selecting best 12 exterior images per listing...\n');
 
-  try {
-    const { stdout, stderr } = await execPromise(
-      'node scripts/mosaic-module.js viva',
-      {
-        cwd: process.cwd(),
-        timeout: 600000  // 10 minutes
-      }
-    );
+    try {
+      const { stdout, stderr } = await execPromise(
+        'python3 scripts/select_exteriors.py vivaprimeimoveis --cache-root data --work-root work_fastdup --out-root selected_exteriors --images-subdir images',
+        {
+          cwd: process.cwd(),
+          timeout: 600000  // 10 minutes
+        }
+      );
 
-    if (stdout) console.log(stdout);
-    if (stderr) console.error(stderr);
+      if (stdout) console.log(stdout);
+      if (stderr) console.error(stderr);
 
-    console.log('\n✅ Mosaic generation complete\n');
-  } catch (error) {
-    console.log(`\n❌ Mosaic generation error: ${error.message}\n`);
+      console.log('\n✅ Exterior selection complete\n');
+    } catch (error) {
+      console.log(`\n❌ Selection error: ${error.message}\n`);
+    }
+
+    // ========================================
+    // STEP 5: GENERATE MOSAICS
+    // ========================================
+    console.log('\nSTEP 5: Generating mosaics...\n');
+
+    try {
+      const { stdout, stderr } = await execPromise(
+        'node scripts/mosaic-module.js viva',
+        {
+          cwd: process.cwd(),
+          timeout: 600000  // 10 minutes
+        }
+      );
+
+      if (stdout) console.log(stdout);
+      if (stderr) console.error(stderr);
+
+      console.log('\n✅ Mosaic generation complete\n');
+    } catch (error) {
+      console.log(`\n❌ Mosaic generation error: ${error.message}\n`);
+    }
   }
 
   // ========================================

@@ -566,6 +566,11 @@ app.use(express.json({ type: ['application/json', 'application/json; charset=utf
 app.use(express.static(PUBLIC_ROOT));
 app.use('/mosaics', express.static(MOSAICS_DIR));
 
+// Cloud Run service URL opens "/" by default; route it to the matcher UI entrypoint.
+app.get('/', (req, res) => {
+  res.redirect('/matcher.html');
+});
+
 // ============================================================================
 // API ENDPOINTS
 // ============================================================================

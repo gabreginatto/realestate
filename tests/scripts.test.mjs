@@ -823,6 +823,81 @@ describe('pipeline-runner.js', () => {
     assert.equal(copiedContent.matches.length, 1);
   });
 
+  it('should sync mosaic files to server-deploy and remove stale files', async () => {
+    root = createTempDir();
+    const { scriptsDir } = scaffoldProject(root, {
+      vivaListings: [],
+      coelhoListings: [],
+      manualMatches: { matches: [], skipped: [], skipped_previous_passes: [] },
+      deterministicMatches: { candidate_pairs: [] },
+    });
+    fs.mkdirSync(path.join(root, 'server-deploy', 'data'), { recursive: true });
+
+    // Create dummy scraper scripts
+    fs.writeFileSync(path.join(scriptsDir, 'master-scraper-viva.js'), 'process.exit(0);');
+    fs.writeFileSync(path.join(scriptsDir, 'master-scraper-coelho.js'), 'process.exit(0);');
+    fs.writeFileSync(path.join(scriptsDir, 'deterministic-matcher.cjs'), 'process.exit(0);');
+
+    // Source mosaics produced by scraping pipeline
+    const srcMosaicsDir = path.join(root, 'data', 'mosaics');
+    const srcVivaDir = path.join(srcMosaicsDir, 'viva');
+    const srcCoelhoDir = path.join(srcMosaicsDir, 'coelho');
+    fs.mkdirSync(srcVivaDir, { recursive: true });
+    fs.mkdirSync(srcCoelhoDir, { recursive: true });
+    fs.writeFileSync(path.join(srcVivaDir, 'viva-001.png'), 'viva-mosaic-content');
+    fs.writeFileSync(path.join(srcCoelhoDir, 'coelho-001.png'), 'coelho-mosaic-content');
+
+    // Seed stale backend file; sync with --delete should remove it
+    const destVivaDir = path.join(root, 'server-deploy', 'data', 'mosaics', 'viva');
+    fs.mkdirSync(destVivaDir, { recursive: true });
+    fs.writeFileSync(path.join(destVivaDir, 'stale.png'), 'stale-content');
+
+    // Provide a local rsync shim so this test is deterministic across environments
+    const binDir = path.join(root, 'bin');
+    const rsyncShim = path.join(binDir, 'rsync');
+    fs.mkdirSync(binDir, { recursive: true });
+    fs.writeFileSync(
+      rsyncShim,
+      `#!/usr/bin/env bash
+set -euo pipefail
+src="\${@: -2:1}"
+dest="\${@: -1}"
+src="\${src%/}"
+dest="\${dest%/}"
+mkdir -p "$dest"
+find "$dest" -mindepth 1 -exec rm -rf {} +
+cp -R "$src"/. "$dest"/
+`,
+      { mode: 0o755 },
+    );
+
+    const existingPath = process.env.PATH || '';
+    await runScript('pipeline-runner.js', root, {
+      env: {
+        SERVER_URL: 'http://localhost:99999',
+        PATH: `${binDir}:${existingPath}`,
+      },
+    });
+
+    const copiedViva = path.join(root, 'server-deploy', 'data', 'mosaics', 'viva', 'viva-001.png');
+    const copiedCoelho = path.join(root, 'server-deploy', 'data', 'mosaics', 'coelho', 'coelho-001.png');
+    const staleFile = path.join(root, 'server-deploy', 'data', 'mosaics', 'viva', 'stale.png');
+
+    assert.ok(fs.existsSync(copiedViva), 'viva mosaic should be synced to server-deploy');
+    assert.ok(fs.existsSync(copiedCoelho), 'coelho mosaic should be synced to server-deploy');
+    assert.equal(
+      fs.readFileSync(copiedViva, 'utf-8'),
+      'viva-mosaic-content',
+      'viva mosaic content should match source',
+    );
+    assert.equal(
+      fs.readFileSync(copiedCoelho, 'utf-8'),
+      'coelho-mosaic-content',
+      'coelho mosaic content should match source',
+    );
+    assert.equal(fs.existsSync(staleFile), false, 'stale backend mosaic should be deleted by sync');
+  });
+
   it('should handle partial failure (one scraper fails, one succeeds)', async () => {
     root = createTempDir();
     const { dataDir, scriptsDir } = scaffoldProject(root, {
