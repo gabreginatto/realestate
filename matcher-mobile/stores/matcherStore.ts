@@ -9,6 +9,10 @@ import {
   submitMatch,
   skipListing as apiSkipListing,
   undo as apiUndo,
+  getNotifications,
+  dismissNotifications,
+  advancePass as advancePassApi,
+  finishMatching as finishMatchingApi,
 } from '../lib/api';
 
 // ============================================================================
@@ -27,6 +31,15 @@ interface MatcherState {
   maxPasses: number;
   passName: string;
   allPassesComplete: boolean;
+  passComplete: boolean;
+  passStats: { matched: number; skipped: number; total_reviewed: number } | null;
+  hasNextPass: boolean;
+  nextPassInfo: { number: number; name: string; price_tolerance: string; area_tolerance: string } | null;
+  userFinished: boolean;
+
+  // Notifications
+  hasNewProperties: boolean;
+  notificationMessage: string | null;
 
   // UI State
   isLoading: boolean;
@@ -43,6 +56,10 @@ interface MatcherActions {
   confirmMatch: (coelhoCode: string) => Promise<void>;
   skipListing: () => Promise<void>;
   undo: () => Promise<void>;
+  advancePass: () => Promise<void>;
+  finishMatching: () => Promise<void>;
+  checkNotifications: () => Promise<void>;
+  dismissNotification: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -61,6 +78,13 @@ const initialState: MatcherState = {
   maxPasses: 5,
   passName: 'strict',
   allPassesComplete: false,
+  passComplete: false,
+  passStats: null,
+  hasNextPass: false,
+  nextPassInfo: null,
+  userFinished: false,
+  hasNewProperties: false,
+  notificationMessage: null,
   isLoading: false,
   canUndo: false,
   decisionStartTime: null,
@@ -116,6 +140,9 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
     try {
       const sessionStats = await getSession();
       set({ sessionStats, isLoading: false });
+
+      // Check for new property notifications after loading session
+      await get().checkNotifications();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load session';
       set({ error: message, isLoading: false });
@@ -142,6 +169,23 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
         return;
       }
 
+      // Handle pass complete (no more tasks in current pass)
+      if ('pass_complete' in result && result.pass_complete) {
+        set({
+          currentListing: null,
+          candidates: [],
+          decisionStartTime: null,
+          isLoading: false,
+          passComplete: true,
+          passStats: result.stats,
+          hasNextPass: result.has_next_pass,
+          nextPassInfo: result.next_pass,
+          currentPass: result.current_pass,
+          passName: result.pass_name,
+        });
+        return;
+      }
+
       // Update pass tracking from the response
       if ('current_pass' in result) {
         set({
@@ -150,11 +194,14 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
         });
       }
 
+      // After early returns above, result must be the listing variant
+      const listing = result as { vivaCode: string; viva: NormalizedVivaListing; current_pass?: number; pass_name?: string };
+
       // Fetch candidates for this listing
-      const candidatesResult = await getCandidates(result.vivaCode);
+      const candidatesResult = await getCandidates(listing.vivaCode);
 
       set({
-        currentListing: result.viva,
+        currentListing: listing.viva,
         candidates: candidatesResult.candidates,
         decisionStartTime: Date.now(),
         isLoading: false,
@@ -257,6 +304,74 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
       const message = err instanceof Error ? err.message : 'Failed to undo';
       set({ error: message, isLoading: false });
       await triggerErrorHaptic();
+    }
+  },
+
+  advancePass: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      await advancePassApi();
+      await triggerSuccessHaptic();
+      set({
+        passComplete: false,
+        passStats: null,
+        hasNextPass: false,
+        nextPassInfo: null,
+      });
+      await get().loadSession();
+      await get().loadNextListing();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to advance pass';
+      set({ error: message, isLoading: false });
+      await triggerErrorHaptic();
+    }
+  },
+
+  finishMatching: async () => {
+    const { reviewer } = get();
+    set({ isLoading: true, error: null });
+    try {
+      await finishMatchingApi(reviewer);
+      await triggerSuccessHaptic();
+      set({
+        passComplete: false,
+        passStats: null,
+        userFinished: true,
+        allPassesComplete: true,
+        currentListing: null,
+        candidates: [],
+        isLoading: false,
+      });
+      await get().loadSession();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to finish matching';
+      set({ error: message, isLoading: false });
+      await triggerErrorHaptic();
+    }
+  },
+
+  checkNotifications: async () => {
+    try {
+      const result = await getNotifications();
+      if (result.unread_count > 0) {
+        set({
+          hasNewProperties: true,
+          notificationMessage: result.notifications[0]?.message || 'New properties available!',
+        });
+      } else {
+        set({ hasNewProperties: false, notificationMessage: null });
+      }
+    } catch {
+      // Silently ignore notification check failures
+    }
+  },
+
+  dismissNotification: async () => {
+    try {
+      await dismissNotifications({ all: true });
+      set({ hasNewProperties: false, notificationMessage: null });
+    } catch {
+      // Silently ignore dismiss failures
     }
   },
 

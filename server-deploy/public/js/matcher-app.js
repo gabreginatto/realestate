@@ -95,8 +95,9 @@ class MatcherAPI {
         return this.request('/api/session');
     }
 
-    async getNext() {
-        return this.request('/api/next');
+    async getNext(reviewer) {
+        const params = reviewer ? `?reviewer=${encodeURIComponent(reviewer)}` : '';
+        return this.request(`/api/next${params}`);
     }
 
     async getListing(id) {
@@ -137,6 +138,17 @@ class MatcherAPI {
 
     async getProgress() {
         return this.request('/api/progress');
+    }
+
+    async advancePass() {
+        return this.request('/api/pass/advance', { method: 'POST' });
+    }
+
+    async finishMatching(reviewer) {
+        return this.request('/api/pass/finish', {
+            method: 'POST',
+            body: JSON.stringify({ reviewer })
+        });
     }
 }
 
@@ -210,7 +222,19 @@ class MatcherUI {
             decisionText: document.querySelector('#decision-overlay .decision-text'),
 
             // Main content wrapper
-            mainContent: document.querySelector('.main-content')
+            mainContent: document.querySelector('.main-content'),
+
+            // Pass complete modal
+            passCompleteModal: document.getElementById('pass-complete-modal'),
+            passCompleteNum: document.getElementById('pass-complete-num'),
+            passCompleteSubtitle: document.getElementById('pass-complete-subtitle'),
+            passStatMatched: document.getElementById('pass-stat-matched'),
+            passStatSkipped: document.getElementById('pass-stat-skipped'),
+            passAdvanceSection: document.getElementById('pass-advance-section'),
+            passAdvanceBtn: document.getElementById('pass-advance-btn'),
+            nextPassNum: document.getElementById('next-pass-num'),
+            nextPassCriteria: document.getElementById('next-pass-criteria'),
+            passFinishBtn: document.getElementById('pass-finish-btn'),
         };
     }
 
@@ -513,6 +537,27 @@ class MatcherUI {
         }
     }
 
+    showPassComplete(data) {
+        this.elements.passCompleteNum.textContent = data.current_pass;
+        this.elements.passCompleteSubtitle.textContent = `${data.pass_name} matching pass finished`;
+        this.elements.passStatMatched.textContent = data.stats.matched;
+        this.elements.passStatSkipped.textContent = data.stats.skipped;
+
+        if (data.has_next_pass && data.next_pass) {
+            this.elements.passAdvanceSection.style.display = 'block';
+            this.elements.nextPassNum.textContent = data.next_pass.number;
+            this.elements.nextPassCriteria.textContent = `${data.next_pass.name} (${data.next_pass.price_tolerance} price, ${data.next_pass.area_tolerance} area)`;
+        } else {
+            this.elements.passAdvanceSection.style.display = 'none';
+        }
+
+        this.elements.passCompleteModal.style.display = 'flex';
+    }
+
+    hidePassComplete() {
+        this.elements.passCompleteModal.style.display = 'none';
+    }
+
     // Haptic feedback for mobile (if supported)
     vibrate(pattern = 10) {
         if (this.isMobile && navigator.vibrate) {
@@ -662,8 +707,9 @@ class MatcherApp {
                 this.ui.vibrate(5);
             }
 
-            if (e.target.classList.contains('match-btn')) {
-                const coelhoCode = e.target.dataset.coelhoCode;
+            const matchBtn = e.target.closest('.match-btn');
+            if (matchBtn) {
+                const coelhoCode = matchBtn.dataset.coelhoCode;
                 this.confirmMatch(coelhoCode);
             }
         });
@@ -685,6 +731,14 @@ class MatcherApp {
                 this.ui.hideHelp();
             }
         });
+
+        // Pass complete buttons
+        if (this.ui.elements.passAdvanceBtn) {
+            this.ui.elements.passAdvanceBtn.addEventListener('click', () => this.handleAdvancePass());
+        }
+        if (this.ui.elements.passFinishBtn) {
+            this.ui.elements.passFinishBtn.addEventListener('click', () => this.handleFinishMatching());
+        }
     }
 
     async loadSession() {
@@ -706,7 +760,13 @@ class MatcherApp {
             this.ui.showLoading(true);
 
             // Get next listing from backend
-            const response = await this.api.getNext();
+            const response = await this.api.getNext(this.state.reviewer);
+
+            // Handle pass complete
+            if (response.pass_complete) {
+                this.ui.showPassComplete(response);
+                return;
+            }
 
             // Handle completion
             if (response.done || !response.viva_code) {
@@ -715,6 +775,26 @@ class MatcherApp {
                 this.state.setCandidates([]);
                 this.ui.clearVivaListing();
                 this.ui.renderCandidates([]);
+
+                // Show completion state with report button
+                const mainContent = this.ui.elements.mainContent;
+                if (mainContent) {
+                    const candidatesSection = mainContent.querySelector('.candidates-section');
+                    if (candidatesSection) {
+                        candidatesSection.innerHTML = `
+                            <div class="empty-state" style="text-align: center; padding: 3rem;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">&#x1F389;</div>
+                                <h2 style="margin-bottom: 0.5rem;">All Done!</h2>
+                                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                                    ${response.message || 'All listings reviewed!'}
+                                </p>
+                                <button class="btn btn-primary" onclick="window.matcherApp.showEmailPrompt()">
+                                    Send Unmatched Report
+                                </button>
+                            </div>
+                        `;
+                    }
+                }
                 return;
             }
 
@@ -792,7 +872,12 @@ class MatcherApp {
      * Used by match/skip/undo transitions that manage their own animations.
      */
     async _loadNextListingContent() {
-        const response = await this.api.getNext();
+        const response = await this.api.getNext(this.state.reviewer);
+
+        if (response.pass_complete) {
+            this.ui.showPassComplete(response);
+            return;
+        }
 
         if (response.done || !response.viva_code) {
             this.ui.showToast('All listings reviewed!', 'success');
@@ -956,6 +1041,37 @@ class MatcherApp {
         }
     }
 
+    async handleAdvancePass() {
+        try {
+            this.ui.hidePassComplete();
+            this.ui.showLoading(true);
+            await this.api.advancePass();
+            await this.loadNextListing();
+        } catch (error) {
+            console.error('Failed to advance pass:', error);
+            this.ui.showToast('Failed to advance pass', 'error');
+            this.ui.showLoading(false);
+        }
+    }
+
+    async handleFinishMatching() {
+        try {
+            this.ui.hidePassComplete();
+            this.ui.showLoading(true);
+            await this.api.finishMatching(this.state.reviewer);
+            this.ui.showToast('Matching complete!', 'success');
+            this.state.setCurrentListing(null);
+            this.state.setCandidates([]);
+            this.ui.clearVivaListing();
+            this.ui.renderCandidates([]);
+            this.ui.showLoading(false);
+        } catch (error) {
+            console.error('Failed to finish:', error);
+            this.ui.showToast('Failed to finish', 'error');
+            this.ui.showLoading(false);
+        }
+    }
+
     handleKeyboard(e) {
         // Don't trigger if typing in input/textarea
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
@@ -1003,6 +1119,29 @@ class MatcherApp {
     hideHelp() {
         this.ui.hideHelp();
     }
+
+    showEmailPrompt() {
+        const email = prompt('Enter email address for the unmatched report:');
+        if (email && email.includes('@')) {
+            this.sendReport(email);
+        }
+    }
+
+    async sendReport(email) {
+        try {
+            this.ui.showLoading(true);
+            await this.api.request('/api/report/send-email', {
+                method: 'POST',
+                body: JSON.stringify({ to: email })
+            });
+            this.ui.showToast(`Report sent to ${email}`, 'success');
+        } catch (error) {
+            console.error('Failed to send report:', error);
+            this.ui.showToast('Failed to send report', 'error');
+        } finally {
+            this.ui.showLoading(false);
+        }
+    }
 }
 
 // ===========================
@@ -1014,4 +1153,4 @@ if (typeof window !== 'undefined') {
     window.matcherApp = new MatcherApp();
 }
 
-export { MatcherAPI };
+export { MatcherAPI, MatcherState, MatcherUI };

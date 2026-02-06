@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { MatcherAPI } from '../public/js/matcher-app.js';
+import { MatcherAPI } from '../server-deploy/public/js/matcher-app.js';
 
 test('resolveEndpoint returns relative API paths by default', () => {
   const api = new MatcherAPI();

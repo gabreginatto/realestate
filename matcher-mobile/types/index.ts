@@ -106,6 +106,10 @@ export type NextListingResponse = {
     total_skipped: number;
     passes_completed: number;
   };
+  pass_complete?: boolean;
+  stats?: { matched: number; skipped: number; total_reviewed: number };
+  has_next_pass?: boolean;
+  next_pass?: { number: number; name: string; price_tolerance: string; area_tolerance: string } | null;
 };
 
 export type CandidatesResponse = {
@@ -215,4 +219,17 @@ export type NormalizedCandidate = {
   aiScore: number | null;
   priceDelta: number | null;
   areaDelta: number | null;
+};
+
+// ============================================================================
+// Notification Types
+// ============================================================================
+
+export type Notification = {
+  id: string;
+  type: 'pipeline_complete' | 'pipeline_trigger';
+  message: string;
+  data: Record<string, unknown>;
+  created_at: string;
+  read: boolean;
 };

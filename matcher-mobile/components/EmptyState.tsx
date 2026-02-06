@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 
 // Color palette
 const colors = {
@@ -20,6 +20,7 @@ type EmptyStateProps = {
   totalMatched?: number;
   totalSkipped?: number;
   passesCompleted?: number;
+  onSendReport?: () => void;
 };
 
 /**
@@ -32,6 +33,7 @@ function EmptyStateComponent({
   totalMatched = 0,
   totalSkipped = 0,
   passesCompleted = 5,
+  onSendReport,
 }: EmptyStateProps) {
   return (
     <View style={styles.container}>
@@ -66,6 +68,12 @@ function EmptyStateComponent({
       <Text style={styles.hint}>
         Pull down to refresh for new listings
       </Text>
+
+      {onSendReport && (
+        <Pressable style={styles.sendReportButton} onPress={onSendReport}>
+          <Text style={styles.sendReportText}>Send Unmatched Report</Text>
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -157,6 +165,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '300',
     fontFamily: 'System',
+  },
+  sendReportButton: {
+    marginTop: 20,
+    backgroundColor: colors.accentBlue,
+    borderRadius: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+  },
+  sendReportText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '700',
   },
 });
 

@@ -56,19 +56,34 @@ export default function MatcherScreen() {
   const passName = useMatcherStore((s) => s.passName);
   const allPassesComplete = useMatcherStore((s) => s.allPassesComplete);
 
+  const passComplete = useMatcherStore((s) => s.passComplete);
+  const passStats = useMatcherStore((s) => s.passStats);
+  const hasNextPass = useMatcherStore((s) => s.hasNextPass);
+  const nextPassInfo = useMatcherStore((s) => s.nextPassInfo);
+  const userFinished = useMatcherStore((s) => s.userFinished);
+
+  const hasNewProperties = useMatcherStore((s) => s.hasNewProperties);
+  const notificationMessage = useMatcherStore((s) => s.notificationMessage);
+
   const setReviewer = useMatcherStore((s) => s.setReviewer);
   const loadSession = useMatcherStore((s) => s.loadSession);
   const loadNextListing = useMatcherStore((s) => s.loadNextListing);
   const confirmMatch = useMatcherStore((s) => s.confirmMatch);
   const skipListing = useMatcherStore((s) => s.skipListing);
   const undo = useMatcherStore((s) => s.undo);
+  const advancePass = useMatcherStore((s) => s.advancePass);
+  const finishMatching = useMatcherStore((s) => s.finishMatching);
   const clearError = useMatcherStore((s) => s.clearError);
+  const dismissNotification = useMatcherStore((s) => s.dismissNotification);
 
   // Local UI state
   const [showNamePrompt, setShowNamePrompt] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
+  const [isSendingReport, setIsSendingReport] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: 'success' | 'error' | 'info';
@@ -121,14 +136,13 @@ export default function MatcherScreen() {
   }, [error]);
 
   // Handle reviewer name submission
-  const handleNameSubmit = useCallback(async () => {
+  // Note: loadSession/loadNextListing are handled by the useEffect on `reviewer`
+  const handleNameSubmit = useCallback(() => {
     if (nameInput.trim()) {
       setReviewer(nameInput.trim());
       setShowNamePrompt(false);
-      await loadSession();
-      await loadNextListing();
     }
-  }, [nameInput, setReviewer, loadSession, loadNextListing]);
+  }, [nameInput, setReviewer]);
 
   // Handle pull-to-refresh
   const handleRefresh = useCallback(async () => {
@@ -139,6 +153,33 @@ export default function MatcherScreen() {
     }
     setRefreshing(false);
   }, [loadSession, loadNextListing, currentListing]);
+
+  // Handle notification dismiss
+  const handleDismissNotification = useCallback(async () => {
+    await dismissNotification();
+    await loadNextListing();
+  }, [dismissNotification, loadNextListing]);
+
+  // Handle sending unmatched report via email
+  const handleSendReport = useCallback(async () => {
+    if (!emailInput.trim() || !emailInput.includes('@')) {
+      setToast({ message: 'Please enter a valid email', type: 'error' });
+      return;
+    }
+    setIsSendingReport(true);
+    try {
+      const { sendReportEmail } = await import('../lib/api');
+      await sendReportEmail(emailInput.trim());
+      setShowEmailModal(false);
+      setEmailInput('');
+      setToast({ message: 'Report sent successfully!', type: 'success' });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to send report';
+      setToast({ message, type: 'error' });
+    } finally {
+      setIsSendingReport(false);
+    }
+  }, [emailInput]);
 
   // ---- Animation helpers ----
 
@@ -239,10 +280,16 @@ export default function MatcherScreen() {
 
       // 6. Clean up
       setOverlayVisible(false);
-      setToast({ message: 'Match confirmed!', type: 'success' });
+      const matchError = useMatcherStore.getState().error;
+      if (matchError) {
+        clearError();
+        setToast({ message: matchError, type: 'error' });
+      } else {
+        setToast({ message: 'Match confirmed!', type: 'success' });
+      }
       isAnimating.current = false;
     },
-    [confirmMatch, contentTranslateX, contentOpacity, contentRotate, contentScale]
+    [confirmMatch, clearError, contentTranslateX, contentOpacity, contentRotate, contentScale]
   );
 
   // Handle skip
@@ -268,9 +315,15 @@ export default function MatcherScreen() {
 
     // 6. Clean up
     setOverlayVisible(false);
-    setToast({ message: 'Listing skipped', type: 'info' });
+    const skipError = useMatcherStore.getState().error;
+    if (skipError) {
+      clearError();
+      setToast({ message: skipError, type: 'error' });
+    } else {
+      setToast({ message: 'Listing skipped', type: 'info' });
+    }
     isAnimating.current = false;
-  }, [skipListing, contentTranslateX, contentOpacity, contentRotate, contentScale]);
+  }, [skipListing, clearError, contentTranslateX, contentOpacity, contentRotate, contentScale]);
 
   // Handle undo
   const handleUndo = useCallback(async () => {
@@ -295,9 +348,15 @@ export default function MatcherScreen() {
 
     // 6. Clean up
     setOverlayVisible(false);
-    setToast({ message: 'Decision undone', type: 'info' });
+    const undoError = useMatcherStore.getState().error;
+    if (undoError) {
+      clearError();
+      setToast({ message: undoError, type: 'error' });
+    } else {
+      setToast({ message: 'Decision undone', type: 'info' });
+    }
     isAnimating.current = false;
-  }, [undo, contentTranslateX, contentOpacity, contentRotate, contentScale]);
+  }, [undo, clearError, contentTranslateX, contentOpacity, contentRotate, contentScale]);
 
   // Handle image press for lightbox
   const handleImagePress = useCallback((imageUrl: string) => {
@@ -318,9 +377,9 @@ export default function MatcherScreen() {
       }
     : { completed: 0, total: 0, percentage: 0 };
 
-  // Check if all done (all passes complete)
+  // Check if all done (all passes complete or user finished)
   const allDone =
-    allPassesComplete &&
+    (allPassesComplete || userFinished) &&
     currentListing === null &&
     !isLoading &&
     sessionStats !== null;
@@ -352,6 +411,19 @@ export default function MatcherScreen() {
         }}
       />
 
+      {/* Notification Banner */}
+      {hasNewProperties && notificationMessage && (
+        <Pressable
+          style={styles.notificationBanner}
+          onPress={handleDismissNotification}
+        >
+          <View style={styles.notificationContent}>
+            <Text style={styles.notificationText}>{notificationMessage}</Text>
+            <Text style={styles.notificationDismiss}>Tap to dismiss</Text>
+          </View>
+        </Pressable>
+      )}
+
       {/* Main Content */}
       {allDone ? (
         <EmptyState
@@ -359,6 +431,7 @@ export default function MatcherScreen() {
           totalMatched={sessionStats?.matched ?? 0}
           totalSkipped={sessionStats?.skipped ?? 0}
           passesCompleted={maxPasses}
+          onSendReport={() => setShowEmailModal(true)}
         />
       ) : (
         <Animated.View style={[styles.animatedContentWrapper, contentAnimatedStyle]}>
@@ -473,6 +546,90 @@ export default function MatcherScreen() {
               disabled={!nameInput.trim()}
             >
               <Text style={styles.promptButtonText}>Start Matching</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Email Report Modal */}
+      <Modal visible={showEmailModal} transparent animationType="slide">
+        <View style={styles.promptOverlay}>
+          <View style={styles.promptCard}>
+            <Text style={styles.promptTitle}>Send Report</Text>
+            <Text style={styles.promptSubtitle}>
+              Send the unmatched properties report to your email
+            </Text>
+            <TextInput
+              style={styles.promptInput}
+              placeholder="email@example.com"
+              placeholderTextColor={colors.textMuted}
+              value={emailInput}
+              onChangeText={setEmailInput}
+              autoFocus
+              keyboardType="email-address"
+              autoCapitalize="none"
+              returnKeyType="send"
+              onSubmitEditing={handleSendReport}
+            />
+            <Pressable
+              style={[
+                styles.promptButton,
+                (!emailInput.trim() || isSendingReport) && styles.promptButtonDisabled,
+              ]}
+              onPress={handleSendReport}
+              disabled={!emailInput.trim() || isSendingReport}
+            >
+              <Text style={styles.promptButtonText}>
+                {isSendingReport ? 'Sending...' : 'Send Report'}
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.emailCancelButton}
+              onPress={() => setShowEmailModal(false)}
+            >
+              <Text style={styles.emailCancelText}>Cancel</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Pass Complete Modal */}
+      <Modal visible={passComplete} transparent animationType="slide">
+        <View style={styles.promptOverlay}>
+          <View style={styles.passCompleteCard}>
+            <Text style={styles.passCompleteIcon}>{'\uD83C\uDFAF'}</Text>
+            <Text style={styles.passCompleteTitle}>Pass {currentPass} Complete!</Text>
+            <Text style={styles.passCompleteSubtitle}>
+              {passName.charAt(0).toUpperCase() + passName.slice(1)} matching pass finished
+            </Text>
+
+            {passStats && (
+              <View style={styles.passStatsContainer}>
+                <View style={styles.passStatBox}>
+                  <Text style={[styles.passStatValue, { color: '#00e676' }]}>{passStats.matched}</Text>
+                  <Text style={styles.passStatLabel}>Matched</Text>
+                </View>
+                <View style={styles.passStatDivider} />
+                <View style={styles.passStatBox}>
+                  <Text style={[styles.passStatValue, { color: '#ffab40' }]}>{passStats.skipped}</Text>
+                  <Text style={styles.passStatLabel}>Skipped</Text>
+                </View>
+              </View>
+            )}
+
+            {hasNextPass && nextPassInfo && (
+              <Pressable style={styles.advanceButton} onPress={advancePass}>
+                <Text style={styles.advanceButtonText}>
+                  Continue to Pass {nextPassInfo.number}
+                </Text>
+                <Text style={styles.advanceButtonSubtext}>
+                  {nextPassInfo.name} ({nextPassInfo.price_tolerance} price, {nextPassInfo.area_tolerance} area)
+                </Text>
+              </Pressable>
+            )}
+
+            <Pressable style={styles.finishButton} onPress={finishMatching}>
+              <Text style={styles.finishButtonText}>I'm Finished - Generate Report</Text>
             </Pressable>
           </View>
         </View>
@@ -618,5 +775,126 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     fontFamily: 'System',
+  },
+  passCompleteCard: {
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 340,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  passCompleteIcon: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  passCompleteTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    marginBottom: 4,
+  },
+  passCompleteSubtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginBottom: 20,
+  },
+  passStatsContainer: {
+    flexDirection: 'row',
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  passStatBox: {
+    alignItems: 'center',
+    paddingHorizontal: 16,
+  },
+  passStatValue: {
+    fontSize: 24,
+    fontWeight: '800',
+  },
+  passStatLabel: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    marginTop: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  passStatDivider: {
+    width: 1,
+    backgroundColor: colors.border,
+  },
+  advanceButton: {
+    width: '100%',
+    backgroundColor: colors.accentBlue,
+    borderRadius: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  advanceButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  advanceButtonSubtext: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 12,
+    marginTop: 2,
+  },
+  finishButton: {
+    width: '100%',
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  finishButtonText: {
+    color: colors.accentAmber,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  notificationBanner: {
+    backgroundColor: '#1a3a2a',
+    borderBottomWidth: 1,
+    borderBottomColor: '#00e676' + '40',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  notificationContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  notificationText: {
+    color: '#00e676',
+    fontSize: 14,
+    fontWeight: '600',
+    flex: 1,
+  },
+  notificationDismiss: {
+    color: '#8892b0',
+    fontSize: 12,
+    fontWeight: '400',
+    marginLeft: 12,
+  },
+  emailCancelButton: {
+    marginTop: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  emailCancelText: {
+    color: colors.textSecondary,
+    fontSize: 15,
   },
 });

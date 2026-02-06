@@ -219,6 +219,40 @@
         </div>
     </div>
 
+    <!-- Pass Complete Dialog -->
+    <div id="pass-complete-modal" class="modal" style="display: none;" role="dialog" aria-labelledby="pass-complete-title" aria-modal="true">
+        <div class="modal-content" style="text-align: center;">
+            <h2 id="pass-complete-title" style="padding-right: 0;">
+                <span id="pass-complete-icon" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">&#x1F3AF;</span>
+                Pass <span id="pass-complete-num">1</span> Complete!
+            </h2>
+            <p id="pass-complete-subtitle" style="color: var(--text-secondary); margin-bottom: 1.5rem;"></p>
+
+            <div id="pass-complete-stats" style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                <div style="text-align: center;">
+                    <div id="pass-stat-matched" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-success);">0</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Matched</div>
+                </div>
+                <div style="width: 1px; background: var(--border-color);"></div>
+                <div style="text-align: center;">
+                    <div id="pass-stat-skipped" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-warning);">0</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Skipped</div>
+                </div>
+            </div>
+
+            <div id="pass-advance-section" style="margin-bottom: 0.75rem;">
+                <button id="pass-advance-btn" class="btn btn-primary btn-large" style="width: 100%;">
+                    Continue to Pass <span id="next-pass-num">2</span>
+                </button>
+                <p id="next-pass-criteria" style="font-size: 0.8rem; color: var(--text-tertiary); margin-top: 0.5rem;"></p>
+            </div>
+
+            <button id="pass-finish-btn" class="btn btn-warning" style="width: 100%;">
+                I'm Finished - Generate Report
+            </button>
+        </div>
+    </div>
+
     <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container"></div>
 
