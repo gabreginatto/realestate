@@ -111,12 +111,16 @@ export async function getSession(baseUrl: string = API_BASE_URL): Promise<Sessio
 /**
  * Get the next listing to review
  */
+type NextListingResult =
+  | { vivaCode: string; viva: NormalizedVivaListing; done?: false; current_pass?: number; pass_name?: string }
+  | { done: true; message: string };
+
 export async function getNextListing(
   reviewer: string,
   baseUrl: string = API_BASE_URL
-): Promise<{ vivaCode: string; viva: NormalizedVivaListing; done?: boolean } | { done: true; message: string }> {
+): Promise<NextListingResult> {
   const response = await fetch(`${baseUrl}/api/next?reviewer=${encodeURIComponent(reviewer)}`);
-  const data = await handleResponse<NextListingResponse & { done?: boolean; message?: string }>(response);
+  const data = await handleResponse<NextListingResponse>(response);
 
   if (data.done) {
     return { done: true, message: data.message || 'All listings reviewed!' };
@@ -125,6 +129,8 @@ export async function getNextListing(
   return {
     vivaCode: data.viva_code,
     viva: normalizeVivaListing(data.viva, data.mosaic_path),
+    current_pass: data.current_pass,
+    pass_name: data.pass_name,
   };
 }
 

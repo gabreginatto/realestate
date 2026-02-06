@@ -1,6 +1,19 @@
 import React, { memo } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// Color palette
+const colors = {
+  background: '#0c0f1a',
+  surface: '#161b2e',
+  surfaceElevated: '#1e2540',
+  border: '#2a3154',
+  textPrimary: '#e8ecf4',
+  textSecondary: '#8892b0',
+  textMuted: '#5a6380',
+  accentAmber: '#ffab40',
+  amberDark: '#3e2723',
+};
 
 type BottomActionBarProps = {
   onSkip: () => void;
@@ -24,27 +37,25 @@ function BottomActionBarComponent({
 
   return (
     <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 16) }]}>
-      <TouchableOpacity
+      <Pressable
         style={[styles.button, styles.skipButton, skipDisabled && styles.buttonDisabled]}
         onPress={onSkip}
         disabled={skipDisabled}
-        activeOpacity={0.7}
       >
         <Text style={[styles.buttonText, styles.skipButtonText, skipDisabled && styles.buttonTextDisabled]}>
-          Skip
+          {'\u2192'}  Skip
         </Text>
-      </TouchableOpacity>
+      </Pressable>
 
-      <TouchableOpacity
+      <Pressable
         style={[styles.button, styles.undoButton, !canUndo && styles.buttonDisabled]}
         onPress={onUndo}
         disabled={!canUndo}
-        activeOpacity={0.7}
       >
         <Text style={[styles.buttonText, styles.undoButtonText, !canUndo && styles.buttonTextDisabled]}>
-          Undo
+          {'\u21B6'}  Undo
         </Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }
@@ -54,45 +65,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 16,
     paddingTop: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.background,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: colors.border,
     gap: 12,
   },
   button: {
     flex: 1,
-    height: 52,
-    borderRadius: 12,
+    height: 54,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
   },
   skipButton: {
-    backgroundColor: '#FEF3C7',
-    borderWidth: 1,
-    borderColor: '#F59E0B',
+    backgroundColor: colors.accentAmber,
   },
   undoButton: {
-    backgroundColor: '#F3F4F6',
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
+    backgroundColor: colors.surfaceElevated,
   },
   buttonDisabled: {
-    backgroundColor: '#F9FAFB',
-    borderColor: '#E5E7EB',
-    opacity: 0.5,
+    opacity: 0.4,
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'System',
   },
   skipButtonText: {
-    color: '#B45309',
+    color: colors.amberDark,
+    fontWeight: '700',
   },
   undoButtonText: {
-    color: '#374151',
+    color: colors.textSecondary,
+    fontWeight: '600',
   },
   buttonTextDisabled: {
-    color: '#9CA3AF',
+    color: colors.textMuted,
   },
 });
 

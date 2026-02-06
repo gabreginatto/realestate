@@ -6,13 +6,13 @@ import type { VivaListing, NormalizedVivaListing, Candidate, NormalizedCandidate
 
 // Color palette
 const colors = {
-  background: '#ffffff',
-  backgroundDark: '#0f172a',
-  text: '#0f172a',
-  textDark: '#f1f5f9',
-  textSecondary: '#64748b',
-  border: '#e2e8f0',
-  primary: '#3b82f6',
+  background: '#161b2e',
+  surface: '#1e2540',
+  border: '#2a3154',
+  textPrimary: '#e8ecf4',
+  textSecondary: '#8892b0',
+  textMuted: '#5a6380',
+  accentBlue: '#448aff',
 };
 
 type PropertyCardProps = {
@@ -41,7 +41,7 @@ function formatPrice(price: string | number): string {
  */
 function formatArea(area: number | undefined): string {
   if (!area) return '-';
-  return `${area} m²`;
+  return `${area} m\u00B2`;
 }
 
 /**
@@ -140,7 +140,12 @@ export function PropertyCard({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{propertyCode}</Text>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>{propertyCode}</Text>
+          <View style={styles.sourceTag}>
+            <Text style={styles.sourceTagText}>Source Property</Text>
+          </View>
+        </View>
         {(listing as Candidate).aiScore !== undefined && (listing as Candidate).aiScore !== null && (
           <View style={styles.scoreBadge}>
             <Text style={styles.scoreText}>
@@ -158,6 +163,7 @@ export function PropertyCard({
             contentFit="cover"
             transition={200}
           />
+          <View style={styles.imageBottomShadow} />
           {onImagePress && (
             <View style={styles.imageOverlay}>
               <Text style={styles.imageOverlayText}>Tap to enlarge</Text>
@@ -179,10 +185,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
   },
   header: {
     flexDirection: 'row',
@@ -192,13 +198,33 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+  },
   title: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
+    fontSize: 20,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    fontFamily: 'System',
+  },
+  sourceTag: {
+    backgroundColor: colors.accentBlue + '20',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.accentBlue + '40',
+  },
+  sourceTagText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.accentBlue,
   },
   scoreBadge: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.accentBlue,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -216,6 +242,19 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  imageBottomShadow: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    backgroundColor: 'transparent',
+    // Gradient-like shadow at bottom of image
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -20 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
   },
   imageOverlay: {
     position: 'absolute',

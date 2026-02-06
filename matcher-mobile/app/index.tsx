@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -9,9 +9,17 @@ import {
   TextInput,
   Pressable,
   Text,
+  Dimensions,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+  runOnJS,
+} from 'react-native-reanimated';
 
 import { Header } from '../components/Header';
 import { PropertyCard } from '../components/PropertyCard';
@@ -19,10 +27,18 @@ import { CandidateList } from '../components/CandidateList';
 import { BottomActionBar } from '../components/BottomActionBar';
 import { Toast } from '../components/Toast';
 import { EmptyState } from '../components/EmptyState';
+import { TransitionOverlay } from '../components/TransitionOverlay';
 import { useMatcherStore } from '../stores/matcherStore';
 
 // Default API URL - change this for your network
 const API_BASE_URL = 'http://localhost:3000';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const EASING_SMOOTH = Easing.bezier(0.4, 0, 0.2, 1);
+
+// Animation durations
+const EXIT_DURATION = 250;
+const ENTER_DURATION = 250;
 
 export default function MatcherScreen() {
   const insets = useSafeAreaInsets();
@@ -35,6 +51,10 @@ export default function MatcherScreen() {
   const isLoading = useMatcherStore((s) => s.isLoading);
   const canUndo = useMatcherStore((s) => s.canUndo);
   const error = useMatcherStore((s) => s.error);
+  const currentPass = useMatcherStore((s) => s.currentPass);
+  const maxPasses = useMatcherStore((s) => s.maxPasses);
+  const passName = useMatcherStore((s) => s.passName);
+  const allPassesComplete = useMatcherStore((s) => s.allPassesComplete);
 
   const setReviewer = useMatcherStore((s) => s.setReviewer);
   const loadSession = useMatcherStore((s) => s.loadSession);
@@ -49,12 +69,39 @@ export default function MatcherScreen() {
   const [nameInput, setNameInput] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: 'success' | 'error' | 'info';
+  } | null>(null);
+
+  // Animation state
+  const [overlayType, setOverlayType] = useState<'match' | 'skip' | 'undo'>(
+    'match'
+  );
+  const [overlayVisible, setOverlayVisible] = useState(false);
+  const isAnimating = useRef(false);
+
+  // Shared values for content slide animation
+  const contentTranslateX = useSharedValue(0);
+  const contentOpacity = useSharedValue(1);
+  const contentRotate = useSharedValue(0);
+  const contentScale = useSharedValue(1);
+
+  const contentAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: contentTranslateX.value },
+      { rotate: `${contentRotate.value}deg` },
+      { scale: contentScale.value },
+    ],
+    opacity: contentOpacity.value,
+  }));
+
+  // ScrollView ref to scroll to top on new content
+  const scrollViewRef = useRef<ScrollView>(null);
 
   // Initialize on mount
   useEffect(() => {
     const init = async () => {
-      // Check if we have a reviewer name
       if (!reviewer) {
         setShowNamePrompt(true);
       } else {
@@ -93,23 +140,164 @@ export default function MatcherScreen() {
     setRefreshing(false);
   }, [loadSession, loadNextListing, currentListing]);
 
+  // ---- Animation helpers ----
+
+  // Promise wrapper for reanimated withTiming
+  const animateOut = (
+    type: 'match' | 'skip' | 'undo'
+  ): Promise<void> => {
+    return new Promise((resolve) => {
+      const direction = type === 'undo' ? 1 : -1; // undo slides right, others slide left
+      const targetX = direction * SCREEN_WIDTH;
+      const targetRotation = type === 'skip' ? -3 : 0; // slight rotation on skip
+      const duration = type === 'match' ? EXIT_DURATION + 50 : EXIT_DURATION;
+
+      if (type === 'match') {
+        // Match: scale down slightly then slide out
+        contentScale.value = withTiming(0.95, {
+          duration: 100,
+          easing: EASING_SMOOTH,
+        });
+      }
+
+      contentTranslateX.value = withTiming(targetX, {
+        duration,
+        easing: EASING_SMOOTH,
+      });
+      contentOpacity.value = withTiming(0.2, {
+        duration,
+        easing: EASING_SMOOTH,
+      });
+      contentRotate.value = withTiming(targetRotation, {
+        duration: duration * 0.6,
+        easing: EASING_SMOOTH,
+        // Use the last animation to resolve the promise
+      });
+
+      // Resolve after the exit animation completes
+      setTimeout(resolve, duration + 20);
+    });
+  };
+
+  const animateIn = (
+    type: 'match' | 'skip' | 'undo'
+  ): Promise<void> => {
+    return new Promise((resolve) => {
+      const direction = type === 'undo' ? -1 : 1; // undo enters from left, others from right
+      const startX = direction * SCREEN_WIDTH * 0.4;
+
+      // Set starting position immediately (no animation)
+      contentTranslateX.value = startX;
+      contentOpacity.value = 0;
+      contentRotate.value = 0;
+      contentScale.value = 1;
+
+      // Animate to final position
+      contentTranslateX.value = withTiming(0, {
+        duration: ENTER_DURATION,
+        easing: EASING_SMOOTH,
+      });
+      contentOpacity.value = withTiming(1, {
+        duration: ENTER_DURATION,
+        easing: EASING_SMOOTH,
+      });
+
+      setTimeout(resolve, ENTER_DURATION + 20);
+    });
+  };
+
+  const resetAnimationValues = () => {
+    contentTranslateX.value = 0;
+    contentOpacity.value = 1;
+    contentRotate.value = 0;
+    contentScale.value = 1;
+  };
+
+  // ---- Action handlers with animations ----
+
   // Handle match confirmation
-  const handleMatch = useCallback(async (coelhoCode: string) => {
-    await confirmMatch(coelhoCode);
-    setToast({ message: `Match confirmed!`, type: 'success' });
-  }, [confirmMatch]);
+  const handleMatch = useCallback(
+    async (coelhoCode: string) => {
+      if (isAnimating.current) return;
+      isAnimating.current = true;
+
+      // 1. Show overlay flash
+      setOverlayType('match');
+      setOverlayVisible(true);
+
+      // 2. Run exit animation
+      await animateOut('match');
+
+      // 3. Perform the store action (loads next listing)
+      await confirmMatch(coelhoCode);
+
+      // 4. Scroll to top
+      scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+
+      // 5. Run entrance animation
+      await animateIn('match');
+
+      // 6. Clean up
+      setOverlayVisible(false);
+      setToast({ message: 'Match confirmed!', type: 'success' });
+      isAnimating.current = false;
+    },
+    [confirmMatch, contentTranslateX, contentOpacity, contentRotate, contentScale]
+  );
 
   // Handle skip
   const handleSkip = useCallback(async () => {
+    if (isAnimating.current) return;
+    isAnimating.current = true;
+
+    // 1. Show overlay flash
+    setOverlayType('skip');
+    setOverlayVisible(true);
+
+    // 2. Run exit animation
+    await animateOut('skip');
+
+    // 3. Perform the store action
     await skipListing();
+
+    // 4. Scroll to top
+    scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+
+    // 5. Run entrance animation
+    await animateIn('skip');
+
+    // 6. Clean up
+    setOverlayVisible(false);
     setToast({ message: 'Listing skipped', type: 'info' });
-  }, [skipListing]);
+    isAnimating.current = false;
+  }, [skipListing, contentTranslateX, contentOpacity, contentRotate, contentScale]);
 
   // Handle undo
   const handleUndo = useCallback(async () => {
+    if (isAnimating.current) return;
+    isAnimating.current = true;
+
+    // 1. Show overlay flash
+    setOverlayType('undo');
+    setOverlayVisible(true);
+
+    // 2. Run exit animation (reverse direction)
+    await animateOut('undo');
+
+    // 3. Perform the store action
     await undo();
+
+    // 4. Scroll to top
+    scrollViewRef.current?.scrollTo({ y: 0, animated: false });
+
+    // 5. Run entrance animation (from left)
+    await animateIn('undo');
+
+    // 6. Clean up
+    setOverlayVisible(false);
     setToast({ message: 'Decision undone', type: 'info' });
-  }, [undo]);
+    isAnimating.current = false;
+  }, [undo, contentTranslateX, contentOpacity, contentRotate, contentScale]);
 
   // Handle image press for lightbox
   const handleImagePress = useCallback((imageUrl: string) => {
@@ -130,8 +318,12 @@ export default function MatcherScreen() {
       }
     : { completed: 0, total: 0, percentage: 0 };
 
-  // Check if all done
-  const allDone = currentListing === null && !isLoading && sessionStats !== null;
+  // Check if all done (all passes complete)
+  const allDone =
+    allPassesComplete &&
+    currentListing === null &&
+    !isLoading &&
+    sessionStats !== null;
 
   return (
     <View style={styles.container}>
@@ -143,14 +335,19 @@ export default function MatcherScreen() {
         skippedCount={sessionStats?.skipped ?? 0}
         canUndo={canUndo}
         onUndo={handleUndo}
+        currentPass={currentPass}
+        maxPasses={maxPasses}
+        passName={passName}
         onHelp={() => {
           Alert.alert(
             'How to Match',
             '1. Compare the source property with candidates below\n\n' +
-            '2. Tap any image to zoom in\n\n' +
-            '3. Tap "Match" when you find the same property\n\n' +
-            '4. Tap "Skip" if no candidate matches\n\n' +
-            '5. Use "Undo" to revert your last decision'
+              '2. Tap any image to zoom in\n\n' +
+              '3. Tap "Match" when you find the same property\n\n' +
+              '4. Tap "Skip" if no candidate matches\n\n' +
+              '5. Use "Undo" to revert your last decision\n\n' +
+              'Passes: Each pass uses broader matching criteria.\n' +
+              'Skipped listings are reconsidered in later passes.'
           );
         }}
       />
@@ -161,41 +358,52 @@ export default function MatcherScreen() {
           totalReviewed={progress.completed}
           totalMatched={sessionStats?.matched ?? 0}
           totalSkipped={sessionStats?.skipped ?? 0}
+          passesCompleted={maxPasses}
         />
       ) : (
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={[
-            styles.scrollContent,
-            { paddingBottom: 100 + insets.bottom },
-          ]}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-          }
-        >
-          {/* Source Property */}
-          {currentListing && (
+        <Animated.View style={[styles.animatedContentWrapper, contentAnimatedStyle]}>
+          <ScrollView
+            ref={scrollViewRef}
+            style={styles.scrollView}
+            contentContainerStyle={[
+              styles.scrollContent,
+              { paddingBottom: 100 + insets.bottom },
+            ]}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
+                tintColor={colors.textSecondary}
+                colors={[colors.accentBlue]}
+              />
+            }
+          >
+            {/* Source Property */}
+            {currentListing && (
+              <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Source Property</Text>
+                <PropertyCard
+                  listing={currentListing}
+                  onImagePress={() =>
+                    handleImagePress(currentListing.mosaicPath)
+                  }
+                />
+              </View>
+            )}
+
+            {/* Candidates */}
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Source Property</Text>
-              <PropertyCard
-                listing={currentListing}
-                onImagePress={() => handleImagePress(currentListing.mosaicPath)}
+              <CandidateList
+                candidates={candidates}
+                onMatch={handleMatch}
+                onImagePress={handleImagePress}
+                totalReviewed={progress.completed}
+                totalMatched={sessionStats?.matched ?? 0}
+                totalSkipped={sessionStats?.skipped ?? 0}
               />
             </View>
-          )}
-
-          {/* Candidates */}
-          <View style={styles.section}>
-            <CandidateList
-              candidates={candidates}
-              onMatch={handleMatch}
-              onImagePress={handleImagePress}
-              totalReviewed={progress.completed}
-              totalMatched={sessionStats?.matched ?? 0}
-              totalSkipped={sessionStats?.skipped ?? 0}
-            />
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </Animated.View>
       )}
 
       {/* Bottom Action Bar */}
@@ -206,6 +414,9 @@ export default function MatcherScreen() {
           canUndo={canUndo}
         />
       )}
+
+      {/* Transition Overlay (match/skip/undo flash) */}
+      <TransitionOverlay type={overlayType} visible={overlayVisible} />
 
       {/* Image Lightbox */}
       <Modal
@@ -229,17 +440,13 @@ export default function MatcherScreen() {
             style={styles.lightboxClose}
             onPress={() => setLightboxImage(null)}
           >
-            <Text style={styles.lightboxCloseText}>✕</Text>
+            <Text style={styles.lightboxCloseText}>{'\u2715'}</Text>
           </Pressable>
         </Pressable>
       </Modal>
 
       {/* Reviewer Name Prompt */}
-      <Modal
-        visible={showNamePrompt}
-        transparent
-        animationType="slide"
-      >
+      <Modal visible={showNamePrompt} transparent animationType="slide">
         <View style={styles.promptOverlay}>
           <View style={styles.promptCard}>
             <Text style={styles.promptTitle}>Welcome!</Text>
@@ -249,6 +456,7 @@ export default function MatcherScreen() {
             <TextInput
               style={styles.promptInput}
               placeholder="Your name"
+              placeholderTextColor={colors.textMuted}
               value={nameInput}
               onChangeText={setNameInput}
               autoFocus
@@ -282,10 +490,29 @@ export default function MatcherScreen() {
   );
 }
 
+// Color palette
+const colors = {
+  background: '#0c0f1a',
+  surface: '#161b2e',
+  surfaceElevated: '#1e2540',
+  border: '#2a3154',
+  borderSubtle: '#1e2540',
+  textPrimary: '#e8ecf4',
+  textSecondary: '#8892b0',
+  textMuted: '#5a6380',
+  accentGreen: '#00e676',
+  accentAmber: '#ffab40',
+  accentBlue: '#448aff',
+  accentRed: '#ff5252',
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.background,
+  },
+  animatedContentWrapper: {
+    flex: 1,
   },
   scrollView: {
     flex: 1,
@@ -299,10 +526,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#64748b',
+    color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 12,
+    fontFamily: 'System',
   },
   lightbox: {
     flex: 1,
@@ -332,55 +560,63 @@ const styles = StyleSheet.create({
   },
   promptOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 24,
   },
   promptCard: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 24,
     width: '100%',
     maxWidth: 340,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   promptTitle: {
     fontSize: 24,
-    fontWeight: '700',
-    color: '#0f172a',
+    fontWeight: '800',
+    color: colors.textPrimary,
     marginBottom: 8,
+    fontFamily: 'System',
   },
   promptSubtitle: {
     fontSize: 15,
-    color: '#64748b',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
+    fontWeight: '300',
+    fontFamily: 'System',
   },
   promptInput: {
     width: '100%',
     height: 48,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: colors.border,
     borderRadius: 10,
     paddingHorizontal: 16,
     fontSize: 16,
     marginBottom: 16,
+    backgroundColor: colors.surfaceElevated,
+    color: colors.textPrimary,
   },
   promptButton: {
     width: '100%',
     height: 48,
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.accentBlue,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   promptButtonDisabled: {
-    backgroundColor: '#94a3b8',
+    backgroundColor: colors.textMuted,
   },
   promptButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
+    fontFamily: 'System',
   },
 });

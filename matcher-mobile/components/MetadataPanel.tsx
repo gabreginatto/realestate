@@ -4,12 +4,12 @@ import { DeltaBadge } from './DeltaBadge';
 
 // Color palette
 const colors = {
-  background: '#f8fafc',
-  backgroundDark: '#0f172a',
-  text: '#0f172a',
-  textDark: '#f1f5f9',
-  textSecondary: '#64748b',
-  border: '#e2e8f0',
+  background: '#161b2e',
+  surface: '#1e2540',
+  border: '#2a3154',
+  textPrimary: '#e8ecf4',
+  textSecondary: '#8892b0',
+  textMuted: '#5a6380',
 };
 
 type MetadataItem = {
@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     fontWeight: '500',
+    fontFamily: 'System',
   },
   valueContainer: {
     flexDirection: 'row',
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 16,
-    color: colors.text,
+    color: colors.textPrimary,
     fontWeight: '600',
   },
   deltaContainer: {

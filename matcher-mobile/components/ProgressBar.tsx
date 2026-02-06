@@ -10,9 +10,9 @@ import Animated, {
 
 // Color palette
 const colors = {
-  background: '#e2e8f0',
-  gradientStart: '#3b82f6', // blue
-  gradientEnd: '#10b981', // green
+  background: '#2a3154',
+  gradientStart: '#448aff', // bright blue
+  gradientEnd: '#00e676', // vivid green
 };
 
 type ProgressBarProps = {
@@ -38,7 +38,7 @@ export function ProgressBar({ progress, height = 6 }: ProgressBarProps) {
     const backgroundColor = interpolateColor(
       animatedProgress.value,
       [0, 50, 100],
-      [colors.gradientStart, '#14b8a6', colors.gradientEnd]
+      [colors.gradientStart, '#00b0ff', colors.gradientEnd]
     );
 
     return {

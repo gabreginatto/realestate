@@ -3,9 +3,9 @@ import { View, Text, StyleSheet } from 'react-native';
 
 // Color palette
 const colors = {
-  success: '#10b981',
-  danger: '#ef4444',
-  neutral: '#6b7280',
+  accentGreen: '#00e676',
+  accentRed: '#ff5252',
+  neutral: '#5a6380',
 };
 
 type DeltaBadgeProps = {
@@ -21,10 +21,16 @@ export function DeltaBadge({ delta }: DeltaBadgeProps) {
   const isNegative = delta < 0;
   const isNeutral = delta === 0;
 
-  const backgroundColor = isNegative
-    ? colors.success
+  const bgColor = isNegative
+    ? colors.accentGreen + '20'
     : isPositive
-    ? colors.danger
+    ? colors.accentRed + '20'
+    : colors.neutral + '20';
+
+  const textColor = isNegative
+    ? colors.accentGreen
+    : isPositive
+    ? colors.accentRed
     : colors.neutral;
 
   const formattedDelta = isPositive
@@ -34,8 +40,8 @@ export function DeltaBadge({ delta }: DeltaBadgeProps) {
     : `${delta.toFixed(1)}%`;
 
   return (
-    <View style={[styles.badge, { backgroundColor }]}>
-      <Text style={styles.text}>{formattedDelta}</Text>
+    <View style={[styles.badge, { backgroundColor: bgColor }]}>
+      <Text style={[styles.text, { color: textColor }]}>{formattedDelta}</Text>
     </View>
   );
 }
@@ -49,7 +55,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: '#ffffff',
     fontSize: 12,
     fontWeight: '600',
   },

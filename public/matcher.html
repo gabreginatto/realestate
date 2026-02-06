@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#0c0f1a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="mobile-web-app-capable" content="yes">
     <title>Property Matcher</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/matcher.css">
     <link rel="preconnect" href="/mosaics">
 </head>
@@ -51,6 +53,12 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- Decision Overlay (match/skip/undo flash) -->
+        <div id="decision-overlay" class="decision-overlay" style="display: none;">
+            <span class="decision-icon"></span>
+            <span class="decision-text"></span>
+        </div>
+
         <!-- Viva Listing Section -->
         <section class="viva-section" aria-labelledby="viva-title">
             <div class="section-header">

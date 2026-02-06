@@ -14,17 +14,18 @@ import { ProgressBar } from './ProgressBar';
 
 // Color palette
 const colors = {
-  primary: '#3b82f6',
-  success: '#10b981',
-  warning: '#f59e0b',
-  danger: '#ef4444',
-  background: '#f8fafc',
-  backgroundDark: '#0f172a',
-  text: '#0f172a',
-  textDark: '#f1f5f9',
-  textSecondary: '#64748b',
-  border: '#e2e8f0',
-  white: '#ffffff',
+  background: '#0c0f1a',
+  surface: '#161b2e',
+  surfaceElevated: '#1e2540',
+  border: '#2a3154',
+  borderSubtle: '#1e2540',
+  textPrimary: '#e8ecf4',
+  textSecondary: '#8892b0',
+  textMuted: '#5a6380',
+  accentGreen: '#00e676',
+  accentAmber: '#ffab40',
+  accentBlue: '#448aff',
+  accentRed: '#ff5252',
 };
 
 type HeaderProps = {
@@ -35,6 +36,9 @@ type HeaderProps = {
   canUndo: boolean;
   onUndo: () => void;
   onHelp?: () => void;
+  currentPass?: number;
+  maxPasses?: number;
+  passName?: string;
 };
 
 /**
@@ -48,6 +52,9 @@ export function Header({
   canUndo,
   onUndo,
   onHelp,
+  currentPass = 1,
+  maxPasses = 5,
+  passName = 'strict',
 }: HeaderProps) {
   const [helpModalVisible, setHelpModalVisible] = useState(false);
 
@@ -73,7 +80,14 @@ export function Header({
       <View style={styles.container}>
         {/* Top row with title and buttons */}
         <View style={styles.topRow}>
-          <Text style={styles.title}>Property Matcher</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Property Matcher</Text>
+            <View style={styles.passBadge}>
+              <Text style={styles.passText}>
+                Pass {currentPass}/{maxPasses} ({passName})
+              </Text>
+            </View>
+          </View>
           <View style={styles.buttons}>
             <Pressable
               onPress={handleUndo}
@@ -83,11 +97,11 @@ export function Header({
               <Ionicons
                 name="arrow-undo"
                 size={22}
-                color={canUndo ? colors.primary : colors.textSecondary}
+                color={canUndo ? colors.accentBlue : colors.textMuted}
               />
             </Pressable>
             <Pressable onPress={handleHelp} style={styles.iconButton}>
-              <Ionicons name="help-circle-outline" size={24} color={colors.primary} />
+              <Ionicons name="help-circle-outline" size={24} color={colors.accentBlue} />
             </Pressable>
           </View>
         </View>
@@ -114,7 +128,7 @@ export function Header({
 
         {/* Progress bar */}
         <View style={styles.progressContainer}>
-          <ProgressBar progress={progress} height={4} />
+          <ProgressBar progress={progress} height={6} />
           <Text style={styles.progressText}>{progress.toFixed(0)}% complete</Text>
         </View>
       </View>
@@ -130,7 +144,7 @@ export function Header({
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>How to Use</Text>
             <Pressable onPress={() => setHelpModalVisible(false)} style={styles.closeButton}>
-              <Ionicons name="close" size={28} color={colors.text} />
+              <Ionicons name="close" size={28} color={colors.textPrimary} />
             </Pressable>
           </View>
           <ScrollView style={styles.modalContent}>
@@ -145,24 +159,24 @@ export function Header({
             <View style={styles.helpSection}>
               <Text style={styles.helpTitle}>Actions</Text>
               <View style={styles.helpItem}>
-                <View style={[styles.helpIcon, { backgroundColor: colors.success }]}>
-                  <Ionicons name="checkmark" size={18} color={colors.white} />
+                <View style={[styles.helpIcon, { backgroundColor: colors.accentGreen }]}>
+                  <Ionicons name="checkmark" size={18} color={colors.background} />
                 </View>
                 <Text style={styles.helpText}>
                   <Text style={styles.helpBold}>Match</Text> - Properties are the same listing
                 </Text>
               </View>
               <View style={styles.helpItem}>
-                <View style={[styles.helpIcon, { backgroundColor: colors.danger }]}>
-                  <Ionicons name="close" size={18} color={colors.white} />
+                <View style={[styles.helpIcon, { backgroundColor: colors.accentRed }]}>
+                  <Ionicons name="close" size={18} color={colors.background} />
                 </View>
                 <Text style={styles.helpText}>
                   <Text style={styles.helpBold}>Reject</Text> - Properties are different
                 </Text>
               </View>
               <View style={styles.helpItem}>
-                <View style={[styles.helpIcon, { backgroundColor: colors.warning }]}>
-                  <Ionicons name="arrow-forward" size={18} color={colors.white} />
+                <View style={[styles.helpIcon, { backgroundColor: colors.accentAmber }]}>
+                  <Ionicons name="arrow-forward" size={18} color={colors.background} />
                 </View>
                 <Text style={styles.helpText}>
                   <Text style={styles.helpBold}>Skip</Text> - Unsure, review later
@@ -188,7 +202,7 @@ export function Header({
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.background,
   },
   container: {
     paddingHorizontal: 16,
@@ -202,10 +216,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
+  titleContainer: {
+    flexDirection: 'column',
+    gap: 2,
+  },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.text,
+    fontSize: 26,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    letterSpacing: -0.5,
+    fontFamily: 'System',
+  },
+  passBadge: {
+    backgroundColor: colors.accentBlue + '15',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    alignSelf: 'flex-start',
+  },
+  passText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: colors.accentBlue,
+    textTransform: 'capitalize',
   },
   buttons: {
     flexDirection: 'row',
@@ -215,7 +248,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surfaceElevated,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -230,28 +263,33 @@ const styles = StyleSheet.create({
   },
   badge: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.surface,
     borderRadius: 10,
     paddingVertical: 8,
     paddingHorizontal: 8,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: colors.borderSubtle,
   },
   badgeSuccess: {
-    backgroundColor: `${colors.success}15`,
+    backgroundColor: '#00e67615',
+    borderColor: '#00e67640',
   },
   badgeWarning: {
-    backgroundColor: `${colors.warning}15`,
+    backgroundColor: '#ffab4015',
+    borderColor: '#ffab4040',
   },
   badgeValue: {
     fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    fontFamily: 'System',
   },
   badgeValueSuccess: {
-    color: colors.success,
+    color: colors.accentGreen,
   },
   badgeValueWarning: {
-    color: colors.warning,
+    color: colors.accentAmber,
   },
   badgeLabel: {
     fontSize: 10,
@@ -262,10 +300,10 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   badgeLabelSuccess: {
-    color: colors.success,
+    color: colors.accentGreen,
   },
   badgeLabelWarning: {
-    color: colors.warning,
+    color: colors.accentAmber,
   },
   progressContainer: {
     flexDirection: 'row',
@@ -282,7 +320,7 @@ const styles = StyleSheet.create({
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: colors.white,
+    backgroundColor: colors.background,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -295,8 +333,9 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    fontFamily: 'System',
   },
   closeButton: {
     padding: 4,
@@ -310,18 +349,21 @@ const styles = StyleSheet.create({
   },
   helpTitle: {
     fontSize: 17,
-    fontWeight: '600',
-    color: colors.text,
+    fontWeight: '800',
+    color: colors.textPrimary,
     marginBottom: 8,
+    fontFamily: 'System',
   },
   helpText: {
     fontSize: 15,
     color: colors.textSecondary,
     lineHeight: 22,
+    fontWeight: '300',
+    fontFamily: 'System',
   },
   helpBold: {
     fontWeight: '600',
-    color: colors.text,
+    color: colors.textPrimary,
   },
   helpItem: {
     flexDirection: 'row',

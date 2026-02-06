@@ -28,15 +28,15 @@ const crypto = require('crypto');
 // ============================================================================
 
 const HOST = process.env.HOST || '0.0.0.0';  // Bind to all interfaces for network access
-const PORT = process.env.MATCHING_PORT || process.argv.find(a => a.startsWith('--port='))?.split('=')[1] || 3000;
-const DATA_ROOT = process.env.DATA_ROOT || path.join(__dirname, '../../data');
-const READ_ONLY = process.argv.includes('--read-only');
+const PORT = process.env.PORT || process.env.MATCHING_PORT || process.argv.find(a => a.startsWith('--port='))?.split('=')[1] || 8080;
+const DATA_ROOT = process.env.DATA_ROOT || path.join(__dirname, 'data');
+const READ_ONLY = process.argv.includes('--read-only') || process.env.READ_ONLY === 'true';
 const SESSION_NAME = process.env.SESSION_NAME || 'default';
 
 const SMART_MATCHES_FILE = path.join(DATA_ROOT, 'deterministic-matches.json');
 const MANUAL_MATCHES_FILE = path.join(DATA_ROOT, 'manual-matches.json');
 const AUDIT_LOG_FILE = path.join(DATA_ROOT, 'manual-matches.log.jsonl');
-const MOSAICS_DIR = path.join(__dirname, '../../data/mosaics');
+const MOSAICS_DIR = path.join(DATA_ROOT, 'mosaics');
 
 // ============================================================================
 // STATE MANAGEMENT
@@ -47,6 +47,8 @@ let matchState = {
   last_updated: null,
   session_name: SESSION_NAME,
   version: 0,
+  current_pass: 1,
+  passes_completed: 0,
   stats: {
     total_viva_listings: 0,
     matched: 0,
@@ -63,10 +65,156 @@ let matchState = {
 
 let smartMatches = null;
 let taskQueue = [];
+let vivaListings = [];
+let coelhoListings = [];
+
+// ============================================================================
+// PASS CRITERIA DEFINITIONS (from iterative-matcher.js)
+// ============================================================================
+
+const PASS_CRITERIA = {
+  1: {
+    name: 'strict',
+    price_tolerance: 0.05,      // ±5%
+    area_tolerance: 0.10,       // ±10%
+    beds_tolerance: 0,          // exact match
+    suites_tolerance: 0,        // exact match
+    park_tolerance: 0           // exact match
+  },
+  2: {
+    name: 'relaxed',
+    price_tolerance: 0.10,      // ±10%
+    area_tolerance: 0.15,       // ±15%
+    beds_tolerance: 0,          // exact match
+    suites_tolerance: 1,        // ±1
+    park_tolerance: 999         // ignore
+  },
+  3: {
+    name: 'broader',
+    price_tolerance: 0.15,      // ±15%
+    area_tolerance: 0.20,       // ±20%
+    beds_tolerance: 1,          // ±1
+    suites_tolerance: 999,      // ignore
+    park_tolerance: 999         // ignore
+  },
+  4: {
+    name: 'very_broad',
+    price_tolerance: 0.25,      // ±25%
+    area_tolerance: 0.30,       // ±30%
+    beds_tolerance: 1,          // ±1
+    suites_tolerance: 999,      // ignore
+    park_tolerance: 999         // ignore
+  },
+  5: {
+    name: 'exhaustive',
+    price_tolerance: 0.40,      // ±40%
+    area_tolerance: 0.50,       // ±50%
+    beds_tolerance: 2,          // ±2
+    suites_tolerance: 999,      // ignore
+    park_tolerance: 999         // ignore
+  }
+};
+
+const MAX_PASSES = 5;
+const MAX_CANDIDATES_PER_LISTING = 5;
+
+function getPassCriteria(passNum) {
+  return PASS_CRITERIA[passNum] || PASS_CRITERIA[5];
+}
+
+// ============================================================================
+// MATCHING LOGIC (from iterative-matcher.js)
+// ============================================================================
+
+function parsePrice(priceStr) {
+  if (!priceStr) return 0;
+  // Handle Brazilian format: R$ 4.900.000,00
+  return parseFloat(String(priceStr).replace(/R\$\s*/g, '').replace(/\./g, '').replace(/,/g, '.'));
+}
+
+function scoreCandidate(viva, coelho, criteria) {
+  let score = 1.0;
+
+  // Price check
+  const vivaPrice = parsePrice(viva.price);
+  const coelhoPrice = parsePrice(coelho.price);
+
+  if (vivaPrice === 0 || coelhoPrice === 0) return 0;
+
+  const priceDiff = Math.abs(vivaPrice - coelhoPrice) / vivaPrice;
+  if (priceDiff > criteria.price_tolerance) return 0;  // hard cutoff
+  score *= (1 - priceDiff / criteria.price_tolerance);  // closer = higher score
+
+  // Area check
+  if (viva.built && coelho.built) {
+    const areaDiff = Math.abs(viva.built - coelho.built) / viva.built;
+    if (areaDiff > criteria.area_tolerance) return 0;
+    score *= (1 - areaDiff / criteria.area_tolerance);
+  }
+
+  // Beds check
+  if (viva.beds && coelho.beds) {
+    const bedsDiff = Math.abs(viva.beds - coelho.beds);
+    if (bedsDiff > criteria.beds_tolerance) return 0;
+    score *= bedsDiff === 0 ? 1.0 : 0.8;
+  }
+
+  // Suites check
+  if (viva.suites && coelho.suites && criteria.suites_tolerance < 999) {
+    const suitesDiff = Math.abs(viva.suites - coelho.suites);
+    if (suitesDiff > criteria.suites_tolerance) return 0;
+    score *= suitesDiff === 0 ? 1.0 : 0.9;
+  }
+
+  // Parking check
+  if (viva.park && coelho.park && criteria.park_tolerance < 999) {
+    const parkDiff = Math.abs(viva.park - coelho.park);
+    if (parkDiff > criteria.park_tolerance) return 0;
+    score *= parkDiff === 0 ? 1.0 : 0.95;
+  }
+
+  return score;
+}
+
+function findCandidatesForViva(viva, coelhoList, criteria, maxCandidates = MAX_CANDIDATES_PER_LISTING) {
+  const candidates = [];
+
+  for (const coelho of coelhoList) {
+    const score = scoreCandidate(viva, coelho, criteria);
+
+    if (score > 0) {
+      candidates.push({
+        ...coelho,
+        score: parseFloat(score.toFixed(3))
+      });
+    }
+  }
+
+  // Sort by score (highest first) and take top N
+  candidates.sort((a, b) => b.score - a.score);
+  return candidates.slice(0, maxCandidates);
+}
 
 // ============================================================================
 // INITIALIZATION
 // ============================================================================
+
+function loadListings(site) {
+  const listingsFile = path.join(DATA_ROOT, 'listings', `${site}_listings.json`);
+
+  if (!fs.existsSync(listingsFile)) {
+    console.warn(`⚠️  ${listingsFile} not found - dynamic matching disabled`);
+    return [];
+  }
+
+  try {
+    const data = JSON.parse(fs.readFileSync(listingsFile, 'utf-8'));
+    return data.listings || [];
+  } catch (error) {
+    console.warn(`⚠️  Error loading ${listingsFile}: ${error.message}`);
+    return [];
+  }
+}
 
 function loadSmartMatches() {
   try {
@@ -96,6 +244,9 @@ function loadManualMatches() {
     if (fs.existsSync(MANUAL_MATCHES_FILE)) {
       const data = JSON.parse(fs.readFileSync(MANUAL_MATCHES_FILE, 'utf-8'));
       console.log(`✓ Loaded existing manual-matches.json (${data.matches?.length || 0} matches)`);
+      // Ensure pass tracking fields exist
+      data.current_pass = data.current_pass || 1;
+      data.passes_completed = data.passes_completed || 0;
       return data;
     }
   } catch (error) {
@@ -108,6 +259,8 @@ function loadManualMatches() {
     last_updated: new Date().toISOString(),
     session_name: SESSION_NAME,
     version: 0,
+    current_pass: 1,
+    passes_completed: 0,
     stats: {
       total_viva_listings: smartMatches?.matches?.length || 0,
       matched: 0,
@@ -129,28 +282,41 @@ function buildTaskQueue() {
   for (const item of smartMatches.matches || []) {
     const vivaCode = item.viva?.code || item.viva?.propertyCode;
 
-    // Skip if already decided
+    // Skip if already matched (final decision)
     const alreadyMatched = matchState.matches.some(m => m.viva_code === vivaCode);
-    const alreadySkipped = matchState.skipped.some(s => s.viva_code === vivaCode);
-
-    if (alreadyMatched || alreadySkipped) {
+    if (alreadyMatched) {
       continue;
     }
 
-    // Filter out already rejected candidates
+    // For current pass, also skip if already skipped (will be reconsidered in next pass)
+    const alreadySkipped = matchState.skipped.some(s => s.viva_code === vivaCode);
+    if (alreadySkipped) {
+      continue;
+    }
+
+    // Filter out already rejected candidates AND already matched Coelho codes
     const rejectedCodes = matchState.rejected
       .filter(r => r.viva_code === vivaCode)
       .map(r => r.coelho_code);
 
+    const matchedCoelhoCodes = new Set(matchState.matches.map(m => m.coelho_code));
+
     const candidates = (item.coelhoCandidates || [])
       .map(c => c.code || c.propertyCode)
-      .filter(code => !rejectedCodes.includes(code));
+      .filter(code => !rejectedCodes.includes(code) && !matchedCoelhoCodes.has(code));
 
     if (candidates.length > 0) {
+      // Also filter the actual candidate objects to keep in sync
+      const filteredCandidates = (item.coelhoCandidates || [])
+        .filter(c => {
+          const code = c.code || c.propertyCode;
+          return !rejectedCodes.includes(code) && !matchedCoelhoCodes.has(code);
+        });
+
       tasks.push({
         viva_code: vivaCode,
         viva: item.viva,
-        candidates: item.coelhoCandidates || [],
+        candidates: filteredCandidates,
         scored: item._scored || [],
         remaining_candidates: candidates.length
       });
@@ -159,6 +325,136 @@ function buildTaskQueue() {
 
   console.log(`✓ Built task queue: ${tasks.length} pending Viva listings`);
   return tasks;
+}
+
+/**
+ * Advance to the next pass by regenerating candidates for skipped listings
+ * with broader criteria.
+ */
+function advanceToNextPass() {
+  const currentPass = matchState.current_pass;
+  const nextPass = currentPass + 1;
+
+  if (nextPass > MAX_PASSES) {
+    console.log(`\n✅ All ${MAX_PASSES} passes completed. No more passes available.`);
+    return false;
+  }
+
+  // Check if we have raw listings to regenerate candidates
+  if (vivaListings.length === 0 || coelhoListings.length === 0) {
+    console.log(`\n⚠️  Cannot advance to Pass ${nextPass}: Raw listings not loaded`);
+    return false;
+  }
+
+  // Get skipped Viva codes from the current pass
+  const skippedVivaCodes = matchState.skipped.map(s => s.viva_code);
+  const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
+
+  // Filter to only include listings that were skipped (not matched)
+  const remainingVivaCodes = skippedVivaCodes.filter(code => !matchedVivaCodes.has(code));
+
+  if (remainingVivaCodes.length === 0) {
+    console.log(`\n✅ No remaining listings to process. All listings have been matched!`);
+    return false;
+  }
+
+  console.log(`\n🔄 Advancing to Pass ${nextPass} (${getPassCriteria(nextPass).name})`);
+  console.log(`   Regenerating candidates for ${remainingVivaCodes.length} previously skipped listings...`);
+
+  const criteria = getPassCriteria(nextPass);
+  const remainingSet = new Set(remainingVivaCodes);
+  const matchedCoelhoCodes = new Set(matchState.matches.map(m => m.coelho_code));
+  const newPairs = [];
+
+  // Filter out already-matched Coelho listings so they can't appear as candidates
+  const availableCoelho = coelhoListings.filter(c => {
+    const code = c.code || c.propertyCode;
+    return !matchedCoelhoCodes.has(code);
+  });
+
+  // Find the full Viva listings for the remaining codes
+  for (const viva of vivaListings) {
+    const vivaCode = viva.code || viva.propertyCode;
+    if (!remainingSet.has(vivaCode)) continue;
+
+    // Generate new candidates with broader criteria, excluding matched Coelho properties
+    const candidates = findCandidatesForViva(viva, availableCoelho, criteria);
+
+    if (candidates.length > 0) {
+      newPairs.push({
+        viva: viva,
+        coelhoCandidates: candidates,
+        _scored: candidates.map(c => ({ code: c.code || c.propertyCode, score: c.score }))
+      });
+    }
+  }
+
+  console.log(`   Found candidates for ${newPairs.length} / ${remainingVivaCodes.length} listings`);
+
+  if (newPairs.length === 0) {
+    console.log(`   No new candidates found with Pass ${nextPass} criteria.`);
+    // Still advance the pass in case we want to try the next one
+    matchState.current_pass = nextPass;
+    return advanceToNextPass(); // Recursively try next pass
+  }
+
+  // Clear skipped listings (they're being reconsidered with new candidates)
+  // Keep track of them in a separate field for audit purposes
+  matchState.skipped_previous_passes = matchState.skipped_previous_passes || [];
+  matchState.skipped_previous_passes.push({
+    pass: currentPass,
+    skipped: [...matchState.skipped]
+  });
+  matchState.skipped = [];
+
+  // Update smartMatches with new pairs
+  smartMatches.matches = newPairs;
+
+  // Update pass tracking
+  matchState.current_pass = nextPass;
+  matchState.passes_completed = currentPass;
+
+  // Rebuild task queue with new candidates
+  taskQueue = buildTaskQueue();
+
+  appendAuditLog('pass_advance', {
+    from_pass: currentPass,
+    to_pass: nextPass,
+    criteria: criteria.name,
+    listings_reconsidered: remainingVivaCodes.length,
+    listings_with_candidates: newPairs.length
+  });
+
+  saveMatchState();
+
+  console.log(`✅ Pass ${nextPass} ready: ${taskQueue.length} listings to review\n`);
+  return true;
+}
+
+/**
+ * Check if current pass is complete and advance if needed.
+ * Returns true if there are tasks available (either existing or from next pass).
+ */
+function checkAndAdvancePass() {
+  if (taskQueue.length > 0) {
+    return true; // Still have work in current pass
+  }
+
+  // Current pass complete - check if we should advance
+  const skippedCount = matchState.skipped.length;
+  const matchedCount = matchState.matches.length;
+
+  console.log(`\n📊 Pass ${matchState.current_pass} complete:`);
+  console.log(`   Matched: ${matchedCount}`);
+  console.log(`   Skipped: ${skippedCount}`);
+
+  if (skippedCount === 0) {
+    console.log(`   All listings processed successfully!`);
+    return false;
+  }
+
+  // Try to advance to next pass
+  return advanceToNextPass();
 }
 
 function saveMatchState() {
@@ -246,7 +542,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json({ type: ['application/json', 'application/json; charset=utf-8', 'application/json; charset=UTF-8'] }));
-app.use(express.static(path.join(__dirname, '../../public')));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/mosaics', express.static(MOSAICS_DIR));
 
 // ============================================================================
@@ -255,13 +551,22 @@ app.use('/mosaics', express.static(MOSAICS_DIR));
 
 // GET /api/session - Get current session info
 app.get('/api/session', (req, res) => {
+  const criteria = getPassCriteria(matchState.current_pass);
   res.json({
     session_name: matchState.session_name,
     session_started: matchState.session_started,
     last_updated: matchState.last_updated,
     version: matchState.version,
     stats: matchState.stats,
-    read_only: READ_ONLY
+    read_only: READ_ONLY,
+    current_pass: matchState.current_pass,
+    passes_completed: matchState.passes_completed,
+    max_passes: MAX_PASSES,
+    pass_criteria: {
+      name: criteria.name,
+      price_tolerance: `±${(criteria.price_tolerance * 100).toFixed(0)}%`,
+      area_tolerance: `±${(criteria.area_tolerance * 100).toFixed(0)}%`
+    }
   });
 });
 
@@ -291,13 +596,18 @@ app.get('/api/candidates/:id', (req, res) => {
     return res.status(404).json({ error: 'Listing not found' });
   }
 
-  // Filter out already rejected candidates
+  // Filter out already rejected candidates AND already matched Coelho codes
   const rejectedCodes = matchState.rejected
     .filter(r => r.viva_code === vivaCode)
     .map(r => r.coelho_code);
 
+  const matchedCoelhoCodes = new Set(matchState.matches.map(m => m.coelho_code));
+
   const candidates = task.candidates
-    .filter(c => !rejectedCodes.includes(c.code || c.propertyCode))
+    .filter(c => {
+      const code = c.code || c.propertyCode;
+      return !rejectedCodes.includes(code) && !matchedCoelhoCodes.has(code);
+    })
     .map((candidate, idx) => {
       const code = candidate.code || candidate.propertyCode;
       const scored = task.scored.find(s => s.code === code);
@@ -328,6 +638,23 @@ app.get('/api/candidates/:id', (req, res) => {
 app.get('/api/next', (req, res) => {
   const reviewer = req.query.reviewer || 'anonymous';
 
+  // Check if we need to advance to next pass
+  if (taskQueue.length === 0) {
+    const hasMoreWork = checkAndAdvancePass();
+    if (!hasMoreWork) {
+      const totalPasses = matchState.current_pass;
+      return res.json({
+        done: true,
+        message: `All ${MAX_PASSES} passes completed! ${matchState.matches.length} total matches found.`,
+        final_stats: {
+          total_matches: matchState.matches.length,
+          total_skipped: matchState.skipped.length,
+          passes_completed: totalPasses
+        }
+      });
+    }
+  }
+
   // Find first listing not in progress by this reviewer
   const available = taskQueue.find(t => {
     const inProgress = matchState.in_progress.find(ip => ip.viva_code === t.viva_code);
@@ -335,6 +662,7 @@ app.get('/api/next', (req, res) => {
   });
 
   if (!available) {
+    // This shouldn't happen after checkAndAdvancePass, but handle it gracefully
     return res.json({ done: true, message: 'All listings reviewed!' });
   }
 
@@ -362,11 +690,15 @@ app.get('/api/next', (req, res) => {
     }
   };
 
+  const currentCriteria = getPassCriteria(matchState.current_pass);
   res.json({
     viva_code: available.viva_code,
     viva: transformedViva,
     remaining_candidates: available.remaining_candidates,
-    mosaic_path: `/mosaics/viva/${available.viva_code}.png`
+    mosaic_path: `/mosaics/viva/${available.viva_code}.png`,
+    current_pass: matchState.current_pass,
+    pass_name: currentCriteria.name,
+    pending_in_pass: taskQueue.length
   });
 });
 
@@ -484,6 +816,7 @@ app.get('/api/progress', (req, res) => {
   const completed = matchState.stats.matched + matchState.stats.skipped;
   const progress_pct = total > 0 ? ((completed / total) * 100).toFixed(1) : 0;
 
+  const currentCriteria = getPassCriteria(matchState.current_pass);
   res.json({
     total_viva_listings: total,
     matched: matchState.stats.matched,
@@ -491,7 +824,14 @@ app.get('/api/progress', (req, res) => {
     pending: matchState.stats.pending,
     in_progress: matchState.stats.in_progress,
     completed,
-    progress_pct: parseFloat(progress_pct)
+    progress_pct: parseFloat(progress_pct),
+    current_pass: matchState.current_pass,
+    max_passes: MAX_PASSES,
+    pass_name: currentCriteria.name,
+    pass_criteria: {
+      price_tolerance: `±${(currentCriteria.price_tolerance * 100).toFixed(0)}%`,
+      area_tolerance: `±${(currentCriteria.area_tolerance * 100).toFixed(0)}%`
+    }
   });
 });
 
@@ -592,7 +932,21 @@ console.log(`Read-only: ${READ_ONLY ? 'YES' : 'NO'}\n`);
 
 smartMatches = loadSmartMatches();
 matchState = loadManualMatches();
+
+// Load raw listings for dynamic pass advancement
+vivaListings = loadListings('vivaprimeimoveis');
+coelhoListings = loadListings('coelhodafonseca');
+if (vivaListings.length > 0 && coelhoListings.length > 0) {
+  console.log(`✓ Loaded ${vivaListings.length} Viva and ${coelhoListings.length} Coelho listings for dynamic matching`);
+}
+
 taskQueue = buildTaskQueue();
+
+// Log current pass info
+const currentCriteria = getPassCriteria(matchState.current_pass);
+console.log(`\n📍 Current Pass: ${matchState.current_pass} (${currentCriteria.name})`);
+console.log(`   Price tolerance: ±${(currentCriteria.price_tolerance * 100).toFixed(0)}%`);
+console.log(`   Area tolerance: ±${(currentCriteria.area_tolerance * 100).toFixed(0)}%`);
 
 // Start server
 app.listen(PORT, HOST, () => {

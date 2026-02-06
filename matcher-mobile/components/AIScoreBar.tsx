@@ -1,6 +1,17 @@
 import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
+// Color palette
+const colors = {
+  surface: '#161b2e',
+  surfaceElevated: '#1e2540',
+  border: '#2a3154',
+  textPrimary: '#e8ecf4',
+  textSecondary: '#8892b0',
+  accentAmber: '#ffab40',
+  accentGreen: '#00e676',
+};
+
 type AIScoreBarProps = {
   score: number; // 0-1
 };
@@ -12,13 +23,13 @@ type AIScoreBarProps = {
 function AIScoreBarComponent({ score }: AIScoreBarProps) {
   const percentage = Math.round(score * 100);
 
-  // Interpolate color from amber (#F59E0B) to green (#22C55E)
+  // Interpolate color from amber (#ffab40) to green (#00e676)
   const getColor = (value: number): string => {
-    // RGB values for amber: 245, 158, 11
-    // RGB values for green: 34, 197, 94
-    const r = Math.round(245 + (34 - 245) * value);
-    const g = Math.round(158 + (197 - 158) * value);
-    const b = Math.round(11 + (94 - 11) * value);
+    // RGB values for amber: 255, 171, 64
+    // RGB values for green: 0, 230, 118
+    const r = Math.round(255 + (0 - 255) * value);
+    const g = Math.round(171 + (230 - 171) * value);
+    const b = Math.round(64 + (118 - 64) * value);
     return `rgb(${r}, ${g}, ${b})`;
   };
 
@@ -49,6 +60,7 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 12,
     paddingVertical: 8,
+    backgroundColor: colors.surface,
   },
   labelRow: {
     flexDirection: 'row',
@@ -58,17 +70,18 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontWeight: '500',
+    fontFamily: 'System',
   },
   percentage: {
     fontSize: 14,
-    color: '#111827',
+    color: colors.textPrimary,
     fontWeight: '600',
   },
   barBackground: {
     height: 8,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.border,
     borderRadius: 4,
     overflow: 'hidden',
   },

@@ -120,8 +120,9 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: '#8892b0',
     fontWeight: '500',
+    fontFamily: 'System',
   },
 });
 

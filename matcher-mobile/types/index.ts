@@ -15,6 +15,12 @@ export type SessionStats = {
   in_progress: number;
 };
 
+export type PassCriteria = {
+  name: string;
+  price_tolerance: string;
+  area_tolerance: string;
+};
+
 export type Session = {
   session_name: string;
   session_started: string | null;
@@ -22,6 +28,10 @@ export type Session = {
   version: number;
   stats: SessionStats;
   read_only: boolean;
+  current_pass?: number;
+  passes_completed?: number;
+  max_passes?: number;
+  pass_criteria?: PassCriteria;
 };
 
 // ============================================================================
@@ -88,6 +98,14 @@ export type NextListingResponse = {
   mosaic_path: string;
   done?: boolean;
   message?: string;
+  current_pass?: number;
+  pass_name?: string;
+  pending_in_pass?: number;
+  final_stats?: {
+    total_matches: number;
+    total_skipped: number;
+    passes_completed: number;
+  };
 };
 
 export type CandidatesResponse = {
@@ -162,6 +180,13 @@ export type Progress = {
   in_progress: number;
   completed: number;
   progress_pct: number;
+  current_pass?: number;
+  max_passes?: number;
+  pass_name?: string;
+  pass_criteria?: {
+    price_tolerance: string;
+    area_tolerance: string;
+  };
 };
 
 // ============================================================================

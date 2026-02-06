@@ -1,7 +1,30 @@
 import React, { memo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Image } from 'expo-image';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSequence,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { AIScoreBar } from './AIScoreBar';
+
+// Color palette
+const colors = {
+  background: '#0c0f1a',
+  surface: '#161b2e',
+  surfaceElevated: '#1e2540',
+  border: '#2a3154',
+  borderSubtle: '#1e2540',
+  textPrimary: '#e8ecf4',
+  textSecondary: '#8892b0',
+  textMuted: '#5a6380',
+  accentGreen: '#00e676',
+  accentAmber: '#ffab40',
+  accentBlue: '#448aff',
+  accentRed: '#ff5252',
+};
 
 type CandidateCardProps = {
   // Pass primitives for better memoization
@@ -37,9 +60,34 @@ function CandidateCardComponent({
   onMatch,
   onImagePress,
 }: CandidateCardProps) {
+  const buttonScale = useSharedValue(1);
+  const buttonGlow = useSharedValue(0);
+
   const handleMatch = useCallback(() => {
+    // Scale-up + glow pulse, then trigger the parent callback
+    buttonScale.value = withSequence(
+      withTiming(1.08, {
+        duration: 120,
+        easing: Easing.bezier(0.4, 0, 0.2, 1),
+      }),
+      withTiming(1, {
+        duration: 100,
+        easing: Easing.bezier(0.4, 0, 0.2, 1),
+      })
+    );
+    buttonGlow.value = withSequence(
+      withTiming(1, { duration: 120 }),
+      withTiming(0, { duration: 100 })
+    );
+    // Fire the match immediately (animation is cosmetic)
     onMatch(propertyCode);
-  }, [onMatch, propertyCode]);
+  }, [onMatch, propertyCode, buttonScale, buttonGlow]);
+
+  const matchButtonAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: buttonScale.value }],
+    shadowOpacity: 0.3 + buttonGlow.value * 0.5,
+    shadowRadius: 16 + buttonGlow.value * 12,
+  }));
 
   const handleImagePress = useCallback(() => {
     onImagePress(mosaicPath);
@@ -52,10 +100,10 @@ function CandidateCardComponent({
   };
 
   const getDeltaColor = (delta: number | null): string => {
-    if (delta === null) return '#6B7280';
-    if (delta < -10) return '#22C55E'; // Good (cheaper/smaller)
-    if (delta > 10) return '#EF4444'; // Bad (more expensive/larger)
-    return '#F59E0B'; // Neutral
+    if (delta === null) return colors.textMuted;
+    if (delta < -10) return colors.accentGreen;
+    if (delta > 10) return colors.accentRed;
+    return colors.accentAmber;
   };
 
   return (
@@ -91,7 +139,7 @@ function CandidateCardComponent({
           </View>
           <View style={styles.metadataItem}>
             <Text style={styles.metadataLabel}>Area</Text>
-            <Text style={styles.metadataValue}>{area}m²</Text>
+            <Text style={styles.metadataValue}>{area}m{'\u00B2'}</Text>
           </View>
         </View>
 
@@ -109,13 +157,13 @@ function CandidateCardComponent({
         {/* Delta badges */}
         <View style={styles.deltaRow}>
           <View style={styles.deltaBadge}>
-            <Text style={styles.deltaLabel}>Price Δ</Text>
+            <Text style={styles.deltaLabel}>Price {'\u0394'}</Text>
             <Text style={[styles.deltaValue, { color: getDeltaColor(priceDelta) }]}>
               {formatDelta(priceDelta)}
             </Text>
           </View>
           <View style={styles.deltaBadge}>
-            <Text style={styles.deltaLabel}>Area Δ</Text>
+            <Text style={styles.deltaLabel}>Area {'\u0394'}</Text>
             <Text style={[styles.deltaValue, { color: getDeltaColor(areaDelta) }]}>
               {formatDelta(areaDelta)}
             </Text>
@@ -124,28 +172,31 @@ function CandidateCardComponent({
       </View>
 
       {/* Match Button */}
-      <TouchableOpacity
-        style={styles.matchButton}
-        onPress={handleMatch}
-        activeOpacity={0.8}
-      >
-        <Text style={styles.matchButtonText}>Match</Text>
-      </TouchableOpacity>
+      <Animated.View style={[styles.matchButtonWrapper, matchButtonAnimatedStyle]}>
+        <Pressable
+          style={styles.matchButton}
+          onPress={handleMatch}
+        >
+          <Text style={styles.matchButtonText}>{'\u2713'}  Match</Text>
+        </Pressable>
+      </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     marginHorizontal: 16,
     marginVertical: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
     overflow: 'hidden',
   },
   header: {
@@ -155,23 +206,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: colors.border,
   },
   code: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
+    fontSize: 18,
+    fontWeight: '800',
+    color: colors.textPrimary,
+    fontFamily: 'System',
   },
   rankBadge: {
-    backgroundColor: '#EEF2FF',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
+    backgroundColor: colors.accentBlue,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
     borderRadius: 12,
   },
   rankText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#4F46E5',
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#ffffff',
   },
   imageContainer: {
     width: '100%',
@@ -183,7 +235,7 @@ const styles = StyleSheet.create({
   },
   metadataPanel: {
     padding: 16,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.surfaceElevated,
   },
   metadataRow: {
     flexDirection: 'row',
@@ -194,20 +246,22 @@ const styles = StyleSheet.create({
   },
   metadataLabel: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 2,
+    fontWeight: '300',
+    fontFamily: 'System',
   },
   metadataValue: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
   },
   deltaRow: {
     flexDirection: 'row',
     marginTop: 4,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: colors.border,
   },
   deltaBadge: {
     flex: 1,
@@ -217,25 +271,39 @@ const styles = StyleSheet.create({
   },
   deltaLabel: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textSecondary,
+    fontWeight: '300',
+    fontFamily: 'System',
   },
   deltaValue: {
     fontSize: 14,
     fontWeight: '600',
   },
-  matchButton: {
-    backgroundColor: '#22C55E',
+  matchButtonWrapper: {
     marginHorizontal: 16,
     marginBottom: 16,
     marginTop: 8,
-    paddingVertical: 14,
-    borderRadius: 12,
+    borderRadius: 14,
+    shadowColor: 'rgba(0, 230, 118, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+  },
+  matchButton: {
+    backgroundColor: colors.accentGreen,
+    height: 56,
+    borderRadius: 14,
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: 'rgba(0, 230, 118, 0.3)',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 16,
+    elevation: 8,
   },
   matchButtonText: {
-    color: '#FFFFFF',
+    color: colors.background,
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '800',
+    fontFamily: 'System',
   },
 });
 

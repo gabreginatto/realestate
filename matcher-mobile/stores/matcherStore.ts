@@ -22,6 +22,12 @@ interface MatcherState {
   currentListing: NormalizedVivaListing | null;
   candidates: NormalizedCandidate[];
 
+  // Pass tracking
+  currentPass: number;
+  maxPasses: number;
+  passName: string;
+  allPassesComplete: boolean;
+
   // UI State
   isLoading: boolean;
   canUndo: boolean;
@@ -51,6 +57,10 @@ const initialState: MatcherState = {
   reviewer: '',
   currentListing: null,
   candidates: [],
+  currentPass: 1,
+  maxPasses: 5,
+  passName: 'strict',
+  allPassesComplete: false,
   isLoading: false,
   canUndo: false,
   decisionStartTime: null,
@@ -121,14 +131,23 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
       const result = await getNextListing(reviewer);
 
       if ('done' in result && result.done) {
-        // All listings have been reviewed
+        // All listings have been reviewed (all passes complete)
         set({
           currentListing: null,
           candidates: [],
           decisionStartTime: null,
           isLoading: false,
+          allPassesComplete: true,
         });
         return;
+      }
+
+      // Update pass tracking from the response
+      if ('current_pass' in result) {
+        set({
+          currentPass: result.current_pass ?? 1,
+          passName: result.pass_name ?? 'strict',
+        });
       }
 
       // Fetch candidates for this listing
@@ -139,6 +158,7 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
         candidates: candidatesResult.candidates,
         decisionStartTime: Date.now(),
         isLoading: false,
+        allPassesComplete: false,
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to load listing';
@@ -309,3 +329,15 @@ export const useHasListing = () =>
 // Candidate count selector
 export const useCandidateCount = () =>
   useMatcherStore((state) => state.candidates.length);
+
+// Pass info selector
+export const usePassInfo = () =>
+  useMatcherStore((state) => ({
+    currentPass: state.currentPass,
+    maxPasses: state.maxPasses,
+    passName: state.passName,
+  }));
+
+// All passes complete selector
+export const useAllPassesComplete = () =>
+  useMatcherStore((state) => state.allPassesComplete);

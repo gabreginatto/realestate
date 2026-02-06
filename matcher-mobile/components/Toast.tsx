@@ -12,10 +12,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Color palette
 const colors = {
-  success: '#10b981',
-  error: '#ef4444',
-  info: '#3b82f6',
-  white: '#ffffff',
+  background: '#0c0f1a',
+  surface: '#161b2e',
+  textPrimary: '#e8ecf4',
+  success: '#00e676',
+  successBg: '#00e67620',
+  error: '#ff5252',
+  errorBg: '#ff525220',
+  info: '#448aff',
+  infoBg: '#448aff20',
 };
 
 type ToastType = 'success' | 'error' | 'info';
@@ -27,7 +32,19 @@ type ToastProps = {
   duration?: number;
 };
 
-const typeColors: Record<ToastType, string> = {
+const typeBgColors: Record<ToastType, string> = {
+  success: colors.successBg,
+  error: colors.errorBg,
+  info: colors.infoBg,
+};
+
+const typeBorderColors: Record<ToastType, string> = {
+  success: colors.success,
+  error: colors.error,
+  info: colors.info,
+};
+
+const typeTextColors: Record<ToastType, string> = {
   success: colors.success,
   error: colors.error,
   info: colors.info,
@@ -95,12 +112,16 @@ export function Toast({
     <Animated.View
       style={[
         styles.container,
-        { paddingTop: insets.top + 8, backgroundColor: typeColors[type] },
+        {
+          paddingTop: insets.top + 8,
+          backgroundColor: typeBgColors[type],
+          borderLeftColor: typeBorderColors[type],
+        },
         animatedStyle,
       ]}
     >
       <Pressable onPress={handlePress} style={styles.pressable}>
-        <Text style={styles.message}>{message}</Text>
+        <Text style={[styles.message, { color: typeTextColors[type] }]}>{message}</Text>
       </Pressable>
     </Animated.View>
   );
@@ -115,20 +136,21 @@ const styles = StyleSheet.create({
     zIndex: 1000,
     paddingHorizontal: 16,
     paddingBottom: 16,
+    borderLeftWidth: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
     elevation: 8,
   },
   pressable: {
     flex: 1,
   },
   message: {
-    color: colors.white,
     fontSize: 15,
-    fontWeight: '500',
+    fontWeight: '600',
     textAlign: 'center',
+    fontFamily: 'System',
   },
 });
 

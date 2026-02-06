@@ -13,7 +13,7 @@ class MatcherState {
         this.sessionInfo = null;
         this.currentIndex = 0;
         this.taskQueue = [];
-        this.theme = localStorage.getItem('matcher-theme') || 'light';
+        this.theme = localStorage.getItem('matcher-theme') || 'dark';
         this.preloadedNext = null;
         this.decisionStartTime = null;
         this.reviewer = this.getReviewer();
@@ -202,7 +202,15 @@ class MatcherUI {
 
             // Toast & Loading
             toastContainer: document.getElementById('toast-container'),
-            loadingOverlay: document.getElementById('loading-overlay')
+            loadingOverlay: document.getElementById('loading-overlay'),
+
+            // Decision overlay
+            decisionOverlay: document.getElementById('decision-overlay'),
+            decisionIcon: document.querySelector('#decision-overlay .decision-icon'),
+            decisionText: document.querySelector('#decision-overlay .decision-text'),
+
+            // Main content wrapper
+            mainContent: document.querySelector('.main-content')
         };
     }
 
@@ -490,7 +498,7 @@ class MatcherUI {
     }
 
     toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
         const newTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('matcher-theme', newTheme);
@@ -510,6 +518,83 @@ class MatcherUI {
         if (this.isMobile && navigator.vibrate) {
             navigator.vibrate(pattern);
         }
+    }
+
+    /**
+     * Show a brief decision overlay flash (match/skip/undo).
+     * Returns a promise that resolves when the flash animation ends.
+     */
+    showDecisionOverlay(type = 'match') {
+        const overlay = this.elements.decisionOverlay;
+        const icon = this.elements.decisionIcon;
+        const text = this.elements.decisionText;
+
+        const config = {
+            match: { icon: '\u2713', text: 'Matched!' },
+            skip:  { icon: '\u2192', text: 'Skipped' },
+            undo:  { icon: '\u21B6', text: 'Undone' }
+        };
+
+        const c = config[type] || config.match;
+
+        // Reset classes
+        overlay.className = 'decision-overlay';
+        overlay.classList.add(`type-${type}`);
+        icon.textContent = c.icon;
+        text.textContent = c.text;
+
+        overlay.style.display = 'flex';
+        // Force reflow so the animation restarts
+        void overlay.offsetWidth;
+        overlay.classList.add('show');
+
+        return new Promise(resolve => {
+            const onEnd = () => {
+                overlay.removeEventListener('animationend', onEnd);
+                overlay.style.display = 'none';
+                overlay.classList.remove('show');
+                resolve();
+            };
+            overlay.addEventListener('animationend', onEnd);
+        });
+    }
+
+    /**
+     * Animate content exit and enter for match/skip/undo transitions.
+     * @param {'match'|'skip'|'undo'} type
+     * @returns {{ exitDone: Promise<void>, startEnter: () => Promise<void> }}
+     */
+    transitionContent(type = 'match') {
+        const main = this.elements.mainContent;
+        const exitClass = type === 'undo' ? 'exit-right' : 'exit-left';
+        const enterClass = type === 'undo' ? 'enter-from-left' : 'enter-from-right';
+
+        // Show the decision overlay flash (fire-and-forget, it self-cleans)
+        this.showDecisionOverlay(type);
+
+        // Start exit animation
+        main.classList.remove('exit-left', 'exit-right', 'enter-from-right', 'enter-from-left');
+        void main.offsetWidth;
+        main.classList.add(exitClass);
+
+        const exitDone = new Promise(resolve => {
+            setTimeout(resolve, 350);
+        });
+
+        const startEnter = () => {
+            main.classList.remove(exitClass);
+            void main.offsetWidth;
+            main.classList.add(enterClass);
+
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    main.classList.remove(enterClass);
+                    resolve();
+                }, 400);
+            });
+        };
+
+        return { exitDone, startEnter };
     }
 }
 
@@ -702,6 +787,75 @@ class MatcherApp {
         }
     }
 
+    /**
+     * Load next listing content without showing the full-screen loading overlay.
+     * Used by match/skip/undo transitions that manage their own animations.
+     */
+    async _loadNextListingContent() {
+        const response = await this.api.getNext();
+
+        if (response.done || !response.viva_code) {
+            this.ui.showToast('All listings reviewed!', 'success');
+            this.state.setCurrentListing(null);
+            this.state.setCandidates([]);
+            this.ui.clearVivaListing();
+            this.ui.renderCandidates([]);
+            const sessionInfo = await this.api.getSession();
+            this.state.setSession(sessionInfo);
+            this.ui.updateSession(sessionInfo);
+            return;
+        }
+
+        const { viva_code, viva, mosaic_path } = response;
+        const specs = viva.detailedData?.specs || viva.specs || {};
+        const vivaListing = {
+            propertyCode: viva_code,
+            price: viva.price,
+            area: specs.area_construida,
+            bedrooms: specs.dormitorios,
+            suites: specs.suites,
+            address: viva.address,
+            url: viva.url,
+            mosaicPath: mosaic_path
+        };
+
+        const candidatesResponse = await this.api.getCandidates(viva_code);
+
+        const normalizedCandidates = (candidatesResponse?.candidates || []).map(item => {
+            const features = item.candidate.features || '';
+            const areaMatch = features.match(/(\d+)\s*m\u00b2\s*constru[i\u00ed]da/i);
+            const bedsMatch = features.match(/(\d+)\s*dorm/i);
+            const suitesMatch = features.match(/(\d+)\s*su[i\u00ed]te/i);
+
+            return {
+                propertyCode: item.code,
+                price: item.candidate.price,
+                area: areaMatch ? parseFloat(areaMatch[1]) : null,
+                bedrooms: bedsMatch ? parseInt(bedsMatch[1]) : null,
+                suites: suitesMatch ? parseInt(suitesMatch[1]) : null,
+                url: item.candidate.url,
+                mosaicPath: item.mosaic_path,
+                aiScore: item.ai_score,
+                priceDelta: item.deltas?.price_delta_pct,
+                areaDelta: item.deltas?.area_delta_pct,
+                priceViva: item.deltas?.price_viva,
+                priceCoelho: item.deltas?.price_coelho,
+                areaViva: item.deltas?.area_viva,
+                areaCoelho: item.deltas?.area_coelho
+            };
+        });
+
+        this.state.setCurrentListing(vivaListing);
+        this.state.setCandidates(normalizedCandidates);
+
+        this.ui.renderVivaListing(vivaListing);
+        this.ui.renderCandidates(normalizedCandidates);
+
+        const sessionInfo = await this.api.getSession();
+        this.state.setSession(sessionInfo);
+        this.ui.updateSession(sessionInfo);
+    }
+
     async confirmMatch(coelhoCode) {
         if (!this.state.currentListing) return;
 
@@ -713,17 +867,28 @@ class MatcherApp {
         this.ui.vibrate([10, 50, 10]);
 
         try {
-            this.ui.showLoading(true);
-            await this.api.submitMatch(vivaCode, coelhoCode, timeSpent, reviewer);
-            this.ui.showToast(`Match confirmed: #${vivaCode} ↔ #${coelhoCode}`, 'success');
+            // Start exit animation and API call in parallel
+            const { exitDone, startEnter } = this.ui.transitionContent('match');
+
+            const [apiResult] = await Promise.all([
+                this.api.submitMatch(vivaCode, coelhoCode, timeSpent, reviewer),
+                exitDone
+            ]);
+
+            this.ui.showToast(`Match confirmed: #${vivaCode} \u2194 #${coelhoCode}`, 'success');
             this.ui.enableUndo(true);
-            await this.loadNextListing();
+
+            // Load next content while hidden
+            await this._loadNextListingContent();
+
+            // Animate new content in
+            await startEnter();
         } catch (error) {
             console.error('Failed to submit match:', error);
             this.ui.showToast('Failed to save match', 'error');
             this.ui.vibrate(100); // Error feedback
-        } finally {
-            this.ui.showLoading(false);
+            // Clean up animation classes on error
+            this.ui.elements.mainContent.classList.remove('exit-left', 'exit-right', 'enter-from-right', 'enter-from-left');
         }
     }
 
@@ -738,17 +903,28 @@ class MatcherApp {
         this.ui.vibrate(5);
 
         try {
-            this.ui.showLoading(true);
-            await this.api.skipListing(vivaCode, timeSpent, reviewer);
+            // Start exit animation and API call in parallel
+            const { exitDone, startEnter } = this.ui.transitionContent('skip');
+
+            const [apiResult] = await Promise.all([
+                this.api.skipListing(vivaCode, timeSpent, reviewer),
+                exitDone
+            ]);
+
             this.ui.showToast(`Skipped #${vivaCode}`, 'info');
             this.ui.enableUndo(true);
-            await this.loadNextListing();
+
+            // Load next content while hidden
+            await this._loadNextListingContent();
+
+            // Animate new content in
+            await startEnter();
         } catch (error) {
             console.error('Failed to skip listing:', error);
             this.ui.showToast('Failed to skip listing', 'error');
             this.ui.vibrate(100); // Error feedback
-        } finally {
-            this.ui.showLoading(false);
+            // Clean up animation classes on error
+            this.ui.elements.mainContent.classList.remove('exit-left', 'exit-right', 'enter-from-right', 'enter-from-left');
         }
     }
 
@@ -756,16 +932,27 @@ class MatcherApp {
         const reviewer = this.state.reviewer;
 
         try {
-            this.ui.showLoading(true);
-            await this.api.undo(reviewer);
+            // Start exit animation (undo exits to the right) and API call in parallel
+            const { exitDone, startEnter } = this.ui.transitionContent('undo');
+
+            const [apiResult] = await Promise.all([
+                this.api.undo(reviewer),
+                exitDone
+            ]);
+
             this.ui.showToast('Undone last decision', 'info');
             this.ui.enableUndo(false);
-            await this.loadNextListing();
+
+            // Load previous content while hidden
+            await this._loadNextListingContent();
+
+            // Animate content in from the left
+            await startEnter();
         } catch (error) {
             console.error('Failed to undo:', error);
             this.ui.showToast('Failed to undo', 'error');
-        } finally {
-            this.ui.showLoading(false);
+            // Clean up animation classes on error
+            this.ui.elements.mainContent.classList.remove('exit-left', 'exit-right', 'enter-from-right', 'enter-from-left');
         }
     }
 
