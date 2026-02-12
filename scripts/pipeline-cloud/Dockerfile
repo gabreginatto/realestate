@@ -31,15 +31,12 @@ RUN pip install --no-cache-dir \
     pandas \
     numpy
 
-# Copy all scripts
+# Copy all scripts and config
 COPY scripts/ ./scripts/
+COPY config/ ./config/
 
-# Create data directories
-RUN mkdir -p data/vivaprimeimoveis/listings data/vivaprimeimoveis/images \
-    data/coelhodafonseca/listings data/coelhodafonseca/images \
-    data/mosaics/viva data/mosaics/coelho \
-    work_fastdup selected_exteriors \
-    server-deploy/data
+# Create data directories (compound-scoped dirs are created at runtime by the pipeline)
+RUN mkdir -p data work_fastdup selected_exteriors server-deploy/data
 
 # Copy the entrypoint
 COPY scripts/pipeline-cloud/entrypoint.sh /app/entrypoint.sh
