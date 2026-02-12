@@ -108,3 +108,4 @@ wheels/
 *.tmp
 temp/
 tmp/
+.venv/

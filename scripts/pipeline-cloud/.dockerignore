@@ -1,0 +1,15 @@
+node_modules
+.git
+data
+work_fastdup
+selected_exteriors
+server-deploy
+matcher-mobile
+venv
+__pycache__
+*.pyc
+.playwright-mcp
+FRESH
+photorec.se2
+CONVERSATION_RECOVERY.md
+FILE_RECOVERY_SEARCH_STRINGS.md

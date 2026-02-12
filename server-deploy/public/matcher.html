@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="theme-color" content="#0c0f1a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Property Matcher</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/matcher.css">
+    <link rel="preconnect" href="/mosaics">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>
+                <span aria-hidden="true">🏡</span>
+                <span>Matcher</span>
+            </h1>
+            <div class="header-stats">
+                <span id="progress-badge" class="stat-badge" title="Review progress">
+                    <span class="sr-only">Progress:</span>
+                    0/0
+                </span>
+                <span id="matched-count" class="stat-badge success" title="Confirmed matches">
+                    <span aria-hidden="true">✓</span> 0
+                </span>
+                <span id="skipped-count" class="stat-badge warning" title="Skipped listings">
+                    <span aria-hidden="true">⊘</span> 0
+                </span>
+            </div>
+            <div class="header-controls">
+                <button id="undo-btn" class="icon-btn" disabled title="Undo last decision (U)" aria-label="Undo">
+                    ↶
+                </button>
+                <button id="theme-toggle" class="icon-btn" title="Toggle dark mode" aria-label="Toggle theme">
+                    🌙
+                </button>
+                <button id="help-btn" class="icon-btn" title="Keyboard shortcuts (?)" aria-label="Help">
+                    ?
+                </button>
+            </div>
+        </div>
+        <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Decision Overlay (match/skip/undo flash) -->
+        <div id="decision-overlay" class="decision-overlay" style="display: none;">
+            <span class="decision-icon"></span>
+            <span class="decision-text"></span>
+        </div>
+
+        <!-- Viva Listing Section -->
+        <section class="viva-section" aria-labelledby="viva-title">
+            <div class="section-header">
+                <h2 id="viva-title">Loading...</h2>
+            </div>
+
+            <div class="listing-container">
+                <!-- Viva Mosaic -->
+                <div class="mosaic-wrapper">
+                    <img id="viva-mosaic"
+                         class="mosaic-image clickable"
+                         alt="Property images mosaic"
+                         data-site="viva"
+                         loading="eager">
+                    <div class="mosaic-overlay">Tap to zoom</div>
+                </div>
+
+                <!-- Viva Metadata -->
+                <div class="metadata-panel">
+                    <h3>Source Property</h3>
+                    <div class="metadata-grid">
+                        <div class="metadata-item">
+                            <span class="label">Price</span>
+                            <span id="viva-price" class="value">-</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="label">Area</span>
+                            <span id="viva-area" class="value">-</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="label">Beds</span>
+                            <span id="viva-bedrooms" class="value">-</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span class="label">Suites</span>
+                            <span id="viva-suites" class="value">-</span>
+                        </div>
+                        <div class="metadata-item full-width">
+                            <span class="label">Address</span>
+                            <span id="viva-address" class="value">-</span>
+                        </div>
+                        <div class="metadata-item full-width">
+                            <span class="label">Link</span>
+                            <a id="viva-url" class="value link" href="#" target="_blank" rel="noopener">View original listing →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Candidates Section -->
+        <section class="candidates-section" aria-labelledby="candidates-heading">
+            <div class="section-header">
+                <h2 id="candidates-heading">
+                    Candidates
+                    <span>(<span id="candidate-count">0</span>)</span>
+                </h2>
+                <button id="skip-btn" class="btn btn-warning" title="Skip - no matches found (S)">
+                    ⊘ Skip
+                </button>
+            </div>
+
+            <div id="candidates-grid" class="candidates-grid" role="list">
+                <!-- Candidate cards will be inserted here dynamically -->
+            </div>
+
+            <div id="no-candidates" class="empty-state" style="display: none;">
+                <p>No candidates found for this property</p>
+                <button class="btn btn-primary btn-large" onclick="window.matcherApp.skipListing()">
+                    Skip to Next Property
+                </button>
+            </div>
+        </section>
+
+        <!-- Desktop Navigation (hidden on mobile) -->
+        <nav class="navigation" aria-label="Listing navigation">
+            <button id="prev-btn" class="btn btn-secondary" disabled aria-label="Previous listing">
+                ← Previous
+            </button>
+            <div class="nav-info">
+                <span id="current-index">0</span> of <span id="total-count">0</span>
+            </div>
+            <button id="next-btn" class="btn btn-primary" aria-label="Next listing">
+                Next →
+            </button>
+        </nav>
+    </main>
+
+    <!-- Mobile Bottom Action Bar -->
+    <div class="bottom-bar" aria-label="Quick actions">
+        <div class="bottom-bar-content">
+            <div class="bottom-bar-actions">
+                <button id="mobile-skip-btn" class="btn btn-warning" title="Skip this listing">
+                    ⊘ Skip
+                </button>
+                <button id="mobile-undo-btn" class="btn btn-secondary" disabled title="Undo last action">
+                    ↶ Undo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox" style="display: none;">
+        <div class="lightbox-content">
+            <button class="lightbox-close" title="Close (Esc)">&times;</button>
+            <div class="lightbox-header">
+                <h3 id="lightbox-title">Property Images</h3>
+                <div class="lightbox-controls">
+                    <button id="lightbox-prev" class="icon-btn" title="Previous (←)">←</button>
+                    <span id="lightbox-counter">1 / 1</span>
+                    <button id="lightbox-next" class="icon-btn" title="Next (→)">→</button>
+                </div>
+            </div>
+            <div class="lightbox-body">
+                <img id="lightbox-image" alt="Enlarged view">
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal" style="display: none;" role="dialog" aria-labelledby="help-title" aria-modal="true">
+        <div class="modal-content">
+            <button class="modal-close" onclick="window.matcherApp.hideHelp()" aria-label="Close help">&times;</button>
+            <h2 id="help-title">Quick Guide</h2>
+
+            <h3>Keyboard Shortcuts</h3>
+            <div class="shortcuts-grid">
+                <div class="shortcut-item">
+                    <kbd>1-9</kbd>
+                    <span>Select candidate as match</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>S</kbd>
+                    <span>Skip (no match found)</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>U</kbd>
+                    <span>Undo last decision</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>Esc</kbd>
+                    <span>Close image/modal</span>
+                </div>
+                <div class="shortcut-item">
+                    <kbd>?</kbd>
+                    <span>Toggle this help</span>
+                </div>
+            </div>
+
+            <h3>How to Match Properties</h3>
+            <ol>
+                <li>Compare the source property images with candidates below</li>
+                <li>Tap any image to zoom and inspect details</li>
+                <li>Tap <strong>Match</strong> when you find the same property</li>
+                <li>Tap <strong>Skip</strong> if no candidate matches</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Pass Complete Dialog -->
+    <div id="pass-complete-modal" class="modal" style="display: none;" role="dialog" aria-labelledby="pass-complete-title" aria-modal="true">
+        <div class="modal-content" style="text-align: center;">
+            <h2 id="pass-complete-title" style="padding-right: 0;">
+                <span id="pass-complete-icon" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">&#x1F3AF;</span>
+                Pass <span id="pass-complete-num">1</span> Complete!
+            </h2>
+            <p id="pass-complete-subtitle" style="color: var(--text-secondary); margin-bottom: 1.5rem;"></p>
+
+            <div id="pass-complete-stats" style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                <div style="text-align: center;">
+                    <div id="pass-stat-matched" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-success);">0</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Matched</div>
+                </div>
+                <div style="width: 1px; background: var(--border-color);"></div>
+                <div style="text-align: center;">
+                    <div id="pass-stat-skipped" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-warning);">0</div>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Skipped</div>
+                </div>
+            </div>
+
+            <div id="pass-advance-section" style="margin-bottom: 0.75rem;">
+                <button id="pass-advance-btn" class="btn btn-primary btn-large" style="width: 100%;">
+                    Continue to Pass <span id="next-pass-num">2</span>
+                </button>
+                <p id="next-pass-criteria" style="font-size: 0.8rem; color: var(--text-tertiary); margin-top: 0.5rem;"></p>
+            </div>
+
+            <button id="pass-finish-btn" class="btn btn-warning" style="width: 100%;">
+                I'm Finished - Generate Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="/js/matcher-app.js"></script>
+</body>
+</html>
