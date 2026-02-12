@@ -22,6 +22,13 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const {
+  syncAllFromGCS,
+  checkForNewPipelineData,
+  syncPipelineData,
+  uploadUserDecisions,
+  flushUserDecisions,
+} = require('./gcs-data-sync');
 
 // ============================================================================
 // CONFIGURATION
@@ -229,9 +236,8 @@ function loadListings(site) {
 function loadSmartMatches() {
   try {
     if (!fs.existsSync(SMART_MATCHES_FILE)) {
-      console.error(`❌ Error: ${SMART_MATCHES_FILE} not found!`);
-      console.error('   Please run deterministic-matcher first to generate candidate pairs.');
-      process.exit(1);
+      console.warn('⚠️  deterministic-matches.json not found — awaiting pipeline data');
+      return { matches: [] };
     }
 
     const data = JSON.parse(fs.readFileSync(SMART_MATCHES_FILE, 'utf-8'));
@@ -244,8 +250,8 @@ function loadSmartMatches() {
     console.log(`✓ Loaded deterministic-matches.json: ${matches.length} Viva listings with candidates`);
     return { matches };
   } catch (error) {
-    console.error(`❌ Error loading deterministic-matches.json: ${error.message}`);
-    process.exit(1);
+    console.warn(`⚠️  Error loading deterministic-matches.json: ${error.message}`);
+    return { matches: [] };
   }
 }
 
@@ -342,8 +348,9 @@ function buildTaskQueue() {
 }
 
 /**
- * Advance to the next pass by regenerating candidates for skipped listings
- * with broader criteria.
+ * Advance to the next pass by regenerating candidates for all unmatched
+ * listings with broader criteria. This includes user-skipped listings AND
+ * "orphan" listings that had zero candidates in previous passes.
  */
 function advanceToNextPass() {
   const currentPass = matchState.current_pass;
@@ -360,20 +367,21 @@ function advanceToNextPass() {
     return false;
   }
 
-  // Get skipped Viva codes from the current pass
-  const skippedVivaCodes = matchState.skipped.map(s => s.viva_code);
+  // Include ALL unmatched Viva listings: skipped + orphans (never had candidates)
   const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
-
-  // Filter to only include listings that were skipped (not matched)
-  const remainingVivaCodes = skippedVivaCodes.filter(code => !matchedVivaCodes.has(code));
+  const allVivaCodes = vivaListings.map(l => l.code || l.propertyCode);
+  const remainingVivaCodes = allVivaCodes.filter(code => !matchedVivaCodes.has(code));
 
   if (remainingVivaCodes.length === 0) {
     console.log(`\n✅ No remaining listings to process. All listings have been matched!`);
     return false;
   }
 
+  const skippedCount = matchState.skipped.length;
+  const orphanCount = remainingVivaCodes.length - skippedCount;
+
   console.log(`\n🔄 Advancing to Pass ${nextPass} (${getPassCriteria(nextPass).name})`);
-  console.log(`   Regenerating candidates for ${remainingVivaCodes.length} previously skipped listings...`);
+  console.log(`   Regenerating candidates for ${remainingVivaCodes.length} unmatched listings (${skippedCount} skipped + ${orphanCount} without previous candidates)...`);
 
   const criteria = getPassCriteria(nextPass);
   const remainingSet = new Set(remainingVivaCodes);
@@ -460,12 +468,15 @@ function checkAndAdvancePass() {
   // Current pass complete - check if we should advance
   const skippedCount = matchState.skipped.length;
   const matchedCount = matchState.matches.length;
+  const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
+  const totalUnmatched = vivaListings.filter(l => !matchedVivaCodes.has(l.code || l.propertyCode)).length;
 
   console.log(`\n📊 Pass ${matchState.current_pass} complete:`);
   console.log(`   Matched: ${matchedCount}`);
   console.log(`   Skipped: ${skippedCount}`);
+  console.log(`   Total unmatched: ${totalUnmatched}`);
 
-  if (skippedCount === 0) {
+  if (totalUnmatched === 0) {
     console.log(`   All listings processed successfully!`);
     return false;
   }
@@ -500,6 +511,9 @@ function saveMatchState() {
 
     fs.writeFileSync(MANUAL_MATCHES_FILE, JSON.stringify(matchState, null, 2));
     console.log(`✓ Saved match state (version ${matchState.version})`);
+
+    // Debounced upload to GCS (at most once per 30s)
+    uploadUserDecisions();
   } catch (error) {
     console.error(`❌ Error saving match state: ${error.message}`);
   }
@@ -553,6 +567,45 @@ function calculateDeltas(vivaListing, coelhoListing) {
     area_coelho: coelhoArea || null,
     area_delta_pct: areaDelta != null ? parseFloat(areaDelta.toFixed(2)) : null
   };
+}
+
+// ============================================================================
+// GCS POLLING & RELOAD
+// ============================================================================
+
+const GCS_POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Reload pipeline-generated data (matches + listings) and rebuild task queue.
+ * Preserves user decisions (matchState.matches, .rejected, .skipped, etc).
+ */
+function reloadPipelineData() {
+  console.log('[Reload] Reloading pipeline data from disk...');
+  smartMatches = loadSmartMatches();
+  vivaListings = loadListings('vivaprimeimoveis');
+  coelhoListings = loadListings('coelhodafonseca');
+  taskQueue = buildTaskQueue();
+  passStartTotal = taskQueue.length;
+  console.log(`[Reload] Done — ${smartMatches.matches.length} match groups, ${taskQueue.length} pending tasks`);
+}
+
+let _pollTimer = null;
+
+function startPolling() {
+  console.log(`[GCS] Polling for new pipeline data every ${GCS_POLL_INTERVAL_MS / 1000}s`);
+  _pollTimer = setInterval(async () => {
+    try {
+      const hasNew = await checkForNewPipelineData();
+      if (hasNew) {
+        console.log('[GCS] New pipeline data detected — syncing...');
+        await syncPipelineData();
+        reloadPipelineData();
+        console.log('[GCS] New pipeline data loaded successfully');
+      }
+    } catch (err) {
+      console.error(`[GCS] Polling error: ${err.message}`);
+    }
+  }, GCS_POLL_INTERVAL_MS);
 }
 
 // ============================================================================
@@ -693,7 +746,17 @@ app.get('/api/next', (req, res) => {
     const skippedCount = matchState.skipped.length;
     const currentCriteria = getPassCriteria(matchState.current_pass);
     const nextPassNum = matchState.current_pass + 1;
-    const hasNextPass = nextPassNum <= MAX_PASSES && skippedCount > 0;
+
+    // Count orphan Viva listings (never had candidates in any pass)
+    const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
+    const skippedVivaCodes = new Set(matchState.skipped.map(s => s.viva_code));
+    const orphanCount = vivaListings.filter(l => {
+      const code = l.code || l.propertyCode;
+      return !matchedVivaCodes.has(code) && !skippedVivaCodes.has(code);
+    }).length;
+
+    const unmatchedCount = skippedCount + orphanCount;
+    const hasNextPass = nextPassNum <= MAX_PASSES && unmatchedCount > 0;
     const nextCriteria = hasNextPass ? getPassCriteria(nextPassNum) : null;
 
     return res.json({
@@ -703,6 +766,7 @@ app.get('/api/next', (req, res) => {
       stats: {
         matched: matchState.matches.length,
         skipped: skippedCount,
+        orphans: orphanCount,
         total_reviewed: matchState.matches.length + skippedCount
       },
       has_next_pass: hasNextPass,
@@ -710,7 +774,8 @@ app.get('/api/next', (req, res) => {
         number: nextPassNum,
         name: nextCriteria.name,
         price_tolerance: `\u00b1${(nextCriteria.price_tolerance * 100).toFixed(0)}%`,
-        area_tolerance: `\u00b1${(nextCriteria.area_tolerance * 100).toFixed(0)}%`
+        area_tolerance: `\u00b1${(nextCriteria.area_tolerance * 100).toFixed(0)}%`,
+        listings_to_review: unmatchedCount
       } : null
     });
   }
@@ -1006,8 +1071,8 @@ app.post('/api/pass/advance', (req, res) => {
   });
 });
 
-// POST /api/pass/finish - User says "I'm done"
-app.post('/api/pass/finish', (req, res) => {
+// POST /api/pass/finish - User says "I'm done" → save, send report, respond
+app.post('/api/pass/finish', async (req, res) => {
   if (READ_ONLY) {
     return res.status(403).json({ error: 'Read-only mode enabled' });
   }
@@ -1023,13 +1088,55 @@ app.post('/api/pass/finish', (req, res) => {
 
   saveMatchState();
 
+  // Auto-send unmatched report email
+  let emailSent = false;
+  let emailError = null;
+  const reportEmail = process.env.REPORT_EMAIL;
+
+  if (reportEmail) {
+    try {
+      const unmatchedListings = getUnmatchedListings();
+      const htmlContent = generateEmailHTML(unmatchedListings, matchState.matches.length);
+      const nodemailer = require('nodemailer');
+
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: false,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+
+      await transporter.sendMail({
+        from: process.env.SMTP_USER,
+        to: reportEmail,
+        subject: `Property Matching Report - ${matchState.matches.length} matched, ${unmatchedListings.length} unmatched`,
+        html: htmlContent,
+      });
+
+      emailSent = true;
+      appendAuditLog('report_auto_sent', { to: reportEmail, unmatched_count: unmatchedListings.length });
+      console.log(`✉️  Report sent to ${reportEmail}`);
+    } catch (err) {
+      emailError = err.message;
+      console.error(`⚠️  Failed to send report email: ${err.message}`);
+    }
+  }
+
   res.json({
     success: true,
     summary: {
       total_matches: matchState.matches.length,
       total_skipped: matchState.skipped.length,
       passes_completed: matchState.current_pass
-    }
+    },
+    email: reportEmail ? {
+      sent: emailSent,
+      to: reportEmail,
+      error: emailError
+    } : null
   });
 });
 
@@ -1406,6 +1513,48 @@ app.post('/api/report/send-email', async (req, res) => {
 // HELPER FUNCTIONS
 // ============================================================================
 
+function getUnmatchedListings() {
+  const allVivaCodes = new Set();
+  for (const item of smartMatches.matches || []) {
+    const vivaCode = item.viva?.code || item.viva?.propertyCode;
+    if (vivaCode) allVivaCodes.add(vivaCode);
+  }
+  if (matchState.skipped_previous_passes) {
+    for (const passData of matchState.skipped_previous_passes) {
+      for (const skip of passData.skipped || []) {
+        allVivaCodes.add(skip.viva_code);
+      }
+    }
+  }
+  for (const skip of matchState.skipped || []) {
+    allVivaCodes.add(skip.viva_code);
+  }
+
+  const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
+  const unmatchedCodes = [...allVivaCodes].filter(code => !matchedVivaCodes.has(code));
+
+  const vivaMap = new Map();
+  for (const l of vivaListings) {
+    vivaMap.set(l.code || l.propertyCode, l);
+  }
+
+  return unmatchedCodes.map(code => {
+    const listing = vivaMap.get(code);
+    if (!listing) return { code, error: 'listing data not found' };
+    return {
+      code,
+      price: listing.price,
+      address: listing.address,
+      url: listing.url,
+      beds: listing.beds,
+      suites: listing.suites,
+      built: listing.built,
+      park: listing.park,
+      neighbourhood: listing.neighbourhood || listing.bairro
+    };
+  });
+}
+
 function generateEmailHTML(unmatchedListings, matchedCount) {
   const rows = unmatchedListings.map(listing => {
     const price = listing.price || '-';
@@ -1495,52 +1644,82 @@ function getLocalIP() {
 // SERVER STARTUP
 // ============================================================================
 
-// Initialize
-console.log('\n🚀 Human-in-the-Loop Matching Server');
-console.log('=====================================\n');
-console.log(`Session: ${SESSION_NAME}`);
-console.log(`Data root: ${DATA_ROOT}`);
-console.log(`Public root: ${PUBLIC_ROOT}`);
-console.log(`Port: ${PORT}`);
-console.log(`Host: ${HOST}`);
-console.log(`Read-only: ${READ_ONLY ? 'YES' : 'NO'}\n`);
+async function start() {
+  console.log('\n🚀 Human-in-the-Loop Matching Server');
+  console.log('=====================================\n');
+  console.log(`Session: ${SESSION_NAME}`);
+  console.log(`Data root: ${DATA_ROOT}`);
+  console.log(`Public root: ${PUBLIC_ROOT}`);
+  console.log(`Port: ${PORT}`);
+  console.log(`Host: ${HOST}`);
+  console.log(`Read-only: ${READ_ONLY ? 'YES' : 'NO'}\n`);
 
-smartMatches = loadSmartMatches();
-matchState = loadManualMatches();
+  // Step 1: Download data from GCS (graceful — server starts even if GCS fails)
+  try {
+    await syncAllFromGCS();
+  } catch (err) {
+    console.warn(`⚠️  GCS sync failed (${err.message}) — starting with local data`);
+  }
 
-// Load raw listings for dynamic pass advancement
-vivaListings = loadListings('vivaprimeimoveis');
-coelhoListings = loadListings('coelhodafonseca');
-if (vivaListings.length > 0 && coelhoListings.length > 0) {
-  console.log(`✓ Loaded ${vivaListings.length} Viva and ${coelhoListings.length} Coelho listings for dynamic matching`);
+  // Step 2: Load data from local files
+  smartMatches = loadSmartMatches();
+  matchState = loadManualMatches();
+
+  // Step 3: Load raw listings for dynamic pass advancement
+  vivaListings = loadListings('vivaprimeimoveis');
+  coelhoListings = loadListings('coelhodafonseca');
+  if (vivaListings.length > 0 && coelhoListings.length > 0) {
+    console.log(`✓ Loaded ${vivaListings.length} Viva and ${coelhoListings.length} Coelho listings for dynamic matching`);
+  }
+
+  // Step 4: Build task queue
+  taskQueue = buildTaskQueue();
+  passStartTotal = taskQueue.length;
+
+  // Log current pass info
+  const currentCriteria = getPassCriteria(matchState.current_pass);
+  console.log(`\n📍 Current Pass: ${matchState.current_pass} (${currentCriteria.name})`);
+  console.log(`   Price tolerance: ±${(currentCriteria.price_tolerance * 100).toFixed(0)}%`);
+  console.log(`   Area tolerance: ±${(currentCriteria.area_tolerance * 100).toFixed(0)}%`);
+
+  // Step 5: Start Express server
+  app.listen(PORT, HOST, () => {
+    const networkIP = getLocalIP();
+
+    console.log(`\n✅ Server running on:`);
+    console.log(`   Local:    http://localhost:${PORT}`);
+    if (networkIP !== 'localhost') {
+      console.log(`   Network:  http://${networkIP}:${PORT}`);
+    }
+    console.log(`\n📊 Ready to review ${taskQueue.length} Viva listings\n`);
+    console.log(`Desktop: http://localhost:${PORT}/matcher.html`);
+    if (networkIP !== 'localhost') {
+      console.log(`Mobile:  http://${networkIP}:${PORT}/matcher.html`);
+    }
+    console.log();
+
+    if (READ_ONLY) {
+      console.log('⚠️  READ-ONLY MODE: No changes will be saved\n');
+    }
+
+    if (smartMatches.matches.length === 0) {
+      console.log('⏳ No pipeline data yet — server will auto-load when data arrives via GCS\n');
+    }
+  });
+
+  // Step 6: Start GCS polling for new pipeline data
+  startPolling();
+
+  // Graceful shutdown: flush pending uploads
+  process.on('SIGTERM', async () => {
+    console.log('\n[Shutdown] SIGTERM received — flushing user decisions...');
+    if (_pollTimer) clearInterval(_pollTimer);
+    await flushUserDecisions();
+    process.exit(0);
+  });
 }
 
-taskQueue = buildTaskQueue();
-passStartTotal = taskQueue.length;
-
-// Log current pass info
-const currentCriteria = getPassCriteria(matchState.current_pass);
-console.log(`\n📍 Current Pass: ${matchState.current_pass} (${currentCriteria.name})`);
-console.log(`   Price tolerance: ±${(currentCriteria.price_tolerance * 100).toFixed(0)}%`);
-console.log(`   Area tolerance: ±${(currentCriteria.area_tolerance * 100).toFixed(0)}%`);
-
-// Start server
-app.listen(PORT, HOST, () => {
-  const networkIP = getLocalIP();
-
-  console.log(`\n✅ Server running on:`);
-  console.log(`   Local:    http://localhost:${PORT}`);
-  if (networkIP !== 'localhost') {
-    console.log(`   Network:  http://${networkIP}:${PORT}`);
-  }
-  console.log(`\n📊 Ready to review ${taskQueue.length} Viva listings\n`);
-  console.log(`Desktop: http://localhost:${PORT}/matcher.html`);
-  if (networkIP !== 'localhost') {
-    console.log(`Mobile:  http://${networkIP}:${PORT}/matcher.html`);
-  }
-  console.log();
-
-  if (READ_ONLY) {
-    console.log('⚠️  READ-ONLY MODE: No changes will be saved\n');
-  }
+start().catch(err => {
+  console.error('Fatal startup error:', err);
+  process.exit(1);
 });
