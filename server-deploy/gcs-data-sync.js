@@ -4,6 +4,8 @@
  * Handles downloading pipeline data from GCS on startup,
  * polling for new pipeline runs, and uploading user decisions.
  *
+ * Multi-compound aware: syncs data per compound based on compounds.json.
+ *
  * On Cloud Run, `new Storage()` auto-authenticates via the service account.
  */
 
@@ -15,6 +17,9 @@ const BUCKET_NAME = process.env.GCS_BUCKET || 'realestate-images-475615';
 const PREFIX = 'pipeline-data';
 const SERVER_DATA_PREFIX = `${PREFIX}/server-deploy-data`;
 
+const COMPOUNDS_CONFIG = JSON.parse(fs.readFileSync(path.join(__dirname, 'compounds.json'), 'utf-8'));
+const compoundIds = Object.keys(COMPOUNDS_CONFIG.compounds);
+
 let storage;
 let bucket;
 
@@ -25,24 +30,29 @@ function initStorage() {
   }
 }
 
-// GCS path -> local path mapping for pipeline-generated data
-const PIPELINE_FILES = {
-  [`${SERVER_DATA_PREFIX}/deterministic-matches.json`]: './data/deterministic-matches.json',
-  [`${PREFIX}/vivaprimeimoveis/listings/all-listings.json`]: './data/listings/vivaprimeimoveis_listings.json',
-  [`${PREFIX}/coelhodafonseca/listings/all-listings.json`]: './data/listings/coelhodafonseca_listings.json',
-};
+// Per-compound GCS path -> local path generators
 
-// GCS path -> local path for user-owned data
-const USER_FILES = {
-  [`${SERVER_DATA_PREFIX}/manual-matches.json`]: './data/manual-matches.json',
-  [`${SERVER_DATA_PREFIX}/manual-matches.log.jsonl`]: './data/manual-matches.log.jsonl',
-};
+function pipelineFiles(compoundId) {
+  return {
+    [`${SERVER_DATA_PREFIX}/compounds/${compoundId}/deterministic-matches.json`]: `./data/${compoundId}/deterministic-matches.json`,
+    [`${PREFIX}/${compoundId}/vivaprimeimoveis/listings/all-listings.json`]: `./data/${compoundId}/listings/vivaprimeimoveis_listings.json`,
+    [`${PREFIX}/${compoundId}/coelhodafonseca/listings/all-listings.json`]: `./data/${compoundId}/listings/coelhodafonseca_listings.json`,
+  };
+}
 
-// Mosaic directories to sync
-const MOSAIC_DIRS = [
-  { gcsPrefix: `${SERVER_DATA_PREFIX}/mosaics/viva`, localDir: './data/mosaics/viva' },
-  { gcsPrefix: `${SERVER_DATA_PREFIX}/mosaics/coelho`, localDir: './data/mosaics/coelho' },
-];
+function userFiles(compoundId) {
+  return {
+    [`${SERVER_DATA_PREFIX}/compounds/${compoundId}/manual-matches.json`]: `./data/${compoundId}/manual-matches.json`,
+    [`${SERVER_DATA_PREFIX}/compounds/${compoundId}/manual-matches.log.jsonl`]: `./data/${compoundId}/manual-matches.log.jsonl`,
+  };
+}
+
+function mosaicDirs(compoundId) {
+  return [
+    { gcsPrefix: `${SERVER_DATA_PREFIX}/compounds/${compoundId}/mosaics/viva`, localDir: `./data/${compoundId}/mosaics/viva` },
+    { gcsPrefix: `${SERVER_DATA_PREFIX}/compounds/${compoundId}/mosaics/coelho`, localDir: `./data/${compoundId}/mosaics/coelho` },
+  ];
+}
 
 async function downloadFile(gcsPath, localPath) {
   try {
@@ -78,36 +88,33 @@ async function downloadDir(gcsPrefix, localDir) {
 
 /**
  * Full download of all data from GCS (used on startup).
- * Downloads pipeline data, user decisions, and mosaics.
+ * Downloads pipeline data, user decisions, and mosaics for all compounds.
  */
 async function syncAllFromGCS() {
   initStorage();
   console.log(`[GCS] Syncing all data from gs://${BUCKET_NAME}...`);
-
   let totalFiles = 0;
 
-  // Download pipeline-generated files
-  for (const [gcsPath, localPath] of Object.entries(PIPELINE_FILES)) {
-    if (await downloadFile(gcsPath, localPath)) {
-      console.log(`  Downloaded: ${path.basename(localPath)}`);
-      totalFiles++;
+  for (const compoundId of compoundIds) {
+    console.log(`  --- ${compoundId} ---`);
+    for (const [gcsPath, localPath] of Object.entries(pipelineFiles(compoundId))) {
+      if (await downloadFile(gcsPath, localPath)) {
+        console.log(`  Downloaded: ${path.basename(localPath)}`);
+        totalFiles++;
+      }
     }
-  }
-
-  // Download user-owned files
-  for (const [gcsPath, localPath] of Object.entries(USER_FILES)) {
-    if (await downloadFile(gcsPath, localPath)) {
-      console.log(`  Downloaded: ${path.basename(localPath)}`);
-      totalFiles++;
+    for (const [gcsPath, localPath] of Object.entries(userFiles(compoundId))) {
+      if (await downloadFile(gcsPath, localPath)) {
+        console.log(`  Downloaded: ${path.basename(localPath)}`);
+        totalFiles++;
+      }
     }
-  }
-
-  // Download mosaics
-  for (const { gcsPrefix, localDir } of MOSAIC_DIRS) {
-    const count = await downloadDir(gcsPrefix, localDir);
-    if (count > 0) {
-      console.log(`  Downloaded ${count} mosaics from ${gcsPrefix.split('/').pop()}/`);
-      totalFiles += count;
+    for (const { gcsPrefix, localDir } of mosaicDirs(compoundId)) {
+      const count = await downloadDir(gcsPrefix, localDir);
+      if (count > 0) {
+        console.log(`  Downloaded ${count} mosaics from ${gcsPrefix.split('/').pop()}/`);
+        totalFiles += count;
+      }
     }
   }
 
@@ -116,48 +123,47 @@ async function syncAllFromGCS() {
 }
 
 /**
- * Check if deterministic-matches.json in GCS is newer than our local copy.
- * Compares the GCS object's `updated` metadata against local file mtime.
+ * Check which compounds have newer pipeline data in GCS.
+ * Returns an array of compound IDs that have updates.
  */
 async function checkForNewPipelineData() {
   initStorage();
+  const updated = [];
 
-  const gcsPath = `${SERVER_DATA_PREFIX}/deterministic-matches.json`;
-  const localPath = './data/deterministic-matches.json';
-
-  try {
-    const [metadata] = await bucket.file(gcsPath).getMetadata();
-    const gcsUpdated = new Date(metadata.updated).getTime();
-
-    if (!fs.existsSync(localPath)) return true;
-
-    const localMtime = fs.statSync(localPath).mtimeMs;
-    return gcsUpdated > localMtime;
-  } catch (err) {
-    if (err.code === 404) return false;
-    console.warn(`[GCS] Error checking for new data: ${err.message}`);
-    return false;
+  for (const compoundId of compoundIds) {
+    const gcsPath = `${SERVER_DATA_PREFIX}/compounds/${compoundId}/deterministic-matches.json`;
+    const localPath = `./data/${compoundId}/deterministic-matches.json`;
+    try {
+      const [metadata] = await bucket.file(gcsPath).getMetadata();
+      const gcsUpdated = new Date(metadata.updated).getTime();
+      if (!fs.existsSync(localPath) || gcsUpdated > fs.statSync(localPath).mtimeMs) {
+        updated.push(compoundId);
+      }
+    } catch (err) {
+      if (err.code !== 404) console.warn(`[GCS] Error checking ${compoundId}: ${err.message}`);
+    }
   }
+
+  return updated;
 }
 
 /**
- * Download only pipeline-generated files (matches + mosaics + listings).
+ * Download only pipeline-generated files (matches + mosaics + listings) for a specific compound.
  * Does NOT download user decisions — those are owned by the backend.
  */
-async function syncPipelineData() {
+async function syncPipelineData(compoundId) {
   initStorage();
-  console.log('[GCS] Downloading new pipeline data...');
-
+  console.log(`[GCS] Downloading pipeline data for ${compoundId}...`);
   let totalFiles = 0;
 
-  for (const [gcsPath, localPath] of Object.entries(PIPELINE_FILES)) {
+  for (const [gcsPath, localPath] of Object.entries(pipelineFiles(compoundId))) {
     if (await downloadFile(gcsPath, localPath)) {
       console.log(`  Updated: ${path.basename(localPath)}`);
       totalFiles++;
     }
   }
 
-  for (const { gcsPrefix, localDir } of MOSAIC_DIRS) {
+  for (const { gcsPrefix, localDir } of mosaicDirs(compoundId)) {
     const count = await downloadDir(gcsPrefix, localDir);
     if (count > 0) {
       console.log(`  Updated ${count} mosaics from ${gcsPrefix.split('/').pop()}/`);
@@ -165,27 +171,31 @@ async function syncPipelineData() {
     }
   }
 
-  console.log(`[GCS] Pipeline sync complete — ${totalFiles} files updated`);
+  console.log(`[GCS] Pipeline sync for ${compoundId} — ${totalFiles} files`);
   return totalFiles;
 }
 
 /**
  * Upload user decisions (manual-matches.json + audit log) to GCS.
- * Debounced — call freely, actual upload happens at most once per interval.
+ * Debounced per compound — call freely, actual upload happens at most once per interval.
  */
-let _uploadTimer = null;
+let _uploadTimers = {};
 const UPLOAD_DEBOUNCE_MS = 30_000; // 30 seconds
 
-function uploadUserDecisions() {
-  if (_uploadTimer) return; // already scheduled
+function uploadUserDecisions(compoundId) {
+  const key = compoundId || '_all';
+  if (_uploadTimers[key]) return; // already scheduled
 
-  _uploadTimer = setTimeout(async () => {
-    _uploadTimer = null;
+  _uploadTimers[key] = setTimeout(async () => {
+    delete _uploadTimers[key];
     try {
       initStorage();
+      const ids = compoundId ? [compoundId] : compoundIds;
       let uploaded = 0;
-      for (const [gcsPath, localPath] of Object.entries(USER_FILES)) {
-        if (await uploadFile(localPath, gcsPath)) uploaded++;
+      for (const id of ids) {
+        for (const [gcsPath, localPath] of Object.entries(userFiles(id))) {
+          if (await uploadFile(localPath, gcsPath)) uploaded++;
+        }
       }
       if (uploaded > 0) {
         console.log(`[GCS] Uploaded ${uploaded} user decision file(s)`);
@@ -200,14 +210,18 @@ function uploadUserDecisions() {
  * Force an immediate upload (used on graceful shutdown).
  */
 async function flushUserDecisions() {
-  if (_uploadTimer) {
-    clearTimeout(_uploadTimer);
-    _uploadTimer = null;
+  if (_uploadTimers) {
+    for (const key of Object.keys(_uploadTimers)) {
+      clearTimeout(_uploadTimers[key]);
+    }
+    _uploadTimers = {};
   }
   try {
     initStorage();
-    for (const [gcsPath, localPath] of Object.entries(USER_FILES)) {
-      await uploadFile(localPath, gcsPath);
+    for (const compoundId of compoundIds) {
+      for (const [gcsPath, localPath] of Object.entries(userFiles(compoundId))) {
+        await uploadFile(localPath, gcsPath);
+      }
     }
     console.log('[GCS] Flushed user decisions to GCS');
   } catch (err) {

@@ -233,3 +233,22 @@ export type Notification = {
   created_at: string;
   read: boolean;
 };
+
+// ============================================================================
+// Compound Types
+// ============================================================================
+
+export type Compound = {
+  id: string;
+  displayName: string;
+  stats: {
+    matched: number;
+    pending: number;
+    total: number;
+  } | null;
+};
+
+export type CompoundsResponse = {
+  compounds: Compound[];
+  defaultCompound: string;
+};

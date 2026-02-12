@@ -14,6 +14,7 @@ import type {
   NormalizedVivaListing,
   NormalizedCandidate,
   Notification,
+  CompoundsResponse,
 } from '../types';
 
 // ============================================================================
@@ -101,10 +102,18 @@ function normalizeCandidate(
 // ============================================================================
 
 /**
+ * Get list of all compounds with their stats
+ */
+export async function getCompounds(baseUrl: string = API_BASE_URL): Promise<CompoundsResponse> {
+  const response = await fetch(`${baseUrl}/api/compounds`);
+  return handleResponse<CompoundsResponse>(response);
+}
+
+/**
  * Get current session info and stats
  */
-export async function getSession(baseUrl: string = API_BASE_URL): Promise<SessionStats> {
-  const response = await fetch(`${baseUrl}/api/session`);
+export async function getSession(compoundId: string, baseUrl: string = API_BASE_URL): Promise<SessionStats> {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/session`);
   const data = await handleResponse<Session>(response);
   return data.stats;
 }
@@ -118,10 +127,11 @@ type NextListingResult =
   | { pass_complete: true; current_pass: number; pass_name: string; stats: { matched: number; skipped: number; total_reviewed: number }; has_next_pass: boolean; next_pass: { number: number; name: string; price_tolerance: string; area_tolerance: string } | null };
 
 export async function getNextListing(
+  compoundId: string,
   reviewer: string,
   baseUrl: string = API_BASE_URL
 ): Promise<NextListingResult> {
-  const response = await fetch(`${baseUrl}/api/next?reviewer=${encodeURIComponent(reviewer)}`);
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/next?reviewer=${encodeURIComponent(reviewer)}`);
   const data = await handleResponse<NextListingResponse>(response);
 
   if (data.done) {
@@ -152,10 +162,11 @@ export async function getNextListing(
  * Get candidates for a specific Viva listing
  */
 export async function getCandidates(
+  compoundId: string,
   vivaCode: string,
   baseUrl: string = API_BASE_URL
 ): Promise<{ candidates: NormalizedCandidate[] }> {
-  const response = await fetch(`${baseUrl}/api/candidates/${encodeURIComponent(vivaCode)}`);
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/candidates/${encodeURIComponent(vivaCode)}`);
   const data = await handleResponse<CandidatesResponse>(response);
 
   return {
@@ -167,13 +178,14 @@ export async function getCandidates(
  * Submit a confirmed match
  */
 export async function submitMatch(
+  compoundId: string,
   vivaCode: string,
   coelhoCode: string,
   timeSpent: number,
   reviewer: string,
   baseUrl: string = API_BASE_URL
 ): Promise<MatchResult> {
-  const response = await fetch(`${baseUrl}/api/match`, {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/match`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -193,13 +205,14 @@ export async function submitMatch(
  * Reject a specific candidate
  */
 export async function rejectCandidate(
+  compoundId: string,
   vivaCode: string,
   coelhoCode: string,
   reviewer: string,
   reason: string = 'visual_mismatch',
   baseUrl: string = API_BASE_URL
 ): Promise<{ success: boolean; remaining: number }> {
-  const response = await fetch(`${baseUrl}/api/reject`, {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/reject`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -219,12 +232,13 @@ export async function rejectCandidate(
  * Skip to the next Viva listing (no good candidates)
  */
 export async function skipListing(
+  compoundId: string,
   vivaCode: string,
   timeSpent: number,
   reviewer: string,
   baseUrl: string = API_BASE_URL
 ): Promise<SkipResult> {
-  const response = await fetch(`${baseUrl}/api/skip`, {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/skip`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -244,10 +258,11 @@ export async function skipListing(
  * Undo the last decision for the current reviewer
  */
 export async function undo(
+  compoundId: string,
   reviewer: string,
   baseUrl: string = API_BASE_URL
 ): Promise<UndoResult> {
-  const response = await fetch(`${baseUrl}/api/undo`, {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/undo`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -261,8 +276,8 @@ export async function undo(
 /**
  * Get progress stats
  */
-export async function getProgress(baseUrl: string = API_BASE_URL): Promise<Progress> {
-  const response = await fetch(`${baseUrl}/api/progress`);
+export async function getProgress(compoundId: string, baseUrl: string = API_BASE_URL): Promise<Progress> {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/progress`);
   return handleResponse<Progress>(response);
 }
 
@@ -270,10 +285,11 @@ export async function getProgress(baseUrl: string = API_BASE_URL): Promise<Progr
  * Get a specific listing by ID
  */
 export async function getListing(
+  compoundId: string,
   vivaCode: string,
   baseUrl: string = API_BASE_URL
 ): Promise<NormalizedVivaListing> {
-  const response = await fetch(`${baseUrl}/api/listing/${encodeURIComponent(vivaCode)}`);
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/listing/${encodeURIComponent(vivaCode)}`);
   const data = await handleResponse<NextListingResponse>(response);
 
   return normalizeVivaListing(data.viva, data.mosaic_path, baseUrl);
@@ -286,16 +302,16 @@ export async function getListing(
 /**
  * Get unread notifications
  */
-export async function getNotifications(baseUrl: string = API_BASE_URL): Promise<{ notifications: Notification[]; unread_count: number }> {
-  const response = await fetch(`${baseUrl}/api/notifications`);
+export async function getNotifications(compoundId: string, baseUrl: string = API_BASE_URL): Promise<{ notifications: Notification[]; unread_count: number }> {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/notifications`);
   return handleResponse(response);
 }
 
 /**
  * Dismiss notifications
  */
-export async function dismissNotifications(options: { id?: string; all?: boolean }, baseUrl: string = API_BASE_URL): Promise<{ success: boolean }> {
-  const response = await fetch(`${baseUrl}/api/notifications/dismiss`, {
+export async function dismissNotifications(compoundId: string, options: { id?: string; all?: boolean }, baseUrl: string = API_BASE_URL): Promise<{ success: boolean }> {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/notifications/dismiss`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(options),
@@ -306,8 +322,8 @@ export async function dismissNotifications(options: { id?: string; all?: boolean
 /**
  * Advance to next matching pass
  */
-export async function advancePass(baseUrl: string = API_BASE_URL): Promise<{ success: boolean; current_pass: number; pass_name: string; pending: number }> {
-  const response = await fetch(`${baseUrl}/api/pass/advance`, {
+export async function advancePass(compoundId: string, baseUrl: string = API_BASE_URL): Promise<{ success: boolean; current_pass: number; pass_name: string; pending: number }> {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/pass/advance`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -321,8 +337,8 @@ export async function advancePass(baseUrl: string = API_BASE_URL): Promise<{ suc
 /**
  * Finish matching session
  */
-export async function finishMatching(reviewer: string, baseUrl: string = API_BASE_URL): Promise<{ success: boolean; summary: { total_matches: number; total_skipped: number; passes_completed: number } }> {
-  const response = await fetch(`${baseUrl}/api/pass/finish`, {
+export async function finishMatching(compoundId: string, reviewer: string, baseUrl: string = API_BASE_URL): Promise<{ success: boolean; summary: { total_matches: number; total_skipped: number; passes_completed: number } }> {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/pass/finish`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ reviewer }),
@@ -337,7 +353,7 @@ export async function finishMatching(reviewer: string, baseUrl: string = API_BAS
 /**
  * Get unmatched properties report
  */
-export async function getUnmatchedReport(baseUrl: string = API_BASE_URL): Promise<{
+export async function getUnmatchedReport(compoundId: string, baseUrl: string = API_BASE_URL): Promise<{
   total_viva: number;
   total_matched: number;
   total_unmatched: number;
@@ -350,7 +366,7 @@ export async function getUnmatchedReport(baseUrl: string = API_BASE_URL): Promis
     built?: number;
   }>;
 }> {
-  const response = await fetch(`${baseUrl}/api/report/unmatched`);
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/report/unmatched`);
   return handleResponse(response);
 }
 
@@ -358,10 +374,11 @@ export async function getUnmatchedReport(baseUrl: string = API_BASE_URL): Promis
  * Send unmatched report via email
  */
 export async function sendReportEmail(
+  compoundId: string,
   email: string,
   baseUrl: string = API_BASE_URL
 ): Promise<{ success: boolean; message: string }> {
-  const response = await fetch(`${baseUrl}/api/report/send-email`, {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/report/send-email`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ to: email }),

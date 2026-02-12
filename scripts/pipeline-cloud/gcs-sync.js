@@ -15,6 +15,9 @@ const PREFIX = 'pipeline-data';
 const storage = new Storage();
 const bucket = storage.bucket(BUCKET);
 
+const COMPOUNDS = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'config', 'compounds.json'), 'utf-8'));
+const compoundIds = Object.keys(COMPOUNDS.compounds);
+
 async function downloadFile(gcsPath, localPath) {
   try {
     fs.mkdirSync(path.dirname(localPath), { recursive: true });
@@ -70,28 +73,28 @@ async function downloadDir(gcsPrefix, localDir) {
 async function download() {
   console.log('[GCS] Downloading state from GCS...');
 
-  // Pipeline state files
-  const stateFiles = ['pipeline-state.json', 'manual-matches.json'];
-  let found = false;
-  for (const f of stateFiles) {
-    if (await downloadFile(`${PREFIX}/${f}`, `data/${f}`)) found = true;
-  }
-  if (!found) {
-    console.log('  No existing data in GCS (first run)');
-  }
+  for (const compoundId of compoundIds) {
+    console.log(`  --- ${compoundId} ---`);
 
-  // Listings JSON (small, needed for incremental delta)
-  await downloadFile(
-    `${PREFIX}/vivaprimeimoveis/listings/all-listings.json`,
-    'data/vivaprimeimoveis/listings/all-listings.json'
-  );
-  await downloadFile(
-    `${PREFIX}/coelhodafonseca/listings/all-listings.json`,
-    'data/coelhodafonseca/listings/all-listings.json'
-  );
+    // Pipeline state files per compound
+    const stateFiles = ['pipeline-state.json', 'manual-matches.json'];
+    for (const f of stateFiles) {
+      await downloadFile(`${PREFIX}/${compoundId}/${f}`, `data/${compoundId}/${f}`);
+    }
 
-  // Existing mosaics (avoid regenerating unchanged)
-  await downloadDir(`${PREFIX}/mosaics`, 'data/mosaics');
+    // Listings JSON per compound
+    await downloadFile(
+      `${PREFIX}/${compoundId}/vivaprimeimoveis/listings/all-listings.json`,
+      `data/${compoundId}/vivaprimeimoveis/listings/all-listings.json`
+    );
+    await downloadFile(
+      `${PREFIX}/${compoundId}/coelhodafonseca/listings/all-listings.json`,
+      `data/${compoundId}/coelhodafonseca/listings/all-listings.json`
+    );
+
+    // Existing mosaics per compound
+    await downloadDir(`${PREFIX}/${compoundId}/mosaics`, `data/${compoundId}/mosaics`);
+  }
 
   console.log('[GCS] Download complete');
 }
@@ -99,27 +102,35 @@ async function download() {
 async function upload() {
   console.log('[GCS] Uploading results to GCS...');
 
-  // Mosaics
-  const mosaicCount = await uploadDir('data/mosaics', `${PREFIX}/mosaics`);
-  console.log(`  Mosaics: ${mosaicCount} files`);
+  for (const compoundId of compoundIds) {
+    console.log(`  --- ${compoundId} ---`);
 
-  // Listings JSON
-  await uploadFile('data/vivaprimeimoveis/listings/all-listings.json', `${PREFIX}/vivaprimeimoveis/listings/all-listings.json`);
-  await uploadFile('data/coelhodafonseca/listings/all-listings.json', `${PREFIX}/coelhodafonseca/listings/all-listings.json`);
+    // Mosaics per compound
+    const mosaicCount = await uploadDir(`data/${compoundId}/mosaics`, `${PREFIX}/${compoundId}/mosaics`);
+    console.log(`  Mosaics: ${mosaicCount} files`);
 
-  // Pipeline state files
-  // NOTE: manual-matches.json is owned by the backend server — don't overwrite
-  const stateFiles = [
-    'pipeline-state.json', 'pipeline-delta.json', 'pipeline-runs.json',
-    'deterministic-matches.json',
-  ];
-  for (const f of stateFiles) {
-    await uploadFile(`data/${f}`, `${PREFIX}/${f}`);
+    // Listings JSON per compound
+    await uploadFile(
+      `data/${compoundId}/vivaprimeimoveis/listings/all-listings.json`,
+      `${PREFIX}/${compoundId}/vivaprimeimoveis/listings/all-listings.json`
+    );
+    await uploadFile(
+      `data/${compoundId}/coelhodafonseca/listings/all-listings.json`,
+      `${PREFIX}/${compoundId}/coelhodafonseca/listings/all-listings.json`
+    );
+
+    // Pipeline state files per compound (not manual-matches.json which is owned by backend)
+    const stateFiles = ['pipeline-state.json', 'pipeline-delta.json', 'pipeline-runs.json', 'deterministic-matches.json'];
+    for (const f of stateFiles) {
+      await uploadFile(`data/${compoundId}/${f}`, `${PREFIX}/${compoundId}/${f}`);
+    }
   }
 
-  // Server-deploy ready data
-  const serverCount = await uploadDir('server-deploy/data', `${PREFIX}/server-deploy-data`);
-  console.log(`  Server-deploy: ${serverCount} files`);
+  // Server-deploy ready data (per compound)
+  for (const compoundId of compoundIds) {
+    const serverCount = await uploadDir(`server-deploy/data/${compoundId}`, `${PREFIX}/server-deploy-data/compounds/${compoundId}`);
+    if (serverCount > 0) console.log(`  Server-deploy (${compoundId}): ${serverCount} files`);
+  }
 
   console.log('[GCS] Upload complete');
 }

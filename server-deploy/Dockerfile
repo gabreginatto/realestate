@@ -9,10 +9,16 @@ RUN npm ci --omit=dev
 # Copy application files
 COPY matching-server.js ./
 COPY gcs-data-sync.js ./
+COPY compounds.json ./
 COPY public ./public
 
-# Data directory created empty — populated from GCS at runtime
-RUN mkdir -p data/mosaics/viva data/mosaics/coelho data/listings
+# Data directories per compound — populated from GCS at runtime
+RUN node -e "const c=require('./compounds.json'); Object.keys(c.compounds).forEach(id => { \
+  const fs=require('fs'); \
+  fs.mkdirSync('data/'+id+'/mosaics/viva', {recursive:true}); \
+  fs.mkdirSync('data/'+id+'/mosaics/coelho', {recursive:true}); \
+  fs.mkdirSync('data/'+id+'/listings', {recursive:true}); \
+})"
 
 # Cloud Run uses PORT env var
 ENV PORT=8080

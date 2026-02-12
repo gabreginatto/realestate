@@ -13,6 +13,7 @@ import {
   dismissNotifications,
   advancePass as advancePassApi,
   finishMatching as finishMatchingApi,
+  getCompounds,
 } from '../lib/api';
 
 // ============================================================================
@@ -20,6 +21,10 @@ import {
 // ============================================================================
 
 interface MatcherState {
+  // Compound
+  compoundId: string | null;
+  compoundName: string | null;
+
   // Data
   sessionStats: SessionStats | null;
   reviewer: string;
@@ -50,6 +55,7 @@ interface MatcherState {
 
 interface MatcherActions {
   // Actions
+  setCompound: (id: string, name: string) => void;
   setReviewer: (name: string) => void;
   loadSession: () => Promise<void>;
   loadNextListing: () => Promise<void>;
@@ -70,6 +76,8 @@ type MatcherStore = MatcherState & MatcherActions;
 // ============================================================================
 
 const initialState: MatcherState = {
+  compoundId: null,
+  compoundName: null,
   sessionStats: null,
   reviewer: '',
   currentListing: null,
@@ -130,15 +138,22 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
   // Actions
   // ---------------------------------------------------------------------------
 
+  setCompound: (id: string, name: string) => {
+    set({ compoundId: id, compoundName: name });
+  },
+
   setReviewer: (name: string) => {
     set({ reviewer: name });
   },
 
   loadSession: async () => {
+    const { compoundId } = get();
+    if (!compoundId) { set({ error: 'No compound selected', isLoading: false }); return; }
+
     set({ isLoading: true, error: null });
 
     try {
-      const sessionStats = await getSession();
+      const sessionStats = await getSession(compoundId);
       set({ sessionStats, isLoading: false });
 
       // Check for new property notifications after loading session
@@ -150,12 +165,13 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
   },
 
   loadNextListing: async () => {
-    const { reviewer } = get();
+    const { reviewer, compoundId } = get();
+    if (!compoundId) { set({ error: 'No compound selected', isLoading: false }); return; }
 
     set({ isLoading: true, error: null });
 
     try {
-      const result = await getNextListing(reviewer);
+      const result = await getNextListing(compoundId, reviewer);
 
       if ('done' in result && result.done) {
         // All listings have been reviewed (all passes complete)
@@ -198,7 +214,7 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
       const listing = result as { vivaCode: string; viva: NormalizedVivaListing; current_pass?: number; pass_name?: string };
 
       // Fetch candidates for this listing
-      const candidatesResult = await getCandidates(listing.vivaCode);
+      const candidatesResult = await getCandidates(compoundId, listing.vivaCode);
 
       set({
         currentListing: listing.viva,
@@ -215,8 +231,9 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
   },
 
   confirmMatch: async (coelhoCode: string) => {
-    const { currentListing, reviewer, decisionStartTime } = get();
+    const { currentListing, reviewer, decisionStartTime, compoundId } = get();
 
+    if (!compoundId) return;
     if (!currentListing) {
       set({ error: 'No listing to match' });
       return;
@@ -230,6 +247,7 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
 
     try {
       await submitMatch(
+        compoundId,
         currentListing.propertyCode,
         coelhoCode,
         timeSpentSec,
@@ -251,8 +269,9 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
   },
 
   skipListing: async () => {
-    const { currentListing, reviewer, decisionStartTime } = get();
+    const { currentListing, reviewer, decisionStartTime, compoundId } = get();
 
+    if (!compoundId) return;
     if (!currentListing) {
       set({ error: 'No listing to skip' });
       return;
@@ -266,6 +285,7 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
 
     try {
       await apiSkipListing(
+        compoundId,
         currentListing.propertyCode,
         timeSpentSec,
         reviewer
@@ -286,12 +306,13 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
   },
 
   undo: async () => {
-    const { reviewer } = get();
+    const { reviewer, compoundId } = get();
+    if (!compoundId) return;
 
     set({ isLoading: true, error: null });
 
     try {
-      await apiUndo(reviewer);
+      await apiUndo(compoundId, reviewer);
 
       await triggerLightHaptic();
 
@@ -308,9 +329,12 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
   },
 
   advancePass: async () => {
+    const { compoundId } = get();
+    if (!compoundId) return;
+
     set({ isLoading: true, error: null });
     try {
-      await advancePassApi();
+      await advancePassApi(compoundId);
       await triggerSuccessHaptic();
       set({
         passComplete: false,
@@ -328,10 +352,12 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
   },
 
   finishMatching: async () => {
-    const { reviewer } = get();
+    const { reviewer, compoundId } = get();
+    if (!compoundId) return;
+
     set({ isLoading: true, error: null });
     try {
-      await finishMatchingApi(reviewer);
+      await finishMatchingApi(compoundId, reviewer);
       await triggerSuccessHaptic();
       set({
         passComplete: false,
@@ -351,8 +377,11 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
   },
 
   checkNotifications: async () => {
+    const { compoundId } = get();
+    if (!compoundId) return;
+
     try {
-      const result = await getNotifications();
+      const result = await getNotifications(compoundId);
       if (result.unread_count > 0) {
         set({
           hasNewProperties: true,
@@ -367,8 +396,11 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
   },
 
   dismissNotification: async () => {
+    const { compoundId } = get();
+    if (!compoundId) return;
+
     try {
-      await dismissNotifications({ all: true });
+      await dismissNotifications(compoundId, { all: true });
       set({ hasNewProperties: false, notificationMessage: null });
     } catch {
       // Silently ignore dismiss failures

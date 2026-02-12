@@ -4,6 +4,18 @@ const path = require('path');
 const https = require('https');
 const http = require('http');
 
+const COMPOUNDS = require('../config/compounds.json');
+
+// Determine which compound to scrape
+const compoundArg = process.argv.find(a => a.startsWith('--compound='));
+const compoundId = process.env.COMPOUND || (compoundArg ? compoundArg.split('=')[1] : COMPOUNDS.defaultCompound);
+const compound = COMPOUNDS.compounds[compoundId];
+if (!compound) {
+  console.error(`Unknown compound: ${compoundId}. Available: ${Object.keys(COMPOUNDS.compounds).join(', ')}`);
+  process.exit(1);
+}
+console.log(`Compound: ${compound.displayName} (${compoundId})`);
+
 /**
  * Master Scraper for Viva Prime Imóveis
  *
@@ -63,7 +75,7 @@ async function downloadImage(url, filepath, redirectCount = 0) {
   console.log('Complete workflow: URLs → Details → Images');
   console.log('=' .repeat(60) + '\n');
 
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({ headless: process.env.HEADLESS !== 'false' });
   const page = await browser.newPage();
   const skipPostProcessing = process.env.SKIP_POST_PROCESSING === 'true';
 
@@ -95,11 +107,12 @@ async function downloadImage(url, filepath, redirectCount = 0) {
   await page.locator('.dropdown-item').filter({ hasText: /^Casa$/ }).click();
   await page.waitForTimeout(500);
 
-  // Select Empreendimento: Alphaville 01
-  console.log('🏘️  Selecting Empreendimento: Alphaville 01');
+  // Select Empreendimento from compound config
+  const empreendimento = compound.viva.empreendimento;
+  console.log(`🏘️  Selecting Empreendimento: ${empreendimento}`);
   await page.getByRole('button', { name: 'Empreendimento' }).click();
   await page.waitForTimeout(500);
-  await page.locator('.dropdown-item').filter({ hasText: /^Alphaville 01$/ }).click();
+  await page.locator('.dropdown-item').filter({ hasText: new RegExp(`^${empreendimento}$`) }).click();
   await page.waitForTimeout(500);
 
   // Click search button
@@ -367,7 +380,7 @@ async function downloadImage(url, filepath, redirectCount = 0) {
   }
 
   // Save listings with URLs
-  const listingsDir = path.join(process.cwd(), 'data', 'vivaprimeimoveis', 'listings');
+  const listingsDir = path.join(process.cwd(), 'data', compoundId, 'vivaprimeimoveis', 'listings');
   fs.mkdirSync(listingsDir, { recursive: true });
 
   const listingsFile = path.join(listingsDir, 'all-listings.json');
@@ -387,7 +400,7 @@ async function downloadImage(url, filepath, redirectCount = 0) {
   // ========================================
   console.log('\nSTEP 3: Downloading all images...\n');
 
-  const imagesBaseDir = path.join(process.cwd(), 'data', 'vivaprimeimoveis', 'images');
+  const imagesBaseDir = path.join(process.cwd(), 'data', compoundId, 'vivaprimeimoveis', 'images');
   fs.mkdirSync(imagesBaseDir, { recursive: true });
 
   let totalDownloaded = 0;
@@ -413,28 +426,36 @@ async function downloadImage(url, filepath, redirectCount = 0) {
     let skipped = 0;
     let failed = 0;
 
+    // Build list of images to download (skip cached)
+    const toDownload = [];
     for (let j = 0; j < imageUrls.length; j++) {
       const url = imageUrls[j];
-
-      // Extract filename from URL
       const urlParts = url.split('/');
       const filename = urlParts[urlParts.length - 1] || `image_${j}.jpg`;
       const filepath = path.join(propertyDir, filename);
-
-      // Skip if already exists
       if (fs.existsSync(filepath)) {
         skipped++;
-        continue;
+      } else {
+        toDownload.push({ url, filepath, index: j });
       }
+    }
 
-      try {
-        await downloadImage(url, filepath);
-        downloaded++;
-        process.stdout.write(`  ⬇️  [${j + 1}/${imageUrls.length}] Downloaded\r`);
-      } catch (err) {
-        failed++;
-        console.log(`  ❌ [${j + 1}/${imageUrls.length}] Failed: ${err.message}`);
+    // Download in parallel batches of 5
+    const BATCH_SIZE = 5;
+    for (let b = 0; b < toDownload.length; b += BATCH_SIZE) {
+      const batch = toDownload.slice(b, b + BATCH_SIZE);
+      const results = await Promise.allSettled(
+        batch.map(({ url, filepath }) => downloadImage(url, filepath))
+      );
+      for (let k = 0; k < results.length; k++) {
+        if (results[k].status === 'fulfilled') {
+          downloaded++;
+        } else {
+          failed++;
+          console.log(`  ❌ [${batch[k].index + 1}/${imageUrls.length}] Failed: ${results[k].reason?.message}`);
+        }
       }
+      process.stdout.write(`  ⬇️  [${Math.min(b + BATCH_SIZE, toDownload.length)}/${toDownload.length}] Downloaded\r`);
     }
 
     console.log(`  ✅ ${downloaded} downloaded, ${skipped} cached, ${failed} failed`);
@@ -480,7 +501,7 @@ async function downloadImage(url, filepath, redirectCount = 0) {
 
     try {
       const { stdout, stderr } = await execPromise(
-        'python3 scripts/select_exteriors.py vivaprimeimoveis --cache-root data --work-root work_fastdup --out-root selected_exteriors --images-subdir images',
+        `python3 scripts/select_exteriors.py vivaprimeimoveis --cache-root data/${compoundId} --work-root work_fastdup --out-root selected_exteriors/${compoundId} --images-subdir images`,
         {
           cwd: process.cwd(),
           timeout: 600000  // 10 minutes
@@ -502,7 +523,7 @@ async function downloadImage(url, filepath, redirectCount = 0) {
 
     try {
       const { stdout, stderr } = await execPromise(
-        'node scripts/mosaic-module.js viva',
+        `COMPOUND=${compoundId} node scripts/mosaic-module.js viva`,
         {
           cwd: process.cwd(),
           timeout: 600000  // 10 minutes
@@ -521,9 +542,9 @@ async function downloadImage(url, filepath, redirectCount = 0) {
   // ========================================
   // FINAL SUMMARY
   // ========================================
-  const selectedDir = path.join(process.cwd(), 'selected_exteriors', 'vivaprimeimoveis');
+  const selectedDir = path.join(process.cwd(), 'selected_exteriors', compoundId, 'vivaprimeimoveis');
   const workDir = path.join(process.cwd(), 'work_fastdup');
-  const mosaicsDir = path.join(process.cwd(), 'data', 'mosaics', 'viva');
+  const mosaicsDir = path.join(process.cwd(), 'data', compoundId, 'mosaics', 'viva');
 
   console.log('\n' + '='.repeat(60));
   console.log('✅ MASTER SCRAPER COMPLETE');
@@ -534,7 +555,7 @@ async function downloadImage(url, filepath, redirectCount = 0) {
   console.log(`Images cached: ${totalSkipped}`);
   console.log(`Images failed: ${totalFailed}`);
   console.log(`\nData locations:`);
-  console.log(`  Listings JSON: ${path.join(process.cwd(), 'data', 'vivaprimeimoveis', 'listings')}`);
+  console.log(`  Listings JSON: ${path.join(process.cwd(), 'data', compoundId, 'vivaprimeimoveis', 'listings')}`);
   console.log(`  Original images: ${imagesBaseDir}`);
   console.log(`  Fastdup analysis: ${workDir}`);
   console.log(`  Selected exteriors (best 12): ${selectedDir}`);

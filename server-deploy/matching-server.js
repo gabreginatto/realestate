@@ -5,6 +5,8 @@
  * Backend API for manual property matching interface.
  * Loads smart-compare results and serves matching tasks to reviewers.
  *
+ * Multi-compound support: state is maintained per compound.
+ *
  * Features:
  * - Session management with resumable state
  * - Append-only audit log for decisions
@@ -45,44 +47,62 @@ const PUBLIC_ROOT = process.env.PUBLIC_ROOT || (
 const READ_ONLY = process.argv.includes('--read-only') || process.env.READ_ONLY === 'true';
 const SESSION_NAME = process.env.SESSION_NAME || 'default';
 
-const SMART_MATCHES_FILE = path.join(DATA_ROOT, 'deterministic-matches.json');
-const MANUAL_MATCHES_FILE = path.join(DATA_ROOT, 'manual-matches.json');
-const AUDIT_LOG_FILE = path.join(DATA_ROOT, 'manual-matches.log.jsonl');
-const MOSAICS_DIR = path.join(DATA_ROOT, 'mosaics');
+// Load compounds configuration
+const COMPOUNDS_CONFIG = JSON.parse(fs.readFileSync(path.join(__dirname, 'compounds.json'), 'utf-8'));
 
 // ============================================================================
-// STATE MANAGEMENT
+// PER-COMPOUND STATE MANAGEMENT
 // ============================================================================
 
-let matchState = {
-  session_started: null,
-  last_updated: null,
-  session_name: SESSION_NAME,
-  version: 0,
-  current_pass: 1,
-  passes_completed: 0,
-  user_finished: false,
-  pass_matched: 0,
-  pass_skipped: 0,
-  stats: {
-    total_viva_listings: 0,
-    matched: 0,
-    rejected: 0,
-    skipped: 0,
-    pending: 0,
-    in_progress: 0
-  },
-  matches: [],
-  rejected: [],
-  skipped: [],
-  in_progress: []
-};
+const compoundStates = new Map(); // compoundId -> compound state object
 
-let smartMatches = null;
-let taskQueue = [];
-let vivaListings = [];
-let coelhoListings = [];
-let passStartTotal = 0; // tracks the number of tasks at the start of the current pass
+function createCompoundState(compoundId) {
+  return {
+    compoundId,
+    matchState: {
+      session_started: null,
+      last_updated: null,
+      session_name: SESSION_NAME,
+      version: 0,
+      current_pass: 1,
+      passes_completed: 0,
+      user_finished: false,
+      pass_matched: 0,
+      pass_skipped: 0,
+      stats: {
+        total_viva_listings: 0,
+        matched: 0,
+        rejected: 0,
+        skipped: 0,
+        pending: 0,
+        in_progress: 0
+      },
+      matches: [],
+      rejected: [],
+      skipped: [],
+      in_progress: []
+    },
+    smartMatches: null,
+    taskQueue: [],
+    vivaListings: [],
+    coelhoListings: [],
+    passStartTotal: 0,
+    // Compound-specific paths
+    dataRoot: path.join(DATA_ROOT, compoundId),
+    smartMatchesFile: path.join(DATA_ROOT, compoundId, 'deterministic-matches.json'),
+    manualMatchesFile: path.join(DATA_ROOT, compoundId, 'manual-matches.json'),
+    auditLogFile: path.join(DATA_ROOT, compoundId, 'manual-matches.log.jsonl'),
+    mosaicsDir: path.join(DATA_ROOT, compoundId, 'mosaics'),
+    notificationsFile: path.join(DATA_ROOT, compoundId, 'notifications.json'),
+  };
+}
+
+function getCompoundState(compoundId) {
+  if (!compoundStates.has(compoundId)) {
+    compoundStates.set(compoundId, createCompoundState(compoundId));
+  }
+  return compoundStates.get(compoundId);
+}
 
 // ============================================================================
 // PASS CRITERIA DEFINITIONS (from iterative-matcher.js)
@@ -91,41 +111,41 @@ let passStartTotal = 0; // tracks the number of tasks at the start of the curren
 const PASS_CRITERIA = {
   1: {
     name: 'strict',
-    price_tolerance: 0.05,      // ±5%
-    area_tolerance: 0.10,       // ±10%
+    price_tolerance: 0.05,      // +/-5%
+    area_tolerance: 0.10,       // +/-10%
     beds_tolerance: 0,          // exact match
     suites_tolerance: 0,        // exact match
     park_tolerance: 0           // exact match
   },
   2: {
     name: 'relaxed',
-    price_tolerance: 0.10,      // ±10%
-    area_tolerance: 0.15,       // ±15%
+    price_tolerance: 0.10,      // +/-10%
+    area_tolerance: 0.15,       // +/-15%
     beds_tolerance: 0,          // exact match
-    suites_tolerance: 1,        // ±1
+    suites_tolerance: 1,        // +/-1
     park_tolerance: 999         // ignore
   },
   3: {
     name: 'broader',
-    price_tolerance: 0.15,      // ±15%
-    area_tolerance: 0.20,       // ±20%
-    beds_tolerance: 1,          // ±1
+    price_tolerance: 0.15,      // +/-15%
+    area_tolerance: 0.20,       // +/-20%
+    beds_tolerance: 1,          // +/-1
     suites_tolerance: 999,      // ignore
     park_tolerance: 999         // ignore
   },
   4: {
     name: 'very_broad',
-    price_tolerance: 0.25,      // ±25%
-    area_tolerance: 0.30,       // ±30%
-    beds_tolerance: 1,          // ±1
+    price_tolerance: 0.25,      // +/-25%
+    area_tolerance: 0.30,       // +/-30%
+    beds_tolerance: 1,          // +/-1
     suites_tolerance: 999,      // ignore
     park_tolerance: 999         // ignore
   },
   5: {
     name: 'exhaustive',
-    price_tolerance: 0.40,      // ±40%
-    area_tolerance: 0.50,       // ±50%
-    beds_tolerance: 2,          // ±2
+    price_tolerance: 0.40,      // +/-40%
+    area_tolerance: 0.50,       // +/-50%
+    beds_tolerance: 2,          // +/-2
     suites_tolerance: 999,      // ignore
     park_tolerance: 999         // ignore
   }
@@ -213,14 +233,14 @@ function findCandidatesForViva(viva, coelhoList, criteria, maxCandidates = MAX_C
 }
 
 // ============================================================================
-// INITIALIZATION
+// INITIALIZATION (compound-scoped)
 // ============================================================================
 
-function loadListings(site) {
-  const listingsFile = path.join(DATA_ROOT, 'listings', `${site}_listings.json`);
+function loadListings(site, cs) {
+  const listingsFile = path.join(cs.dataRoot, 'listings', `${site}_listings.json`);
 
   if (!fs.existsSync(listingsFile)) {
-    console.warn(`⚠️  ${listingsFile} not found - dynamic matching disabled`);
+    console.warn(`  [${cs.compoundId}] ${listingsFile} not found - dynamic matching disabled`);
     return [];
   }
 
@@ -228,38 +248,38 @@ function loadListings(site) {
     const data = JSON.parse(fs.readFileSync(listingsFile, 'utf-8'));
     return data.listings || [];
   } catch (error) {
-    console.warn(`⚠️  Error loading ${listingsFile}: ${error.message}`);
+    console.warn(`  [${cs.compoundId}] Error loading ${listingsFile}: ${error.message}`);
     return [];
   }
 }
 
-function loadSmartMatches() {
+function loadSmartMatches(cs) {
   try {
-    if (!fs.existsSync(SMART_MATCHES_FILE)) {
-      console.warn('⚠️  deterministic-matches.json not found — awaiting pipeline data');
+    if (!fs.existsSync(cs.smartMatchesFile)) {
+      console.warn(`  [${cs.compoundId}] deterministic-matches.json not found — awaiting pipeline data`);
       return { matches: [] };
     }
 
-    const data = JSON.parse(fs.readFileSync(SMART_MATCHES_FILE, 'utf-8'));
+    const data = JSON.parse(fs.readFileSync(cs.smartMatchesFile, 'utf-8'));
     // Convert deterministic-matches format to expected format
     const matches = (data.candidate_pairs || []).map(pair => ({
       viva: pair.viva,
       coelhoCandidates: pair.candidates || [],
       _scored: (pair.candidates || []).map(c => ({ code: c.code, score: c.score }))
     }));
-    console.log(`✓ Loaded deterministic-matches.json: ${matches.length} Viva listings with candidates`);
+    console.log(`  [${cs.compoundId}] Loaded deterministic-matches.json: ${matches.length} Viva listings with candidates`);
     return { matches };
   } catch (error) {
-    console.warn(`⚠️  Error loading deterministic-matches.json: ${error.message}`);
+    console.warn(`  [${cs.compoundId}] Error loading deterministic-matches.json: ${error.message}`);
     return { matches: [] };
   }
 }
 
-function loadManualMatches() {
+function loadManualMatches(cs) {
   try {
-    if (fs.existsSync(MANUAL_MATCHES_FILE)) {
-      const data = JSON.parse(fs.readFileSync(MANUAL_MATCHES_FILE, 'utf-8'));
-      console.log(`✓ Loaded existing manual-matches.json (${data.matches?.length || 0} matches)`);
+    if (fs.existsSync(cs.manualMatchesFile)) {
+      const data = JSON.parse(fs.readFileSync(cs.manualMatchesFile, 'utf-8'));
+      console.log(`  [${cs.compoundId}] Loaded existing manual-matches.json (${data.matches?.length || 0} matches)`);
       // Ensure pass tracking fields exist
       data.current_pass = data.current_pass || 1;
       data.passes_completed = data.passes_completed || 0;
@@ -268,7 +288,7 @@ function loadManualMatches() {
       return data;
     }
   } catch (error) {
-    console.warn(`⚠️  Error loading manual-matches.json: ${error.message}`);
+    console.warn(`  [${cs.compoundId}] Error loading manual-matches.json: ${error.message}`);
   }
 
   // Initialize new session
@@ -282,11 +302,11 @@ function loadManualMatches() {
     pass_matched: 0,
     pass_skipped: 0,
     stats: {
-      total_viva_listings: smartMatches?.matches?.length || 0,
+      total_viva_listings: cs.smartMatches?.matches?.length || 0,
       matched: 0,
       rejected: 0,
       skipped: 0,
-      pending: smartMatches?.matches?.length || 0,
+      pending: cs.smartMatches?.matches?.length || 0,
       in_progress: 0
     },
     matches: [],
@@ -296,30 +316,30 @@ function loadManualMatches() {
   };
 }
 
-function buildTaskQueue() {
+function buildTaskQueue(cs) {
   const tasks = [];
 
-  for (const item of smartMatches.matches || []) {
+  for (const item of cs.smartMatches.matches || []) {
     const vivaCode = item.viva?.code || item.viva?.propertyCode;
 
     // Skip if already matched (final decision)
-    const alreadyMatched = matchState.matches.some(m => m.viva_code === vivaCode);
+    const alreadyMatched = cs.matchState.matches.some(m => m.viva_code === vivaCode);
     if (alreadyMatched) {
       continue;
     }
 
     // For current pass, also skip if already skipped (will be reconsidered in next pass)
-    const alreadySkipped = matchState.skipped.some(s => s.viva_code === vivaCode);
+    const alreadySkipped = cs.matchState.skipped.some(s => s.viva_code === vivaCode);
     if (alreadySkipped) {
       continue;
     }
 
     // Filter out already rejected candidates AND already matched Coelho codes
-    const rejectedCodes = matchState.rejected
+    const rejectedCodes = cs.matchState.rejected
       .filter(r => r.viva_code === vivaCode)
       .map(r => r.coelho_code);
 
-    const matchedCoelhoCodes = new Set(matchState.matches.map(m => m.coelho_code));
+    const matchedCoelhoCodes = new Set(cs.matchState.matches.map(m => m.coelho_code));
 
     const candidates = (item.coelhoCandidates || [])
       .map(c => c.code || c.propertyCode)
@@ -343,7 +363,7 @@ function buildTaskQueue() {
     }
   }
 
-  console.log(`✓ Built task queue: ${tasks.length} pending Viva listings`);
+  console.log(`  [${cs.compoundId}] Built task queue: ${tasks.length} pending Viva listings`);
   return tasks;
 }
 
@@ -352,50 +372,50 @@ function buildTaskQueue() {
  * listings with broader criteria. This includes user-skipped listings AND
  * "orphan" listings that had zero candidates in previous passes.
  */
-function advanceToNextPass() {
-  const currentPass = matchState.current_pass;
+function advanceToNextPass(cs) {
+  const currentPass = cs.matchState.current_pass;
   const nextPass = currentPass + 1;
 
   if (nextPass > MAX_PASSES) {
-    console.log(`\n✅ All ${MAX_PASSES} passes completed. No more passes available.`);
+    console.log(`\n  [${cs.compoundId}] All ${MAX_PASSES} passes completed. No more passes available.`);
     return false;
   }
 
   // Check if we have raw listings to regenerate candidates
-  if (vivaListings.length === 0 || coelhoListings.length === 0) {
-    console.log(`\n⚠️  Cannot advance to Pass ${nextPass}: Raw listings not loaded`);
+  if (cs.vivaListings.length === 0 || cs.coelhoListings.length === 0) {
+    console.log(`\n  [${cs.compoundId}] Cannot advance to Pass ${nextPass}: Raw listings not loaded`);
     return false;
   }
 
   // Include ALL unmatched Viva listings: skipped + orphans (never had candidates)
-  const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
-  const allVivaCodes = vivaListings.map(l => l.code || l.propertyCode);
+  const matchedVivaCodes = new Set(cs.matchState.matches.map(m => m.viva_code));
+  const allVivaCodes = cs.vivaListings.map(l => l.code || l.propertyCode);
   const remainingVivaCodes = allVivaCodes.filter(code => !matchedVivaCodes.has(code));
 
   if (remainingVivaCodes.length === 0) {
-    console.log(`\n✅ No remaining listings to process. All listings have been matched!`);
+    console.log(`\n  [${cs.compoundId}] No remaining listings to process. All listings have been matched!`);
     return false;
   }
 
-  const skippedCount = matchState.skipped.length;
+  const skippedCount = cs.matchState.skipped.length;
   const orphanCount = remainingVivaCodes.length - skippedCount;
 
-  console.log(`\n🔄 Advancing to Pass ${nextPass} (${getPassCriteria(nextPass).name})`);
+  console.log(`\n  [${cs.compoundId}] Advancing to Pass ${nextPass} (${getPassCriteria(nextPass).name})`);
   console.log(`   Regenerating candidates for ${remainingVivaCodes.length} unmatched listings (${skippedCount} skipped + ${orphanCount} without previous candidates)...`);
 
   const criteria = getPassCriteria(nextPass);
   const remainingSet = new Set(remainingVivaCodes);
-  const matchedCoelhoCodes = new Set(matchState.matches.map(m => m.coelho_code));
+  const matchedCoelhoCodes = new Set(cs.matchState.matches.map(m => m.coelho_code));
   const newPairs = [];
 
   // Filter out already-matched Coelho listings so they can't appear as candidates
-  const availableCoelho = coelhoListings.filter(c => {
+  const availableCoelho = cs.coelhoListings.filter(c => {
     const code = c.code || c.propertyCode;
     return !matchedCoelhoCodes.has(code);
   });
 
   // Find the full Viva listings for the remaining codes
-  for (const viva of vivaListings) {
+  for (const viva of cs.vivaListings) {
     const vivaCode = viva.code || viva.propertyCode;
     if (!remainingSet.has(vivaCode)) continue;
 
@@ -416,33 +436,33 @@ function advanceToNextPass() {
   if (newPairs.length === 0) {
     console.log(`   No new candidates found with Pass ${nextPass} criteria.`);
     // Still advance the pass in case we want to try the next one
-    matchState.current_pass = nextPass;
-    return advanceToNextPass(); // Recursively try next pass
+    cs.matchState.current_pass = nextPass;
+    return advanceToNextPass(cs); // Recursively try next pass
   }
 
   // Clear skipped listings (they're being reconsidered with new candidates)
   // Keep track of them in a separate field for audit purposes
-  matchState.skipped_previous_passes = matchState.skipped_previous_passes || [];
-  matchState.skipped_previous_passes.push({
+  cs.matchState.skipped_previous_passes = cs.matchState.skipped_previous_passes || [];
+  cs.matchState.skipped_previous_passes.push({
     pass: currentPass,
-    skipped: [...matchState.skipped]
+    skipped: [...cs.matchState.skipped]
   });
-  matchState.skipped = [];
+  cs.matchState.skipped = [];
 
   // Update smartMatches with new pairs
-  smartMatches.matches = newPairs;
+  cs.smartMatches.matches = newPairs;
 
   // Update pass tracking
-  matchState.current_pass = nextPass;
-  matchState.passes_completed = currentPass;
-  matchState.pass_matched = 0;
-  matchState.pass_skipped = 0;
+  cs.matchState.current_pass = nextPass;
+  cs.matchState.passes_completed = currentPass;
+  cs.matchState.pass_matched = 0;
+  cs.matchState.pass_skipped = 0;
 
   // Rebuild task queue with new candidates
-  taskQueue = buildTaskQueue();
-  passStartTotal = taskQueue.length;
+  cs.taskQueue = buildTaskQueue(cs);
+  cs.passStartTotal = cs.taskQueue.length;
 
-  appendAuditLog('pass_advance', {
+  appendAuditLog(cs, 'pass_advance', {
     from_pass: currentPass,
     to_pass: nextPass,
     criteria: criteria.name,
@@ -450,9 +470,9 @@ function advanceToNextPass() {
     listings_with_candidates: newPairs.length
   });
 
-  saveMatchState();
+  saveMatchState(cs);
 
-  console.log(`✅ Pass ${nextPass} ready: ${taskQueue.length} listings to review\n`);
+  console.log(`  [${cs.compoundId}] Pass ${nextPass} ready: ${cs.taskQueue.length} listings to review\n`);
   return true;
 }
 
@@ -460,18 +480,18 @@ function advanceToNextPass() {
  * Check if current pass is complete and advance if needed.
  * Returns true if there are tasks available (either existing or from next pass).
  */
-function checkAndAdvancePass() {
-  if (taskQueue.length > 0) {
+function checkAndAdvancePass(cs) {
+  if (cs.taskQueue.length > 0) {
     return true; // Still have work in current pass
   }
 
   // Current pass complete - check if we should advance
-  const skippedCount = matchState.skipped.length;
-  const matchedCount = matchState.matches.length;
-  const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
-  const totalUnmatched = vivaListings.filter(l => !matchedVivaCodes.has(l.code || l.propertyCode)).length;
+  const skippedCount = cs.matchState.skipped.length;
+  const matchedCount = cs.matchState.matches.length;
+  const matchedVivaCodes = new Set(cs.matchState.matches.map(m => m.viva_code));
+  const totalUnmatched = cs.vivaListings.filter(l => !matchedVivaCodes.has(l.code || l.propertyCode)).length;
 
-  console.log(`\n📊 Pass ${matchState.current_pass} complete:`);
+  console.log(`\n  [${cs.compoundId}] Pass ${cs.matchState.current_pass} complete:`);
   console.log(`   Matched: ${matchedCount}`);
   console.log(`   Skipped: ${skippedCount}`);
   console.log(`   Total unmatched: ${totalUnmatched}`);
@@ -482,44 +502,44 @@ function checkAndAdvancePass() {
   }
 
   // Try to advance to next pass
-  return advanceToNextPass();
+  return advanceToNextPass(cs);
 }
 
-function saveMatchState() {
+function saveMatchState(cs) {
   if (READ_ONLY) {
-    console.log('⚠️  Read-only mode: not saving state');
+    console.log(`  [${cs.compoundId}] Read-only mode: not saving state`);
     return;
   }
 
   try {
-    matchState.last_updated = new Date().toISOString();
-    matchState.version++;
+    cs.matchState.last_updated = new Date().toISOString();
+    cs.matchState.version++;
 
     // Recalculate stats -- use per-pass counters for consistent progress tracking
-    const passMatched = matchState.pass_matched || 0;
-    const passSkipped = matchState.pass_skipped || 0;
+    const passMatched = cs.matchState.pass_matched || 0;
+    const passSkipped = cs.matchState.pass_skipped || 0;
     const passCompleted = passMatched + passSkipped;
-    const passTotal = passCompleted + taskQueue.length;
-    matchState.stats = {
+    const passTotal = passCompleted + cs.taskQueue.length;
+    cs.matchState.stats = {
       total_viva_listings: passTotal,
       matched: passMatched,
-      rejected: matchState.rejected.length,
+      rejected: cs.matchState.rejected.length,
       skipped: passSkipped,
-      pending: taskQueue.length,
-      in_progress: matchState.in_progress.length
+      pending: cs.taskQueue.length,
+      in_progress: cs.matchState.in_progress.length
     };
 
-    fs.writeFileSync(MANUAL_MATCHES_FILE, JSON.stringify(matchState, null, 2));
-    console.log(`✓ Saved match state (version ${matchState.version})`);
+    fs.writeFileSync(cs.manualMatchesFile, JSON.stringify(cs.matchState, null, 2));
+    console.log(`  [${cs.compoundId}] Saved match state (version ${cs.matchState.version})`);
 
     // Debounced upload to GCS (at most once per 30s)
-    uploadUserDecisions();
+    uploadUserDecisions(cs.compoundId);
   } catch (error) {
-    console.error(`❌ Error saving match state: ${error.message}`);
+    console.error(`  [${cs.compoundId}] Error saving match state: ${error.message}`);
   }
 }
 
-function appendAuditLog(action, payload) {
+function appendAuditLog(cs, action, payload) {
   if (READ_ONLY) return;
 
   try {
@@ -532,9 +552,9 @@ function appendAuditLog(action, payload) {
       hash: crypto.createHash('sha256').update(JSON.stringify(payload)).digest('hex').substring(0, 16)
     };
 
-    fs.appendFileSync(AUDIT_LOG_FILE, JSON.stringify(logEntry) + '\n');
+    fs.appendFileSync(cs.auditLogFile, JSON.stringify(logEntry) + '\n');
   } catch (error) {
-    console.error(`❌ Error writing audit log: ${error.message}`);
+    console.error(`  [${cs.compoundId}] Error writing audit log: ${error.message}`);
   }
 }
 
@@ -576,17 +596,19 @@ function calculateDeltas(vivaListing, coelhoListing) {
 const GCS_POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
 /**
- * Reload pipeline-generated data (matches + listings) and rebuild task queue.
+ * Reload pipeline-generated data (matches + listings) and rebuild task queue
+ * for a specific compound.
  * Preserves user decisions (matchState.matches, .rejected, .skipped, etc).
  */
-function reloadPipelineData() {
-  console.log('[Reload] Reloading pipeline data from disk...');
-  smartMatches = loadSmartMatches();
-  vivaListings = loadListings('vivaprimeimoveis');
-  coelhoListings = loadListings('coelhodafonseca');
-  taskQueue = buildTaskQueue();
-  passStartTotal = taskQueue.length;
-  console.log(`[Reload] Done — ${smartMatches.matches.length} match groups, ${taskQueue.length} pending tasks`);
+function reloadPipelineData(compoundId) {
+  console.log(`[Reload] Reloading pipeline data for ${compoundId}...`);
+  const cs = getCompoundState(compoundId);
+  cs.smartMatches = loadSmartMatches(cs);
+  cs.vivaListings = loadListings('vivaprimeimoveis', cs);
+  cs.coelhoListings = loadListings('coelhodafonseca', cs);
+  cs.taskQueue = buildTaskQueue(cs);
+  cs.passStartTotal = cs.taskQueue.length;
+  console.log(`[Reload] Done — ${cs.smartMatches.matches.length} match groups, ${cs.taskQueue.length} pending tasks`);
 }
 
 let _pollTimer = null;
@@ -595,12 +617,12 @@ function startPolling() {
   console.log(`[GCS] Polling for new pipeline data every ${GCS_POLL_INTERVAL_MS / 1000}s`);
   _pollTimer = setInterval(async () => {
     try {
-      const hasNew = await checkForNewPipelineData();
-      if (hasNew) {
-        console.log('[GCS] New pipeline data detected — syncing...');
-        await syncPipelineData();
-        reloadPipelineData();
-        console.log('[GCS] New pipeline data loaded successfully');
+      const updatedCompounds = await checkForNewPipelineData();
+      for (const compoundId of updatedCompounds) {
+        console.log(`[GCS] New pipeline data for ${compoundId} — syncing...`);
+        await syncPipelineData(compoundId);
+        reloadPipelineData(compoundId);
+        console.log(`[GCS] New pipeline data for ${compoundId} loaded successfully`);
       }
     } catch (err) {
       console.error(`[GCS] Polling error: ${err.message}`);
@@ -609,547 +631,13 @@ function startPolling() {
 }
 
 // ============================================================================
-// EXPRESS APP
+// NOTIFICATION HELPERS (compound-scoped)
 // ============================================================================
 
-const app = express();
-
-app.use(cors());
-app.use(express.json({ type: ['application/json', 'application/json; charset=utf-8', 'application/json; charset=UTF-8'] }));
-app.use(express.static(PUBLIC_ROOT));
-app.use('/mosaics', express.static(MOSAICS_DIR));
-
-// Cloud Run service URL opens "/" by default; route it to the matcher UI entrypoint.
-app.get('/', (req, res) => {
-  res.redirect('/matcher.html');
-});
-
-// ============================================================================
-// API ENDPOINTS
-// ============================================================================
-
-// GET /api/session - Get current session info
-app.get('/api/session', (req, res) => {
-  const criteria = getPassCriteria(matchState.current_pass);
-
-  // Check for unread pipeline_complete notifications
-  let has_new_properties = false;
+function loadNotifications(cs) {
   try {
-    const notifData = loadNotifications();
-    has_new_properties = notifData.notifications.some(n => n.type === 'pipeline_complete' && !n.read);
-  } catch {
-    // Ignore notification errors in session endpoint
-  }
-
-  res.json({
-    session_name: matchState.session_name,
-    session_started: matchState.session_started,
-    last_updated: matchState.last_updated,
-    version: matchState.version,
-    stats: matchState.stats,
-    read_only: READ_ONLY,
-    current_pass: matchState.current_pass,
-    passes_completed: matchState.passes_completed,
-    max_passes: MAX_PASSES,
-    pass_criteria: {
-      name: criteria.name,
-      price_tolerance: `±${(criteria.price_tolerance * 100).toFixed(0)}%`,
-      area_tolerance: `±${(criteria.area_tolerance * 100).toFixed(0)}%`
-    },
-    has_new_properties,
-  });
-});
-
-// GET /api/listing/:id - Get specific Viva listing
-app.get('/api/listing/:id', (req, res) => {
-  const vivaCode = req.params.id;
-  const task = taskQueue.find(t => t.viva_code === vivaCode);
-
-  if (!task) {
-    return res.status(404).json({ error: 'Listing not found or already processed' });
-  }
-
-  res.json({
-    viva_code: task.viva_code,
-    viva: task.viva,
-    remaining_candidates: task.remaining_candidates,
-    mosaic_path: `/mosaics/viva/${vivaCode}.png`
-  });
-});
-
-// GET /api/candidates/:id - Get candidates for Viva listing
-app.get('/api/candidates/:id', (req, res) => {
-  const vivaCode = req.params.id;
-  const task = taskQueue.find(t => t.viva_code === vivaCode);
-
-  if (!task) {
-    return res.status(404).json({ error: 'Listing not found' });
-  }
-
-  // Filter out already rejected candidates AND already matched Coelho codes
-  const rejectedCodes = matchState.rejected
-    .filter(r => r.viva_code === vivaCode)
-    .map(r => r.coelho_code);
-
-  const matchedCoelhoCodes = new Set(matchState.matches.map(m => m.coelho_code));
-
-  const candidates = task.candidates
-    .filter(c => {
-      const code = c.code || c.propertyCode;
-      return !rejectedCodes.includes(code) && !matchedCoelhoCodes.has(code);
-    })
-    .map((candidate, idx) => {
-      const code = candidate.code || candidate.propertyCode;
-      const scored = task.scored.find(s => s.code === code);
-
-      // Transform candidate data to include features string for frontend parsing
-      const transformedCandidate = {
-        ...candidate,
-        features: `${candidate.built || 0}m² construída, ${candidate.beds || 0} dorm, ${candidate.suites || 0} suíte`
-      };
-
-      return {
-        code,
-        candidate: transformedCandidate,
-        ai_score: scored?.score || null,
-        deltas: calculateDeltas(task.viva, candidate),
-        mosaic_path: `/mosaics/coelho/${code}.png`
-      };
-    });
-
-  res.json({
-    viva_code: vivaCode,
-    candidates,
-    total_candidates: candidates.length
-  });
-});
-
-// GET /api/next - Get next listing to review
-app.get('/api/next', (req, res) => {
-  const reviewer = req.query.reviewer || 'anonymous';
-
-  // If user has finished, return done
-  if (matchState.user_finished) {
-    return res.json({
-      done: true,
-      message: `Matching complete! ${matchState.matches.length} total matches found.`,
-      final_stats: {
-        total_matches: matchState.matches.length,
-        total_skipped: matchState.skipped.length,
-        passes_completed: matchState.current_pass
-      }
-    });
-  }
-
-  // Check if current pass is exhausted
-  if (taskQueue.length === 0) {
-    const skippedCount = matchState.skipped.length;
-    const currentCriteria = getPassCriteria(matchState.current_pass);
-    const nextPassNum = matchState.current_pass + 1;
-
-    // Count orphan Viva listings (never had candidates in any pass)
-    const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
-    const skippedVivaCodes = new Set(matchState.skipped.map(s => s.viva_code));
-    const orphanCount = vivaListings.filter(l => {
-      const code = l.code || l.propertyCode;
-      return !matchedVivaCodes.has(code) && !skippedVivaCodes.has(code);
-    }).length;
-
-    const unmatchedCount = skippedCount + orphanCount;
-    const hasNextPass = nextPassNum <= MAX_PASSES && unmatchedCount > 0;
-    const nextCriteria = hasNextPass ? getPassCriteria(nextPassNum) : null;
-
-    return res.json({
-      pass_complete: true,
-      current_pass: matchState.current_pass,
-      pass_name: currentCriteria.name,
-      stats: {
-        matched: matchState.matches.length,
-        skipped: skippedCount,
-        orphans: orphanCount,
-        total_reviewed: matchState.matches.length + skippedCount
-      },
-      has_next_pass: hasNextPass,
-      next_pass: hasNextPass ? {
-        number: nextPassNum,
-        name: nextCriteria.name,
-        price_tolerance: `\u00b1${(nextCriteria.price_tolerance * 100).toFixed(0)}%`,
-        area_tolerance: `\u00b1${(nextCriteria.area_tolerance * 100).toFixed(0)}%`,
-        listings_to_review: unmatchedCount
-      } : null
-    });
-  }
-
-  // Clean up stale locks (older than LOCK_TIMEOUT_MS)
-  const now = Date.now();
-  const staleBefore = matchState.in_progress.length;
-  matchState.in_progress = matchState.in_progress.filter(ip => {
-    const lockTime = new Date(ip.last_active || ip.started_at).getTime();
-    return (now - lockTime) < LOCK_TIMEOUT_MS;
-  });
-  if (matchState.in_progress.length < staleBefore) {
-    console.log(`🔓 Cleaned up ${staleBefore - matchState.in_progress.length} stale lock(s)`);
-  }
-
-  // Find first listing not in progress by another reviewer
-  const available = taskQueue.find(t => {
-    const inProgress = matchState.in_progress.find(ip => ip.viva_code === t.viva_code);
-    return !inProgress || inProgress.reviewer === reviewer;
-  });
-
-  if (!available) {
-    return res.json({ done: true, message: 'All listings reviewed!' });
-  }
-
-  // Mark as in progress
-  const existingIdx = matchState.in_progress.findIndex(ip => ip.viva_code === available.viva_code);
-  if (existingIdx >= 0) {
-    matchState.in_progress[existingIdx].last_active = new Date().toISOString();
-  } else {
-    matchState.in_progress.push({
-      viva_code: available.viva_code,
-      reviewer,
-      started_at: new Date().toISOString(),
-      last_active: new Date().toISOString()
-    });
-  }
-
-  // Transform viva data to match frontend expectations
-  const viva = available.viva;
-  const transformedViva = {
-    ...viva,
-    specs: {
-      area_construida: viva.built,
-      dormitorios: viva.beds,
-      suites: viva.suites
-    }
-  };
-
-  const currentCriteria = getPassCriteria(matchState.current_pass);
-  res.json({
-    viva_code: available.viva_code,
-    viva: transformedViva,
-    remaining_candidates: available.remaining_candidates,
-    mosaic_path: `/mosaics/viva/${available.viva_code}.png`,
-    current_pass: matchState.current_pass,
-    pass_name: currentCriteria.name,
-    pending_in_pass: taskQueue.length
-  });
-});
-
-// POST /api/match - Record a confirmed match
-app.post('/api/match', (req, res) => {
-  if (READ_ONLY) {
-    return res.status(403).json({ error: 'Read-only mode enabled' });
-  }
-
-  const { viva_code, coelho_code, reviewer, time_spent_sec, notes } = req.body;
-
-  if (!viva_code || !coelho_code) {
-    return res.status(400).json({ error: 'Missing viva_code or coelho_code' });
-  }
-
-  // Find task
-  const task = taskQueue.find(t => t.viva_code === viva_code);
-  if (!task) {
-    return res.status(404).json({ error: 'Listing not found' });
-  }
-
-  const scored = task.scored.find(s => s.code === coelho_code);
-
-  const match = {
-    viva_code,
-    coelho_code,
-    matched_at: new Date().toISOString(),
-    reviewer: reviewer || 'anonymous',
-    time_spent_sec: time_spent_sec || null,
-    ai_score: scored?.score || null,
-    confidence: 'manual_confirmed',
-    notes: notes || null
-  };
-
-  matchState.matches.push(match);
-  matchState.pass_matched = (matchState.pass_matched || 0) + 1;
-
-  // Remove from in_progress
-  matchState.in_progress = matchState.in_progress.filter(ip => ip.viva_code !== viva_code);
-
-  // Remove from task queue
-  const taskIdx = taskQueue.findIndex(t => t.viva_code === viva_code);
-  if (taskIdx >= 0) taskQueue.splice(taskIdx, 1);
-
-  appendAuditLog('match', match);
-  saveMatchState();
-
-  res.json({ success: true, match, remaining: taskQueue.length });
-});
-
-// POST /api/reject - Reject a specific candidate
-app.post('/api/reject', (req, res) => {
-  if (READ_ONLY) {
-    return res.status(403).json({ error: 'Read-only mode enabled' });
-  }
-
-  const { viva_code, coelho_code, reviewer, reason } = req.body;
-
-  if (!viva_code || !coelho_code) {
-    return res.status(400).json({ error: 'Missing viva_code or coelho_code' });
-  }
-
-  const rejection = {
-    viva_code,
-    coelho_code,
-    rejected_at: new Date().toISOString(),
-    reviewer: reviewer || 'anonymous',
-    reason: reason || 'visual_mismatch'
-  };
-
-  matchState.rejected.push(rejection);
-  appendAuditLog('reject', rejection);
-  saveMatchState();
-
-  // Rebuild task queue to update remaining candidates
-  taskQueue = buildTaskQueue();
-
-  res.json({ success: true, rejection, remaining: taskQueue.length });
-});
-
-// POST /api/skip - Skip to next Viva listing (no matches found)
-app.post('/api/skip', (req, res) => {
-  if (READ_ONLY) {
-    return res.status(403).json({ error: 'Read-only mode enabled' });
-  }
-
-  const { viva_code, reviewer, reason } = req.body;
-
-  if (!viva_code) {
-    return res.status(400).json({ error: 'Missing viva_code' });
-  }
-
-  const skip = {
-    viva_code,
-    skipped_at: new Date().toISOString(),
-    reviewer: reviewer || 'anonymous',
-    reason: reason || 'no_good_candidates'
-  };
-
-  matchState.skipped.push(skip);
-  matchState.pass_skipped = (matchState.pass_skipped || 0) + 1;
-  matchState.in_progress = matchState.in_progress.filter(ip => ip.viva_code !== viva_code);
-
-  // Remove from task queue
-  const taskIdx = taskQueue.findIndex(t => t.viva_code === viva_code);
-  if (taskIdx >= 0) taskQueue.splice(taskIdx, 1);
-
-  appendAuditLog('skip', skip);
-  saveMatchState();
-
-  res.json({ success: true, skip, remaining: taskQueue.length });
-});
-
-// GET /api/progress - Get completion stats
-app.get('/api/progress', (req, res) => {
-  // Use per-pass counters for progress so percentages are scoped to the current pass
-  const passMatched = matchState.pass_matched || 0;
-  const passSkipped = matchState.pass_skipped || 0;
-  const passCompleted = passMatched + passSkipped;
-  const passTotal = passCompleted + taskQueue.length;
-  const progress_pct = passTotal > 0 ? ((passCompleted / passTotal) * 100).toFixed(1) : 0;
-
-  const currentCriteria = getPassCriteria(matchState.current_pass);
-  res.json({
-    total_viva_listings: passTotal,
-    matched: passMatched,
-    skipped: passSkipped,
-    pending: taskQueue.length,
-    in_progress: matchState.in_progress.length,
-    completed: passCompleted,
-    progress_pct: parseFloat(progress_pct),
-    // Cumulative stats across all passes for overall context
-    cumulative_matched: matchState.matches.length,
-    cumulative_skipped: matchState.skipped.length + (matchState.skipped_previous_passes || []).reduce((sum, p) => sum + p.skipped.length, 0),
-    current_pass: matchState.current_pass,
-    max_passes: MAX_PASSES,
-    pass_name: currentCriteria.name,
-    pass_criteria: {
-      price_tolerance: `±${(currentCriteria.price_tolerance * 100).toFixed(0)}%`,
-      area_tolerance: `±${(currentCriteria.area_tolerance * 100).toFixed(0)}%`
-    }
-  });
-});
-
-// POST /api/undo - Undo last decision for current reviewer
-app.post('/api/undo', (req, res) => {
-  if (READ_ONLY) {
-    return res.status(403).json({ error: 'Read-only mode enabled' });
-  }
-
-  const { reviewer } = req.body;
-  const reviewerName = reviewer || 'anonymous';
-
-  // Find last action by this reviewer
-  let undone = null;
-
-  // Check matches (most recent first)
-  for (let i = matchState.matches.length - 1; i >= 0; i--) {
-    if (matchState.matches[i].reviewer === reviewerName) {
-      undone = { type: 'match', ...matchState.matches[i] };
-      matchState.matches.splice(i, 1);
-      break;
-    }
-  }
-
-  // If not found, check skips
-  if (!undone) {
-    for (let i = matchState.skipped.length - 1; i >= 0; i--) {
-      if (matchState.skipped[i].reviewer === reviewerName) {
-        undone = { type: 'skip', ...matchState.skipped[i] };
-        matchState.skipped.splice(i, 1);
-        break;
-      }
-    }
-  }
-
-  if (!undone) {
-    return res.status(404).json({ error: 'No recent actions to undo' });
-  }
-
-  // Decrement per-pass counters
-  if (undone.type === 'match') {
-    matchState.pass_matched = Math.max(0, (matchState.pass_matched || 0) - 1);
-  } else if (undone.type === 'skip') {
-    matchState.pass_skipped = Math.max(0, (matchState.pass_skipped || 0) - 1);
-  }
-
-  appendAuditLog('undo', { undone, reviewer: reviewerName });
-
-  // Rebuild task queue
-  taskQueue = buildTaskQueue();
-  saveMatchState();
-
-  res.json({ success: true, undone, remaining: taskQueue.length });
-});
-
-// GET /api/audit - Stream decision history
-app.get('/api/audit', (req, res) => {
-  try {
-    if (!fs.existsSync(AUDIT_LOG_FILE)) {
-      return res.json({ entries: [] });
-    }
-
-    const lines = fs.readFileSync(AUDIT_LOG_FILE, 'utf-8').trim().split('\n');
-    const entries = lines.filter(Boolean).map(line => JSON.parse(line));
-
-    res.json({ entries, total: entries.length });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// POST /api/pass/advance - User confirms advancing to next pass
-app.post('/api/pass/advance', (req, res) => {
-  if (READ_ONLY) {
-    return res.status(403).json({ error: 'Read-only mode enabled' });
-  }
-
-  const advanced = advanceToNextPass();
-
-  if (!advanced) {
-    return res.json({
-      success: false,
-      message: 'Cannot advance to next pass',
-      current_pass: matchState.current_pass
-    });
-  }
-
-  const criteria = getPassCriteria(matchState.current_pass);
-  res.json({
-    success: true,
-    current_pass: matchState.current_pass,
-    pass_name: criteria.name,
-    pending: taskQueue.length
-  });
-});
-
-// POST /api/pass/finish - User says "I'm done" → save, send report, respond
-app.post('/api/pass/finish', async (req, res) => {
-  if (READ_ONLY) {
-    return res.status(403).json({ error: 'Read-only mode enabled' });
-  }
-
-  matchState.user_finished = true;
-
-  appendAuditLog('user_finished', {
-    total_matches: matchState.matches.length,
-    total_skipped: matchState.skipped.length,
-    passes_completed: matchState.current_pass,
-    reviewer: req.body.reviewer || 'anonymous'
-  });
-
-  saveMatchState();
-
-  // Auto-send unmatched report email
-  let emailSent = false;
-  let emailError = null;
-  const reportEmail = process.env.REPORT_EMAIL;
-
-  if (reportEmail) {
-    try {
-      const unmatchedListings = getUnmatchedListings();
-      const htmlContent = generateEmailHTML(unmatchedListings, matchState.matches.length);
-      const nodemailer = require('nodemailer');
-
-      const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: false,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-
-      await transporter.sendMail({
-        from: process.env.SMTP_USER,
-        to: reportEmail,
-        subject: `Property Matching Report - ${matchState.matches.length} matched, ${unmatchedListings.length} unmatched`,
-        html: htmlContent,
-      });
-
-      emailSent = true;
-      appendAuditLog('report_auto_sent', { to: reportEmail, unmatched_count: unmatchedListings.length });
-      console.log(`✉️  Report sent to ${reportEmail}`);
-    } catch (err) {
-      emailError = err.message;
-      console.error(`⚠️  Failed to send report email: ${err.message}`);
-    }
-  }
-
-  res.json({
-    success: true,
-    summary: {
-      total_matches: matchState.matches.length,
-      total_skipped: matchState.skipped.length,
-      passes_completed: matchState.current_pass
-    },
-    email: reportEmail ? {
-      sent: emailSent,
-      to: reportEmail,
-      error: emailError
-    } : null
-  });
-});
-
-// ============================================================================
-// PIPELINE & NOTIFICATION ENDPOINTS
-// ============================================================================
-
-const NOTIFICATIONS_FILE = path.join(DATA_ROOT, 'notifications.json');
-
-function loadNotifications() {
-  try {
-    if (fs.existsSync(NOTIFICATIONS_FILE)) {
-      return JSON.parse(fs.readFileSync(NOTIFICATIONS_FILE, 'utf-8'));
+    if (fs.existsSync(cs.notificationsFile)) {
+      return JSON.parse(fs.readFileSync(cs.notificationsFile, 'utf-8'));
     }
   } catch {
     // Corrupted file, start fresh
@@ -1157,384 +645,36 @@ function loadNotifications() {
   return { notifications: [] };
 }
 
-function saveNotifications(data) {
-  fs.writeFileSync(NOTIFICATIONS_FILE, JSON.stringify(data, null, 2));
+function saveNotifications(cs, data) {
+  fs.writeFileSync(cs.notificationsFile, JSON.stringify(data, null, 2));
 }
 
-// POST /api/pipeline/trigger - Record that a pipeline run was requested
-app.post('/api/pipeline/trigger', (req, res) => {
-  try {
-    const data = loadNotifications();
-
-    const notification = {
-      id: crypto.randomUUID(),
-      type: 'pipeline_trigger',
-      message: 'Pipeline run requested',
-      data: { requested_at: new Date().toISOString() },
-      created_at: new Date().toISOString(),
-      read: false,
-    };
-
-    data.notifications.push(notification);
-    saveNotifications(data);
-
-    res.json({ triggered: true, message: 'Pipeline trigger recorded' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// POST /api/pipeline/complete - Called by pipeline-runner when done
-app.post('/api/pipeline/complete', (req, res) => {
-  try {
-    const { new_viva = 0, new_coelho = 0, timestamp } = req.body;
-    const data = loadNotifications();
-
-    const notification = {
-      id: crypto.randomUUID(),
-      type: 'pipeline_complete',
-      message: `New properties available! ${new_viva} Viva, ${new_coelho} Coelho listings scraped`,
-      data: { new_viva, new_coelho, timestamp: timestamp || new Date().toISOString() },
-      created_at: new Date().toISOString(),
-      read: false,
-    };
-
-    data.notifications.push(notification);
-    saveNotifications(data);
-
-    console.log(`Pipeline complete notification: ${notification.message}`);
-    res.json({ success: true, notification_id: notification.id });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// GET /api/notifications - Returns unread notifications
-app.get('/api/notifications', (req, res) => {
-  try {
-    const data = loadNotifications();
-    const unread = data.notifications.filter(n => !n.read);
-
-    res.json({
-      notifications: unread,
-      unread_count: unread.length,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// POST /api/notifications/dismiss - Mark notifications as read
-app.post('/api/notifications/dismiss', (req, res) => {
-  try {
-    const { id, all } = req.body;
-    const data = loadNotifications();
-
-    if (all) {
-      data.notifications.forEach(n => { n.read = true; });
-    } else if (id) {
-      const notification = data.notifications.find(n => n.id === id);
-      if (notification) {
-        notification.read = true;
-      } else {
-        return res.status(404).json({ error: 'Notification not found' });
-      }
-    } else {
-      return res.status(400).json({ error: 'Must provide id or all: true' });
-    }
-
-    saveNotifications(data);
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // ============================================================================
-// MATCH VALIDATION & EXPORT ENDPOINTS
+// HELPER FUNCTIONS (compound-scoped)
 // ============================================================================
 
-// GET /api/matches/validate - Cross-reference matches against listings
-app.get('/api/matches/validate', (req, res) => {
-  const valid = [];
-  const invalid = [];
-  const duplicates = [];
-
-  // Build lookup sets
-  const vivaCodeSet = new Set(vivaListings.map(l => l.code || l.propertyCode));
-  const coelhoCodeSet = new Set(coelhoListings.map(l => l.code || l.propertyCode));
-
-  // Track duplicates
-  const vivaMatchCount = {};
-  const coelhoMatchCount = {};
-
-  for (const match of matchState.matches) {
-    // Check validity
-    const vivaExists = vivaCodeSet.has(match.viva_code);
-    const coelhoExists = coelhoCodeSet.has(match.coelho_code);
-
-    if (!vivaExists) {
-      invalid.push({ match, reason: `viva_code '${match.viva_code}' not found in listings` });
-    } else if (!coelhoExists) {
-      invalid.push({ match, reason: `coelho_code '${match.coelho_code}' not found in listings` });
-    } else {
-      valid.push(match);
-    }
-
-    // Track for duplicate detection
-    vivaMatchCount[match.viva_code] = (vivaMatchCount[match.viva_code] || 0) + 1;
-    coelhoMatchCount[match.coelho_code] = (coelhoMatchCount[match.coelho_code] || 0) + 1;
-  }
-
-  // Find duplicates
-  for (const [code, count] of Object.entries(vivaMatchCount)) {
-    if (count > 1) {
-      duplicates.push({
-        code,
-        type: 'viva',
-        matches: matchState.matches.filter(m => m.viva_code === code)
-      });
-    }
-  }
-  for (const [code, count] of Object.entries(coelhoMatchCount)) {
-    if (count > 1) {
-      duplicates.push({
-        code,
-        type: 'coelho',
-        matches: matchState.matches.filter(m => m.coelho_code === code)
-      });
-    }
-  }
-
-  res.json({
-    valid,
-    invalid,
-    duplicates,
-    summary: {
-      total: matchState.matches.length,
-      valid_count: valid.length,
-      invalid_count: invalid.length,
-      duplicate_count: duplicates.length
-    }
-  });
-});
-
-// GET /api/matches/export - Export enriched match data with full listing details
-app.get('/api/matches/export', (req, res) => {
-  // Build lookup maps
-  const vivaMap = new Map();
-  for (const l of vivaListings) {
-    vivaMap.set(l.code || l.propertyCode, l);
-  }
-  const coelhoMap = new Map();
-  for (const l of coelhoListings) {
-    coelhoMap.set(l.code || l.propertyCode, l);
-  }
-
-  const enrichedMatches = matchState.matches.map(match => {
-    const vivaListing = vivaMap.get(match.viva_code);
-    const coelhoListing = coelhoMap.get(match.coelho_code);
-
-    return {
-      viva: vivaListing ? {
-        code: match.viva_code,
-        price: vivaListing.price,
-        address: vivaListing.address,
-        url: vivaListing.url,
-        beds: vivaListing.beds,
-        suites: vivaListing.suites,
-        built: vivaListing.built,
-        park: vivaListing.park
-      } : { code: match.viva_code, error: 'listing not found' },
-      coelho: coelhoListing ? {
-        code: match.coelho_code,
-        price: coelhoListing.price,
-        address: coelhoListing.address,
-        url: coelhoListing.url,
-        beds: coelhoListing.beds,
-        suites: coelhoListing.suites,
-        built: coelhoListing.built,
-        park: coelhoListing.park
-      } : { code: match.coelho_code, error: 'listing not found' },
-      matched_at: match.matched_at,
-      reviewer: match.reviewer,
-      ai_score: match.ai_score,
-      confidence: match.confidence
-    };
-  });
-
-  res.json({
-    exported_at: new Date().toISOString(),
-    total_matches: enrichedMatches.length,
-    matches: enrichedMatches
-  });
-});
-
-// ============================================================================
-// UNMATCHED REPORT & EMAIL ENDPOINTS
-// ============================================================================
-
-app.get('/api/report/unmatched', (req, res) => {
-  // Get all viva codes that were in the candidate pool
+function getUnmatchedListings(cs) {
   const allVivaCodes = new Set();
-  for (const item of smartMatches.matches || []) {
+  for (const item of cs.smartMatches.matches || []) {
     const vivaCode = item.viva?.code || item.viva?.propertyCode;
     if (vivaCode) allVivaCodes.add(vivaCode);
   }
-
-  // Also include viva codes from skipped_previous_passes
-  if (matchState.skipped_previous_passes) {
-    for (const passData of matchState.skipped_previous_passes) {
+  if (cs.matchState.skipped_previous_passes) {
+    for (const passData of cs.matchState.skipped_previous_passes) {
       for (const skip of passData.skipped || []) {
         allVivaCodes.add(skip.viva_code);
       }
     }
   }
-  for (const skip of matchState.skipped || []) {
+  for (const skip of cs.matchState.skipped || []) {
     allVivaCodes.add(skip.viva_code);
   }
 
-  // Get matched viva codes
-  const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
-
-  // Find unmatched
-  const unmatchedCodes = [...allVivaCodes].filter(code => !matchedVivaCodes.has(code));
-
-  // Build lookup map from vivaListings
-  const vivaMap = new Map();
-  for (const l of vivaListings) {
-    vivaMap.set(l.code || l.propertyCode, l);
-  }
-
-  const unmatchedListings = unmatchedCodes.map(code => {
-    const listing = vivaMap.get(code);
-    if (!listing) {
-      return { code, error: 'listing data not found' };
-    }
-    return {
-      code,
-      price: listing.price,
-      address: listing.address,
-      url: listing.url,
-      beds: listing.beds,
-      suites: listing.suites,
-      built: listing.built,
-      park: listing.park,
-      neighbourhood: listing.neighbourhood || listing.bairro
-    };
-  });
-
-  res.json({
-    total_viva: allVivaCodes.size,
-    total_matched: matchedVivaCodes.size,
-    total_unmatched: unmatchedListings.length,
-    listings: unmatchedListings
-  });
-});
-
-app.post('/api/report/send-email', async (req, res) => {
-  const { to } = req.body;
-
-  if (!to || !to.includes('@')) {
-    return res.status(400).json({ error: 'Valid email address required' });
-  }
-
-  try {
-    // Get unmatched data
-    const allVivaCodes = new Set();
-    for (const item of smartMatches.matches || []) {
-      const vivaCode = item.viva?.code || item.viva?.propertyCode;
-      if (vivaCode) allVivaCodes.add(vivaCode);
-    }
-    if (matchState.skipped_previous_passes) {
-      for (const passData of matchState.skipped_previous_passes) {
-        for (const skip of passData.skipped || []) {
-          allVivaCodes.add(skip.viva_code);
-        }
-      }
-    }
-    for (const skip of matchState.skipped || []) {
-      allVivaCodes.add(skip.viva_code);
-    }
-
-    const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
-    const unmatchedCodes = [...allVivaCodes].filter(code => !matchedVivaCodes.has(code));
-
-    const vivaMap = new Map();
-    for (const l of vivaListings) {
-      vivaMap.set(l.code || l.propertyCode, l);
-    }
-
-    const unmatchedListings = unmatchedCodes.map(code => {
-      const listing = vivaMap.get(code);
-      return listing ? { code, ...listing } : { code };
-    });
-
-    // Try to load nodemailer
-    let nodemailer;
-    try {
-      nodemailer = require('nodemailer');
-    } catch {
-      return res.status(500).json({
-        error: 'nodemailer not installed. Run: npm install nodemailer',
-        fallback: 'Use GET /api/report/unmatched to get the data as JSON'
-      });
-    }
-
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    const htmlContent = generateEmailHTML(unmatchedListings, matchState.matches.length);
-
-    await transporter.sendMail({
-      from: process.env.REPORT_FROM_EMAIL || process.env.SMTP_USER,
-      to,
-      subject: `Property Matching Report - ${matchState.matches.length} matched, ${unmatchedListings.length} unmatched`,
-      html: htmlContent,
-    });
-
-    appendAuditLog('report_sent', { to, unmatched_count: unmatchedListings.length });
-
-    res.json({ success: true, message: `Report sent to ${to}` });
-  } catch (error) {
-    console.error('Email error:', error);
-    res.status(500).json({ error: `Failed to send email: ${error.message}` });
-  }
-});
-
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
-function getUnmatchedListings() {
-  const allVivaCodes = new Set();
-  for (const item of smartMatches.matches || []) {
-    const vivaCode = item.viva?.code || item.viva?.propertyCode;
-    if (vivaCode) allVivaCodes.add(vivaCode);
-  }
-  if (matchState.skipped_previous_passes) {
-    for (const passData of matchState.skipped_previous_passes) {
-      for (const skip of passData.skipped || []) {
-        allVivaCodes.add(skip.viva_code);
-      }
-    }
-  }
-  for (const skip of matchState.skipped || []) {
-    allVivaCodes.add(skip.viva_code);
-  }
-
-  const matchedVivaCodes = new Set(matchState.matches.map(m => m.viva_code));
+  const matchedVivaCodes = new Set(cs.matchState.matches.map(m => m.viva_code));
   const unmatchedCodes = [...allVivaCodes].filter(code => !matchedVivaCodes.has(code));
 
   const vivaMap = new Map();
-  for (const l of vivaListings) {
+  for (const l of cs.vivaListings) {
     vivaMap.set(l.code || l.propertyCode, l);
   }
 
@@ -1641,57 +781,1121 @@ function getLocalIP() {
 }
 
 // ============================================================================
+// EXPRESS APP
+// ============================================================================
+
+const app = express();
+
+const defaultCompound = COMPOUNDS_CONFIG.defaultCompound;
+
+app.use(cors());
+app.use(express.json({ type: ['application/json', 'application/json; charset=utf-8', 'application/json; charset=UTF-8'] }));
+app.use(express.static(PUBLIC_ROOT));
+
+// Serve mosaics per compound
+app.use('/mosaics/:compoundId', (req, res, next) => {
+  const { compoundId } = req.params;
+  const cs = compoundStates.get(compoundId);
+  if (!cs) return res.status(404).send('Not found');
+  express.static(cs.mosaicsDir)(req, res, next);
+});
+
+// Legacy mosaic serving (default compound)
+app.use('/mosaics', express.static(path.join(DATA_ROOT, defaultCompound, 'mosaics')));
+
+// Cloud Run service URL opens "/" by default; route it to the matcher UI entrypoint.
+app.get('/', (req, res) => {
+  res.redirect('/matcher.html');
+});
+
+// ============================================================================
+// COMPOUND RESOLUTION MIDDLEWARE
+// ============================================================================
+
+function resolveCompound(req, res, next) {
+  const { compoundId } = req.params;
+  if (!COMPOUNDS_CONFIG.compounds[compoundId]) {
+    return res.status(404).json({ error: `Unknown compound: ${compoundId}` });
+  }
+  req.cs = getCompoundState(compoundId);
+  req.compoundId = compoundId;
+  next();
+}
+
+// ============================================================================
+// COMPOUND LISTING ENDPOINT
+// ============================================================================
+
+app.get('/api/compounds', (req, res) => {
+  const compounds = Object.entries(COMPOUNDS_CONFIG.compounds).map(([id, config]) => {
+    const cs = compoundStates.get(id);
+    const stats = cs ? {
+      matched: cs.matchState.matches.length,
+      pending: cs.taskQueue.length,
+      total: cs.matchState.stats.total_viva_listings
+    } : null;
+    return { id, displayName: config.displayName, stats };
+  });
+  res.json({ compounds, defaultCompound: COMPOUNDS_CONFIG.defaultCompound });
+});
+
+// ============================================================================
+// COMPOUND-SCOPED ROUTE HANDLERS (named functions)
+// ============================================================================
+
+function handleSession(req, res) {
+  const cs = req.cs;
+  const criteria = getPassCriteria(cs.matchState.current_pass);
+
+  // Check for unread pipeline_complete notifications
+  let has_new_properties = false;
+  try {
+    const notifData = loadNotifications(cs);
+    has_new_properties = notifData.notifications.some(n => n.type === 'pipeline_complete' && !n.read);
+  } catch {
+    // Ignore notification errors in session endpoint
+  }
+
+  res.json({
+    session_name: cs.matchState.session_name,
+    session_started: cs.matchState.session_started,
+    last_updated: cs.matchState.last_updated,
+    version: cs.matchState.version,
+    stats: cs.matchState.stats,
+    read_only: READ_ONLY,
+    current_pass: cs.matchState.current_pass,
+    passes_completed: cs.matchState.passes_completed,
+    max_passes: MAX_PASSES,
+    pass_criteria: {
+      name: criteria.name,
+      price_tolerance: `\u00b1${(criteria.price_tolerance * 100).toFixed(0)}%`,
+      area_tolerance: `\u00b1${(criteria.area_tolerance * 100).toFixed(0)}%`
+    },
+    has_new_properties,
+  });
+}
+
+function handleListing(req, res) {
+  const cs = req.cs;
+  const vivaCode = req.params.id;
+  const task = cs.taskQueue.find(t => t.viva_code === vivaCode);
+
+  if (!task) {
+    return res.status(404).json({ error: 'Listing not found or already processed' });
+  }
+
+  res.json({
+    viva_code: task.viva_code,
+    viva: task.viva,
+    remaining_candidates: task.remaining_candidates,
+    mosaic_path: `/mosaics/${cs.compoundId}/viva/${vivaCode}.png`
+  });
+}
+
+function handleCandidates(req, res) {
+  const cs = req.cs;
+  const vivaCode = req.params.id;
+  const task = cs.taskQueue.find(t => t.viva_code === vivaCode);
+
+  if (!task) {
+    return res.status(404).json({ error: 'Listing not found' });
+  }
+
+  // Filter out already rejected candidates AND already matched Coelho codes
+  const rejectedCodes = cs.matchState.rejected
+    .filter(r => r.viva_code === vivaCode)
+    .map(r => r.coelho_code);
+
+  const matchedCoelhoCodes = new Set(cs.matchState.matches.map(m => m.coelho_code));
+
+  const candidates = task.candidates
+    .filter(c => {
+      const code = c.code || c.propertyCode;
+      return !rejectedCodes.includes(code) && !matchedCoelhoCodes.has(code);
+    })
+    .map((candidate, idx) => {
+      const code = candidate.code || candidate.propertyCode;
+      const scored = task.scored.find(s => s.code === code);
+
+      // Transform candidate data to include features string for frontend parsing
+      const transformedCandidate = {
+        ...candidate,
+        features: `${candidate.built || 0}m\u00b2 constru\u00edda, ${candidate.beds || 0} dorm, ${candidate.suites || 0} su\u00edte`
+      };
+
+      return {
+        code,
+        candidate: transformedCandidate,
+        ai_score: scored?.score || null,
+        deltas: calculateDeltas(task.viva, candidate),
+        mosaic_path: `/mosaics/${cs.compoundId}/coelho/${code}.png`
+      };
+    });
+
+  res.json({
+    viva_code: vivaCode,
+    candidates,
+    total_candidates: candidates.length
+  });
+}
+
+function handleNext(req, res) {
+  const cs = req.cs;
+  const reviewer = req.query.reviewer || 'anonymous';
+
+  // If user has finished, return done
+  if (cs.matchState.user_finished) {
+    return res.json({
+      done: true,
+      message: `Matching complete! ${cs.matchState.matches.length} total matches found.`,
+      final_stats: {
+        total_matches: cs.matchState.matches.length,
+        total_skipped: cs.matchState.skipped.length,
+        passes_completed: cs.matchState.current_pass
+      }
+    });
+  }
+
+  // Check if current pass is exhausted
+  if (cs.taskQueue.length === 0) {
+    const skippedCount = cs.matchState.skipped.length;
+    const currentCriteria = getPassCriteria(cs.matchState.current_pass);
+    const nextPassNum = cs.matchState.current_pass + 1;
+
+    // Count orphan Viva listings (never had candidates in any pass)
+    const matchedVivaCodes = new Set(cs.matchState.matches.map(m => m.viva_code));
+    const skippedVivaCodes = new Set(cs.matchState.skipped.map(s => s.viva_code));
+    const orphanCount = cs.vivaListings.filter(l => {
+      const code = l.code || l.propertyCode;
+      return !matchedVivaCodes.has(code) && !skippedVivaCodes.has(code);
+    }).length;
+
+    const unmatchedCount = skippedCount + orphanCount;
+    const hasNextPass = nextPassNum <= MAX_PASSES && unmatchedCount > 0;
+    const nextCriteria = hasNextPass ? getPassCriteria(nextPassNum) : null;
+
+    return res.json({
+      pass_complete: true,
+      current_pass: cs.matchState.current_pass,
+      pass_name: currentCriteria.name,
+      stats: {
+        matched: cs.matchState.matches.length,
+        skipped: skippedCount,
+        orphans: orphanCount,
+        total_reviewed: cs.matchState.matches.length + skippedCount
+      },
+      has_next_pass: hasNextPass,
+      next_pass: hasNextPass ? {
+        number: nextPassNum,
+        name: nextCriteria.name,
+        price_tolerance: `\u00b1${(nextCriteria.price_tolerance * 100).toFixed(0)}%`,
+        area_tolerance: `\u00b1${(nextCriteria.area_tolerance * 100).toFixed(0)}%`,
+        listings_to_review: unmatchedCount
+      } : null
+    });
+  }
+
+  // Clean up stale locks (older than LOCK_TIMEOUT_MS)
+  const now = Date.now();
+  const staleBefore = cs.matchState.in_progress.length;
+  cs.matchState.in_progress = cs.matchState.in_progress.filter(ip => {
+    const lockTime = new Date(ip.last_active || ip.started_at).getTime();
+    return (now - lockTime) < LOCK_TIMEOUT_MS;
+  });
+  if (cs.matchState.in_progress.length < staleBefore) {
+    console.log(`  [${cs.compoundId}] Cleaned up ${staleBefore - cs.matchState.in_progress.length} stale lock(s)`);
+  }
+
+  // Find first listing not in progress by another reviewer
+  const available = cs.taskQueue.find(t => {
+    const inProgress = cs.matchState.in_progress.find(ip => ip.viva_code === t.viva_code);
+    return !inProgress || inProgress.reviewer === reviewer;
+  });
+
+  if (!available) {
+    return res.json({ done: true, message: 'All listings reviewed!' });
+  }
+
+  // Mark as in progress
+  const existingIdx = cs.matchState.in_progress.findIndex(ip => ip.viva_code === available.viva_code);
+  if (existingIdx >= 0) {
+    cs.matchState.in_progress[existingIdx].last_active = new Date().toISOString();
+  } else {
+    cs.matchState.in_progress.push({
+      viva_code: available.viva_code,
+      reviewer,
+      started_at: new Date().toISOString(),
+      last_active: new Date().toISOString()
+    });
+  }
+
+  // Transform viva data to match frontend expectations
+  const viva = available.viva;
+  const transformedViva = {
+    ...viva,
+    specs: {
+      area_construida: viva.built,
+      dormitorios: viva.beds,
+      suites: viva.suites
+    }
+  };
+
+  const currentCriteria = getPassCriteria(cs.matchState.current_pass);
+  res.json({
+    viva_code: available.viva_code,
+    viva: transformedViva,
+    remaining_candidates: available.remaining_candidates,
+    mosaic_path: `/mosaics/${cs.compoundId}/viva/${available.viva_code}.png`,
+    current_pass: cs.matchState.current_pass,
+    pass_name: currentCriteria.name,
+    pending_in_pass: cs.taskQueue.length
+  });
+}
+
+function handleMatch(req, res) {
+  const cs = req.cs;
+
+  if (READ_ONLY) {
+    return res.status(403).json({ error: 'Read-only mode enabled' });
+  }
+
+  const { viva_code, coelho_code, reviewer, time_spent_sec, notes } = req.body;
+
+  if (!viva_code || !coelho_code) {
+    return res.status(400).json({ error: 'Missing viva_code or coelho_code' });
+  }
+
+  // Find task
+  const task = cs.taskQueue.find(t => t.viva_code === viva_code);
+  if (!task) {
+    return res.status(404).json({ error: 'Listing not found' });
+  }
+
+  const scored = task.scored.find(s => s.code === coelho_code);
+
+  const match = {
+    viva_code,
+    coelho_code,
+    matched_at: new Date().toISOString(),
+    reviewer: reviewer || 'anonymous',
+    time_spent_sec: time_spent_sec || null,
+    ai_score: scored?.score || null,
+    confidence: 'manual_confirmed',
+    notes: notes || null
+  };
+
+  cs.matchState.matches.push(match);
+  cs.matchState.pass_matched = (cs.matchState.pass_matched || 0) + 1;
+
+  // Remove from in_progress
+  cs.matchState.in_progress = cs.matchState.in_progress.filter(ip => ip.viva_code !== viva_code);
+
+  // Remove from task queue
+  const taskIdx = cs.taskQueue.findIndex(t => t.viva_code === viva_code);
+  if (taskIdx >= 0) cs.taskQueue.splice(taskIdx, 1);
+
+  appendAuditLog(cs, 'match', match);
+  saveMatchState(cs);
+
+  res.json({ success: true, match, remaining: cs.taskQueue.length });
+}
+
+function handleReject(req, res) {
+  const cs = req.cs;
+
+  if (READ_ONLY) {
+    return res.status(403).json({ error: 'Read-only mode enabled' });
+  }
+
+  const { viva_code, coelho_code, reviewer, reason } = req.body;
+
+  if (!viva_code || !coelho_code) {
+    return res.status(400).json({ error: 'Missing viva_code or coelho_code' });
+  }
+
+  const rejection = {
+    viva_code,
+    coelho_code,
+    rejected_at: new Date().toISOString(),
+    reviewer: reviewer || 'anonymous',
+    reason: reason || 'visual_mismatch'
+  };
+
+  cs.matchState.rejected.push(rejection);
+  appendAuditLog(cs, 'reject', rejection);
+  saveMatchState(cs);
+
+  // Rebuild task queue to update remaining candidates
+  cs.taskQueue = buildTaskQueue(cs);
+
+  res.json({ success: true, rejection, remaining: cs.taskQueue.length });
+}
+
+function handleSkip(req, res) {
+  const cs = req.cs;
+
+  if (READ_ONLY) {
+    return res.status(403).json({ error: 'Read-only mode enabled' });
+  }
+
+  const { viva_code, reviewer, reason } = req.body;
+
+  if (!viva_code) {
+    return res.status(400).json({ error: 'Missing viva_code' });
+  }
+
+  const skip = {
+    viva_code,
+    skipped_at: new Date().toISOString(),
+    reviewer: reviewer || 'anonymous',
+    reason: reason || 'no_good_candidates'
+  };
+
+  cs.matchState.skipped.push(skip);
+  cs.matchState.pass_skipped = (cs.matchState.pass_skipped || 0) + 1;
+  cs.matchState.in_progress = cs.matchState.in_progress.filter(ip => ip.viva_code !== viva_code);
+
+  // Remove from task queue
+  const taskIdx = cs.taskQueue.findIndex(t => t.viva_code === viva_code);
+  if (taskIdx >= 0) cs.taskQueue.splice(taskIdx, 1);
+
+  appendAuditLog(cs, 'skip', skip);
+  saveMatchState(cs);
+
+  res.json({ success: true, skip, remaining: cs.taskQueue.length });
+}
+
+function handleProgress(req, res) {
+  const cs = req.cs;
+
+  // Use per-pass counters for progress so percentages are scoped to the current pass
+  const passMatched = cs.matchState.pass_matched || 0;
+  const passSkipped = cs.matchState.pass_skipped || 0;
+  const passCompleted = passMatched + passSkipped;
+  const passTotal = passCompleted + cs.taskQueue.length;
+  const progress_pct = passTotal > 0 ? ((passCompleted / passTotal) * 100).toFixed(1) : 0;
+
+  const currentCriteria = getPassCriteria(cs.matchState.current_pass);
+  res.json({
+    total_viva_listings: passTotal,
+    matched: passMatched,
+    skipped: passSkipped,
+    pending: cs.taskQueue.length,
+    in_progress: cs.matchState.in_progress.length,
+    completed: passCompleted,
+    progress_pct: parseFloat(progress_pct),
+    // Cumulative stats across all passes for overall context
+    cumulative_matched: cs.matchState.matches.length,
+    cumulative_skipped: cs.matchState.skipped.length + (cs.matchState.skipped_previous_passes || []).reduce((sum, p) => sum + p.skipped.length, 0),
+    current_pass: cs.matchState.current_pass,
+    max_passes: MAX_PASSES,
+    pass_name: currentCriteria.name,
+    pass_criteria: {
+      price_tolerance: `\u00b1${(currentCriteria.price_tolerance * 100).toFixed(0)}%`,
+      area_tolerance: `\u00b1${(currentCriteria.area_tolerance * 100).toFixed(0)}%`
+    }
+  });
+}
+
+function handleUndo(req, res) {
+  const cs = req.cs;
+
+  if (READ_ONLY) {
+    return res.status(403).json({ error: 'Read-only mode enabled' });
+  }
+
+  const { reviewer } = req.body;
+  const reviewerName = reviewer || 'anonymous';
+
+  // Find last action by this reviewer
+  let undone = null;
+
+  // Check matches (most recent first)
+  for (let i = cs.matchState.matches.length - 1; i >= 0; i--) {
+    if (cs.matchState.matches[i].reviewer === reviewerName) {
+      undone = { type: 'match', ...cs.matchState.matches[i] };
+      cs.matchState.matches.splice(i, 1);
+      break;
+    }
+  }
+
+  // If not found, check skips
+  if (!undone) {
+    for (let i = cs.matchState.skipped.length - 1; i >= 0; i--) {
+      if (cs.matchState.skipped[i].reviewer === reviewerName) {
+        undone = { type: 'skip', ...cs.matchState.skipped[i] };
+        cs.matchState.skipped.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  if (!undone) {
+    return res.status(404).json({ error: 'No recent actions to undo' });
+  }
+
+  // Decrement per-pass counters
+  if (undone.type === 'match') {
+    cs.matchState.pass_matched = Math.max(0, (cs.matchState.pass_matched || 0) - 1);
+  } else if (undone.type === 'skip') {
+    cs.matchState.pass_skipped = Math.max(0, (cs.matchState.pass_skipped || 0) - 1);
+  }
+
+  appendAuditLog(cs, 'undo', { undone, reviewer: reviewerName });
+
+  // Rebuild task queue
+  cs.taskQueue = buildTaskQueue(cs);
+  saveMatchState(cs);
+
+  res.json({ success: true, undone, remaining: cs.taskQueue.length });
+}
+
+function handleAudit(req, res) {
+  const cs = req.cs;
+
+  try {
+    if (!fs.existsSync(cs.auditLogFile)) {
+      return res.json({ entries: [] });
+    }
+
+    const lines = fs.readFileSync(cs.auditLogFile, 'utf-8').trim().split('\n');
+    const entries = lines.filter(Boolean).map(line => JSON.parse(line));
+
+    res.json({ entries, total: entries.length });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+function handlePassAdvance(req, res) {
+  const cs = req.cs;
+
+  if (READ_ONLY) {
+    return res.status(403).json({ error: 'Read-only mode enabled' });
+  }
+
+  const advanced = advanceToNextPass(cs);
+
+  if (!advanced) {
+    return res.json({
+      success: false,
+      message: 'Cannot advance to next pass',
+      current_pass: cs.matchState.current_pass
+    });
+  }
+
+  const criteria = getPassCriteria(cs.matchState.current_pass);
+  res.json({
+    success: true,
+    current_pass: cs.matchState.current_pass,
+    pass_name: criteria.name,
+    pending: cs.taskQueue.length
+  });
+}
+
+function handlePassFinish(req, res) {
+  const cs = req.cs;
+
+  if (READ_ONLY) {
+    return res.status(403).json({ error: 'Read-only mode enabled' });
+  }
+
+  cs.matchState.user_finished = true;
+
+  appendAuditLog(cs, 'user_finished', {
+    total_matches: cs.matchState.matches.length,
+    total_skipped: cs.matchState.skipped.length,
+    passes_completed: cs.matchState.current_pass,
+    reviewer: req.body.reviewer || 'anonymous'
+  });
+
+  saveMatchState(cs);
+
+  const unmatchedListings = getUnmatchedListings(cs);
+
+  res.json({
+    success: true,
+    summary: {
+      total_matches: cs.matchState.matches.length,
+      total_skipped: cs.matchState.skipped.length,
+      total_unmatched: unmatchedListings.length,
+      passes_completed: cs.matchState.current_pass
+    }
+  });
+}
+
+function handlePassResume(req, res) {
+  const cs = req.cs;
+
+  if (READ_ONLY) {
+    return res.status(403).json({ error: 'Read-only mode enabled' });
+  }
+
+  if (!cs.matchState.user_finished) {
+    return res.json({ success: true, message: 'Already active — not in finished state' });
+  }
+
+  cs.matchState.user_finished = false;
+
+  appendAuditLog(cs, 'user_resumed', {
+    reviewer: req.body.reviewer || 'anonymous',
+    current_pass: cs.matchState.current_pass
+  });
+
+  // Rebuild task queue in case it was cleared
+  cs.taskQueue = buildTaskQueue(cs);
+  cs.passStartTotal = cs.taskQueue.length;
+
+  saveMatchState(cs);
+
+  res.json({
+    success: true,
+    message: 'Resumed matching session',
+    pending: cs.taskQueue.length,
+    current_pass: cs.matchState.current_pass
+  });
+}
+
+function handleReportSend(req, res) {
+  const cs = req.cs;
+  const reportEmail = req.body.to || process.env.REPORT_EMAIL;
+
+  if (!reportEmail || !reportEmail.includes('@')) {
+    return res.status(400).json({ error: 'No recipient email configured' });
+  }
+
+  (async () => {
+    try {
+      const unmatchedListings = getUnmatchedListings(cs);
+      const htmlContent = generateEmailHTML(unmatchedListings, cs.matchState.matches.length);
+      const nodemailer = require('nodemailer');
+
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: false,
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+
+      await transporter.sendMail({
+        from: process.env.SMTP_USER,
+        to: reportEmail,
+        subject: `Property Matching Report - ${cs.matchState.matches.length} matched, ${unmatchedListings.length} unmatched`,
+        html: htmlContent,
+      });
+
+      appendAuditLog(cs, 'report_sent', { to: reportEmail, unmatched_count: unmatchedListings.length });
+      console.log(`  [${cs.compoundId}] Report sent to ${reportEmail}`);
+
+      res.json({ success: true, sent_to: reportEmail, unmatched_count: unmatchedListings.length });
+    } catch (err) {
+      console.error(`  [${cs.compoundId}] Failed to send report email: ${err.message}`);
+      res.status(500).json({ error: `Failed to send email: ${err.message}` });
+    }
+  })();
+}
+
+function handlePipelineTrigger(req, res) {
+  const cs = req.cs;
+
+  try {
+    const data = loadNotifications(cs);
+
+    const notification = {
+      id: crypto.randomUUID(),
+      type: 'pipeline_trigger',
+      message: 'Pipeline run requested',
+      data: { requested_at: new Date().toISOString() },
+      created_at: new Date().toISOString(),
+      read: false,
+    };
+
+    data.notifications.push(notification);
+    saveNotifications(cs, data);
+
+    res.json({ triggered: true, message: 'Pipeline trigger recorded' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+function handlePipelineComplete(req, res) {
+  const cs = req.cs;
+
+  try {
+    const { new_viva = 0, new_coelho = 0, timestamp } = req.body;
+    const data = loadNotifications(cs);
+
+    const notification = {
+      id: crypto.randomUUID(),
+      type: 'pipeline_complete',
+      message: `New properties available! ${new_viva} Viva, ${new_coelho} Coelho listings scraped`,
+      data: { new_viva, new_coelho, timestamp: timestamp || new Date().toISOString() },
+      created_at: new Date().toISOString(),
+      read: false,
+    };
+
+    data.notifications.push(notification);
+    saveNotifications(cs, data);
+
+    console.log(`[${cs.compoundId}] Pipeline complete notification: ${notification.message}`);
+    res.json({ success: true, notification_id: notification.id });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+function handleNotifications(req, res) {
+  const cs = req.cs;
+
+  try {
+    const data = loadNotifications(cs);
+    const unread = data.notifications.filter(n => !n.read);
+
+    res.json({
+      notifications: unread,
+      unread_count: unread.length,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+function handleNotificationsDismiss(req, res) {
+  const cs = req.cs;
+
+  try {
+    const { id, all } = req.body;
+    const data = loadNotifications(cs);
+
+    if (all) {
+      data.notifications.forEach(n => { n.read = true; });
+    } else if (id) {
+      const notification = data.notifications.find(n => n.id === id);
+      if (notification) {
+        notification.read = true;
+      } else {
+        return res.status(404).json({ error: 'Notification not found' });
+      }
+    } else {
+      return res.status(400).json({ error: 'Must provide id or all: true' });
+    }
+
+    saveNotifications(cs, data);
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+function handleMatchesValidate(req, res) {
+  const cs = req.cs;
+
+  const valid = [];
+  const invalid = [];
+  const duplicates = [];
+
+  // Build lookup sets
+  const vivaCodeSet = new Set(cs.vivaListings.map(l => l.code || l.propertyCode));
+  const coelhoCodeSet = new Set(cs.coelhoListings.map(l => l.code || l.propertyCode));
+
+  // Track duplicates
+  const vivaMatchCount = {};
+  const coelhoMatchCount = {};
+
+  for (const match of cs.matchState.matches) {
+    // Check validity
+    const vivaExists = vivaCodeSet.has(match.viva_code);
+    const coelhoExists = coelhoCodeSet.has(match.coelho_code);
+
+    if (!vivaExists) {
+      invalid.push({ match, reason: `viva_code '${match.viva_code}' not found in listings` });
+    } else if (!coelhoExists) {
+      invalid.push({ match, reason: `coelho_code '${match.coelho_code}' not found in listings` });
+    } else {
+      valid.push(match);
+    }
+
+    // Track for duplicate detection
+    vivaMatchCount[match.viva_code] = (vivaMatchCount[match.viva_code] || 0) + 1;
+    coelhoMatchCount[match.coelho_code] = (coelhoMatchCount[match.coelho_code] || 0) + 1;
+  }
+
+  // Find duplicates
+  for (const [code, count] of Object.entries(vivaMatchCount)) {
+    if (count > 1) {
+      duplicates.push({
+        code,
+        type: 'viva',
+        matches: cs.matchState.matches.filter(m => m.viva_code === code)
+      });
+    }
+  }
+  for (const [code, count] of Object.entries(coelhoMatchCount)) {
+    if (count > 1) {
+      duplicates.push({
+        code,
+        type: 'coelho',
+        matches: cs.matchState.matches.filter(m => m.coelho_code === code)
+      });
+    }
+  }
+
+  res.json({
+    valid,
+    invalid,
+    duplicates,
+    summary: {
+      total: cs.matchState.matches.length,
+      valid_count: valid.length,
+      invalid_count: invalid.length,
+      duplicate_count: duplicates.length
+    }
+  });
+}
+
+function handleMatchesExport(req, res) {
+  const cs = req.cs;
+
+  // Build lookup maps
+  const vivaMap = new Map();
+  for (const l of cs.vivaListings) {
+    vivaMap.set(l.code || l.propertyCode, l);
+  }
+  const coelhoMap = new Map();
+  for (const l of cs.coelhoListings) {
+    coelhoMap.set(l.code || l.propertyCode, l);
+  }
+
+  const enrichedMatches = cs.matchState.matches.map(match => {
+    const vivaListing = vivaMap.get(match.viva_code);
+    const coelhoListing = coelhoMap.get(match.coelho_code);
+
+    return {
+      viva: vivaListing ? {
+        code: match.viva_code,
+        price: vivaListing.price,
+        address: vivaListing.address,
+        url: vivaListing.url,
+        beds: vivaListing.beds,
+        suites: vivaListing.suites,
+        built: vivaListing.built,
+        park: vivaListing.park
+      } : { code: match.viva_code, error: 'listing not found' },
+      coelho: coelhoListing ? {
+        code: match.coelho_code,
+        price: coelhoListing.price,
+        address: coelhoListing.address,
+        url: coelhoListing.url,
+        beds: coelhoListing.beds,
+        suites: coelhoListing.suites,
+        built: coelhoListing.built,
+        park: coelhoListing.park
+      } : { code: match.coelho_code, error: 'listing not found' },
+      matched_at: match.matched_at,
+      reviewer: match.reviewer,
+      ai_score: match.ai_score,
+      confidence: match.confidence
+    };
+  });
+
+  res.json({
+    exported_at: new Date().toISOString(),
+    total_matches: enrichedMatches.length,
+    matches: enrichedMatches
+  });
+}
+
+function handleReportUnmatched(req, res) {
+  const cs = req.cs;
+
+  // Get all viva codes that were in the candidate pool
+  const allVivaCodes = new Set();
+  for (const item of cs.smartMatches.matches || []) {
+    const vivaCode = item.viva?.code || item.viva?.propertyCode;
+    if (vivaCode) allVivaCodes.add(vivaCode);
+  }
+
+  // Also include viva codes from skipped_previous_passes
+  if (cs.matchState.skipped_previous_passes) {
+    for (const passData of cs.matchState.skipped_previous_passes) {
+      for (const skip of passData.skipped || []) {
+        allVivaCodes.add(skip.viva_code);
+      }
+    }
+  }
+  for (const skip of cs.matchState.skipped || []) {
+    allVivaCodes.add(skip.viva_code);
+  }
+
+  // Get matched viva codes
+  const matchedVivaCodes = new Set(cs.matchState.matches.map(m => m.viva_code));
+
+  // Find unmatched
+  const unmatchedCodes = [...allVivaCodes].filter(code => !matchedVivaCodes.has(code));
+
+  // Build lookup map from vivaListings
+  const vivaMap = new Map();
+  for (const l of cs.vivaListings) {
+    vivaMap.set(l.code || l.propertyCode, l);
+  }
+
+  const unmatchedListings = unmatchedCodes.map(code => {
+    const listing = vivaMap.get(code);
+    if (!listing) {
+      return { code, error: 'listing data not found' };
+    }
+    return {
+      code,
+      price: listing.price,
+      address: listing.address,
+      url: listing.url,
+      beds: listing.beds,
+      suites: listing.suites,
+      built: listing.built,
+      park: listing.park,
+      neighbourhood: listing.neighbourhood || listing.bairro
+    };
+  });
+
+  res.json({
+    total_viva: allVivaCodes.size,
+    total_matched: matchedVivaCodes.size,
+    total_unmatched: unmatchedListings.length,
+    listings: unmatchedListings
+  });
+}
+
+function handleReportSendEmail(req, res) {
+  const cs = req.cs;
+  const { to } = req.body;
+
+  if (!to || !to.includes('@')) {
+    return res.status(400).json({ error: 'Valid email address required' });
+  }
+
+  (async () => {
+    try {
+      // Get unmatched data
+      const allVivaCodes = new Set();
+      for (const item of cs.smartMatches.matches || []) {
+        const vivaCode = item.viva?.code || item.viva?.propertyCode;
+        if (vivaCode) allVivaCodes.add(vivaCode);
+      }
+      if (cs.matchState.skipped_previous_passes) {
+        for (const passData of cs.matchState.skipped_previous_passes) {
+          for (const skip of passData.skipped || []) {
+            allVivaCodes.add(skip.viva_code);
+          }
+        }
+      }
+      for (const skip of cs.matchState.skipped || []) {
+        allVivaCodes.add(skip.viva_code);
+      }
+
+      const matchedVivaCodes = new Set(cs.matchState.matches.map(m => m.viva_code));
+      const unmatchedCodes = [...allVivaCodes].filter(code => !matchedVivaCodes.has(code));
+
+      const vivaMap = new Map();
+      for (const l of cs.vivaListings) {
+        vivaMap.set(l.code || l.propertyCode, l);
+      }
+
+      const unmatchedListings = unmatchedCodes.map(code => {
+        const listing = vivaMap.get(code);
+        return listing ? { code, ...listing } : { code };
+      });
+
+      // Try to load nodemailer
+      let nodemailer;
+      try {
+        nodemailer = require('nodemailer');
+      } catch {
+        return res.status(500).json({
+          error: 'nodemailer not installed. Run: npm install nodemailer',
+          fallback: 'Use GET /api/report/unmatched to get the data as JSON'
+        });
+      }
+
+      const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: process.env.SMTP_SECURE === 'true',
+        auth: {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS,
+        },
+      });
+
+      const htmlContent = generateEmailHTML(unmatchedListings, cs.matchState.matches.length);
+
+      await transporter.sendMail({
+        from: process.env.REPORT_FROM_EMAIL || process.env.SMTP_USER,
+        to,
+        subject: `Property Matching Report - ${cs.matchState.matches.length} matched, ${unmatchedListings.length} unmatched`,
+        html: htmlContent,
+      });
+
+      appendAuditLog(cs, 'report_sent', { to, unmatched_count: unmatchedListings.length });
+
+      res.json({ success: true, message: `Report sent to ${to}` });
+    } catch (error) {
+      console.error('Email error:', error);
+      res.status(500).json({ error: `Failed to send email: ${error.message}` });
+    }
+  })();
+}
+
+// ============================================================================
+// COMPOUND-SCOPED ROUTER
+// ============================================================================
+
+const compoundRouter = express.Router({ mergeParams: true });
+compoundRouter.use(resolveCompound);
+
+compoundRouter.get('/session', handleSession);
+compoundRouter.get('/listing/:id', handleListing);
+compoundRouter.get('/candidates/:id', handleCandidates);
+compoundRouter.get('/next', handleNext);
+compoundRouter.post('/match', handleMatch);
+compoundRouter.post('/reject', handleReject);
+compoundRouter.post('/skip', handleSkip);
+compoundRouter.get('/progress', handleProgress);
+compoundRouter.post('/undo', handleUndo);
+compoundRouter.get('/audit', handleAudit);
+compoundRouter.post('/pass/advance', handlePassAdvance);
+compoundRouter.post('/pass/finish', handlePassFinish);
+compoundRouter.post('/pass/resume', handlePassResume);
+compoundRouter.post('/report/send', handleReportSend);
+compoundRouter.get('/report/unmatched', handleReportUnmatched);
+compoundRouter.post('/report/send-email', handleReportSendEmail);
+compoundRouter.get('/matches/validate', handleMatchesValidate);
+compoundRouter.get('/matches/export', handleMatchesExport);
+compoundRouter.post('/pipeline/trigger', handlePipelineTrigger);
+compoundRouter.post('/pipeline/complete', handlePipelineComplete);
+compoundRouter.get('/notifications', handleNotifications);
+compoundRouter.post('/notifications/dismiss', handleNotificationsDismiss);
+
+app.use('/api/compounds/:compoundId', compoundRouter);
+
+// ============================================================================
+// LEGACY ROUTES (backward compatibility - forward to default compound)
+// ============================================================================
+
+function withDefaultCompound(handler) {
+  return (req, res) => {
+    req.params = req.params || {};
+    req.params.compoundId = defaultCompound;
+    resolveCompound(req, res, () => handler(req, res));
+  };
+}
+
+// GET endpoints
+app.get('/api/session', withDefaultCompound(handleSession));
+app.get('/api/listing/:id', (req, res) => {
+  const id = req.params.id;
+  req.params.compoundId = defaultCompound;
+  req.params.id = id;
+  resolveCompound(req, res, () => handleListing(req, res));
+});
+app.get('/api/candidates/:id', (req, res) => {
+  const id = req.params.id;
+  req.params.compoundId = defaultCompound;
+  req.params.id = id;
+  resolveCompound(req, res, () => handleCandidates(req, res));
+});
+app.get('/api/next', withDefaultCompound(handleNext));
+app.get('/api/progress', withDefaultCompound(handleProgress));
+app.get('/api/audit', withDefaultCompound(handleAudit));
+app.get('/api/report/unmatched', withDefaultCompound(handleReportUnmatched));
+app.get('/api/matches/validate', withDefaultCompound(handleMatchesValidate));
+app.get('/api/matches/export', withDefaultCompound(handleMatchesExport));
+app.get('/api/notifications', withDefaultCompound(handleNotifications));
+
+// POST endpoints
+app.post('/api/match', withDefaultCompound(handleMatch));
+app.post('/api/reject', withDefaultCompound(handleReject));
+app.post('/api/skip', withDefaultCompound(handleSkip));
+app.post('/api/undo', withDefaultCompound(handleUndo));
+app.post('/api/pass/advance', withDefaultCompound(handlePassAdvance));
+app.post('/api/pass/finish', withDefaultCompound(handlePassFinish));
+app.post('/api/pass/resume', withDefaultCompound(handlePassResume));
+app.post('/api/report/send', withDefaultCompound(handleReportSend));
+app.post('/api/report/send-email', withDefaultCompound(handleReportSendEmail));
+app.post('/api/pipeline/trigger', withDefaultCompound(handlePipelineTrigger));
+app.post('/api/pipeline/complete', withDefaultCompound(handlePipelineComplete));
+app.post('/api/notifications/dismiss', withDefaultCompound(handleNotificationsDismiss));
+
+// ============================================================================
 // SERVER STARTUP
 // ============================================================================
 
 async function start() {
-  console.log('\n🚀 Human-in-the-Loop Matching Server');
+  console.log('\n Human-in-the-Loop Matching Server');
   console.log('=====================================\n');
   console.log(`Session: ${SESSION_NAME}`);
   console.log(`Data root: ${DATA_ROOT}`);
   console.log(`Public root: ${PUBLIC_ROOT}`);
   console.log(`Port: ${PORT}`);
   console.log(`Host: ${HOST}`);
-  console.log(`Read-only: ${READ_ONLY ? 'YES' : 'NO'}\n`);
+  console.log(`Read-only: ${READ_ONLY ? 'YES' : 'NO'}`);
+  console.log(`Compounds: ${Object.keys(COMPOUNDS_CONFIG.compounds).join(', ')}`);
+  console.log(`Default compound: ${defaultCompound}\n`);
 
   // Step 1: Download data from GCS (graceful — server starts even if GCS fails)
   try {
     await syncAllFromGCS();
   } catch (err) {
-    console.warn(`⚠️  GCS sync failed (${err.message}) — starting with local data`);
+    console.warn(`GCS sync failed (${err.message}) — starting with local data`);
   }
 
-  // Step 2: Load data from local files
-  smartMatches = loadSmartMatches();
-  matchState = loadManualMatches();
+  // Step 2: Initialize all compounds
+  for (const compoundId of Object.keys(COMPOUNDS_CONFIG.compounds)) {
+    console.log(`\nInitializing compound: ${compoundId}`);
+    const cs = getCompoundState(compoundId);
 
-  // Step 3: Load raw listings for dynamic pass advancement
-  vivaListings = loadListings('vivaprimeimoveis');
-  coelhoListings = loadListings('coelhodafonseca');
-  if (vivaListings.length > 0 && coelhoListings.length > 0) {
-    console.log(`✓ Loaded ${vivaListings.length} Viva and ${coelhoListings.length} Coelho listings for dynamic matching`);
+    // Ensure data directories exist
+    fs.mkdirSync(path.join(cs.dataRoot, 'mosaics', 'viva'), { recursive: true });
+    fs.mkdirSync(path.join(cs.dataRoot, 'mosaics', 'coelho'), { recursive: true });
+    fs.mkdirSync(path.join(cs.dataRoot, 'listings'), { recursive: true });
+
+    cs.smartMatches = loadSmartMatches(cs);
+    cs.matchState = loadManualMatches(cs);
+    cs.vivaListings = loadListings('vivaprimeimoveis', cs);
+    cs.coelhoListings = loadListings('coelhodafonseca', cs);
+
+    if (cs.vivaListings.length > 0 && cs.coelhoListings.length > 0) {
+      console.log(`  [${compoundId}] Loaded ${cs.vivaListings.length} Viva and ${cs.coelhoListings.length} Coelho listings for dynamic matching`);
+    }
+
+    cs.taskQueue = buildTaskQueue(cs);
+    cs.passStartTotal = cs.taskQueue.length;
+
+    // Log current pass info
+    const currentCriteria = getPassCriteria(cs.matchState.current_pass);
+    console.log(`  [${compoundId}] Current Pass: ${cs.matchState.current_pass} (${currentCriteria.name})`);
+    console.log(`  [${compoundId}] ${cs.smartMatches.matches.length} match groups, ${cs.taskQueue.length} pending tasks`);
   }
 
-  // Step 4: Build task queue
-  taskQueue = buildTaskQueue();
-  passStartTotal = taskQueue.length;
-
-  // Log current pass info
-  const currentCriteria = getPassCriteria(matchState.current_pass);
-  console.log(`\n📍 Current Pass: ${matchState.current_pass} (${currentCriteria.name})`);
-  console.log(`   Price tolerance: ±${(currentCriteria.price_tolerance * 100).toFixed(0)}%`);
-  console.log(`   Area tolerance: ±${(currentCriteria.area_tolerance * 100).toFixed(0)}%`);
-
-  // Step 5: Start Express server
+  // Step 3: Start Express server
   app.listen(PORT, HOST, () => {
     const networkIP = getLocalIP();
 
-    console.log(`\n✅ Server running on:`);
+    console.log(`\nServer running on:`);
     console.log(`   Local:    http://localhost:${PORT}`);
     if (networkIP !== 'localhost') {
       console.log(`   Network:  http://${networkIP}:${PORT}`);
     }
-    console.log(`\n📊 Ready to review ${taskQueue.length} Viva listings\n`);
+
+    // Summary across all compounds
+    let totalPending = 0;
+    for (const [id, cs] of compoundStates) {
+      totalPending += cs.taskQueue.length;
+    }
+    console.log(`\nReady to review ${totalPending} total Viva listings across ${compoundStates.size} compound(s)\n`);
     console.log(`Desktop: http://localhost:${PORT}/matcher.html`);
     if (networkIP !== 'localhost') {
       console.log(`Mobile:  http://${networkIP}:${PORT}/matcher.html`);
@@ -1699,15 +1903,20 @@ async function start() {
     console.log();
 
     if (READ_ONLY) {
-      console.log('⚠️  READ-ONLY MODE: No changes will be saved\n');
+      console.log('READ-ONLY MODE: No changes will be saved\n');
     }
 
-    if (smartMatches.matches.length === 0) {
-      console.log('⏳ No pipeline data yet — server will auto-load when data arrives via GCS\n');
+    // Check if any compound has data
+    let anyData = false;
+    for (const [id, cs] of compoundStates) {
+      if (cs.smartMatches.matches.length > 0) { anyData = true; break; }
+    }
+    if (!anyData) {
+      console.log('No pipeline data yet — server will auto-load when data arrives via GCS\n');
     }
   });
 
-  // Step 6: Start GCS polling for new pipeline data
+  // Step 4: Start GCS polling for new pipeline data
   startPolling();
 
   // Graceful shutdown: flush pending uploads

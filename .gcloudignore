@@ -1,0 +1,22 @@
+# Large data directories — NOT needed for Docker build
+data/
+work_fastdup/
+selected_exteriors/
+FRESH/
+photorec.se2
+
+# Build artifacts
+node_modules/
+venv/
+__pycache__
+*.pyc
+.git/
+
+# Deployment dirs (not needed for pipeline image)
+server-deploy/
+matcher-mobile/
+.playwright-mcp/
+
+# Recovery files
+CONVERSATION_RECOVERY.md
+FILE_RECOVERY_SEARCH_STRINGS.md

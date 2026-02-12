@@ -4,6 +4,18 @@ const path = require('path');
 const https = require('https');
 const http = require('http');
 
+const COMPOUNDS = require('../config/compounds.json');
+
+// Determine which compound to scrape
+const compoundArg = process.argv.find(a => a.startsWith('--compound='));
+const compoundId = process.env.COMPOUND || (compoundArg ? compoundArg.split('=')[1] : COMPOUNDS.defaultCompound);
+const compound = COMPOUNDS.compounds[compoundId];
+if (!compound) {
+  console.error(`Unknown compound: ${compoundId}. Available: ${Object.keys(COMPOUNDS.compounds).join(', ')}`);
+  process.exit(1);
+}
+console.log(`Compound: ${compound.displayName} (${compoundId})`);
+
 /**
  * Master Scraper for Coelho da Fonseca
  *
@@ -70,7 +82,7 @@ async function isSoldProperty(scope) {
   console.log('Complete workflow: URLs → Details → Images');
   console.log('='.repeat(60) + '\n');
 
-  const browser = await chromium.launch({ headless: false });
+  const browser = await chromium.launch({ headless: process.env.HEADLESS !== 'false' });
   const page = await browser.newPage();
   const skipPostProcessing = process.env.SKIP_POST_PROCESSING === 'true';
 
@@ -79,7 +91,17 @@ async function isSoldProperty(scope) {
   // ========================================
   console.log('STEP 1: Collecting listing URLs...\n');
 
-  const baseSearchUrl = 'https://www.coelhodafonseca.com.br/search?transaction=Residencial&indicators=Comprar&work_phase=Prontos%20para%20morar&is_release_or_slam=false&region=Alphaville%20%2F%20Tambor%C3%A9&kind_of=Casa%20em%20Condom%C3%ADnio&enterprises=Alphaville%201';
+  const coelhoParams = compound.coelho;
+  const searchParams = new URLSearchParams({
+    transaction: coelhoParams.transaction,
+    indicators: coelhoParams.indicators,
+    work_phase: coelhoParams.work_phase,
+    is_release_or_slam: coelhoParams.is_release_or_slam,
+    region: coelhoParams.region,
+    kind_of: coelhoParams.kind_of,
+    enterprises: coelhoParams.enterprises,
+  });
+  const baseSearchUrl = `https://www.coelhodafonseca.com.br/search?${searchParams.toString()}`;
 
   const totalPages = 3;
   console.log(`📄 Expected ${totalPages} pages\n`);
@@ -179,8 +201,23 @@ async function isSoldProperty(scope) {
       await page.goto(listing.url, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await page.waitForTimeout(1500);
 
-      // Check if property is sold (VENDIDO)
-      const isSold = await isSoldProperty(page);
+      // Check if property is sold (VENDIDO) — scoped to main property area
+      // to avoid false positives from recommended listings at the bottom
+      const isSold = await page.evaluate(() => {
+        const recHeading = [...document.querySelectorAll('h2')]
+          .find(h => h.textContent.includes('interessar'));
+        const isMainContent = (el) => !recHeading ||
+          !!(recHeading.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_PRECEDING);
+
+        for (const badge of document.querySelectorAll('.property_display_areaSold__1e8Md')) {
+          if (isMainContent(badge)) return true;
+        }
+        for (const el of document.querySelectorAll('div, span, p')) {
+          if (el.children.length === 0 && /^VENDIDO$/i.test(el.textContent.trim()) && isMainContent(el))
+            return true;
+        }
+        return false;
+      });
 
       if (isSold) {
         console.log(`  ⚠️  Property is SOLD (VENDIDO) - skipping`);
@@ -294,7 +331,7 @@ async function isSoldProperty(scope) {
   }
 
   // Save listings with URLs
-  const listingsDir = path.join(process.cwd(), 'data', 'coelhodafonseca', 'listings');
+  const listingsDir = path.join(process.cwd(), 'data', compoundId, 'coelhodafonseca', 'listings');
   fs.mkdirSync(listingsDir, { recursive: true });
 
   const listingsFile = path.join(listingsDir, 'all-listings.json');
@@ -302,13 +339,7 @@ async function isSoldProperty(scope) {
     scraped_at: new Date().toISOString(),
     total_listings: allListings.length,
     total_pages: totalPages,
-    search_criteria: {
-      transaction: 'Residencial',
-      indicators: 'Comprar',
-      region: 'Alphaville / Tamboré',
-      kind_of: 'Casa em Condomínio',
-      enterprises: 'Alphaville 1'
-    },
+    search_criteria: coelhoParams,
     listings: allListings
   };
 
@@ -320,7 +351,7 @@ async function isSoldProperty(scope) {
   // ========================================
   console.log('\nSTEP 3: Downloading all images...\n');
 
-  const imagesBaseDir = path.join(process.cwd(), 'data', 'coelhodafonseca', 'images');
+  const imagesBaseDir = path.join(process.cwd(), 'data', compoundId, 'coelhodafonseca', 'images');
   fs.mkdirSync(imagesBaseDir, { recursive: true });
 
   let totalDownloaded = 0;
@@ -346,28 +377,36 @@ async function isSoldProperty(scope) {
     let skipped = 0;
     let failed = 0;
 
+    // Build list of images to download (skip cached)
+    const toDownload = [];
     for (let j = 0; j < imageUrls.length; j++) {
       const url = imageUrls[j];
-
-      // Extract filename from URL
       const urlParts = url.split('/');
       const filename = urlParts[urlParts.length - 1] || `image_${j}.jpg`;
       const filepath = path.join(propertyDir, filename);
-
-      // Skip if already exists
       if (fs.existsSync(filepath)) {
         skipped++;
-        continue;
+      } else {
+        toDownload.push({ url, filepath, index: j });
       }
+    }
 
-      try {
-        await downloadImage(url, filepath);
-        downloaded++;
-        process.stdout.write(`  ⬇️  [${j + 1}/${imageUrls.length}] Downloaded\r`);
-      } catch (err) {
-        failed++;
-        console.log(`  ❌ [${j + 1}/${imageUrls.length}] Failed: ${err.message}`);
+    // Download in parallel batches of 5
+    const BATCH_SIZE = 5;
+    for (let b = 0; b < toDownload.length; b += BATCH_SIZE) {
+      const batch = toDownload.slice(b, b + BATCH_SIZE);
+      const results = await Promise.allSettled(
+        batch.map(({ url, filepath }) => downloadImage(url, filepath))
+      );
+      for (let k = 0; k < results.length; k++) {
+        if (results[k].status === 'fulfilled') {
+          downloaded++;
+        } else {
+          failed++;
+          console.log(`  ❌ [${batch[k].index + 1}/${imageUrls.length}] Failed: ${results[k].reason?.message}`);
+        }
       }
+      process.stdout.write(`  ⬇️  [${Math.min(b + BATCH_SIZE, toDownload.length)}/${toDownload.length}] Downloaded\r`);
     }
 
     console.log(`  ✅ ${downloaded} downloaded, ${skipped} cached, ${failed} failed`);
@@ -413,7 +452,7 @@ async function isSoldProperty(scope) {
 
     try {
       const { stdout, stderr } = await execPromise(
-        'python3 scripts/select_exteriors.py coelhodafonseca --cache-root data --work-root work_fastdup --out-root selected_exteriors --images-subdir images',
+        `python3 scripts/select_exteriors.py coelhodafonseca --cache-root data/${compoundId} --work-root work_fastdup --out-root selected_exteriors/${compoundId} --images-subdir images`,
         {
           cwd: process.cwd(),
           timeout: 600000  // 10 minutes
@@ -435,7 +474,7 @@ async function isSoldProperty(scope) {
 
     try {
       const { stdout, stderr } = await execPromise(
-        'node scripts/mosaic-module.js coelho',
+        `COMPOUND=${compoundId} node scripts/mosaic-module.js coelho`,
         {
           cwd: process.cwd(),
           timeout: 600000  // 10 minutes
@@ -454,9 +493,9 @@ async function isSoldProperty(scope) {
   // ========================================
   // FINAL SUMMARY
   // ========================================
-  const selectedDir = path.join(process.cwd(), 'selected_exteriors', 'coelhodafonseca');
+  const selectedDir = path.join(process.cwd(), 'selected_exteriors', compoundId, 'coelhodafonseca');
   const workDir = path.join(process.cwd(), 'work_fastdup');
-  const mosaicsDir = path.join(process.cwd(), 'data', 'mosaics', 'coelho');
+  const mosaicsDir = path.join(process.cwd(), 'data', compoundId, 'mosaics', 'coelho');
 
   console.log('\n' + '='.repeat(60));
   console.log('✅ MASTER SCRAPER COMPLETE');
@@ -467,7 +506,7 @@ async function isSoldProperty(scope) {
   console.log(`Images cached: ${totalSkipped}`);
   console.log(`Images failed: ${totalFailed}`);
   console.log(`\nData locations:`);
-  console.log(`  Listings JSON: ${path.join(process.cwd(), 'data', 'coelhodafonseca', 'listings')}`);
+  console.log(`  Listings JSON: ${path.join(process.cwd(), 'data', compoundId, 'coelhodafonseca', 'listings')}`);
   console.log(`  Original images: ${imagesBaseDir}`);
   console.log(`  Fastdup analysis: ${workDir}`);
   console.log(`  Selected exteriors (best 12): ${selectedDir}`);
