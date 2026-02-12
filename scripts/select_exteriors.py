@@ -270,7 +270,7 @@ def select_best_12(listing_dir, work_dir, site, listing_id, out_root, copy_mode=
 @app.command()
 def run(
     site: str = typer.Argument(..., help="Site name: 'coelhodafonseca' or 'vivaprimeimoveis'"),
-    cache_root: str = typer.Option("data_clean", help="Root data directory (UFOID cleaned)"),
+    cache_root: str = typer.Option("data", help="Root data directory (e.g. data/{compoundId})"),
     work_root: str = typer.Option("work_fastdup", help="Fastdup work directory"),
     out_root: str = typer.Option("selected_exteriors", help="Output directory for selected images"),
     copy_mode: str = typer.Option("copy", help="'copy' or 'symlink'"),
