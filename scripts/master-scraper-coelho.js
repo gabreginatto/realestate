@@ -103,20 +103,42 @@ async function isSoldProperty(scope) {
   });
   const baseSearchUrl = `https://www.coelhodafonseca.com.br/search?${searchParams.toString()}`;
 
-  const totalPages = 3;
-  console.log(`📄 Expected ${totalPages} pages\n`);
-
   const allListings = [];
+
+  // Load page 1 to detect total results and compute page count
+  await page.goto(baseSearchUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.waitForTimeout(2000);
+  await page.waitForSelector('section.property_display_main__3gOwW', { timeout: 30000 });
+
+  const RESULTS_PER_PAGE = 30;
+  let totalPages = 1;
+  try {
+    const resultText = await page.locator('text=/\\d+ Resultado/').first().textContent({ timeout: 5000 });
+    const totalResults = parseInt(resultText.match(/(\d+)/)?.[1] || '0');
+    totalPages = Math.max(1, Math.ceil(totalResults / RESULTS_PER_PAGE));
+    console.log(`📄 ${totalResults} results across ${totalPages} page(s)\n`);
+  } catch {
+    console.log(`📄 Could not detect result count, assuming 1 page\n`);
+  }
 
   // Loop through all pages to collect URLs and basic data
   for (let currentPage = 1; currentPage <= totalPages; currentPage++) {
     console.log(`📄 PAGE ${currentPage}/${totalPages}`);
 
-    const pageUrl = currentPage === 1 ? baseSearchUrl : `${baseSearchUrl}&page=${currentPage}`;
-    await page.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
-    await page.waitForTimeout(2000);
+    // Page 1 is already loaded; navigate only for subsequent pages
+    if (currentPage > 1) {
+      const pageUrl = `${baseSearchUrl}&page=${currentPage}`;
+      await page.goto(pageUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.waitForTimeout(2000);
 
-    await page.waitForSelector('section.property_display_main__3gOwW', { timeout: 30000 });
+      try {
+        await page.waitForSelector('section.property_display_main__3gOwW', { timeout: 30000 });
+      } catch {
+        console.log(`⚠️  No property cards on page ${currentPage} — stopping pagination`);
+        break;
+      }
+    }
+
     await page.waitForTimeout(1500);
 
     const propertyCards = page.locator('section.property_display_main__3gOwW');

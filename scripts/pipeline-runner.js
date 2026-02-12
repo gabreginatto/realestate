@@ -186,6 +186,8 @@ function runIncrementalSitePostProcessing(runRecord, site, codes, compoundId) {
   const fastdupCmd = [
     'python3 scripts/process-images-fastdup.py',
     `--site ${siteInfo.siteArg}`,
+    `--data-root data/${compoundId}`,
+    `--work-root work_fastdup/${compoundId}`,
     `--only-codes-file ${deltaFile}`,
     `--codes-key ${siteInfo.codesKey}`,
   ].join(' ');
@@ -194,9 +196,9 @@ function runIncrementalSitePostProcessing(runRecord, site, codes, compoundId) {
   log(`[PROGRESS] Step ${stepBase + 1}/${TOTAL_STEPS} — ${siteInfo.name} Exterior Selection (${compoundId})`);
   const selectCmd = [
     `python3 scripts/select_exteriors.py ${siteInfo.siteArg}`,
-    '--cache-root data',
-    '--work-root work_fastdup',
-    '--out-root selected_exteriors',
+    `--cache-root data/${compoundId}`,
+    `--work-root work_fastdup/${compoundId}`,
+    `--out-root selected_exteriors/${compoundId}`,
     '--images-subdir images',
     `--only-codes-file ${deltaFile}`,
     `--codes-key ${siteInfo.codesKey}`,
@@ -206,6 +208,7 @@ function runIncrementalSitePostProcessing(runRecord, site, codes, compoundId) {
   log(`[PROGRESS] Step ${stepBase + 2}/${TOTAL_STEPS} — ${siteInfo.name} Mosaic Generation (${compoundId})`);
   const mosaicCmd = [
     `node scripts/mosaic-module.js ${siteInfo.mosaicArg}`,
+    `--compound=${compoundId}`,
     `--onlyCodesFile=${deltaFile}`,
     `--codesKey=${siteInfo.codesKey}`,
   ].join(' ');
@@ -229,15 +232,15 @@ async function runIncrementalSitePostProcessingAsync(site, codes, compoundId) {
   }
 
   log(`[PROGRESS] ${siteInfo.name} Fastdup (${compoundId}, ${codes.length} listings)`);
-  const fastdupCmd = `python3 scripts/process-images-fastdup.py --site ${siteInfo.siteArg} --only-codes-file ${deltaFile} --codes-key ${siteInfo.codesKey}`;
+  const fastdupCmd = `python3 scripts/process-images-fastdup.py --site ${siteInfo.siteArg} --data-root data/${compoundId} --work-root work_fastdup/${compoundId} --only-codes-file ${deltaFile} --codes-key ${siteInfo.codesKey}`;
   results.push(await runStepAsync(`${siteInfo.name} Fastdup (${compoundId})`, fastdupCmd));
 
   log(`[PROGRESS] ${siteInfo.name} Exterior Selection (${compoundId})`);
-  const selectCmd = `python3 scripts/select_exteriors.py ${siteInfo.siteArg} --cache-root data --work-root work_fastdup --out-root selected_exteriors --images-subdir images --only-codes-file ${deltaFile} --codes-key ${siteInfo.codesKey}`;
+  const selectCmd = `python3 scripts/select_exteriors.py ${siteInfo.siteArg} --cache-root data/${compoundId} --work-root work_fastdup/${compoundId} --out-root selected_exteriors/${compoundId} --images-subdir images --only-codes-file ${deltaFile} --codes-key ${siteInfo.codesKey}`;
   results.push(await runStepAsync(`${siteInfo.name} Exterior Selection (${compoundId})`, selectCmd));
 
   log(`[PROGRESS] ${siteInfo.name} Mosaic Generation (${compoundId})`);
-  const mosaicCmd = `node scripts/mosaic-module.js ${siteInfo.mosaicArg} --onlyCodesFile=${deltaFile} --codesKey=${siteInfo.codesKey}`;
+  const mosaicCmd = `node scripts/mosaic-module.js ${siteInfo.mosaicArg} --compound=${compoundId} --onlyCodesFile=${deltaFile} --codesKey=${siteInfo.codesKey}`;
   results.push(await runStepAsync(`${siteInfo.name} Mosaic Generation (${compoundId})`, mosaicCmd));
 
   return results;

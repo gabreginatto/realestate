@@ -39,9 +39,11 @@ let MIN_OUTDOOR_SCORE  = 0.35; // tighten for exterior-only mosaics
 let MOSAIC_BG = { r: 255, g: 255, b: 255 };
 let RENDER_FIT = 'contain'; // 'contain' (letterbox) or 'cover'
 
-// Paths
-const MOSAIC_DIR = path.join(process.cwd(), 'data', 'mosaics');
-const FASTDUP_SELECTED_DIR = path.join(process.cwd(), 'selected_exteriors');
+// Paths (overridable via --compound or --dataRoot / --selectedDir flags)
+let MOSAIC_DIR = path.join(process.cwd(), 'data', 'mosaics');
+let FASTDUP_SELECTED_DIR = path.join(process.cwd(), 'selected_exteriors');
+let DATA_ROOT = path.join(process.cwd(), 'data');
+let COMPOUND = null;
 let ONLY_CODES_SET = null;
 
 // ---------------------- CLI Flags ----------------------------
@@ -80,6 +82,17 @@ function parseFlags() {
     const t = parseInt(flags.dupThresh, 10);
     if (Number.isFinite(t) && t >= 0 && t <= 64) global.DUP_THRESH_OVERRIDE = t;
   }
+
+  // Compound support
+  if (flags.compound) {
+    COMPOUND = flags.compound;
+    DATA_ROOT = path.join(process.cwd(), 'data', COMPOUND);
+    MOSAIC_DIR = path.join(DATA_ROOT, 'mosaics');
+    FASTDUP_SELECTED_DIR = path.join(process.cwd(), 'selected_exteriors', COMPOUND);
+  }
+  if (flags.dataRoot) DATA_ROOT = path.resolve(flags.dataRoot);
+  if (flags.mosaicDir) MOSAIC_DIR = path.resolve(flags.mosaicDir);
+  if (flags.selectedDir) FASTDUP_SELECTED_DIR = path.resolve(flags.selectedDir);
 
   if (flags.onlyCodesFile) {
     const raw = fs.readFileSync(String(flags.onlyCodesFile), 'utf-8');
@@ -177,7 +190,7 @@ async function downloadAndCache(listing, side) {
     console.log(`  ⚠️  No images for ${side}/${code}`);
     return [];
   }
-  const cacheDir = path.join(process.cwd(), 'data',
+  const cacheDir = path.join(DATA_ROOT,
     side === 'viva' ? 'vivaprimeimoveis' : 'coelhodafonseca', 'cache', String(code));
   await ensureDir(cacheDir);
 
@@ -714,11 +727,11 @@ Notes:
 
     try {
       if (arg === 'viva' || arg === 'both') {
-        const vivaPath = path.join(process.cwd(), 'data', 'vivaprimeimoveis', 'listings', 'all-listings.json');
+        const vivaPath = path.join(DATA_ROOT, 'vivaprimeimoveis', 'listings', 'all-listings.json');
         await generateMosaicsForAll(vivaPath, 'viva');
       }
       if (arg === 'coelho' || arg === 'both') {
-        const coelhoPath = path.join(process.cwd(), 'data', 'coelhodafonseca', 'listings', 'all-listings.json');
+        const coelhoPath = path.join(DATA_ROOT, 'coelhodafonseca', 'listings', 'all-listings.json');
         await generateMosaicsForAll(coelhoPath, 'coelho');
       }
       console.log('\n🎉 All done!\n');

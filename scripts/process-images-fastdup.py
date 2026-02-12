@@ -149,6 +149,16 @@ if __name__ == "__main__":
         default="",
         help="JSON key when --only-codes-file points to an object payload",
     )
+    parser.add_argument(
+        "--data-root",
+        default="data",
+        help="Root data directory (e.g. data/tambore-xi for compound-scoped runs)",
+    )
+    parser.add_argument(
+        "--work-root",
+        default="work_fastdup",
+        help="Root work directory for fastdup output",
+    )
     args = parser.parse_args()
 
     console.print("\n[bold]Running fastdup on all listings[/bold]")
@@ -163,16 +173,16 @@ if __name__ == "__main__":
     if args.site in ("coelhodafonseca", "both"):
         process_site(
             "coelhodafonseca",
-            "data/coelhodafonseca/images",
-            "work_fastdup",
+            f"{args.data_root}/coelhodafonseca/images",
+            args.work_root,
             only_codes=only_codes
         )
 
     if args.site in ("vivaprimeimoveis", "both"):
         process_site(
             "vivaprimeimoveis",
-            "data/vivaprimeimoveis/images",
-            "work_fastdup",
+            f"{args.data_root}/vivaprimeimoveis/images",
+            args.work_root,
             only_codes=only_codes
         )
 
