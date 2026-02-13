@@ -19,7 +19,10 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..');
-const SERVER_SCRIPT = path.join(PROJECT_ROOT, 'scripts', 'human-loop', 'matching-server.js');
+const SERVER_SCRIPT = path.join(PROJECT_ROOT, 'server-deploy', 'matching-server.js');
+
+const COMPOUND = 'alphaville-1';
+const C = `/api/compounds/${COMPOUND}`;
 
 // ---------------------------------------------------------------------------
 // Mock data factories
@@ -36,6 +39,7 @@ function makeVivaListing(code, overrides = {}) {
     built: 100,
     park: 2,
     neighbourhood: 'Jardins',
+    features: 'PG',
     ...overrides,
   };
 }
@@ -50,6 +54,7 @@ function makeCoelhoListing(code, overrides = {}) {
     suites: 1,
     built: 105,
     park: 2,
+    features: 'P',
     ...overrides,
   };
 }
@@ -72,11 +77,11 @@ function makeDeterministicMatches(vivaListings, coelhoListings) {
 
 function createTempDataDir() {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'matching-server-test-'));
-  const listingsDir = path.join(tmpDir, 'listings');
-  const mosaicsDir = path.join(tmpDir, 'mosaics');
+  const compoundDir = path.join(tmpDir, COMPOUND);
+  const listingsDir = path.join(compoundDir, 'listings');
   fs.mkdirSync(listingsDir, { recursive: true });
-  fs.mkdirSync(path.join(mosaicsDir, 'viva'), { recursive: true });
-  fs.mkdirSync(path.join(mosaicsDir, 'coelho'), { recursive: true });
+  fs.mkdirSync(path.join(compoundDir, 'mosaics', 'viva'), { recursive: true });
+  fs.mkdirSync(path.join(compoundDir, 'mosaics', 'coelho'), { recursive: true });
   return tmpDir;
 }
 
@@ -97,23 +102,25 @@ function writeMockData(dataRoot, { vivaListings, coelhoListings, deterministicMa
   ];
   const detMatches = deterministicMatches || makeDeterministicMatches(viva, coelho);
 
+  const compoundDir = path.join(dataRoot, COMPOUND);
+
   fs.writeFileSync(
-    path.join(dataRoot, 'listings', 'vivaprimeimoveis_listings.json'),
+    path.join(compoundDir, 'listings', 'vivaprimeimoveis_listings.json'),
     JSON.stringify({ listings: viva }),
   );
   fs.writeFileSync(
-    path.join(dataRoot, 'listings', 'coelhodafonseca_listings.json'),
+    path.join(compoundDir, 'listings', 'coelhodafonseca_listings.json'),
     JSON.stringify({ listings: coelho }),
   );
   fs.writeFileSync(
-    path.join(dataRoot, 'deterministic-matches.json'),
+    path.join(compoundDir, 'deterministic-matches.json'),
     JSON.stringify(detMatches),
   );
 
   // Remove any leftover files from a prior run
-  const notifPath = path.join(dataRoot, 'notifications.json');
+  const notifPath = path.join(compoundDir, 'notifications.json');
   if (fs.existsSync(notifPath)) fs.unlinkSync(notifPath);
-  const auditPath = path.join(dataRoot, 'manual-matches.log.jsonl');
+  const auditPath = path.join(compoundDir, 'manual-matches.log.jsonl');
   if (fs.existsSync(auditPath)) fs.unlinkSync(auditPath);
 
   return { viva, coelho, detMatches };
@@ -146,6 +153,7 @@ function startServer(dataRoot, extraEnv = {}) {
       DATA_ROOT: dataRoot,
       SESSION_NAME: 'test',
       READ_ONLY: extraEnv.READ_ONLY || 'false',
+      GCS_BUCKET: '__test_nonexistent_bucket__',
       ...extraEnv,
     };
 
@@ -250,11 +258,11 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // GET /api/session
+  // GET /api/compounds/:compoundId/session
   // =========================================================================
-  describe('GET /api/session', () => {
+  describe(`GET ${C}/session`, () => {
     it('returns session metadata and stats', async () => {
-      const { status, body } = await get(baseUrl, '/api/session');
+      const { status, body } = await get(baseUrl, `${C}/session`);
       assert.equal(status, 200);
       assert.equal(body.session_name, 'test');
       assert.equal(typeof body.version, 'number');
@@ -274,11 +282,11 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // GET /api/next
+  // GET /api/compounds/:compoundId/next
   // =========================================================================
-  describe('GET /api/next', () => {
+  describe(`GET ${C}/next`, () => {
     it('returns the next listing to review with reviewer param', async () => {
-      const { status, body } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+      const { status, body } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
       assert.equal(status, 200);
       assert.ok(body.viva_code);
       assert.ok(body.viva);
@@ -289,15 +297,13 @@ describe('Matching Server API', () => {
     });
 
     it('defaults to anonymous reviewer when param is missing', async () => {
-      // Use a different reviewer so we can test this path
-      // The /api/next with no reviewer param uses 'anonymous'
-      const { status, body } = await get(baseUrl, '/api/next');
+      const { status, body } = await get(baseUrl, `${C}/next`);
       assert.equal(status, 200);
       assert.ok(body.viva_code || body.done || body.pass_complete);
     });
 
     it('includes transformed specs in viva data', async () => {
-      const { body } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+      const { body } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
       if (body.viva) {
         assert.ok(body.viva.specs, 'viva should have specs object');
         assert.equal(typeof body.viva.specs.area_construida, 'number');
@@ -307,15 +313,15 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // GET /api/candidates/:vivaCode
+  // GET /api/compounds/:compoundId/candidates/:vivaCode
   // =========================================================================
-  describe('GET /api/candidates/:vivaCode', () => {
+  describe(`GET ${C}/candidates/:vivaCode`, () => {
     it('returns candidates for a valid viva listing', async () => {
-      const { body: nextBody } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+      const { body: nextBody } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
       const vivaCode = nextBody.viva_code;
-      assert.ok(vivaCode, 'should have a viva_code from /api/next');
+      assert.ok(vivaCode, 'should have a viva_code from next');
 
-      const { status, body } = await get(baseUrl, `/api/candidates/${vivaCode}`);
+      const { status, body } = await get(baseUrl, `${C}/candidates/${vivaCode}`);
       assert.equal(status, 200);
       assert.equal(body.viva_code, vivaCode);
       assert.ok(Array.isArray(body.candidates));
@@ -332,24 +338,24 @@ describe('Matching Server API', () => {
     });
 
     it('returns 404 for non-existent viva code', async () => {
-      const { status, body } = await get(baseUrl, '/api/candidates/NONEXISTENT');
+      const { status, body } = await get(baseUrl, `${C}/candidates/NONEXISTENT`);
       assert.equal(status, 404);
       assert.ok(body.error);
     });
   });
 
   // =========================================================================
-  // POST /api/match
+  // POST /api/compounds/:compoundId/match
   // =========================================================================
-  describe('POST /api/match', () => {
+  describe(`POST ${C}/match`, () => {
     it('rejects request without viva_code or coelho_code', async () => {
-      const { status, body } = await post(baseUrl, '/api/match', {});
+      const { status, body } = await post(baseUrl, `${C}/match`, {});
       assert.equal(status, 400);
       assert.ok(body.error.includes('Missing'));
     });
 
     it('returns 404 for non-existent listing', async () => {
-      const { status, body } = await post(baseUrl, '/api/match', {
+      const { status, body } = await post(baseUrl, `${C}/match`, {
         viva_code: 'NONEXISTENT',
         coelho_code: 'COELHO001',
         reviewer: REVIEWER,
@@ -360,17 +366,17 @@ describe('Matching Server API', () => {
 
     it('records a valid match', async () => {
       // Get a listing to match using the same reviewer
-      const { body: nextBody } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+      const { body: nextBody } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
       const vivaCode = nextBody.viva_code;
       assert.ok(vivaCode, 'should get a listing to match');
 
       // Get its candidates
-      const { body: candBody } = await get(baseUrl, `/api/candidates/${vivaCode}`);
+      const { body: candBody } = await get(baseUrl, `${C}/candidates/${vivaCode}`);
       assert.ok(candBody.candidates.length > 0);
       const coelhoCode = candBody.candidates[0].code;
 
       // Confirm match
-      const { status, body } = await post(baseUrl, '/api/match', {
+      const { status, body } = await post(baseUrl, `${C}/match`, {
         viva_code: vivaCode,
         coelho_code: coelhoCode,
         reviewer: REVIEWER,
@@ -390,24 +396,24 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // POST /api/skip
+  // POST /api/compounds/:compoundId/skip
   // =========================================================================
-  describe('POST /api/skip', () => {
+  describe(`POST ${C}/skip`, () => {
     it('rejects request without viva_code', async () => {
-      const { status, body } = await post(baseUrl, '/api/skip', {});
+      const { status, body } = await post(baseUrl, `${C}/skip`, {});
       assert.equal(status, 400);
       assert.ok(body.error.includes('Missing'));
     });
 
     it('skips a valid listing', async () => {
-      const { body: nextBody } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+      const { body: nextBody } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
       if (nextBody.done || nextBody.pass_complete) {
         return;
       }
       const vivaCode = nextBody.viva_code;
       assert.ok(vivaCode);
 
-      const { status, body } = await post(baseUrl, '/api/skip', {
+      const { status, body } = await post(baseUrl, `${C}/skip`, {
         viva_code: vivaCode,
         reviewer: REVIEWER,
         reason: 'no_good_candidates',
@@ -423,11 +429,11 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // POST /api/undo
+  // POST /api/compounds/:compoundId/undo
   // =========================================================================
-  describe('POST /api/undo', () => {
+  describe(`POST ${C}/undo`, () => {
     it('returns 404 when there is nothing to undo for a reviewer', async () => {
-      const { status, body } = await post(baseUrl, '/api/undo', {
+      const { status, body } = await post(baseUrl, `${C}/undo`, {
         reviewer: 'nobody_ever',
       });
       assert.equal(status, 404);
@@ -436,7 +442,7 @@ describe('Matching Server API', () => {
 
     it('undoes the most recent match for the reviewer first', async () => {
       // The undo logic checks matches before skips, so the match is undone first
-      const { status, body } = await post(baseUrl, '/api/undo', {
+      const { status, body } = await post(baseUrl, `${C}/undo`, {
         reviewer: REVIEWER,
       });
       assert.equal(status, 200);
@@ -449,7 +455,7 @@ describe('Matching Server API', () => {
 
     it('undoes the skip after the match has been undone', async () => {
       // With the match already undone, the next undo targets the skip
-      const { status, body } = await post(baseUrl, '/api/undo', {
+      const { status, body } = await post(baseUrl, `${C}/undo`, {
         reviewer: REVIEWER,
       });
       assert.equal(status, 200);
@@ -462,11 +468,11 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // GET /api/progress
+  // GET /api/compounds/:compoundId/progress
   // =========================================================================
-  describe('GET /api/progress', () => {
+  describe(`GET ${C}/progress`, () => {
     it('returns progress stats', async () => {
-      const { status, body } = await get(baseUrl, '/api/progress');
+      const { status, body } = await get(baseUrl, `${C}/progress`);
       assert.equal(status, 200);
       assert.equal(typeof body.total_viva_listings, 'number');
       assert.equal(typeof body.matched, 'number');
@@ -482,11 +488,11 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // GET /api/audit
+  // GET /api/compounds/:compoundId/audit
   // =========================================================================
-  describe('GET /api/audit', () => {
+  describe(`GET ${C}/audit`, () => {
     it('returns audit log entries from prior actions', async () => {
-      const { status, body } = await get(baseUrl, '/api/audit');
+      const { status, body } = await get(baseUrl, `${C}/audit`);
       assert.equal(status, 200);
       assert.ok(Array.isArray(body.entries));
       // We performed match, skip, and undo actions earlier so there should be entries
@@ -505,17 +511,17 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // POST /api/pass/advance
+  // POST /api/compounds/:compoundId/pass/advance
   // =========================================================================
-  describe('POST /api/pass/advance', () => {
+  describe(`POST ${C}/pass/advance`, () => {
     it('advances pass or reports inability', async () => {
       // First, skip all remaining listings so the pass is exhausted
       let listing;
       do {
-        const { body } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+        const { body } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
         listing = body;
         if (listing.viva_code) {
-          await post(baseUrl, '/api/skip', {
+          await post(baseUrl, `${C}/skip`, {
             viva_code: listing.viva_code,
             reviewer: REVIEWER,
           });
@@ -523,7 +529,7 @@ describe('Matching Server API', () => {
       } while (listing.viva_code);
 
       // Now advance
-      const { status, body } = await post(baseUrl, '/api/pass/advance', {});
+      const { status, body } = await post(baseUrl, `${C}/pass/advance`, {});
       assert.equal(status, 200);
 
       if (body.success) {
@@ -538,35 +544,35 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // GET /api/next -- pass_complete response
+  // GET /api/compounds/:compoundId/next -- pass_complete response
   // =========================================================================
-  describe('GET /api/next (pass_complete / done)', () => {
+  describe(`GET ${C}/next (pass_complete / done)`, () => {
     it('returns pass_complete or done when no tasks remain', async () => {
       // Skip everything remaining in the current pass
       let listing;
       do {
-        const { body } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+        const { body } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
         listing = body;
         if (listing.viva_code) {
-          await post(baseUrl, '/api/skip', {
+          await post(baseUrl, `${C}/skip`, {
             viva_code: listing.viva_code,
             reviewer: REVIEWER,
           });
         }
       } while (listing.viva_code);
 
-      const { status, body } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+      const { status, body } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
       assert.equal(status, 200);
       assert.ok(body.pass_complete || body.done, 'should indicate pass_complete or done');
     });
   });
 
   // =========================================================================
-  // POST /api/pass/finish
+  // POST /api/compounds/:compoundId/pass/finish
   // =========================================================================
-  describe('POST /api/pass/finish', () => {
+  describe(`POST ${C}/pass/finish`, () => {
     it('marks the session as finished and returns summary', async () => {
-      const { status, body } = await post(baseUrl, '/api/pass/finish', {
+      const { status, body } = await post(baseUrl, `${C}/pass/finish`, {
         reviewer: REVIEWER,
       });
       assert.equal(status, 200);
@@ -577,8 +583,8 @@ describe('Matching Server API', () => {
       assert.equal(typeof body.summary.passes_completed, 'number');
     });
 
-    it('causes /api/next to return done after finishing', async () => {
-      const { status, body } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+    it('causes next to return done after finishing', async () => {
+      const { status, body } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
       assert.equal(status, 200);
       assert.equal(body.done, true);
       assert.ok(body.message);
@@ -587,11 +593,11 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // GET /api/matches/validate
+  // GET /api/compounds/:compoundId/matches/validate
   // =========================================================================
-  describe('GET /api/matches/validate', () => {
+  describe(`GET ${C}/matches/validate`, () => {
     it('returns validation results', async () => {
-      const { status, body } = await get(baseUrl, '/api/matches/validate');
+      const { status, body } = await get(baseUrl, `${C}/matches/validate`);
       assert.equal(status, 200);
       assert.ok(Array.isArray(body.valid));
       assert.ok(Array.isArray(body.invalid));
@@ -605,11 +611,11 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // GET /api/matches/export
+  // GET /api/compounds/:compoundId/matches/export
   // =========================================================================
-  describe('GET /api/matches/export', () => {
+  describe(`GET ${C}/matches/export`, () => {
     it('returns enriched export data', async () => {
-      const { status, body } = await get(baseUrl, '/api/matches/export');
+      const { status, body } = await get(baseUrl, `${C}/matches/export`);
       assert.equal(status, 200);
       assert.ok(body.exported_at);
       assert.equal(typeof body.total_matches, 'number');
@@ -620,18 +626,18 @@ describe('Matching Server API', () => {
   // =========================================================================
   // Pipeline & Notification endpoints
   // =========================================================================
-  describe('POST /api/pipeline/trigger', () => {
+  describe(`POST ${C}/pipeline/trigger`, () => {
     it('records a pipeline trigger notification', async () => {
-      const { status, body } = await post(baseUrl, '/api/pipeline/trigger', {});
+      const { status, body } = await post(baseUrl, `${C}/pipeline/trigger`, {});
       assert.equal(status, 200);
       assert.equal(body.triggered, true);
       assert.ok(body.message);
     });
   });
 
-  describe('POST /api/pipeline/complete', () => {
+  describe(`POST ${C}/pipeline/complete`, () => {
     it('records a pipeline completion notification', async () => {
-      const { status, body } = await post(baseUrl, '/api/pipeline/complete', {
+      const { status, body } = await post(baseUrl, `${C}/pipeline/complete`, {
         new_viva: 5,
         new_coelho: 3,
       });
@@ -641,9 +647,9 @@ describe('Matching Server API', () => {
     });
   });
 
-  describe('GET /api/notifications', () => {
+  describe(`GET ${C}/notifications`, () => {
     it('returns unread notifications including pipeline events', async () => {
-      const { status, body } = await get(baseUrl, '/api/notifications');
+      const { status, body } = await get(baseUrl, `${C}/notifications`);
       assert.equal(status, 200);
       assert.ok(Array.isArray(body.notifications));
       assert.equal(typeof body.unread_count, 'number');
@@ -659,15 +665,15 @@ describe('Matching Server API', () => {
     });
   });
 
-  describe('POST /api/notifications/dismiss', () => {
+  describe(`POST ${C}/notifications/dismiss`, () => {
     it('returns 400 when neither id nor all provided', async () => {
-      const { status, body } = await post(baseUrl, '/api/notifications/dismiss', {});
+      const { status, body } = await post(baseUrl, `${C}/notifications/dismiss`, {});
       assert.equal(status, 400);
       assert.ok(body.error);
     });
 
     it('returns 404 for non-existent notification id', async () => {
-      const { status, body } = await post(baseUrl, '/api/notifications/dismiss', {
+      const { status, body } = await post(baseUrl, `${C}/notifications/dismiss`, {
         id: 'nonexistent-id',
       });
       assert.equal(status, 404);
@@ -675,56 +681,56 @@ describe('Matching Server API', () => {
     });
 
     it('dismisses a single notification by id', async () => {
-      const { body: notifsBody } = await get(baseUrl, '/api/notifications');
+      const { body: notifsBody } = await get(baseUrl, `${C}/notifications`);
       assert.ok(notifsBody.notifications.length > 0);
       const targetId = notifsBody.notifications[0].id;
 
-      const { status, body } = await post(baseUrl, '/api/notifications/dismiss', {
+      const { status, body } = await post(baseUrl, `${C}/notifications/dismiss`, {
         id: targetId,
       });
       assert.equal(status, 200);
       assert.equal(body.success, true);
 
       // Verify it was dismissed
-      const { body: afterBody } = await get(baseUrl, '/api/notifications');
+      const { body: afterBody } = await get(baseUrl, `${C}/notifications`);
       const dismissed = afterBody.notifications.find(n => n.id === targetId);
       assert.equal(dismissed, undefined, 'dismissed notification should not appear in unread');
     });
 
     it('dismisses all notifications', async () => {
-      const { status, body } = await post(baseUrl, '/api/notifications/dismiss', { all: true });
+      const { status, body } = await post(baseUrl, `${C}/notifications/dismiss`, { all: true });
       assert.equal(status, 200);
       assert.equal(body.success, true);
 
-      const { body: afterBody } = await get(baseUrl, '/api/notifications');
+      const { body: afterBody } = await get(baseUrl, `${C}/notifications`);
       assert.equal(afterBody.unread_count, 0);
     });
   });
 
   // =========================================================================
-  // GET /api/session -- has_new_properties after pipeline_complete
+  // GET /api/compounds/:compoundId/session -- has_new_properties after pipeline_complete
   // =========================================================================
-  describe('GET /api/session (has_new_properties)', () => {
+  describe(`GET ${C}/session (has_new_properties)`, () => {
     it('reflects has_new_properties when unread pipeline_complete exists', async () => {
       // Create a new pipeline_complete notification
-      await post(baseUrl, '/api/pipeline/complete', { new_viva: 1, new_coelho: 1 });
+      await post(baseUrl, `${C}/pipeline/complete`, { new_viva: 1, new_coelho: 1 });
 
-      const { body } = await get(baseUrl, '/api/session');
+      const { body } = await get(baseUrl, `${C}/session`);
       assert.equal(body.has_new_properties, true);
 
       // Dismiss all and verify
-      await post(baseUrl, '/api/notifications/dismiss', { all: true });
-      const { body: afterBody } = await get(baseUrl, '/api/session');
+      await post(baseUrl, `${C}/notifications/dismiss`, { all: true });
+      const { body: afterBody } = await get(baseUrl, `${C}/session`);
       assert.equal(afterBody.has_new_properties, false);
     });
   });
 
   // =========================================================================
-  // GET /api/report/unmatched
+  // GET /api/compounds/:compoundId/report/unmatched
   // =========================================================================
-  describe('GET /api/report/unmatched', () => {
+  describe(`GET ${C}/report/unmatched`, () => {
     it('returns unmatched viva listings', async () => {
-      const { status, body } = await get(baseUrl, '/api/report/unmatched');
+      const { status, body } = await get(baseUrl, `${C}/report/unmatched`);
       assert.equal(status, 200);
       assert.equal(typeof body.total_viva, 'number');
       assert.equal(typeof body.total_matched, 'number');
@@ -734,11 +740,11 @@ describe('Matching Server API', () => {
   });
 
   // =========================================================================
-  // POST /api/report/send-email
+  // POST /api/compounds/:compoundId/report/send-email
   // =========================================================================
-  describe('POST /api/report/send-email', () => {
+  describe(`POST ${C}/report/send-email`, () => {
     it('rejects invalid email', async () => {
-      const { status, body } = await post(baseUrl, '/api/report/send-email', {
+      const { status, body } = await post(baseUrl, `${C}/report/send-email`, {
         to: 'not-an-email',
       });
       assert.equal(status, 400);
@@ -746,7 +752,7 @@ describe('Matching Server API', () => {
     });
 
     it('gracefully fails without SMTP/nodemailer config', async () => {
-      const { status, body } = await post(baseUrl, '/api/report/send-email', {
+      const { status, body } = await post(baseUrl, `${C}/report/send-email`, {
         to: 'test@example.com',
       });
       // Should return 500 because nodemailer is likely not installed or SMTP is not configured
@@ -778,11 +784,11 @@ describe('Matching Server API -- Read-only mode', () => {
   });
 
   it('GET endpoints still work in read-only mode', async () => {
-    const { status } = await get(baseUrl, '/api/session');
+    const { status } = await get(baseUrl, `${C}/session`);
     assert.equal(status, 200);
   });
 
-  for (const endpoint of ['/api/match', '/api/skip', '/api/undo', '/api/pass/advance', '/api/pass/finish']) {
+  for (const endpoint of [`${C}/match`, `${C}/skip`, `${C}/undo`, `${C}/pass/advance`, `${C}/pass/finish`]) {
     it(`POST ${endpoint} returns 403 in read-only mode`, async () => {
       const { status, body } = await post(baseUrl, endpoint, {
         viva_code: 'VIVA001',
@@ -820,16 +826,16 @@ describe('Matching Server API -- Match & Export workflow', () => {
     const REVIEWER = 'workflow_tester';
 
     // 1. Get first listing
-    const { body: nextBody } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+    const { body: nextBody } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
     assert.ok(nextBody.viva_code);
 
     // 2. Get candidates
-    const { body: candBody } = await get(baseUrl, `/api/candidates/${nextBody.viva_code}`);
+    const { body: candBody } = await get(baseUrl, `${C}/candidates/${nextBody.viva_code}`);
     assert.ok(candBody.candidates.length > 0);
 
     // 3. Match it
     const coelhoCode = candBody.candidates[0].code;
-    const { body: matchBody } = await post(baseUrl, '/api/match', {
+    const { body: matchBody } = await post(baseUrl, `${C}/match`, {
       viva_code: nextBody.viva_code,
       coelho_code: coelhoCode,
       reviewer: REVIEWER,
@@ -837,11 +843,11 @@ describe('Matching Server API -- Match & Export workflow', () => {
     assert.equal(matchBody.success, true);
 
     // 4. Validate matches
-    const { body: validateBody } = await get(baseUrl, '/api/matches/validate');
+    const { body: validateBody } = await get(baseUrl, `${C}/matches/validate`);
     assert.ok(validateBody.summary.valid_count >= 1);
 
     // 5. Export matches
-    const { body: exportBody } = await get(baseUrl, '/api/matches/export');
+    const { body: exportBody } = await get(baseUrl, `${C}/matches/export`);
     assert.ok(exportBody.total_matches >= 1);
     const exportedMatch = exportBody.matches.find(
       m => m.viva.code === nextBody.viva_code,
@@ -851,24 +857,24 @@ describe('Matching Server API -- Match & Export workflow', () => {
     assert.ok(exportedMatch.coelho.price);
 
     // 6. Check unmatched report
-    const { body: unmatchedBody } = await get(baseUrl, '/api/report/unmatched');
+    const { body: unmatchedBody } = await get(baseUrl, `${C}/report/unmatched`);
     assert.ok(unmatchedBody.total_matched >= 1);
     assert.ok(unmatchedBody.total_unmatched < unmatchedBody.total_viva);
 
     // 7. Progress should reflect the match
-    const { body: progressBody } = await get(baseUrl, '/api/progress');
+    const { body: progressBody } = await get(baseUrl, `${C}/progress`);
     assert.ok(progressBody.matched >= 1);
   });
 
   it('matched coelho code is excluded from other listings candidates', async () => {
     const REVIEWER = 'exclusion_tester';
-    const { body: nextBody } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+    const { body: nextBody } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
     if (nextBody.done || nextBody.pass_complete) return;
 
     const vivaCode = nextBody.viva_code;
-    const { body: candBody } = await get(baseUrl, `/api/candidates/${vivaCode}`);
+    const { body: candBody } = await get(baseUrl, `${C}/candidates/${vivaCode}`);
 
-    const { body: exportBody } = await get(baseUrl, '/api/matches/export');
+    const { body: exportBody } = await get(baseUrl, `${C}/matches/export`);
     const matchedCoelhoCodes = new Set(exportBody.matches.map(m => m.coelho.code));
 
     for (const cand of candBody.candidates) {
@@ -925,7 +931,7 @@ describe('Matching Server API -- Session resumption', () => {
     };
 
     fs.writeFileSync(
-      path.join(dataRoot, 'manual-matches.json'),
+      path.join(dataRoot, COMPOUND, 'manual-matches.json'),
       JSON.stringify(manualMatches),
     );
 
@@ -939,19 +945,19 @@ describe('Matching Server API -- Session resumption', () => {
   });
 
   it('resumes session with pre-existing matches', async () => {
-    const { body } = await get(baseUrl, '/api/session');
+    const { body } = await get(baseUrl, `${C}/session`);
     assert.ok(body.version >= 5, 'version should be at least the pre-seeded value');
   });
 
-  it('skips already-matched listings in /api/next', async () => {
+  it('skips already-matched listings in next', async () => {
     const REVIEWER = 'resume_tester';
     const seen = new Set();
     for (let i = 0; i < 10; i++) {
-      const { body } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+      const { body } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
       if (body.done || body.pass_complete) break;
       assert.notEqual(body.viva_code, 'VIVA001', 'VIVA001 should be skipped (already matched)');
       seen.add(body.viva_code);
-      await post(baseUrl, '/api/skip', {
+      await post(baseUrl, `${C}/skip`, {
         viva_code: body.viva_code,
         reviewer: REVIEWER,
       });
@@ -959,14 +965,14 @@ describe('Matching Server API -- Session resumption', () => {
   });
 
   it('export includes pre-existing matches', async () => {
-    const { body } = await get(baseUrl, '/api/matches/export');
+    const { body } = await get(baseUrl, `${C}/matches/export`);
     assert.ok(body.total_matches >= 1);
     const preExisting = body.matches.find(m => m.viva.code === 'VIVA001');
     assert.ok(preExisting, 'pre-existing VIVA001 match should appear in export');
   });
 
   it('validate detects matches against listings', async () => {
-    const { body } = await get(baseUrl, '/api/matches/validate');
+    const { body } = await get(baseUrl, `${C}/matches/validate`);
     const vivaMatch = body.valid.find(m => m.viva_code === 'VIVA001');
     assert.ok(vivaMatch, 'VIVA001 match should be valid');
   });
@@ -982,15 +988,18 @@ describe('Matching Server API -- Missing listings files', () => {
   let baseUrl;
 
   before(async () => {
-    dataRoot = createTempDataDir();
+    dataRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'matching-server-test-'));
+    const compoundDir = path.join(dataRoot, COMPOUND);
     // Only write deterministic-matches but NO listing files
     const viva = [makeVivaListing('VIVA001')];
     const coelho = [makeCoelhoListing('COELHO001')];
+    fs.mkdirSync(compoundDir, { recursive: true });
     fs.writeFileSync(
-      path.join(dataRoot, 'deterministic-matches.json'),
+      path.join(compoundDir, 'deterministic-matches.json'),
       JSON.stringify(makeDeterministicMatches(viva, coelho)),
     );
-    fs.mkdirSync(path.join(dataRoot, 'mosaics'), { recursive: true });
+    fs.mkdirSync(path.join(compoundDir, 'mosaics', 'viva'), { recursive: true });
+    fs.mkdirSync(path.join(compoundDir, 'mosaics', 'coelho'), { recursive: true });
 
     server = await startServer(dataRoot);
     baseUrl = server.baseUrl;
@@ -1002,7 +1011,7 @@ describe('Matching Server API -- Missing listings files', () => {
   });
 
   it('server starts even without listing files', async () => {
-    const { status, body } = await get(baseUrl, '/api/session');
+    const { status, body } = await get(baseUrl, `${C}/session`);
     assert.equal(status, 200);
     assert.ok(body.session_name);
   });
@@ -1010,11 +1019,11 @@ describe('Matching Server API -- Missing listings files', () => {
   it('validate works when listings are missing', async () => {
     const REVIEWER = 'edge_tester';
     // First match something
-    const { body: nextBody } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+    const { body: nextBody } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
     if (nextBody.viva_code) {
-      const { body: candBody } = await get(baseUrl, `/api/candidates/${nextBody.viva_code}`);
+      const { body: candBody } = await get(baseUrl, `${C}/candidates/${nextBody.viva_code}`);
       if (candBody.candidates.length > 0) {
-        await post(baseUrl, '/api/match', {
+        await post(baseUrl, `${C}/match`, {
           viva_code: nextBody.viva_code,
           coelho_code: candBody.candidates[0].code,
           reviewer: REVIEWER,
@@ -1022,7 +1031,7 @@ describe('Matching Server API -- Missing listings files', () => {
       }
     }
 
-    const { status, body } = await get(baseUrl, '/api/matches/validate');
+    const { status, body } = await get(baseUrl, `${C}/matches/validate`);
     assert.equal(status, 200);
     // Without listings loaded, all matches are "invalid" (codes not in empty sets)
     assert.ok(body.summary);
@@ -1034,17 +1043,17 @@ describe('Matching Server API -- Missing listings files', () => {
     // Skip remaining
     let listing;
     do {
-      const { body } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+      const { body } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
       listing = body;
       if (listing.viva_code) {
-        await post(baseUrl, '/api/skip', {
+        await post(baseUrl, `${C}/skip`, {
           viva_code: listing.viva_code,
           reviewer: REVIEWER,
         });
       }
     } while (listing.viva_code);
 
-    const { status, body } = await post(baseUrl, '/api/pass/advance', {});
+    const { status, body } = await post(baseUrl, `${C}/pass/advance`, {});
     assert.equal(status, 200);
     assert.equal(body.success, false);
     assert.ok(body.message);
@@ -1074,18 +1083,18 @@ describe('Matching Server API -- Reject endpoint', () => {
 
   it('rejects a specific candidate and removes it from candidates list', async () => {
     const REVIEWER = 'reject_tester';
-    const { body: nextBody } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+    const { body: nextBody } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
     assert.ok(nextBody.viva_code);
     const vivaCode = nextBody.viva_code;
 
     // Get candidates
-    const { body: candBefore } = await get(baseUrl, `/api/candidates/${vivaCode}`);
+    const { body: candBefore } = await get(baseUrl, `${C}/candidates/${vivaCode}`);
     assert.ok(candBefore.candidates.length > 0);
     const coelhoCode = candBefore.candidates[0].code;
     const countBefore = candBefore.total_candidates;
 
     // Reject the first candidate
-    const { status, body } = await post(baseUrl, '/api/reject', {
+    const { status, body } = await post(baseUrl, `${C}/reject`, {
       viva_code: vivaCode,
       coelho_code: coelhoCode,
       reviewer: REVIEWER,
@@ -1099,14 +1108,14 @@ describe('Matching Server API -- Reject endpoint', () => {
     assert.equal(body.rejection.coelho_code, coelhoCode);
 
     // Verify candidate is removed
-    const { body: candAfter } = await get(baseUrl, `/api/candidates/${vivaCode}`);
+    const { body: candAfter } = await get(baseUrl, `${C}/candidates/${vivaCode}`);
     const rejected = candAfter.candidates.find(c => c.code === coelhoCode);
     assert.equal(rejected, undefined, 'rejected candidate should not appear');
     assert.ok(candAfter.total_candidates < countBefore, 'candidate count should decrease');
   });
 
   it('rejects request without required fields', async () => {
-    const { status, body } = await post(baseUrl, '/api/reject', {});
+    const { status, body } = await post(baseUrl, `${C}/reject`, {});
     assert.equal(status, 400);
     assert.ok(body.error.includes('Missing'));
   });
@@ -1116,7 +1125,7 @@ describe('Matching Server API -- Reject endpoint', () => {
 // AUDIT LOG EMPTY STATE
 // ===========================================================================
 
-describe('GET /api/audit -- empty state', () => {
+describe(`GET ${C}/audit -- empty state`, () => {
   let dataRoot;
   let server;
   let baseUrl;
@@ -1134,7 +1143,7 @@ describe('GET /api/audit -- empty state', () => {
   });
 
   it('returns empty entries when no actions have been taken', async () => {
-    const { status, body } = await get(baseUrl, '/api/audit');
+    const { status, body } = await get(baseUrl, `${C}/audit`);
     assert.equal(status, 200);
     assert.ok(Array.isArray(body.entries));
     // When audit log file does not exist, server returns { entries: [] } without total
@@ -1146,7 +1155,7 @@ describe('GET /api/audit -- empty state', () => {
 // LISTING ENDPOINT TEST
 // ===========================================================================
 
-describe('GET /api/listing/:id', () => {
+describe(`GET ${C}/listing/:id`, () => {
   let dataRoot;
   let server;
   let baseUrl;
@@ -1165,10 +1174,10 @@ describe('GET /api/listing/:id', () => {
 
   it('returns listing details for a valid viva code', async () => {
     const REVIEWER = 'listing_tester';
-    const { body: nextBody } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+    const { body: nextBody } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
     assert.ok(nextBody.viva_code);
 
-    const { status, body } = await get(baseUrl, `/api/listing/${nextBody.viva_code}`);
+    const { status, body } = await get(baseUrl, `${C}/listing/${nextBody.viva_code}`);
     assert.equal(status, 200);
     assert.equal(body.viva_code, nextBody.viva_code);
     assert.ok(body.viva);
@@ -1177,7 +1186,7 @@ describe('GET /api/listing/:id', () => {
   });
 
   it('returns 404 for non-existent listing', async () => {
-    const { status, body } = await get(baseUrl, '/api/listing/NONEXISTENT');
+    const { status, body } = await get(baseUrl, `${C}/listing/NONEXISTENT`);
     assert.equal(status, 404);
     assert.ok(body.error);
   });
@@ -1209,10 +1218,10 @@ describe('Matching Server API -- Delta calculations', () => {
 
   it('returns correct price and area deltas in candidates', async () => {
     const REVIEWER = 'delta_tester';
-    const { body: nextBody } = await get(baseUrl, `/api/next?reviewer=${REVIEWER}`);
+    const { body: nextBody } = await get(baseUrl, `${C}/next?reviewer=${REVIEWER}`);
     assert.ok(nextBody.viva_code);
 
-    const { body } = await get(baseUrl, `/api/candidates/${nextBody.viva_code}`);
+    const { body } = await get(baseUrl, `${C}/candidates/${nextBody.viva_code}`);
     assert.ok(body.candidates.length > 0);
 
     const cand = body.candidates[0];

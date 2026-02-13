@@ -1,3 +1,21 @@
+# Ignore data directory (populated from GCS at runtime)
 data/
+data/**
+
+# Ignore dependencies (npm ci runs in Docker build)
 node_modules/
+node_modules/**
+
+# Git
 .git
+.git/**
+.gitignore
+
+# Firebase (not needed for Cloud Run)
+.firebase/
+.firebaserc
+firebase.json
+
+# Misc
+*.md
+npm-debug.log

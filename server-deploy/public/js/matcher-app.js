@@ -16,6 +16,8 @@ class MatcherState {
         this.theme = localStorage.getItem('matcher-theme') || 'dark';
         this.preloadedNext = null;
         this.decisionStartTime = null;
+        this.compoundId = null;
+        this.compoundName = null;
         this.reviewer = this.getReviewer();
     }
 
@@ -26,6 +28,12 @@ class MatcherState {
             localStorage.setItem('matcher-reviewer', reviewer);
         }
         return reviewer;
+    }
+
+    setCompound(id, name) {
+        this.compoundId = id;
+        this.compoundName = name;
+        localStorage.setItem('matcher-last-compound', id);
     }
 
     setSession(sessionInfo) {
@@ -53,6 +61,16 @@ class MatcherState {
 class MatcherAPI {
     constructor(baseURL = '') {
         this.baseURL = (baseURL || '').replace(/\/+$/, '');
+        this.compoundId = null;
+    }
+
+    setCompound(compoundId) {
+        this.compoundId = compoundId;
+    }
+
+    compoundPrefix() {
+        if (!this.compoundId) throw new Error('No compound selected');
+        return `/api/compounds/${encodeURIComponent(this.compoundId)}`;
     }
 
     resolveEndpoint(endpoint) {
@@ -91,63 +109,74 @@ class MatcherAPI {
         return response.json();
     }
 
+    async getCompounds() {
+        return this.request('/api/compounds');
+    }
+
     async getSession() {
-        return this.request('/api/session');
+        return this.request(`${this.compoundPrefix()}/session`);
     }
 
     async getNext(reviewer) {
         const params = reviewer ? `?reviewer=${encodeURIComponent(reviewer)}` : '';
-        return this.request(`/api/next${params}`);
+        return this.request(`${this.compoundPrefix()}/next${params}`);
     }
 
     async getListing(id) {
-        return this.request(`/api/listing/${id}`);
+        return this.request(`${this.compoundPrefix()}/listing/${encodeURIComponent(id)}`);
     }
 
     async getCandidates(vivaId) {
-        return this.request(`/api/candidates/${vivaId}`);
+        return this.request(`${this.compoundPrefix()}/candidates/${encodeURIComponent(vivaId)}`);
     }
 
     async submitMatch(vivaCode, coelhoCode, timeSpent, reviewer, notes = '') {
-        return this.request('/api/match', {
+        return this.request(`${this.compoundPrefix()}/match`, {
             method: 'POST',
             body: JSON.stringify({ viva_code: vivaCode, coelho_code: coelhoCode, time_spent_sec: timeSpent, reviewer, notes })
         });
     }
 
     async rejectCandidate(vivaCode, coelhoCode, reviewer, reason = '') {
-        return this.request('/api/reject', {
+        return this.request(`${this.compoundPrefix()}/reject`, {
             method: 'POST',
             body: JSON.stringify({ viva_code: vivaCode, coelho_code: coelhoCode, reviewer, reason })
         });
     }
 
     async skipListing(vivaCode, timeSpent, reviewer, reason = 'no_good_candidates') {
-        return this.request('/api/skip', {
+        return this.request(`${this.compoundPrefix()}/skip`, {
             method: 'POST',
             body: JSON.stringify({ viva_code: vivaCode, reason, time_spent_sec: timeSpent, reviewer })
         });
     }
 
     async undo(reviewer) {
-        return this.request('/api/undo', {
+        return this.request(`${this.compoundPrefix()}/undo`, {
             method: 'POST',
             body: JSON.stringify({ reviewer })
         });
     }
 
     async getProgress() {
-        return this.request('/api/progress');
+        return this.request(`${this.compoundPrefix()}/progress`);
     }
 
     async advancePass() {
-        return this.request('/api/pass/advance', { method: 'POST' });
+        return this.request(`${this.compoundPrefix()}/pass/advance`, { method: 'POST' });
     }
 
     async finishMatching(reviewer) {
-        return this.request('/api/pass/finish', {
+        return this.request(`${this.compoundPrefix()}/pass/finish`, {
             method: 'POST',
             body: JSON.stringify({ reviewer })
+        });
+    }
+
+    async sendReportEmail(email) {
+        return this.request(`${this.compoundPrefix()}/report/send-email`, {
+            method: 'POST',
+            body: JSON.stringify({ to: email })
         });
     }
 }
@@ -300,8 +329,8 @@ class MatcherUI {
 
         this.elements.vivaTitle.textContent = `Source #${listing.propertyCode}`;
 
-        // Use mosaic path from backend if available
-        const mosaicSrc = listing.mosaicPath || `/mosaics/vivaprimeimoveis/${listing.propertyCode}.png`;
+        // Use mosaic path from backend
+        const mosaicSrc = listing.mosaicPath || '';
 
         // Show loading state while image loads
         this.elements.vivaMosaic.style.opacity = '0.5';
@@ -372,7 +401,7 @@ class MatcherUI {
             : this.calculateDelta(candidate.areaViva, candidate.areaCoelho);
 
         // Use mosaic path from backend
-        const mosaicSrc = candidate.mosaicPath || `/mosaics/coelhodafonseca/${candidate.propertyCode}.png`;
+        const mosaicSrc = candidate.mosaicPath || '';
 
         // AI score badge color
         const aiScoreDisplay = candidate.aiScore
@@ -655,23 +684,133 @@ class MatcherApp {
         this.api = new MatcherAPI(globalBase);
         this.ui = new UI();
 
+        // Screen elements
+        this.compoundSelector = document.getElementById('compound-selector');
+        this.compoundList = document.getElementById('compound-list');
+        this.compoundLoading = document.getElementById('compound-loading');
+        this.header = document.querySelector('.header');
+        this.mainContent = document.querySelector('.main-content');
+        this.bottomBar = document.querySelector('.bottom-bar');
+        this.headerCompoundName = document.getElementById('header-compound-name');
+
         this.init();
     }
 
     async init() {
         // Apply saved theme
         document.documentElement.setAttribute('data-theme', this.state.theme);
-        this.ui.elements.themeToggle.textContent = this.state.theme === 'light' ? '🌙' : '☀️';
 
         // Setup event listeners
         this.setupEventListeners();
 
-        // Load initial session
+        // Show compound selector
+        await this.loadCompounds();
+    }
+
+    // ----- Compound Selection -----
+
+    async loadCompounds() {
+        this.compoundLoading.style.display = 'flex';
+        this.compoundList.innerHTML = '';
+
+        try {
+            const data = await this.api.getCompounds();
+            this.compoundLoading.style.display = 'none';
+            this.renderCompoundList(data.compounds, data.defaultCompound);
+        } catch (error) {
+            console.error('Failed to load compounds:', error);
+            this.compoundLoading.innerHTML = '<p style="color: var(--accent-danger);">Failed to load compounds. Refresh to retry.</p>';
+        }
+    }
+
+    renderCompoundList(compounds, defaultCompound) {
+        this.compoundList.innerHTML = '';
+
+        compounds.forEach(compound => {
+            const card = document.createElement('div');
+            card.className = 'compound-card';
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            card.setAttribute('aria-label', `Select ${compound.displayName}`);
+
+            const stats = compound.stats || {};
+            card.innerHTML = `
+                <div class="compound-card-header">
+                    <span class="compound-card-name">${compound.displayName}</span>
+                    <span class="compound-card-arrow">→</span>
+                </div>
+                <div class="compound-card-stats">
+                    <div class="compound-stat">
+                        <span class="compound-stat-value matched">${stats.matched ?? '-'}</span>
+                        <span class="compound-stat-label">Matched</span>
+                    </div>
+                    <div class="compound-stat">
+                        <span class="compound-stat-value pending">${stats.pending ?? '-'}</span>
+                        <span class="compound-stat-label">Pending</span>
+                    </div>
+                    <div class="compound-stat">
+                        <span class="compound-stat-value total">${stats.total ?? '-'}</span>
+                        <span class="compound-stat-label">Total</span>
+                    </div>
+                </div>
+            `;
+
+            card.addEventListener('click', () => this.selectCompound(compound.id, compound.displayName));
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.selectCompound(compound.id, compound.displayName);
+                }
+            });
+
+            this.compoundList.appendChild(card);
+        });
+    }
+
+    async selectCompound(compoundId, compoundName) {
+        this.state.setCompound(compoundId, compoundName);
+        this.api.setCompound(compoundId);
+
+        // Transition from selector to matcher
+        this.compoundSelector.style.display = 'none';
+        this.header.style.display = '';
+        this.mainContent.style.display = '';
+        // Bottom bar visibility is handled by CSS media queries
+        this.bottomBar.style.removeProperty('display');
+
+        // Update header
+        this.headerCompoundName.textContent = compoundName;
+
+        // Apply theme toggle text now that header is visible
+        this.ui.elements.themeToggle.textContent = this.state.theme === 'light' ? '🌙' : '☀️';
+
+        // Load session for selected compound
         await this.loadSession();
         await this.loadNextListing();
     }
 
+    backToCompounds() {
+        // Reset state
+        this.state.compoundId = null;
+        this.state.compoundName = null;
+        this.state.setCurrentListing(null);
+        this.state.setCandidates([]);
+        this.api.compoundId = null;
+
+        // Transition back to selector
+        this.header.style.display = 'none';
+        this.mainContent.style.display = 'none';
+        this.bottomBar.style.display = 'none';
+        this.compoundSelector.style.display = '';
+
+        // Refresh compound stats
+        this.loadCompounds();
+    }
+
     setupEventListeners() {
+        // Back to compound selector
+        document.getElementById('back-to-compounds').addEventListener('click', () => this.backToCompounds());
+
         // Header controls
         this.ui.elements.themeToggle.addEventListener('click', () => {
             this.ui.toggleTheme();
@@ -1073,8 +1212,9 @@ class MatcherApp {
     }
 
     handleKeyboard(e) {
-        // Don't trigger if typing in input/textarea
+        // Don't trigger if typing in input/textarea or no compound selected
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (!this.state.compoundId) return;
 
         // Escape - close modals
         if (e.key === 'Escape') {
@@ -1130,10 +1270,7 @@ class MatcherApp {
     async sendReport(email) {
         try {
             this.ui.showLoading(true);
-            await this.api.request('/api/report/send-email', {
-                method: 'POST',
-                body: JSON.stringify({ to: email })
-            });
+            await this.api.sendReportEmail(email);
             this.ui.showToast(`Report sent to ${email}`, 'success');
         } catch (error) {
             console.error('Failed to send report:', error);

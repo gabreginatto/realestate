@@ -15,12 +15,35 @@
     <link rel="preconnect" href="/mosaics">
 </head>
 <body>
+    <!-- Compound Selector Screen -->
+    <div id="compound-selector" class="compound-selector">
+        <div class="compound-selector-content">
+            <div class="compound-selector-header">
+                <h1>
+                    <span aria-hidden="true">🏡</span>
+                    <span>Property Matcher</span>
+                </h1>
+                <p class="compound-selector-subtitle">Select a compound to start matching</p>
+            </div>
+            <div id="compound-list" class="compound-list">
+                <!-- Compound cards injected by JS -->
+            </div>
+            <div id="compound-loading" class="compound-loading">
+                <div class="spinner"></div>
+                <p>Loading compounds...</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
-    <header class="header">
+    <header class="header" style="display: none;">
         <div class="header-content">
             <h1>
+                <button id="back-to-compounds" class="icon-btn" title="Switch compound" aria-label="Back to compound selector" style="margin-right: 0.5rem;">
+                    ←
+                </button>
                 <span aria-hidden="true">🏡</span>
-                <span>Matcher</span>
+                <span id="header-compound-name">Matcher</span>
             </h1>
             <div class="header-stats">
                 <span id="progress-badge" class="stat-badge" title="Review progress">
@@ -52,7 +75,7 @@
     </header>
 
     <!-- Main Content -->
-    <main class="main-content">
+    <main class="main-content" style="display: none;">
         <!-- Decision Overlay (match/skip/undo flash) -->
         <div id="decision-overlay" class="decision-overlay" style="display: none;">
             <span class="decision-icon"></span>
@@ -148,7 +171,7 @@
     </main>
 
     <!-- Mobile Bottom Action Bar -->
-    <div class="bottom-bar" aria-label="Quick actions">
+    <div class="bottom-bar" aria-label="Quick actions" style="display: none;">
         <div class="bottom-bar-content">
             <div class="bottom-bar-actions">
                 <button id="mobile-skip-btn" class="btn btn-warning" title="Skip this listing">

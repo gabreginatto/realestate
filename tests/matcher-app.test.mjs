@@ -326,13 +326,14 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
             globalThis.fetch = originalFetch;
         });
 
-        test('calls /api/session with GET method', async () => {
+        test('calls /api/compounds/test-compound/session with GET method', async () => {
             const sessionData = { stats: { matched: 5, skipped: 2, total_viva_listings: 100 } };
             globalThis.fetch = mockFetch(sessionData);
 
@@ -340,7 +341,7 @@ describe('MatcherAPI', () => {
 
             assert.deepEqual(result, sessionData);
             const [url] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/session');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/session');
         });
     });
 
@@ -354,13 +355,14 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
             globalThis.fetch = originalFetch;
         });
 
-        test('calls /api/next with GET method', async () => {
+        test('calls /api/compounds/test-compound/next with GET method', async () => {
             const nextData = { viva_code: 'V123', viva: { price: '1000000' } };
             globalThis.fetch = mockFetch(nextData);
 
@@ -368,7 +370,7 @@ describe('MatcherAPI', () => {
 
             assert.deepEqual(result, nextData);
             const [url] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/next');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/next');
         });
 
         test('handles done response', async () => {
@@ -408,13 +410,14 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
             globalThis.fetch = originalFetch;
         });
 
-        test('calls /api/candidates/{vivaId}', async () => {
+        test('calls /api/compounds/test-compound/candidates/{vivaId}', async () => {
             const candidatesData = { candidates: [{ code: 'C001' }, { code: 'C002' }] };
             globalThis.fetch = mockFetch(candidatesData);
 
@@ -422,7 +425,7 @@ describe('MatcherAPI', () => {
 
             assert.deepEqual(result, candidatesData);
             const [url] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/candidates/V123');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/candidates/V123');
         });
 
         test('handles empty candidates list', async () => {
@@ -444,13 +447,14 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
             globalThis.fetch = originalFetch;
         });
 
-        test('calls /api/listing/{id}', async () => {
+        test('calls /api/compounds/test-compound/listing/{id}', async () => {
             const listing = { id: 'V123', price: '500000' };
             globalThis.fetch = mockFetch(listing);
 
@@ -458,7 +462,7 @@ describe('MatcherAPI', () => {
 
             assert.deepEqual(result, listing);
             const [url] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/listing/V123');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/listing/V123');
         });
     });
 
@@ -472,6 +476,7 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
@@ -484,7 +489,7 @@ describe('MatcherAPI', () => {
             await api.submitMatch('V123', 'C456', 30, 'reviewer1', 'looks good');
 
             const [url, options] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/match');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/match');
             assert.equal(options.method, 'POST');
 
             const body = JSON.parse(options.body);
@@ -516,6 +521,7 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
@@ -528,7 +534,7 @@ describe('MatcherAPI', () => {
             await api.rejectCandidate('V123', 'C456', 'reviewer1', 'not a match');
 
             const [url, options] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/reject');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/reject');
             assert.equal(options.method, 'POST');
 
             const body = JSON.parse(options.body);
@@ -559,6 +565,7 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
@@ -571,7 +578,7 @@ describe('MatcherAPI', () => {
             await api.skipListing('V123', 45, 'reviewer1');
 
             const [url, options] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/skip');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/skip');
             assert.equal(options.method, 'POST');
 
             const body = JSON.parse(options.body);
@@ -602,6 +609,7 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
@@ -614,7 +622,7 @@ describe('MatcherAPI', () => {
             const result = await api.undo('reviewer1');
 
             const [url, options] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/undo');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/undo');
             assert.equal(options.method, 'POST');
 
             const body = JSON.parse(options.body);
@@ -633,13 +641,14 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
             globalThis.fetch = originalFetch;
         });
 
-        test('calls /api/progress with GET', async () => {
+        test('calls /api/compounds/test-compound/progress with GET', async () => {
             const progressData = { total: 100, matched: 50, skipped: 10, remaining: 40 };
             globalThis.fetch = mockFetch(progressData);
 
@@ -647,7 +656,7 @@ describe('MatcherAPI', () => {
 
             assert.deepEqual(result, progressData);
             const [url] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/progress');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/progress');
         });
     });
 
@@ -661,19 +670,20 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
             globalThis.fetch = originalFetch;
         });
 
-        test('POSTs to /api/pass/advance', async () => {
+        test('POSTs to /api/compounds/test-compound/pass/advance', async () => {
             globalThis.fetch = mockFetch({ pass: 2 });
 
             const result = await api.advancePass();
 
             const [url, options] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/pass/advance');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/pass/advance');
             assert.equal(options.method, 'POST');
             assert.equal(result.pass, 2);
         });
@@ -689,19 +699,20 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
             globalThis.fetch = originalFetch;
         });
 
-        test('POSTs to /api/pass/finish with reviewer', async () => {
+        test('POSTs to /api/compounds/test-compound/pass/finish with reviewer', async () => {
             globalThis.fetch = mockFetch({ finished: true });
 
             const result = await api.finishMatching('reviewer1');
 
             const [url, options] = globalThis.fetch.mock.calls[0].arguments;
-            assert.equal(url, 'http://localhost:8080/api/pass/finish');
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/pass/finish');
             assert.equal(options.method, 'POST');
 
             const body = JSON.parse(options.body);
@@ -720,6 +731,7 @@ describe('MatcherAPI', () => {
         beforeEach(() => {
             originalFetch = globalThis.fetch;
             api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
         });
 
         afterEach(() => {
@@ -802,6 +814,108 @@ describe('MatcherAPI', () => {
                 () => api.finishMatching('reviewer'),
                 { message: 'Timeout' }
             );
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // setCompound() / compoundPrefix()
+    // ---------------------------------------------------------------
+    describe('setCompound() / compoundPrefix()', () => {
+        test('setCompound stores the compound ID', () => {
+            const api = new MatcherAPI();
+            api.setCompound('alphaville-1');
+            assert.equal(api.compoundId, 'alphaville-1');
+        });
+
+        test('compoundPrefix returns correct path', () => {
+            const api = new MatcherAPI();
+            api.setCompound('alphaville-1');
+            assert.equal(api.compoundPrefix(), '/api/compounds/alphaville-1');
+        });
+
+        test('compoundPrefix throws when no compound set', () => {
+            const api = new MatcherAPI();
+            assert.throws(() => api.compoundPrefix(), { message: 'No compound selected' });
+        });
+
+        test('compoundPrefix encodes special characters', () => {
+            const api = new MatcherAPI();
+            api.setCompound('test compound/special');
+            assert.equal(api.compoundPrefix(), '/api/compounds/test%20compound%2Fspecial');
+        });
+
+        test('setCompound overwrites previous compound', () => {
+            const api = new MatcherAPI();
+            api.setCompound('compound-a');
+            api.setCompound('compound-b');
+            assert.equal(api.compoundId, 'compound-b');
+            assert.equal(api.compoundPrefix(), '/api/compounds/compound-b');
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // getCompounds()
+    // ---------------------------------------------------------------
+    describe('getCompounds()', () => {
+        let api;
+        let originalFetch;
+
+        beforeEach(() => {
+            originalFetch = globalThis.fetch;
+            api = new MatcherAPI('http://localhost:8080');
+        });
+
+        afterEach(() => {
+            globalThis.fetch = originalFetch;
+        });
+
+        test('calls /api/compounds without compound prefix', async () => {
+            const compoundsData = { compounds: [{ id: 'alphaville-1' }] };
+            globalThis.fetch = mockFetch(compoundsData);
+
+            const result = await api.getCompounds();
+
+            assert.deepEqual(result, compoundsData);
+            const [url] = globalThis.fetch.mock.calls[0].arguments;
+            assert.equal(url, 'http://localhost:8080/api/compounds');
+        });
+
+        test('works without setCompound being called', async () => {
+            globalThis.fetch = mockFetch({ compounds: [] });
+            // Should NOT throw "No compound selected"
+            const result = await api.getCompounds();
+            assert.deepEqual(result, { compounds: [] });
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // sendReportEmail()
+    // ---------------------------------------------------------------
+    describe('sendReportEmail()', () => {
+        let api;
+        let originalFetch;
+
+        beforeEach(() => {
+            originalFetch = globalThis.fetch;
+            api = new MatcherAPI('http://localhost:8080');
+            api.setCompound('test-compound');
+        });
+
+        afterEach(() => {
+            globalThis.fetch = originalFetch;
+        });
+
+        test('POSTs to compound-scoped report/send-email', async () => {
+            globalThis.fetch = mockFetch({ success: true });
+
+            await api.sendReportEmail('test@example.com');
+
+            const [url, options] = globalThis.fetch.mock.calls[0].arguments;
+            assert.equal(url, 'http://localhost:8080/api/compounds/test-compound/report/send-email');
+            assert.equal(options.method, 'POST');
+
+            const body = JSON.parse(options.body);
+            assert.equal(body.to, 'test@example.com');
         });
     });
 });
@@ -992,6 +1106,36 @@ describe('MatcherState', () => {
         test('returns correct time for longer intervals', () => {
             state.decisionStartTime = Date.now() - 65000; // 65 seconds ago
             assert.equal(state.getTimeSpent(), 65);
+        });
+    });
+
+    // ---------------------------------------------------------------
+    // setCompound()
+    // ---------------------------------------------------------------
+    describe('setCompound()', () => {
+        test('stores compound id and name', () => {
+            localStorage.clear();
+            globalThis.prompt = () => 'tester';
+            const state = new MatcherState();
+            state.setCompound('alphaville-1', 'Alphaville 1');
+            assert.equal(state.compoundId, 'alphaville-1');
+            assert.equal(state.compoundName, 'Alphaville 1');
+        });
+
+        test('persists compound id to localStorage', () => {
+            localStorage.clear();
+            globalThis.prompt = () => 'tester';
+            const state = new MatcherState();
+            state.setCompound('tambore-xi', 'Tambore XI');
+            assert.equal(localStorage.getItem('matcher-last-compound'), 'tambore-xi');
+        });
+
+        test('initializes with null compoundId', () => {
+            localStorage.clear();
+            globalThis.prompt = () => 'tester';
+            const state = new MatcherState();
+            assert.equal(state.compoundId, null);
+            assert.equal(state.compoundName, null);
         });
     });
 });
@@ -1233,6 +1377,7 @@ describe('MatcherAPI request flow integration', () => {
         originalFetch = globalThis.fetch;
         fetchCalls = [];
         api = new MatcherAPI('http://localhost:8080');
+        api.setCompound('test-compound');
     });
 
     afterEach(() => {
