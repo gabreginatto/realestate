@@ -31,6 +31,7 @@ type CandidateCardProps = {
   propertyCode: string;
   rank: number;
   mosaicPath: string;
+  fullMosaicPath?: string;
   price: string;
   area: number;
   bedrooms: number;
@@ -39,7 +40,7 @@ type CandidateCardProps = {
   priceDelta: number | null;
   areaDelta: number | null;
   onMatch: (code: string) => void;
-  onImagePress: (url: string) => void;
+  onImagePress: (url: string, fullUrl?: string) => void;
 };
 
 /**
@@ -50,6 +51,7 @@ function CandidateCardComponent({
   propertyCode,
   rank,
   mosaicPath,
+  fullMosaicPath,
   price,
   area,
   bedrooms,
@@ -90,8 +92,8 @@ function CandidateCardComponent({
   }));
 
   const handleImagePress = useCallback(() => {
-    onImagePress(mosaicPath);
-  }, [onImagePress, mosaicPath]);
+    onImagePress(mosaicPath, fullMosaicPath);
+  }, [onImagePress, mosaicPath, fullMosaicPath]);
 
   const formatDelta = (delta: number | null): string => {
     if (delta === null) return 'N/A';

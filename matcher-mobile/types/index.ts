@@ -206,6 +206,7 @@ export type NormalizedVivaListing = {
   address: string;
   url: string;
   mosaicPath: string;
+  fullMosaicPath: string;  // Extended mosaic (4×4, 16 images)
 };
 
 export type NormalizedCandidate = {
@@ -216,6 +217,7 @@ export type NormalizedCandidate = {
   suites: number;
   url: string;
   mosaicPath: string;
+  fullMosaicPath: string;  // Extended mosaic (4×4, 16 images)
   aiScore: number | null;
   priceDelta: number | null;
   areaDelta: number | null;

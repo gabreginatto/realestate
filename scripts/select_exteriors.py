@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Select the best 12 exterior-leaning photos per listing using fastdup outputs.
+Select the best 16 exterior-leaning photos per listing using fastdup outputs.
 
 IMPORTANT: Processes each site (Coelho, Viva) separately to preserve
 cross-site duplicates for property matching.
@@ -129,9 +129,9 @@ def load_fastdup_tables(work_dir):
 
     return df_stats, df_features_with_cluster, df_sim
 
-def select_best_12(listing_dir, work_dir, site, listing_id, out_root, copy_mode="copy"):
+def select_best_16(listing_dir, work_dir, site, listing_id, out_root, copy_mode="copy"):
     """
-    Select the best 12 (or fewer if < 12) exterior-leaning photos for a listing.
+    Select the best 16 (or fewer if < 16) exterior-leaning photos for a listing.
 
     Returns: number of images selected
     """
@@ -230,8 +230,8 @@ def select_best_12(listing_dir, work_dir, site, listing_id, out_root, copy_mode=
     # Sort by rank_score descending (best first)
     df_sorted = df.sort_values("rank_score", ascending=False)
 
-    # Select best 12 (or all if fewer than 12)
-    num_to_keep = min(12, len(df_sorted))
+    # Select best 16 (or all if fewer than 16)
+    num_to_keep = min(16, len(df_sorted))
     chosen = df_sorted.head(num_to_keep).copy()
 
     # Create output directory
@@ -258,7 +258,7 @@ def select_best_12(listing_dir, work_dir, site, listing_id, out_root, copy_mode=
         "total_images": len(files),
         "valid_images": int(len(df)),
         "selected_count": int(len(chosen)),
-        "target_count": 12,
+        "target_count": 16,
         "selected": chosen[["filename", "rank_score", "ext_n", "sharp_n", "bright_n", "cluster"]].to_dict(orient="records")
     }
 
@@ -279,13 +279,13 @@ def run(
     codes_key: str = typer.Option("", help="JSON key when --only-codes-file contains an object payload"),
 ):
     """
-    Select best 12 exterior photos per listing for a single site.
+    Select best 16 exterior photos per listing for a single site.
 
     Example:
         python select_exteriors.py coelhodafonseca
         python select_exteriors.py vivaprimeimoveis --images-subdir images
     """
-    console.print(f"\n[bold cyan]Selecting best 12 exterior images for: {site}[/bold cyan]\n")
+    console.print(f"\n[bold cyan]Selecting best 16 exterior images for: {site}[/bold cyan]\n")
 
     cache_dir = os.path.join(cache_root, site)
     if images_subdir:
@@ -315,7 +315,7 @@ def run(
     console.print(f"Found {len(listings)} listings to process\n")
 
     total_selected = 0
-    stats = {"12": 0, "less_than_12": 0, "failed": 0}
+    stats = {"16": 0, "less_than_16": 0, "failed": 0}
 
     for listing_path in track(listings, description=f"Processing {site}"):
         listing_id = listing_path.name
@@ -323,13 +323,13 @@ def run(
         work_dir = os.path.join(work_root, site, listing_id, "fastdup")
 
         try:
-            count = select_best_12(listing_dir, work_dir, site, listing_id, out_root, copy_mode)
+            count = select_best_16(listing_dir, work_dir, site, listing_id, out_root, copy_mode)
             total_selected += count
 
-            if count == 12:
-                stats["12"] += 1
+            if count == 16:
+                stats["16"] += 1
             elif count > 0:
-                stats["less_than_12"] += 1
+                stats["less_than_16"] += 1
             else:
                 stats["failed"] += 1
 
@@ -339,8 +339,8 @@ def run(
 
     console.print(f"\n[bold green]✓ Complete![/bold green]")
     console.print(f"\nStatistics:")
-    console.print(f"  Listings with exactly 12 photos: {stats['12']}")
-    console.print(f"  Listings with < 12 photos: {stats['less_than_12']}")
+    console.print(f"  Listings with exactly 16 photos: {stats['16']}")
+    console.print(f"  Listings with < 16 photos: {stats['less_than_16']}")
     console.print(f"  Failed/No images: {stats['failed']}")
     console.print(f"  Total images selected: {total_selected}")
     console.print(f"\nOutput: {out_root}/{site}/\n")

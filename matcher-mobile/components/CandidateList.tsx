@@ -8,7 +8,7 @@ import type { NormalizedCandidate } from '../types';
 type CandidateListProps = {
   candidates: NormalizedCandidate[];
   onMatch: (code: string) => void;
-  onImagePress: (url: string) => void;
+  onImagePress: (url: string, fullUrl?: string) => void;
   // Optional stats for empty state
   totalReviewed?: number;
   totalMatched?: number;
@@ -51,6 +51,7 @@ function CandidateListComponent({
           propertyCode={item.propertyCode}
           rank={index + 1}
           mosaicPath={item.mosaicPath}
+          fullMosaicPath={item.fullMosaicPath}
           price={formatPrice(item.price)}
           area={item.area}
           bedrooms={item.bedrooms}

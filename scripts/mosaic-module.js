@@ -609,31 +609,59 @@ async function generateMosaicForListing(listing, side) {
   const code = getListingCode(listing);
   console.log(`\n🖼️  Processing ${side}/${code}...`);
 
-  // Load top 8 images from fastdup selection (already ranked)
-  const selected = await loadFromFastdupSelection(listing, side, GRID_TILES());
+  const FULL_GRID_TILES = 16;
 
-  if (!selected.length) {
+  // Load up to 16 images from fastdup selection (already ranked)
+  const allSelected = await loadFromFastdupSelection(listing, side, FULL_GRID_TILES);
+
+  if (!allSelected.length) {
     console.log('  ❌ No images available from fastdup selection for mosaic');
-    return { mosaicPath: null, stats: { error: 'No fastdup images' } };
+    return { mosaicPath: null, fullMosaicPath: null, stats: { error: 'No fastdup images' } };
   }
 
-  console.log(`  ✅ Using ${selected.length} top-ranked images from fastdup`);
+  // Standard mosaic uses top GRID_TILES images
+  const selected = allSelected.slice(0, GRID_TILES());
+  console.log(`  ✅ Using ${selected.length} top-ranked images from fastdup (${allSelected.length} total available)`);
 
   const outDir = path.join(MOSAIC_DIR, side);
   await ensureDir(outDir);
   const outPath = path.join(outDir, `${safeId(code)}.png`);
 
+  // --- Standard mosaic (2x4) ---
+  let standardCached = false;
   if (fs.existsSync(outPath)) {
     console.log(`  ♻️  Mosaic already exists: ${outPath}`);
-    return { mosaicPath: outPath, stats: { cached: true, images: selected.length } };
+    standardCached = true;
+  } else {
+    await makeMosaic(selected, outPath, { rows: GRID_ROWS, cols: GRID_COLS, cellWidth: CELL_W, cellHeight: CELL_H, fit: RENDER_FIT });
+    console.log(`  ✅ Mosaic generated: ${outPath}`);
   }
 
-  await makeMosaic(selected, outPath, { rows: GRID_ROWS, cols: GRID_COLS, cellWidth: CELL_W, cellHeight: CELL_H, fit: RENDER_FIT });
-  console.log(`  ✅ Mosaic generated: ${outPath}`);
+  // --- Full mosaic (4x4) --- only if more than GRID_TILES images available
+  let fullMosaicPath = null;
+  if (allSelected.length > GRID_TILES()) {
+    const fullOutPath = path.join(outDir, `${safeId(code)}_full.png`);
+
+    if (fs.existsSync(fullOutPath)) {
+      console.log(`  ♻️  Full mosaic already exists: ${fullOutPath}`);
+      fullMosaicPath = fullOutPath;
+    } else {
+      await makeMosaic(allSelected, fullOutPath, { rows: 4, cols: 4, cellWidth: CELL_W, cellHeight: CELL_H, fit: RENDER_FIT });
+      console.log(`  ✅ Full mosaic generated (4x4, ${allSelected.length} images): ${fullOutPath}`);
+      fullMosaicPath = fullOutPath;
+    }
+  }
 
   return {
     mosaicPath: outPath,
-    stats: { selectedImages: selected.length, cached: false, source: 'fastdup' }
+    fullMosaicPath,
+    stats: {
+      selectedImages: selected.length,
+      totalAvailable: allSelected.length,
+      cached: standardCached,
+      fullMosaicGenerated: !!fullMosaicPath,
+      source: 'fastdup'
+    }
   };
 }
 
@@ -664,6 +692,7 @@ async function generateMosaicsForAll(jsonPath, side) {
         propertyCode: getListingCode(listing),
         success: !!r.mosaicPath,
         mosaicPath: r.mosaicPath,
+        fullMosaicPath: r.fullMosaicPath || null,
         stats: r.stats
       });
     } catch (e) {

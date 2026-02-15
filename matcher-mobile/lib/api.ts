@@ -72,6 +72,7 @@ function normalizeVivaListing(
     address: viva.address || '',
     url: viva.url || '',
     mosaicPath: `${baseUrl}${mosaicPath}`,
+    fullMosaicPath: `${baseUrl}${mosaicPath}`.replace(/\.png$/, '_full.png'),
   };
 }
 
@@ -91,6 +92,7 @@ function normalizeCandidate(
     suites: candidate.suites || 0,
     url: candidate.url || '',
     mosaicPath: `${baseUrl}${mosaic_path}`,
+    fullMosaicPath: `${baseUrl}${mosaic_path}`.replace(/\.png$/, '_full.png'),
     aiScore: ai_score,
     priceDelta: deltas.price_delta_pct,
     areaDelta: deltas.area_delta_pct,

@@ -87,7 +87,11 @@ export default function MatcherScreen() {
   const [showNamePrompt, setShowNamePrompt] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<{
+    standard: string;
+    full: string | null;
+  } | null>(null);
+  const [showFullMosaic, setShowFullMosaic] = useState(true);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [emailInput, setEmailInput] = useState('');
   const [isSendingReport, setIsSendingReport] = useState(false);
@@ -393,8 +397,9 @@ export default function MatcherScreen() {
   }, [undo, clearError, contentTranslateX, contentOpacity, contentRotate, contentScale]);
 
   // Handle image press for lightbox
-  const handleImagePress = useCallback((imageUrl: string) => {
-    setLightboxImage(imageUrl);
+  const handleImagePress = useCallback((standardUrl: string, fullUrl?: string) => {
+    setLightboxImage({ standard: standardUrl, full: fullUrl || null });
+    setShowFullMosaic(!!fullUrl);
   }, []);
 
   // Calculate progress
@@ -498,7 +503,7 @@ export default function MatcherScreen() {
                 <PropertyCard
                   listing={currentListing}
                   onImagePress={() =>
-                    handleImagePress(currentListing.mosaicPath)
+                    handleImagePress(currentListing.mosaicPath, currentListing.fullMosaicPath)
                   }
                 />
               </View>
@@ -544,9 +549,16 @@ export default function MatcherScreen() {
         >
           {lightboxImage && (
             <Image
-              source={{ uri: lightboxImage }}
+              source={{
+                uri: showFullMosaic && lightboxImage.full
+                  ? lightboxImage.full
+                  : lightboxImage.standard,
+              }}
               style={styles.lightboxImage}
               contentFit="contain"
+              onError={() => {
+                if (showFullMosaic) setShowFullMosaic(false);
+              }}
             />
           )}
           <Pressable
@@ -555,6 +567,19 @@ export default function MatcherScreen() {
           >
             <Text style={styles.lightboxCloseText}>{'\u2715'}</Text>
           </Pressable>
+          {lightboxImage?.full && (
+            <Pressable
+              style={styles.mosaicToggle}
+              onPress={(e) => {
+                e.stopPropagation();
+                setShowFullMosaic((prev) => !prev);
+              }}
+            >
+              <Text style={styles.mosaicToggleText}>
+                {showFullMosaic ? 'Standard (8)' : 'All Photos (16)'}
+              </Text>
+            </Pressable>
+          )}
         </Pressable>
       </Modal>
 
@@ -766,6 +791,20 @@ const styles = StyleSheet.create({
   lightboxCloseText: {
     color: '#fff',
     fontSize: 20,
+    fontWeight: '600',
+  },
+  mosaicToggle: {
+    position: 'absolute',
+    bottom: 60,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  mosaicToggleText: {
+    color: '#fff',
+    fontSize: 14,
     fontWeight: '600',
   },
   promptOverlay: {

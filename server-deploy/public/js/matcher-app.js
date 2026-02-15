@@ -532,10 +532,22 @@ class MatcherUI {
         return `${sign}${delta.toFixed(1)}%`;
     }
 
-    showLightbox(imageSrc, title) {
-        this.elements.lightboxImage.src = imageSrc;
+    showLightbox(imageSrc, title, fullSrc) {
+        this.elements.lightboxImage.src = fullSrc || imageSrc;
         this.elements.lightboxTitle.textContent = title;
         this.elements.lightbox.style.display = 'flex';
+
+        // Store both URLs for toggle
+        this._lightboxStandard = imageSrc;
+        this._lightboxFull = fullSrc;
+        this._showingFull = !!fullSrc;
+
+        // Show/hide toggle
+        const toggle = document.getElementById('lightbox-mosaic-toggle');
+        if (toggle) {
+            toggle.style.display = fullSrc ? 'block' : 'none';
+            toggle.textContent = fullSrc ? 'Standard (8)' : 'All Photos (16)';
+        }
     }
 
     hideLightbox() {
@@ -836,13 +848,41 @@ class MatcherApp {
             if (e.target === this.ui.elements.lightbox) this.ui.hideLightbox();
         });
 
+        // Lightbox mosaic toggle button
+        document.getElementById('lightbox-mosaic-toggle')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.ui._showingFull = !this.ui._showingFull;
+            const toggle = e.target;
+            if (this.ui._showingFull && this.ui._lightboxFull) {
+                this.ui.elements.lightboxImage.src = this.ui._lightboxFull;
+                toggle.textContent = 'Standard (8)';
+            } else {
+                this.ui.elements.lightboxImage.src = this.ui._lightboxStandard;
+                toggle.textContent = 'All Photos (16)';
+            }
+        });
+
+        // Lightbox image error fallback (e.g. _full.png doesn't exist)
+        this.ui.elements.lightboxImage.addEventListener('error', () => {
+            if (this.ui._showingFull) {
+                this.ui._showingFull = false;
+                this.ui.elements.lightboxImage.src = this.ui._lightboxStandard;
+                const toggle = document.getElementById('lightbox-mosaic-toggle');
+                if (toggle) {
+                    toggle.style.display = 'none';
+                }
+            }
+        });
+
         // Mosaic clicks (delegate to grid)
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('mosaic-image') && e.target.classList.contains('clickable')) {
                 const site = e.target.dataset.site;
                 const code = e.target.dataset.code;
                 const title = site === 'viva' ? `Source #${code}` : `Candidate #${code}`;
-                this.ui.showLightbox(e.target.src, title);
+                const standardSrc = e.target.src;
+                const fullSrc = standardSrc.replace(/\.png$/, '_full.png');
+                this.ui.showLightbox(standardSrc, title, fullSrc);
                 this.ui.vibrate(5);
             }
 
@@ -929,6 +969,9 @@ class MatcherApp {
                                 </p>
                                 <button class="btn btn-primary" onclick="window.matcherApp.showEmailPrompt()">
                                     Send Unmatched Report
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="window.matcherApp.handleReset()" style="margin-top: 0.75rem; border: 1px solid #ff5252; color: #ff5252; background: transparent;">
+                                    Start Over
                                 </button>
                             </div>
                         `;
@@ -1275,6 +1318,32 @@ class MatcherApp {
         } catch (error) {
             console.error('Failed to send report:', error);
             this.ui.showToast('Failed to send report', 'error');
+        } finally {
+            this.ui.showLoading(false);
+        }
+    }
+
+    async handleReset() {
+        if (!confirm('Reset all matches for this compound? This will clear all matching decisions and start fresh.')) return;
+
+        try {
+            this.ui.showLoading(true);
+            const response = await fetch(`${this.api.baseURL}/api/compounds/${this.state.compoundId}/reset`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reviewer: this.state.reviewer })
+            });
+
+            if (!response.ok) throw new Error('Reset failed');
+
+            const data = await response.json();
+            this.ui.showToast(`Compound reset — ${data.pending} listings to review`, 'success');
+
+            // Reload the current compound
+            await this.loadNextListing();
+        } catch (error) {
+            console.error('Reset failed:', error);
+            this.ui.showToast('Failed to reset compound', 'error');
         } finally {
             this.ui.showLoading(false);
         }
