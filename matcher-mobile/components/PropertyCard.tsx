@@ -162,6 +162,7 @@ export function PropertyCard({
             style={styles.image}
             contentFit="cover"
             transition={200}
+            cachePolicy="disk"
           />
           <View style={styles.imageBottomShadow} />
           {onImagePress && (

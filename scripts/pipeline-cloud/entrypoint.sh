@@ -14,7 +14,9 @@ node scripts/pipeline-cloud/gcs-sync.js download
 # Step 2: Run the pipeline (scrape -> fastdup -> select exteriors -> mosaics -> match)
 echo ""
 echo "[2/6] Running pipeline..."
-node scripts/pipeline-runner.js --all 2>&1 || {
+PIPELINE_FLAG="${PIPELINE_COMPOUND:---all}"
+echo "  Pipeline flag: $PIPELINE_FLAG"
+node scripts/pipeline-runner.js $PIPELINE_FLAG 2>&1 || {
   echo "Pipeline failed with exit code $?"
   echo "Uploading partial results anyway..."
 }

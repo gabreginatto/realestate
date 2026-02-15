@@ -8,6 +8,7 @@ photorec.se2
 # Build artifacts
 node_modules/
 venv/
+.venv/
 __pycache__
 *.pyc
 .git/
@@ -16,6 +17,14 @@ __pycache__
 server-deploy/
 matcher-mobile/
 .playwright-mcp/
+
+# Logs and temp files
+logs/
+var/
+*.log
+*.png
+test-results/
+playwright-report/
 
 # Recovery files
 CONVERSATION_RECOVERY.md

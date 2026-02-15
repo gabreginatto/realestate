@@ -13,6 +13,7 @@ import {
   dismissNotifications,
   advancePass as advancePassApi,
   finishMatching as finishMatchingApi,
+  resetCompound as resetCompoundApi,
   getCompounds,
 } from '../lib/api';
 
@@ -39,7 +40,7 @@ interface MatcherState {
   passComplete: boolean;
   passStats: { matched: number; skipped: number; total_reviewed: number } | null;
   hasNextPass: boolean;
-  nextPassInfo: { number: number; name: string; price_tolerance: string; area_tolerance: string } | null;
+  nextPassInfo: { number: number; name: string; hail_mary?: boolean; price_tolerance?: string; area_tolerance?: string; description?: string; listings_to_review?: number } | null;
   userFinished: boolean;
 
   // Notifications
@@ -64,6 +65,7 @@ interface MatcherActions {
   undo: () => Promise<void>;
   advancePass: () => Promise<void>;
   finishMatching: () => Promise<void>;
+  resetCompound: () => Promise<void>;
   checkNotifications: () => Promise<void>;
   dismissNotification: () => Promise<void>;
   clearError: () => void;
@@ -215,6 +217,12 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
 
       // Fetch candidates for this listing
       const candidatesResult = await getCandidates(compoundId, listing.vivaCode);
+
+      // Auto-skip listings with no candidates in current pass
+      if (candidatesResult.candidates.length === 0) {
+        await apiSkipListing(compoundId, listing.vivaCode, 0, reviewer);
+        return get().loadNextListing();
+      }
 
       set({
         currentListing: listing.viva,
@@ -371,6 +379,38 @@ export const useMatcherStore = create<MatcherStore>((set, get) => ({
       await get().loadSession();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to finish matching';
+      set({ error: message, isLoading: false });
+      await triggerErrorHaptic();
+    }
+  },
+
+  resetCompound: async () => {
+    const { reviewer, compoundId } = get();
+    if (!compoundId) return;
+
+    set({ isLoading: true, error: null });
+    try {
+      await resetCompoundApi(compoundId, reviewer);
+      await triggerSuccessHaptic();
+      set({
+        sessionStats: null,
+        currentListing: null,
+        candidates: [],
+        currentPass: 1,
+        passName: 'strict',
+        passComplete: false,
+        passStats: null,
+        hasNextPass: false,
+        nextPassInfo: null,
+        userFinished: false,
+        allPassesComplete: false,
+        canUndo: false,
+        isLoading: false,
+      });
+      await get().loadSession();
+      await get().loadNextListing();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to reset';
       set({ error: message, isLoading: false });
       await triggerErrorHaptic();
     }

@@ -84,7 +84,7 @@ export function Header({
             <Text style={styles.title}>Property Matcher</Text>
             <View style={styles.passBadge}>
               <Text style={styles.passText}>
-                Pass {currentPass}/{maxPasses} ({passName})
+                Pass {currentPass}/{maxPasses} ({passName === 'hail_mary' ? 'Hail Mary' : passName})
               </Text>
             </View>
           </View>

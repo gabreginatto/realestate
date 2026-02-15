@@ -346,6 +346,22 @@ export async function finishMatching(compoundId: string, reviewer: string, baseU
   return handleResponse(response);
 }
 
+/**
+ * Reset compound state (clear all matches, start over from Pass 1)
+ */
+export async function resetCompound(
+  compoundId: string,
+  reviewer: string,
+  baseUrl: string = API_BASE_URL
+): Promise<{ success: boolean; message: string; pending: number; current_pass: number }> {
+  const response = await fetch(`${baseUrl}/api/compounds/${encodeURIComponent(compoundId)}/reset`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ reviewer }),
+  });
+  return handleResponse(response);
+}
+
 // ============================================================================
 // Report API Functions
 // ============================================================================

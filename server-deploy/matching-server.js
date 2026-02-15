@@ -142,12 +142,13 @@ const PASS_CRITERIA = {
     park_tolerance: 999         // ignore
   },
   5: {
-    name: 'exhaustive',
-    price_tolerance: 0.40,      // +/-40%
-    area_tolerance: 0.50,       // +/-50%
-    beds_tolerance: 2,          // +/-2
-    suites_tolerance: 999,      // ignore
-    park_tolerance: 999         // ignore
+    name: 'hail_mary',
+    hail_mary: true,            // No tolerance filtering - all remaining candidates shown
+    price_tolerance: 999,       // effectively infinite (not used in hail mary)
+    area_tolerance: 999,
+    beds_tolerance: 999,
+    suites_tolerance: 999,
+    park_tolerance: 999
   }
 };
 
@@ -419,21 +420,30 @@ function advanceToNextPass(cs) {
     const vivaCode = viva.code || viva.propertyCode;
     if (!remainingSet.has(vivaCode)) continue;
 
-    // Generate new candidates with broader criteria, excluding matched Coelho properties
-    const candidates = findCandidatesForViva(viva, availableCoelho, criteria);
-
-    if (candidates.length > 0) {
+    if (criteria.hail_mary) {
+      // Hail Mary: ALL remaining Coelho are candidates, no scoring
       newPairs.push({
         viva: viva,
-        coelhoCandidates: candidates,
-        _scored: candidates.map(c => ({ code: c.code || c.propertyCode, score: c.score }))
+        coelhoCandidates: availableCoelho.map(c => ({ ...c, score: null })),
+        _scored: []  // No AI scores in hail mary
       });
+    } else {
+      // Normal pass: score-based filtering
+      const candidates = findCandidatesForViva(viva, availableCoelho, criteria);
+
+      if (candidates.length > 0) {
+        newPairs.push({
+          viva: viva,
+          coelhoCandidates: candidates,
+          _scored: candidates.map(c => ({ code: c.code || c.propertyCode, score: c.score }))
+        });
+      }
     }
   }
 
   console.log(`   Found candidates for ${newPairs.length} / ${remainingVivaCodes.length} listings`);
 
-  if (newPairs.length === 0) {
+  if (newPairs.length === 0 && !criteria.hail_mary) {
     console.log(`   No new candidates found with Pass ${nextPass} criteria.`);
     // Still advance the pass in case we want to try the next one
     cs.matchState.current_pass = nextPass;
@@ -792,16 +802,19 @@ app.use(cors());
 app.use(express.json({ type: ['application/json', 'application/json; charset=utf-8', 'application/json; charset=UTF-8'] }));
 app.use(express.static(PUBLIC_ROOT));
 
-// Serve mosaics per compound
+// Serve mosaics per compound (immutable — cache forever)
 app.use('/mosaics/:compoundId', (req, res, next) => {
   const { compoundId } = req.params;
   const cs = compoundStates.get(compoundId);
   if (!cs) return res.status(404).send('Not found');
+  res.set('Cache-Control', 'public, max-age=31536000, immutable');
   express.static(cs.mosaicsDir)(req, res, next);
 });
 
 // Legacy mosaic serving (default compound)
-app.use('/mosaics', express.static(path.join(DATA_ROOT, defaultCompound, 'mosaics')));
+app.use('/mosaics', express.static(path.join(DATA_ROOT, defaultCompound, 'mosaics'), {
+  setHeaders: (res) => res.set('Cache-Control', 'public, max-age=31536000, immutable')
+}));
 
 // Cloud Run service URL opens "/" by default; route it to the matcher UI entrypoint.
 app.get('/', (req, res) => {
@@ -827,6 +840,7 @@ function resolveCompound(req, res, next) {
 // ============================================================================
 
 app.get('/api/compounds', (req, res) => {
+  res.set('Cache-Control', 'public, max-age=300');
   const compounds = Object.entries(COMPOUNDS_CONFIG.compounds).map(([id, config]) => {
     const cs = compoundStates.get(id);
     const stats = cs ? {
@@ -868,8 +882,13 @@ function handleSession(req, res) {
     max_passes: MAX_PASSES,
     pass_criteria: {
       name: criteria.name,
-      price_tolerance: `\u00b1${(criteria.price_tolerance * 100).toFixed(0)}%`,
-      area_tolerance: `\u00b1${(criteria.area_tolerance * 100).toFixed(0)}%`
+      hail_mary: criteria.hail_mary || false,
+      ...(criteria.hail_mary ? {
+        description: 'All remaining properties shown'
+      } : {
+        price_tolerance: `\u00b1${(criteria.price_tolerance * 100).toFixed(0)}%`,
+        area_tolerance: `\u00b1${(criteria.area_tolerance * 100).toFixed(0)}%`
+      })
     },
     has_new_properties,
   });
@@ -988,9 +1007,15 @@ function handleNext(req, res) {
       next_pass: hasNextPass ? {
         number: nextPassNum,
         name: nextCriteria.name,
-        price_tolerance: `\u00b1${(nextCriteria.price_tolerance * 100).toFixed(0)}%`,
-        area_tolerance: `\u00b1${(nextCriteria.area_tolerance * 100).toFixed(0)}%`,
-        listings_to_review: unmatchedCount
+        hail_mary: nextCriteria.hail_mary || false,
+        ...(nextCriteria.hail_mary ? {
+          description: 'All remaining properties shown',
+          listings_to_review: unmatchedCount
+        } : {
+          price_tolerance: `\u00b1${(nextCriteria.price_tolerance * 100).toFixed(0)}%`,
+          area_tolerance: `\u00b1${(nextCriteria.area_tolerance * 100).toFixed(0)}%`,
+          listings_to_review: unmatchedCount
+        })
       } : null
     });
   }
@@ -1191,8 +1216,13 @@ function handleProgress(req, res) {
     max_passes: MAX_PASSES,
     pass_name: currentCriteria.name,
     pass_criteria: {
-      price_tolerance: `\u00b1${(currentCriteria.price_tolerance * 100).toFixed(0)}%`,
-      area_tolerance: `\u00b1${(currentCriteria.area_tolerance * 100).toFixed(0)}%`
+      hail_mary: currentCriteria.hail_mary || false,
+      ...(currentCriteria.hail_mary ? {
+        description: 'All remaining properties shown'
+      } : {
+        price_tolerance: `\u00b1${(currentCriteria.price_tolerance * 100).toFixed(0)}%`,
+        area_tolerance: `\u00b1${(currentCriteria.area_tolerance * 100).toFixed(0)}%`
+      })
     }
   });
 }
@@ -1290,6 +1320,52 @@ function handlePassAdvance(req, res) {
     current_pass: cs.matchState.current_pass,
     pass_name: criteria.name,
     pending: cs.taskQueue.length
+  });
+}
+
+function handleReset(req, res) {
+  const cs = req.cs;
+  if (READ_ONLY) return res.status(403).json({ error: 'Read-only mode enabled' });
+
+  const { reviewer } = req.body;
+
+  // Log the reset in audit BEFORE wiping state
+  appendAuditLog(cs, 'reset', {
+    reviewer: reviewer || 'anonymous',
+    previous_matches: cs.matchState.matches.length,
+    previous_pass: cs.matchState.current_pass,
+  });
+
+  // Re-initialize match state (fresh session)
+  cs.matchState = {
+    session_started: new Date().toISOString(),
+    last_updated: new Date().toISOString(),
+    session_name: SESSION_NAME,
+    version: 0,
+    current_pass: 1,
+    passes_completed: 0,
+    user_finished: false,
+    pass_matched: 0,
+    pass_skipped: 0,
+    stats: { total_viva_listings: 0, matched: 0, rejected: 0, skipped: 0, pending: 0, in_progress: 0 },
+    matches: [],
+    rejected: [],
+    skipped: [],
+    in_progress: [],
+  };
+
+  // Reload smart matches and rebuild task queue
+  cs.smartMatches = loadSmartMatches(cs);
+  cs.taskQueue = buildTaskQueue(cs);
+  cs.passStartTotal = cs.taskQueue.length;
+
+  saveMatchState(cs);
+
+  res.json({
+    success: true,
+    message: 'Compound reset successfully',
+    pending: cs.taskQueue.length,
+    current_pass: 1,
   });
 }
 
@@ -1768,6 +1844,7 @@ compoundRouter.post('/undo', handleUndo);
 compoundRouter.get('/audit', handleAudit);
 compoundRouter.post('/pass/advance', handlePassAdvance);
 compoundRouter.post('/pass/finish', handlePassFinish);
+compoundRouter.post('/reset', handleReset);
 compoundRouter.post('/pass/resume', handlePassResume);
 compoundRouter.post('/report/send', handleReportSend);
 compoundRouter.get('/report/unmatched', handleReportUnmatched);
@@ -1822,6 +1899,7 @@ app.post('/api/skip', withDefaultCompound(handleSkip));
 app.post('/api/undo', withDefaultCompound(handleUndo));
 app.post('/api/pass/advance', withDefaultCompound(handlePassAdvance));
 app.post('/api/pass/finish', withDefaultCompound(handlePassFinish));
+app.post('/api/reset', withDefaultCompound(handleReset));
 app.post('/api/pass/resume', withDefaultCompound(handlePassResume));
 app.post('/api/report/send', withDefaultCompound(handleReportSend));
 app.post('/api/report/send-email', withDefaultCompound(handleReportSendEmail));

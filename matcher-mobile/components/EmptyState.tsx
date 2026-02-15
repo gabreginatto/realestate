@@ -21,6 +21,7 @@ type EmptyStateProps = {
   totalSkipped?: number;
   passesCompleted?: number;
   onSendReport?: () => void;
+  onReset?: () => void;
 };
 
 /**
@@ -34,6 +35,7 @@ function EmptyStateComponent({
   totalSkipped = 0,
   passesCompleted = 5,
   onSendReport,
+  onReset,
 }: EmptyStateProps) {
   return (
     <View style={styles.container}>
@@ -72,6 +74,12 @@ function EmptyStateComponent({
       {onSendReport && (
         <Pressable style={styles.sendReportButton} onPress={onSendReport}>
           <Text style={styles.sendReportText}>Send Unmatched Report</Text>
+        </Pressable>
+      )}
+
+      {onReset && (
+        <Pressable style={styles.resetButton} onPress={onReset}>
+          <Text style={styles.resetButtonText}>Start Over</Text>
         </Pressable>
       )}
     </View>
@@ -177,6 +185,20 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 15,
     fontWeight: '700',
+  },
+  resetButton: {
+    marginTop: 12,
+    backgroundColor: 'transparent',
+    borderRadius: 10,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderWidth: 1,
+    borderColor: '#ff5252' + '60',
+  },
+  resetButtonText: {
+    color: '#ff5252',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
 

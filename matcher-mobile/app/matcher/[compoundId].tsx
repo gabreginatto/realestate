@@ -79,6 +79,7 @@ export default function MatcherScreen() {
   const undo = useMatcherStore((s) => s.undo);
   const advancePass = useMatcherStore((s) => s.advancePass);
   const finishMatching = useMatcherStore((s) => s.finishMatching);
+  const resetCompound = useMatcherStore((s) => s.resetCompound);
   const clearError = useMatcherStore((s) => s.clearError);
   const dismissNotification = useMatcherStore((s) => s.dismissNotification);
 
@@ -194,6 +195,25 @@ export default function MatcherScreen() {
       setIsSendingReport(false);
     }
   }, [emailInput, storeCompoundId]);
+
+  // Handle reset compound
+  const handleReset = useCallback(() => {
+    Alert.alert(
+      'Reset All Matches?',
+      'This will clear all matching decisions for this compound. You\'ll start over from Pass 1. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: async () => {
+            await resetCompound();
+            setToast({ message: 'Compound reset — starting fresh', type: 'info' });
+          },
+        },
+      ]
+    );
+  }, [resetCompound]);
 
   // ---- Animation helpers ----
 
@@ -451,6 +471,7 @@ export default function MatcherScreen() {
           totalSkipped={sessionStats?.skipped ?? 0}
           passesCompleted={maxPasses}
           onSendReport={() => setShowEmailModal(true)}
+          onReset={handleReset}
         />
       ) : (
         <Animated.View style={[styles.animatedContentWrapper, contentAnimatedStyle]}>
@@ -619,7 +640,7 @@ export default function MatcherScreen() {
             <Text style={styles.passCompleteIcon}>{'\uD83C\uDFAF'}</Text>
             <Text style={styles.passCompleteTitle}>Pass {currentPass} Complete!</Text>
             <Text style={styles.passCompleteSubtitle}>
-              {passName.charAt(0).toUpperCase() + passName.slice(1)} matching pass finished
+              {passName === 'hail_mary' ? 'Hail Mary' : passName.charAt(0).toUpperCase() + passName.slice(1)} matching pass finished
             </Text>
 
             {passStats && (
@@ -639,10 +660,14 @@ export default function MatcherScreen() {
             {hasNextPass && nextPassInfo && (
               <Pressable style={styles.advanceButton} onPress={advancePass}>
                 <Text style={styles.advanceButtonText}>
-                  Continue to Pass {nextPassInfo.number}
+                  {nextPassInfo.hail_mary
+                    ? 'Hail Mary Pass'
+                    : `Continue to Pass ${nextPassInfo.number}`}
                 </Text>
                 <Text style={styles.advanceButtonSubtext}>
-                  {nextPassInfo.name} ({nextPassInfo.price_tolerance} price, {nextPassInfo.area_tolerance} area)
+                  {nextPassInfo.hail_mary
+                    ? `All remaining properties \u2013 ${nextPassInfo.listings_to_review} to review`
+                    : `${nextPassInfo.name} (${nextPassInfo.price_tolerance} price, ${nextPassInfo.area_tolerance} area)`}
                 </Text>
               </Pressable>
             )}
