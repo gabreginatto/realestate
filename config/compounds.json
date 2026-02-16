@@ -1,0 +1,61 @@
+{
+  "compounds": {
+    "alphaville-1": {
+      "id": "alphaville-1",
+      "displayName": "Alphaville 1",
+      "viva": { "empreendimento": "Alphaville 01" },
+      "coelho": {
+        "enterprises": "Alphaville 1",
+        "region": "Alphaville / Tamboré",
+        "kind_of": "Casa em Condomínio",
+        "transaction": "Residencial",
+        "indicators": "Comprar",
+        "work_phase": "Prontos para morar",
+        "is_release_or_slam": "false"
+      }
+    },
+    "tambore-xi": {
+      "id": "tambore-xi",
+      "displayName": "Tamboré XI",
+      "viva": { "empreendimento": "Tamboré 11" },
+      "coelho": {
+        "enterprises": "Tamboré XI",
+        "region": "Alphaville / Tamboré",
+        "kind_of": "Casa em Condomínio",
+        "transaction": "Residencial",
+        "indicators": "Comprar",
+        "work_phase": "Prontos para morar",
+        "is_release_or_slam": "false"
+      }
+    },
+    "tambore-ii": {
+      "id": "tambore-ii",
+      "displayName": "Tamboré II",
+      "viva": { "empreendimento": "Tamboré 02" },
+      "coelho": {
+        "enterprises": "Tamboré II",
+        "region": "Alphaville / Tamboré",
+        "kind_of": "Casa em Condomínio",
+        "transaction": "Residencial",
+        "indicators": "Comprar",
+        "work_phase": "Prontos para morar",
+        "is_release_or_slam": "false"
+      }
+    },
+    "tambore-x": {
+      "id": "tambore-x",
+      "displayName": "Tamboré X",
+      "viva": { "empreendimento": "Tamboré 10" },
+      "coelho": {
+        "enterprises": "Tamboré  X",
+        "region": "Alphaville / Tamboré",
+        "kind_of": "Casa em Condomínio",
+        "transaction": "Residencial",
+        "indicators": "Comprar",
+        "work_phase": "Prontos para morar",
+        "is_release_or_slam": "false"
+      }
+    }
+  },
+  "defaultCompound": "alphaville-1"
+}
