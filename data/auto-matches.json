@@ -1,0 +1,508 @@
+{
+  "session_started": "2026-02-28T02:29:34.670102+00:00",
+  "session_name": "dino-auto",
+  "current_pass": 5,
+  "matches": [],
+  "skipped": [
+    {
+      "viva_code": "17232",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 4.500.000,00",
+      "area": 397.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17116",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 4.900.000,00",
+      "area": 457.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17076",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 5.300.000,00",
+      "area": 281.4,
+      "beds": 4
+    },
+    {
+      "viva_code": "17266",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 5.300.000,00",
+      "area": 400.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17489",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 5.300.000,00",
+      "area": 305.59,
+      "beds": 3
+    },
+    {
+      "viva_code": "8748",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 5.400.000,00",
+      "area": 500.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "14138",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 5.650.000,00",
+      "area": 400.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "2075",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 5.650.000,00",
+      "area": 600.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17697",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 5.990.000,00",
+      "area": 362.0,
+      "beds": 3
+    },
+    {
+      "viva_code": "17378",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 6.290.000,00",
+      "area": 314.0,
+      "beds": 3
+    },
+    {
+      "viva_code": "12441",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 6.300.000,00",
+      "area": 500.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "8527",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 6.400.000,00",
+      "area": 420.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "12252",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 6.500.000,00",
+      "area": 451.2,
+      "beds": 4
+    },
+    {
+      "viva_code": "17388",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 6.500.000,00",
+      "area": 344.0,
+      "beds": 3
+    },
+    {
+      "viva_code": "8989",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 6.600.000,00",
+      "area": 367.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17316",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 6.700.000,00",
+      "area": 554.3,
+      "beds": 4
+    },
+    {
+      "viva_code": "16113",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 6.920.000,00",
+      "area": 520.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17279",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 7.000.000,00",
+      "area": 350.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "16872",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 7.300.000,00",
+      "area": 410.0,
+      "beds": 3
+    },
+    {
+      "viva_code": "8177",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 7.400.000,00",
+      "area": 426.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "9281",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 7.440.000,00",
+      "area": 327.0,
+      "beds": 3
+    },
+    {
+      "viva_code": "2307",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 7.500.000,00",
+      "area": 720.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "8682",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 7.800.000,00",
+      "area": 685.24,
+      "beds": 4
+    },
+    {
+      "viva_code": "17722",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 7.890.000,00",
+      "area": 665.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "12814",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 7.900.000,00",
+      "area": 498.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "1230",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 7.900.000,00",
+      "area": 520.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17465",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 8.000.000,00",
+      "area": 500.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "15008",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 8.000.000,00",
+      "area": 580.0,
+      "beds": 3
+    },
+    {
+      "viva_code": "12668",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 8.500.000,00",
+      "area": 750.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "17654",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 8.500.000,00",
+      "area": 400.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "14184",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 8.500.000,00",
+      "area": 490.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "14533",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 9.000.000,00",
+      "area": 600.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "13572",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 9.050.000,00",
+      "area": 640.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "1034",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 9.500.000,00",
+      "area": 523.57,
+      "beds": 4
+    },
+    {
+      "viva_code": "4657",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 9.500.000,00",
+      "area": 500.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "5380",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 9.500.000,00",
+      "area": 414.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "16117",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 11.000.000,00",
+      "area": 600.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "16448",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 11.000.000,00",
+      "area": 582.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "4659",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 11.000.000,00",
+      "area": 480.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17397",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 11.800.000,00",
+      "area": 756.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "7597",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 12.000.000,00",
+      "area": 834.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17481",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 12.000.000,00",
+      "area": 430.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "15776",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 12.500.000,00",
+      "area": 874.52,
+      "beds": 5
+    },
+    {
+      "viva_code": "16026",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 12.500.000,00",
+      "area": 950.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17775",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 12.500.000,00",
+      "area": 510.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "16882",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 13.000.000,00",
+      "area": 552.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "16892",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 13.000.000,00",
+      "area": 600.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "17596",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 13.890.000,00",
+      "area": 520.0,
+      "beds": 3
+    },
+    {
+      "viva_code": "13254",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 14.000.000,00",
+      "area": 655.81,
+      "beds": 5
+    },
+    {
+      "viva_code": "16528",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 14.000.000,00",
+      "area": 646.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "8188",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 14.800.000,00",
+      "area": 727.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "16615",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 14.900.000,00",
+      "area": 480.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "16998",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 15.500.000,00",
+      "area": 750.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "1115",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 16.000.000,00",
+      "area": 800.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "17660",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 16.500.000,00",
+      "area": 680.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "16886",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 17.000.000,00",
+      "area": 580.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "12752",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 17.300.000,00",
+      "area": 1279.0,
+      "beds": 6
+    },
+    {
+      "viva_code": "17670",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 17.500.000,00",
+      "area": 610.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "17323",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 17.800.000,00",
+      "area": 906.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "12484",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 18.000.000,00",
+      "area": 700.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "16356",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 18.000.000,00",
+      "area": 628.81,
+      "beds": 4
+    },
+    {
+      "viva_code": "14502",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 19.000.000,00",
+      "area": 686.78,
+      "beds": 4
+    },
+    {
+      "viva_code": "6930",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 21.000.000,00",
+      "area": 1784.0,
+      "beds": 7
+    },
+    {
+      "viva_code": "9624",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 22.000.000,00",
+      "area": 667.13,
+      "beds": 4
+    },
+    {
+      "viva_code": "15335",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 28.000.000,00",
+      "area": 750.0,
+      "beds": 4
+    },
+    {
+      "viva_code": "12854",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 28.500.000,00",
+      "area": 1100.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "16705",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 29.950.000,00",
+      "area": 1160.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "16385",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 32.000.000,00",
+      "area": 980.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "14127",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 35.000.000,00",
+      "area": 800.0,
+      "beds": 5
+    },
+    {
+      "viva_code": "16626",
+      "reason": "no_match_after_all_passes",
+      "price": "R$ 44.000.000,00",
+      "area": 987.0,
+      "beds": 4
+    }
+  ],
+  "stats": {
+    "total_viva": 70,
+    "total_coelho": 81,
+    "matched": 0,
+    "skipped": 70,
+    "embedding_cache_size": 70,
+    "total_api_calls": 0,
+    "threshold": 0.85,
+    "dry_run": true
+  }
+}

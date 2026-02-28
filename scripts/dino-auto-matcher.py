@@ -119,19 +119,23 @@ def get_images_for_listing(site: str, listing_id: str, data_root: Path,
                            compound: str | None = None) -> list[Path]:
     """
     Priority:
-      1. selected_exteriors/{site}/{listing_id}/
-      2. data/{compound}/mosaics/{site}/{listing_id}.png
-      3. data/{site}/images/{listing_id}_1.jpg, _2.jpg
+      1. selected_for_matching/{site}/{listing_id}/   (CLIP-selected, pool-first)
+      2. selected_exteriors/{site}/{listing_id}/      (HSV-selected, legacy)
+      3. data/{compound}/mosaics/{site}/{listing_id}.png
+      4. data/{site}/images/{listing_id}_1.jpg, _2.jpg
     """
-    ext_dir = data_root.parent / "selected_exteriors" / site / listing_id
-    if ext_dir.is_dir():
-        imgs = sorted(
-            p for p in ext_dir.iterdir()
-            if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp")
-            and p.name != "_manifest.json"
-        )
-        if imgs:
-            return imgs
+    repo_root = data_root.parent
+
+    for subdir in ("selected_for_matching", "selected_exteriors"):
+        candidate = repo_root / subdir / site / listing_id
+        if candidate.is_dir():
+            imgs = sorted(
+                p for p in candidate.iterdir()
+                if p.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp")
+                and not p.name.startswith("_")
+            )
+            if imgs:
+                return imgs
 
     if compound:
         mosaic = data_root / compound / "mosaics" / site / f"{listing_id}.png"
