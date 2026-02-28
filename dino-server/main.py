@@ -33,7 +33,12 @@ _device = None
 async def lifespan(app: FastAPI):
     global _processor, _model, _device
 
-    _device = "cuda" if torch.cuda.is_available() else "cpu"
+    if torch.cuda.is_available():
+        _device = "cuda"
+    elif torch.backends.mps.is_available():
+        _device = "mps"
+    else:
+        _device = "cpu"
     logger.info(f"Loading {MODEL_NAME} on {_device} ...")
 
     _processor = AutoImageProcessor.from_pretrained(MODEL_NAME)
