@@ -6,8 +6,9 @@ Endpoints:
   POST /classify  — CLIP zero-shot image classification (pool/exterior/garden/interior)
   GET  /health    — liveness check for both models
 
-Both models load on startup. CUDA when available, CPU otherwise.
-MPS (Apple Silicon) is skipped — DINOv2 attention ops are unreliable on MPS.
+Both models load on startup. Device priority: CUDA → MPS → CPU.
+MPS is validated with a real DINOv2 forward pass before use; falls back to
+CPU automatically if the check fails (older PyTorch had unreliable attention).
 
 Start:  uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1
 Test embed:    curl -F "image=@test.jpg" http://localhost:8000/embed | python -m json.tool
@@ -53,12 +54,39 @@ _clip_model = None
 _device = None
 
 
+def _select_device() -> str:
+    """
+    Pick the best available device, validating MPS with a real forward pass
+    before committing to it (older PyTorch has unreliable DINOv2 attention on MPS).
+    """
+    if torch.cuda.is_available():
+        return "cuda"
+
+    if torch.backends.mps.is_available():
+        logger.info("MPS detected — running compatibility check ...")
+        try:
+            from transformers import AutoImageProcessor, AutoModel
+            _proc = AutoImageProcessor.from_pretrained(DINO_MODEL_NAME)
+            _mdl  = AutoModel.from_pretrained(DINO_MODEL_NAME).to("mps").eval()
+            _dummy = torch.zeros(1, 3, 224, 224, device="mps")
+            _inputs = _proc(images=Image.new("RGB", (224, 224)), return_tensors="pt")
+            _inputs = {k: v.to("mps") for k, v in _inputs.items()}
+            with torch.no_grad():
+                _mdl(**_inputs)
+            del _mdl, _proc, _inputs, _dummy
+            logger.info("MPS check passed — using MPS")
+            return "mps"
+        except Exception as exc:
+            logger.warning(f"MPS check failed ({exc}) — falling back to CPU")
+
+    return "cpu"
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _dino_processor, _dino_model, _clip_processor, _clip_model, _device
 
-    # MPS skipped: DINOv2 scaled_dot_product_attention is unreliable on MPS.
-    _device = "cuda" if torch.cuda.is_available() else "cpu"
+    _device = _select_device()
 
     logger.info(f"Device: {_device}")
     logger.info(f"Loading {DINO_MODEL_NAME} ...")
