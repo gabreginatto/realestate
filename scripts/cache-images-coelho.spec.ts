@@ -38,6 +38,8 @@ async function downloadImage(url: string, filepath: string): Promise<boolean> {
 }
 
 test('Download all images for every Coelho listing', async ({ page }) => {
+  test.setTimeout(0); // no timeout — scraping 80+ listings takes as long as it takes
+
   const listingsFile = path.join(process.cwd(), 'data', 'coelhodafonseca', 'listings', 'all-listings.json');
   if (!fs.existsSync(listingsFile)) {
     throw new Error(`Listings file not found: ${listingsFile}\nRun the listings scraper first.`);
