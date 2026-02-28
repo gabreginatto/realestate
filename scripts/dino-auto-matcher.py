@@ -153,6 +153,31 @@ def get_images_for_listing(site: str, listing_id: str, data_root: Path,
     return raw_imgs
 
 
+def get_images_by_category(site: str, listing_id: str, data_root: Path) -> dict[str, list[Path]]:
+    """
+    Read the CLIP manifest and return images grouped by category.
+    Returns {"pool": [...], "facade": [...], "garden": [...]}
+    Falls back to get_images_for_listing() (all in "pool" bucket) if no manifest.
+    """
+    repo_root = data_root.parent
+    manifest_path = repo_root / "selected_for_matching" / site / listing_id / "_manifest.json"
+    if manifest_path.exists():
+        with open(manifest_path) as f:
+            manifest = json.load(f)
+        base_dir = manifest_path.parent
+        by_cat: dict[str, list[Path]] = {"pool": [], "facade": [], "garden": []}
+        for entry in manifest.get("selected", []):
+            cat = entry.get("category", "pool")
+            if cat in by_cat:
+                p = base_dir / entry["filename"]
+                if p.exists():
+                    by_cat[cat].append(p)
+        return by_cat
+    # Fallback: treat all images as "pool"
+    imgs = get_images_for_listing(site, listing_id, data_root)
+    return {"pool": imgs, "facade": [], "garden": []}
+
+
 # ---------------------------------------------------------------------------
 # DINOv2 embedding via HTTP server
 # ---------------------------------------------------------------------------
@@ -186,34 +211,79 @@ def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
 # Embedding cache (shared between strategies)
 # ---------------------------------------------------------------------------
 
+# Weights for per-category contribution to the combined embedding
+CATEGORY_WEIGHTS = {"pool": 0.60, "facade": 0.25, "garden": 0.15}
+
+
+def category_similarity(a_cats: dict[str, np.ndarray | None],
+                        b_cats: dict[str, np.ndarray | None]) -> float:
+    """
+    Build a single weighted-mean embedding per listing (pool=60%, facade=25%,
+    garden=15%) and compare with one cosine operation.
+
+    This is more robust than comparing category vectors separately because
+    pool shots of the same property from two different agents can look quite
+    different (angle, staging, lighting), while the combined fingerprint is
+    more stable.
+    """
+    def weighted_embedding(cats: dict[str, np.ndarray | None]) -> np.ndarray | None:
+        present = {cat: emb for cat, emb in cats.items() if emb is not None}
+        if not present:
+            return None
+        # Normalise weights to the categories that exist
+        total_w = sum(CATEGORY_WEIGHTS[cat] for cat in present)
+        combined = sum(
+            (CATEGORY_WEIGHTS[cat] / total_w) * emb
+            for cat, emb in present.items()
+        )
+        return combined
+
+    a_emb = weighted_embedding(a_cats)
+    b_emb = weighted_embedding(b_cats)
+    if a_emb is None or b_emb is None:
+        return 0.0
+    return cosine_similarity(a_emb, b_emb)
+
+
 class EmbeddingCache:
     def __init__(self, dino_url: str, data_root: Path,
                  compound: str | None, dry_run: bool):
-        self._cache: dict[str, np.ndarray | None] = {}
+        self._cache: dict[str, dict[str, np.ndarray | None]] = {}
         self.api_calls = 0
         self.dino_url = dino_url
         self.data_root = data_root
         self.compound = compound
         self.dry_run = dry_run
 
-    def get(self, site: str, code: str) -> np.ndarray | None:
+    def get(self, site: str, code: str) -> dict[str, np.ndarray | None]:
+        """Return per-category embeddings: {"pool": vec|None, "facade": vec|None, "garden": vec|None}"""
         key = f"{site}/{code}"
         if key in self._cache:
             return self._cache[key]
-        image_paths = get_images_for_listing(site, code, self.data_root, self.compound)
-        if not image_paths:
+
+        by_cat = get_images_by_category(site, code, self.data_root)
+        total_imgs = sum(len(v) for v in by_cat.values())
+        if total_imgs == 0:
             log.warning(f"  [{site}/{code}] no images found")
-            self._cache[key] = None
-            return None
-        if self.dry_run:
-            v = np.random.randn(768).astype(np.float32)
-            v /= np.linalg.norm(v)
-            self._cache[key] = v
-            return v
-        emb = mean_embedding(image_paths, self.dino_url)
-        self.api_calls += len(image_paths)
-        self._cache[key] = emb
-        return emb
+            result = {"pool": None, "facade": None, "garden": None}
+            self._cache[key] = result
+            return result
+
+        result: dict[str, np.ndarray | None] = {}
+        for cat, paths in by_cat.items():
+            if not paths:
+                result[cat] = None
+                continue
+            if self.dry_run:
+                v = np.random.randn(768).astype(np.float32)
+                v /= np.linalg.norm(v)
+                result[cat] = v
+            else:
+                result[cat] = mean_embedding(paths, self.dino_url)
+                self.api_calls += len(paths)
+
+        self._cache[key] = result
+        return result
 
     def __len__(self):
         return len(self._cache)
@@ -296,8 +366,8 @@ def run_optimal_matching(
     n_viva = len(viva_listings)
     n_coelho = len(coelho_listings)
 
-    # ── Phase 1: embed all listings ──────────────────────────────────────────
-    log.info(f"\nPhase 1 — embedding all {n_viva} Viva listings ...")
+    # ── Phase 1: embed all listings (per-category) ───────────────────────────
+    log.info(f"\nPhase 1 — embedding all {n_viva} Viva listings (pool / facade / garden) ...")
     viva_embs = []
     for i, v in enumerate(viva_listings):
         emb = cache.get("vivaprimeimoveis", v["code"])
@@ -305,7 +375,7 @@ def run_optimal_matching(
         if (i + 1) % 10 == 0:
             log.info(f"  {i+1}/{n_viva} embedded")
 
-    log.info(f"\nPhase 2 — embedding all {n_coelho} Coelho listings ...")
+    log.info(f"\nPhase 2 — embedding all {n_coelho} Coelho listings (pool / facade / garden) ...")
     coelho_embs = []
     for j, c in enumerate(coelho_listings):
         emb = cache.get("coelhodafonseca", c["code"])
@@ -313,16 +383,16 @@ def run_optimal_matching(
         if (j + 1) % 10 == 0:
             log.info(f"  {j+1}/{n_coelho} embedded")
 
-    # ── Phase 2: build similarity matrix ────────────────────────────────────
-    log.info(f"\nPhase 3 — building {n_viva}×{n_coelho} similarity matrix ...")
+    # ── Phase 3: build similarity matrix (weighted per-category) ────────────
+    log.info(f"\nPhase 3 — building {n_viva}×{n_coelho} similarity matrix (pool×0.60 + facade×0.25 + garden×0.15) ...")
     sim_matrix = np.zeros((n_viva, n_coelho), dtype=np.float32)
     for i, v_emb in enumerate(viva_embs):
-        if v_emb is None:
+        if all(v is None for v in v_emb.values()):
             continue
         for j, c_emb in enumerate(coelho_embs):
-            if c_emb is None:
+            if all(v is None for v in c_emb.values()):
                 continue
-            sim_matrix[i, j] = cosine_similarity(v_emb, c_emb)
+            sim_matrix[i, j] = category_similarity(v_emb, c_emb)
 
     # ── Phase 3: optimal assignment ──────────────────────────────────────────
     log.info("Phase 4 — running optimal assignment (Hungarian algorithm) ...")
@@ -492,7 +562,7 @@ def run_greedy_matching(
             )
 
             viva_emb = cache.get("vivaprimeimoveis", viva["code"])
-            if viva_emb is None:
+            if all(v is None for v in viva_emb.values()):
                 log.warning(f"  Viva {viva['code']}: no embedding — skipping")
                 continue
 
@@ -501,9 +571,9 @@ def run_greedy_matching(
                 if coelho["code"] in matched_coelho:
                     continue
                 coelho_emb = cache.get("coelhodafonseca", coelho["code"])
-                if coelho_emb is None:
+                if all(v is None for v in coelho_emb.values()):
                     continue
-                sim = cosine_similarity(viva_emb, coelho_emb)
+                sim = category_similarity(viva_emb, coelho_emb)
                 log.debug(f"    Coelho {coelho['code']} sim={sim:.4f}")
                 if sim > best_sim:
                     best_sim, best_coelho = sim, coelho

@@ -17,11 +17,21 @@ import * as http from 'http';
  *   npx playwright test scripts/cache-images-viva.spec.ts --project=chromium --workers=1
  */
 
-async function downloadImage(url: string, filepath: string): Promise<boolean> {
+async function downloadImage(url: string, filepath: string, maxRedirects = 5): Promise<boolean> {
   return new Promise((resolve) => {
+    if (maxRedirects <= 0) { resolve(false); return; }
     const protocol = url.startsWith('https') ? https : http;
     const file = fs.createWriteStream(filepath);
     protocol.get(url, (response) => {
+      if (response.statusCode && response.statusCode >= 300 && response.statusCode < 400) {
+        file.close();
+        fs.unlink(filepath, () => {});
+        const location = response.headers.location;
+        if (!location) { resolve(false); return; }
+        const redirectUrl = location.startsWith('http') ? location : new URL(location, url).href;
+        downloadImage(redirectUrl, filepath, maxRedirects - 1).then(resolve);
+        return;
+      }
       if (response.statusCode && response.statusCode >= 400) {
         file.close();
         fs.unlink(filepath, () => {});
