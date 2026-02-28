@@ -45,12 +45,15 @@ log = logging.getLogger("dino-matcher")
 # ---------------------------------------------------------------------------
 
 PASS_CRITERIA = [
-    {"pass": 1, "label": "strict",      "price_tol": 0.05, "area_tol": 0.10, "beds_delta": 0},
-    {"pass": 2, "label": "relaxed",     "price_tol": 0.10, "area_tol": 0.15, "beds_delta": 0},
-    {"pass": 3, "label": "broader",     "price_tol": 0.15, "area_tol": 0.20, "beds_delta": 1},
-    {"pass": 4, "label": "very_broad",  "price_tol": 0.25, "area_tol": 0.30, "beds_delta": 1},
-    {"pass": 5, "label": "hail_mary",   "hail_mary": True},
+    {"pass": 1, "label": "strict",     "area_tol": 0.15, "beds_delta": 0},
+    {"pass": 2, "label": "relaxed",    "area_tol": 0.20, "beds_delta": 0},
+    {"pass": 3, "label": "broader",    "area_tol": 0.28, "beds_delta": 1},
+    {"pass": 4, "label": "very_broad", "area_tol": 0.40, "beds_delta": 2},
+    {"pass": 5, "label": "hail_mary",  "hail_mary": True},
 ]
+# Price is no longer a hard gate — agencies list the same property at different
+# prices too often (see Viva 17481 / Coelho 677791: sim=0.97 but 20% price gap).
+# Price is still used in score_candidate() to rank candidates before image comparison.
 
 # ---------------------------------------------------------------------------
 # Helpers — parsing
@@ -273,28 +276,24 @@ def build_candidates(viva: dict, coelho_all: list[dict], criteria: dict) -> list
         # Pass 5: include every Coelho listing not yet matched
         candidates = list(coelho_all)
     else:
-        price_tol = criteria["price_tol"]
         area_tol = criteria["area_tol"]
         beds_delta = criteria["beds_delta"]
 
         candidates = []
         for c in coelho_all:
-            # Area check (required unless both are None)
+            # Area check (hard gate — area is reliable and limits the candidate pool)
             if viva["area"] and c["area"]:
                 if not within_tolerance(viva["area"], c["area"], area_tol):
                     continue
             elif viva["area"] or c["area"]:
                 continue  # one has area, the other doesn't — skip
 
-            # Price check (only if both have price)
-            if viva["price"] and c["price"]:
-                if not within_tolerance(viva["price"], c["price"], price_tol):
-                    continue
-
-            # Beds check (only if both have beds and beds_delta == 0 means exact)
+            # Beds check (hard gate)
             if viva["beds"] is not None and c["beds"] is not None:
                 if abs(viva["beds"] - c["beds"]) > beds_delta:
                     continue
+
+            # Price is NOT a hard gate — it feeds into score_candidate() for ranking only
 
             candidates.append(c)
 
