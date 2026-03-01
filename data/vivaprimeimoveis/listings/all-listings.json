@@ -1,48 +1,47 @@
 {
-  "scraped_at": "2025-10-15T21:10:19.444Z",
-  "total_listings": 70,
+  "scraped_at": "2026-02-28T04:51:50.808Z",
+  "total_listings": 62,
   "total_pages": 5,
   "search_url": "https://www.vivaprimeimoveis.com.br/imoveis?busca=venda&finalidade=venda&tipo=casa&empreendimento=alphaville-01",
   "listings": [
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17232",
-      "propertyCode": "17232",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17266",
+      "propertyCode": "17266",
       "page": 1,
       "price": "R$ 4.500.000,00",
       "detailedData": {
         "title": "",
-        "description": "Lindo Sobrado, com salas de jantar, estar, lareira e de tv, também adega e lavabo. Copa, cozinha, lavanderia, dependência de empregados. \nDuas suítes mais dois quartos e um banheiro no piso superior. \nÁrea externa com jardins, piscina, churrasqueira e vestiário. \n\nAgende sua visita!",
+        "description": "Casa para retrofit , com 4 suítes em excelente localização no Alphaville 1.\nProximo a portaria e ao clube. \nAceita permuta de menor .\n\n\nAgende sua visita!!",
         "specs": {
           "dormitorios": 4,
-          "suites": 2,
-          "banheiros": 4,
+          "suites": 4,
+          "banheiros": 5,
           "vagas": 4,
-          "area_construida": "397m²",
-          "area_total": "650m²"
+          "area_construida": "400m²",
+          "area_total": "610m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
+          "Área Serviço Cozinha Lavabo Sala Jantar",
           "Área Serviço",
-          "Churrasqueira",
           "Cozinha",
-          "Despensa",
-          "Lareira",
           "Lavabo",
-          "Piscina",
-          "Espaço Gourmet",
-          "Sala Estar",
           "Sala Jantar",
-          "WC Empregada",
           "Portaria 24Hrs Segurança Patrimonial",
           "Portaria 24Hrs",
-          "Segurança Patrimonial"
+          "Segurança Patrimonial",
+          "Apartamentos",
+          "Área",
+          "Área Industrial",
+          "Casa",
+          "Coberturas"
         ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17232_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17232_2.jpg"
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17266_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17266_2.jpg"
       }
     },
     {
@@ -62,11 +61,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço Churrasqueira Cozinha Lareira Lavabo Piscina Espaço Gourmet Sala Estar Sala Jantar",
           "Área Serviço",
           "Churrasqueira",
@@ -102,11 +101,11 @@
           "area_total": "706.4m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -126,90 +125,10 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17266",
-      "propertyCode": "17266",
-      "page": 1,
-      "price": "R$ 5.300.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Casa para retrofit , com 4 suítes em excelente localização no Alphaville 1.\nProximo a portaria e ao clube. \nAceita permuta de menor .\n\n\nAgende sua visita!!",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 5,
-          "vagas": 4,
-          "area_construida": "400m²",
-          "area_total": "610m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço Cozinha Lavabo Sala Jantar",
-          "Área Serviço",
-          "Cozinha",
-          "Lavabo",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial",
-          "Apartamentos",
-          "Área",
-          "Área Industrial",
-          "Casa",
-          "Coberturas"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17266_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17266_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17489",
-      "propertyCode": "17489",
-      "page": 1,
-      "price": "R$ 5.300.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Casa para venda no Alphaville 01.\n\nBem localizada, próxima da portaria .\nCom 3 suítes . Living para vários ambientes, copa e cozinha Piso em porcelanato , escritório e espaço gourmet.\n\nO Residencial Alphaville 1 tem a melhor localização em Alphaville, com acesso direto para a rodovia Castelo Branco e Rodoanel. Situado em uma das áreas mais privilegiadas e nobres da região, além de estar próximo ao vasto comércio local. \n\nSuas alamedas são largas e arborizadas, paisagismo impecável. Outro grande destaque do local é o ALPHAVILLE TÊNIS CLUBE que está localizado dentro do condomínio. Há também no residencial um lindo parquinho com brinquedos, loja de conveniência ,2 quadras de Beach Tênis. Um Boulevard para eventos e convivência. Venha morar com requinte, segurança e alto padrão!",
-        "specs": {
-          "dormitorios": 3,
-          "suites": 3,
-          "banheiros": 5,
-          "vagas": 2,
-          "area_construida": "305.59m²",
-          "area_total": "560m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lareira",
-          "Lavabo",
-          "Espaço Gourmet",
-          "Sala Estar",
-          "Sala Jantar",
-          "WC Empregada",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17489_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17489_2.jpg"
-      }
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8748",
       "propertyCode": "8748",
       "page": 1,
-      "price": "R$ 5.400.000,00",
+      "price": "R$ 5.500.000,00",
       "detailedData": {
         "title": "",
         "description": "Casa bem localizada, com 04 suítes .\n\nEstar, jantar, lareira, suite com closet e escritório.\nLazer com área gourmet e piscina ensolarada!!\n\nEm rua valorizada do residencial por estar perto da portaria.\n\nAnalisa permuta.\n\n\nAgende sua visita!!!",
@@ -222,11 +141,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -246,6 +165,47 @@
       }
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17996",
+      "propertyCode": "17996",
+      "page": 1,
+      "price": "R$ 5.500.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Ótima casa para retrofit.\n\nCasa ampla, num terreno plano com leve declive. Possui 4 suítes espaçosas, sendo duas delas com closet e a máster com banheira e sala privativa, sala de TV com varanda no piso superior. \n\nO piso principal conta com escritório, depósito, duas amplas salas de estar, uma delas com lareira. Sala de jantar, cozinha, copa, lavanderia, 2 dormitórios de serviço. Sala externa com banheiro completo que dá acesso ao quintal com piscina e churrasqueira.\n\nA casa conta ainda com um espaço multifuncional no subsolo com banheiro completo.\nVaga para 6 carros sendo 3 cobertas.",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 6,
+          "area_construida": "530m²",
+          "area_total": "640m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço",
+          "Churrasqueira",
+          "Cozinha",
+          "Despensa",
+          "Lavabo",
+          "Piscina",
+          "Espaço Gourmet",
+          "Quintal",
+          "Sala Estar",
+          "Sala Jantar",
+          "Suíte Master",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17996_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17996_2.jpg"
+      }
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/14138",
       "propertyCode": "14138",
       "page": 1,
@@ -262,11 +222,11 @@
           "area_total": "640m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -302,11 +262,11 @@
           "area_total": "598m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Água Quente",
           "Churrasqueira",
           "Cozinha",
@@ -334,7 +294,7 @@
       "price": "R$ 5.990.000,00",
       "detailedData": {
         "title": "",
-        "description": "Casa renovada.\n\n3 suítes, todas como armários e ar condicionado, sendo a master com closet e banheira.\nAmpla sala de estar. \nSala de TV com lareira.\nSala de jantar.\nCozinha ampla com muito armário.\nÁrea gourmet com churrasqueira e forno de pizza.\nPiscina com prainha e quintal acolhedor.\n4 vagas garagem\nAr condicionado em todos os ambientes.",
+        "description": "Casa renovada.\n\n3 suítes, todas como armários e ar condicionado, sendo a master com closet e banheira.\nAmpla sala de estar. \nSala de TV com lareira.\nSala de jantar.\nCozinha ampla com muito armário.\nÁrea gourmet com churrasqueira e forno de pizza.\nPiscina com prainha e quintal acolhedor.\n4 vagas garagem\nAr condicionado em todos os ambientes.\n\n\nLocação pacote!",
         "specs": {
           "dormitorios": 3,
           "suites": 3,
@@ -344,11 +304,11 @@
           "area_total": "611.3m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -369,6 +329,86 @@
       }
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/12252",
+      "propertyCode": "12252",
+      "page": 1,
+      "price": "R$ 6.000.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Casa à venda no Alphaville 1 - Vista maravilhosa!\n\nLocalizada em uma rua alta e muito silenciosa do condomínio, esta casa oferece tranquilidade e uma vista privilegiada para a área verde.\nA residência conta com 4 suítes, sala de estar, sala de jantar e sala íntima, proporcionando conforto e boa circulação entre os ambientes.\n\nÉ uma construção antiga, porém robusta e feita com materiais de qualidade.",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 7,
+          "vagas": 6,
+          "area_construida": "451.2m²",
+          "area_total": "595m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial",
+          "Apartamentos",
+          "Área",
+          "Área Industrial",
+          "Casa",
+          "Coberturas",
+          "Empreendimento",
+          "Galpao",
+          "Laje",
+          "Loja",
+          "Prédio"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12252_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12252_2.jpg"
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17388",
+      "propertyCode": "17388",
+      "page": 1,
+      "price": "R$ 6.000.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Casa no Alpha 1 localização excelente, para morar ou retrofit.\n\nConstruída com face norte e num belo terreno plano, a casa é muito iluminada. Ao entrar você encontra uma sala amola, para três ambientes, com portas de vidro voltadas para o quintal que tem uma bela piscina redonda e uma área gourmet. \n\nAinda no térreo, a cozinha tem uma abertura para a sala de almoço com um janelão para o jardim. Há também a área de serviço e dependência de funcionários.\n\nJá o primeiro andar conta com uma sala de TV muito espaçosa, dois quartos que dividem um banheiro e a suíte máster com closet.\n\nGaragem para 5 carros sendo 2 cobertas",
+        "specs": {
+          "dormitorios": 3,
+          "suites": 1,
+          "banheiros": 3,
+          "vagas": 5,
+          "area_construida": "344m²",
+          "area_total": "588m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço",
+          "Churrasqueira",
+          "Cozinha",
+          "Despensa",
+          "Lavabo",
+          "Piscina",
+          "Espaço Gourmet",
+          "Sala Estar",
+          "Sala Jantar",
+          "Suíte Master",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17388_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17388_2.jpg"
+      }
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17378",
       "propertyCode": "17378",
       "page": 1,
@@ -385,11 +425,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -417,147 +457,28 @@
       "price": "R$ 6.300.000,00",
       "detailedData": {
         "title": "",
-        "description": "Excelente casa pronta para morar!\n\nCom imperdível qualidade e privacidade.\n\nDispõe de 4 amplas suítes com ar condicionado, escritório e ótima sala de lareira.\n\nAluga mobiliada por R$27.000,00",
+        "description": "Excelente casa pronta para morar!\n\nCom imperdível qualidade e privacidade.\n\nDispõe de 4 amplas suítes com ar condicionado, escritório e ótima sala de lareira.",
         "specs": {
           "dormitorios": 4,
           "suites": 4,
-          "banheiros": 4,
+          "banheiros": 5,
           "vagas": 2,
           "area_construida": "500m²",
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
-          "Área Serviço Cozinha Despensa Lareira Lavabo Mobiliado Piscina Sala Estar Sala Jantar Suíte Master",
           "Área Serviço",
+          "Churrasqueira",
           "Cozinha",
           "Despensa",
           "Lareira",
           "Lavabo",
           "Mobiliado",
-          "Piscina",
-          "Sala Estar",
-          "Sala Jantar",
-          "Suíte Master",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12441_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12441_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8527",
-      "propertyCode": "8527",
-      "page": 1,
-      "price": "R$ 6.400.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Lindo imóvel muito bem localizado no condomínio com vista permanente para o clube, sendo 4 suítes com armários, living para 3 ambientes, cozinha com armários planejados, varanda e piscina. \n\nAceita permuta até 50%.\n\nAgende sua visita.",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 4,
-          "vagas": null,
-          "area_construida": "420m²",
-          "area_total": "575m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço Cozinha Cozinha Montada Despensa Lareira Lavabo Piscina Sala Jantar",
-          "Área Serviço",
-          "Cozinha",
-          "Cozinha Montada",
-          "Despensa",
-          "Lareira",
-          "Lavabo",
-          "Piscina",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial",
-          "Apartamentos"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/8527_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/8527_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/12252",
-      "propertyCode": "12252",
-      "page": 2,
-      "price": "R$ 6.500.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "*Vista maravilhosa  para área verde !\n\nSituada em rua alta do condomínio muito silenciosa , a residência tem área construída  451,20 m², e  o  terreno 595 m² .\n\nConstrução antiga mais robusta e com materiais de qualidade\n\nCondomínio com quadra de tênis, quadras de beach tênis, campo gramado de futebol, ginásio coberto, áreas de churrasqueiras, parquinho, academia, pista de cooper, com aulas variadas Yoga, Alongamento , também tem da própria Quales a Recreação Infantil com Colônia de Férias, tudo incluso no Condomínio horta..",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 7,
-          "vagas": 6,
-          "area_construida": "451.2m²",
-          "area_total": "595m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial",
-          "Apartamentos",
-          "Área",
-          "Área Industrial",
-          "Casa",
-          "Coberturas",
-          "Empreendimento",
-          "Galpao",
-          "Galpão Industrial",
-          "Laje",
-          "Loja"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12252_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12252_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17388",
-      "propertyCode": "17388",
-      "page": 2,
-      "price": "R$ 6.500.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Casa no Alpha 1 localização excelente, para morar ou retrofit.\n\nConstruída com face norte e num belo terreno plano, a casa é muito iluminada. Ao entrar você encontra uma sala amola, para três ambientes, com portas de vidro voltadas para o quintal que tem uma bela piscina redonda e uma área gourmet. \n\nAinda no térreo, a cozinha tem uma abertura para a sala de almoço com um janelão para o jardim. Há também a área de serviço e dependência de funcionários.\n\nJá o primeiro andar conta com uma sala de TV muito espaçosa, dois quartos que dividem um banheiro e a suíte máster com closet.\n\nGaragem para 5 carros sendo 2 cobertas",
-        "specs": {
-          "dormitorios": 3,
-          "suites": 1,
-          "banheiros": 3,
-          "vagas": 5,
-          "area_construida": "344m²",
-          "area_total": "588m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lavabo",
           "Piscina",
           "Espaço Gourmet",
           "Sala Estar",
@@ -567,8 +488,8 @@
           "Portaria 24Hrs",
           "Segurança Patrimonial"
         ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17388_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17388_2.jpg"
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12441_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12441_2.jpg"
       }
     },
     {
@@ -582,18 +503,17 @@
         "specs": {
           "dormitorios": 4,
           "suites": 2,
-          "banheiros": 7,
+          "banheiros": 4,
           "vagas": 6,
           "area_construida": "367m²",
           "area_total": "700m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
-          "Área Serviço Cozinha Cozinha Montada Despensa Lareira Lavabo Piscina Sala Jantar Suíte Master",
           "Área Serviço",
           "Cozinha",
           "Cozinha Montada",
@@ -603,6 +523,7 @@
           "Piscina",
           "Sala Jantar",
           "Suíte Master",
+          "WC Empregada",
           "Portaria 24Hrs Segurança Patrimonial",
           "Portaria 24Hrs",
           "Segurança Patrimonial"
@@ -628,11 +549,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço Churrasqueira Cozinha Despensa Lavabo Piscina Espaço Gourmet Sala Estar Sala Jantar",
           "Área Serviço",
           "Churrasqueira",
@@ -668,11 +589,11 @@
           "area_total": "650m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -693,6 +614,93 @@
       }
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/4509",
+      "propertyCode": "4509",
+      "page": 2,
+      "price": "R$ 6.950.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Casa com Vista Espetacular no Coração de Alphaville - Alphaville 01\n\nDescubra esta casa impressionante com 437 m² de área útil e 560 m² de área total, localizada no coração do Alphaville, com uma vista deslumbrante que encanta à primeira vista.\n\n Destaques da Residência:\n\n  4 suítes amplas, incluindo 1 térrea para maior praticidade e acessibilidade.\n\n  Living espaçoso com ambientes integrados: sala de estar, jantar e TV.\n\n  Lareira para momentos aconchegantes e acolhedores.\n\n  Cozinha com armários planejados, funcional e elegante.\n\n  Lazer Completo:\n\n  Piscina privativa para momentos de diversão e relaxamento.\n\n  Varanda gourmet com churrasqueira, ideal para receber amigos e familiares.\n\n  Sauna privativa para bem-estar e recuperação.\n\n  Academia integrada, perfeita para manter a forma em casa.\n\n Vista Privilegiada:\n\n  Vista espetacular que proporciona uma experiência visual única e inesquecível.\n\n Conveniência:\n\n  2 vagas cobertas de garagem + 4 vagas descobertas\n\n Localização no Coração de Alphaville:\n\n  Posicionada estrategicamente no centro do Alphaville, com acesso fácil a restaurantes, lojas, escolas e serviços.\n\n  Condomínio com infraestrutura de segurança, lazer, conveniência e esportes.",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 6,
+          "area_construida": "437m²",
+          "area_total": "560m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço",
+          "Banheiro Auxiliar",
+          "Churrasqueira",
+          "Copa Cozinha",
+          "Cozinha",
+          "Cozinha Montada",
+          "Despensa",
+          "Estar Íntimo",
+          "Home Theater",
+          "Lareira",
+          "Lavabo",
+          "Living Hall",
+          "Piscina",
+          "Espaço Gourmet",
+          "Quintal",
+          "Sauna",
+          "Sala Estar",
+          "Sala Jantar",
+          "Split",
+          "Suíte Master"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/4509_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/4509_2.jpg"
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8527",
+      "propertyCode": "8527",
+      "page": 2,
+      "price": "R$ 7.000.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Lindo imóvel muito bem localizado no condomínio com vista permanente para o clube, sendo 4 suítes com armários, living para 3 ambientes, cozinha com armários planejados, varanda e piscina. \n\n\nAgende sua visita.",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 4,
+          "vagas": null,
+          "area_construida": "420m²",
+          "area_total": "575m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço Cozinha Cozinha Montada Despensa Lareira Lavabo Piscina Sala Jantar",
+          "Área Serviço",
+          "Cozinha",
+          "Cozinha Montada",
+          "Despensa",
+          "Lareira",
+          "Lavabo",
+          "Piscina",
+          "Sala Jantar",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial",
+          "Apartamentos"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/8527_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/8527_2.jpg"
+      }
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17279",
       "propertyCode": "17279",
       "page": 2,
@@ -709,11 +717,11 @@
           "area_total": "732m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço Churrasqueira Cozinha Despensa Lavabo Piscina Espaço Gourmet Sala Estar Sala Jantar",
           "Área Serviço",
           "Churrasqueira",
@@ -733,34 +741,34 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/16872",
-      "propertyCode": "16872",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/9281",
+      "propertyCode": "9281",
       "page": 2,
-      "price": "R$ 7.300.000,00",
+      "price": "R$ 7.440.000,00",
       "detailedData": {
         "title": "",
-        "description": "Casa clássica, em desejado residencial de Alphaville!! 3 dormitórios, sendo 1 suíte. 4 banheiros. Living para 3 ambientes. Lareira. Sala de estar. Sala de jantar. Sala de Tv. Escritório. Lavabo. \n\nResidencial com total infraestrutura de segurança e lazer para a família, com quadras de Beach tenis, quadra poliesportiva, playground, salão com churrasqueira, área Pet, Nutricar, nova academia, a ser entregue nos próximos meses e ainda, o acesso exclusivo ao Alphaville Tênis Clube. \n\nLocalização privilegiada, próxima à conveniências como Padaria La Ville, St Marchè, Mambo, Pão de Açúcar, Cobasi e muito mais!! \n\nFácil acesso à Rodovia Castello Branco. \n\nVisite!!!",
+        "description": "Oportunidade Única no Residencial 1 - Alphaville\n\nApresentamos uma excelente oportunidade de investimento no Residencial 1, o melhor e mais tradicional residencial de Alphaville, com localização privilegiada e infraestrutura completa. O condomínio conta com segurança 24h, fácil acesso à Rodovia Castelo Branco e, como grande diferencial, abriga o Alphaville Tênis Clube (ATC) - um dos clubes mais renomados da região, oferecendo lazer e qualidade de vida aos moradores.\n\nEsta casa está localizada em um dos pontos mais valorizados do residencial e oferece alto potencial para retrofit (reforma e modernização), sendo ideal para quem busca valorização patrimonial ou deseja personalizar uma residência para moradia com alto padrão de acabamento.\n\nDestaques:\n\n Excelente estrutura para reforma\n Localização estratégica dentro do condomínio\n Ótimo custo-benefício para valorização futura\n Oportunidade real de lucro com retrofit\n\nSeja para morar com conforto e exclusividade ou para investir com alta rentabilidade, esta é uma oportunidade rara no mercado.\n\n Entre em contato com a nossa equipe e agende sua visita. Essa pode ser a casa que vai transformar seu projeto de vida - ou seu próximo grande negócio.",
         "specs": {
           "dormitorios": 3,
-          "suites": 1,
+          "suites": 3,
           "banheiros": 4,
           "vagas": 4,
-          "area_construida": "410m²",
-          "area_total": "890m²"
+          "area_construida": "327m²",
+          "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
-          "Área Serviço Cozinha Despensa Lareira Lavabo Sala Estar Sala Jantar",
-          "Área Serviço",
-          "Cozinha",
-          "Despensa",
-          "Lareira",
-          "Lavabo",
-          "Sala Estar",
+          "Água Quente Churrasqueira Copa Cozinha Cozinha Montada Piscina Quintal Sala Jantar",
+          "Água Quente",
+          "Churrasqueira",
+          "Copa Cozinha",
+          "Cozinha Montada",
+          "Piscina",
+          "Quintal",
           "Sala Jantar",
           "Portaria 24Hrs Segurança Patrimonial",
           "Portaria 24Hrs",
@@ -768,32 +776,32 @@
           "Apartamentos",
           "Área"
         ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16872_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16872_2.jpg"
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/9281_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/9281_2.jpg"
       }
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8177",
       "propertyCode": "8177",
       "page": 2,
-      "price": "R$ 7.400.000,00",
+      "price": "R$ 7.500.000,00",
       "detailedData": {
         "title": "",
         "description": "Casa à Venda no Residencial Mais Desejado de Alphaville \n\n\nApresentamos uma residência impecável, localizada em ponto privilegiado do condomínio ? a poucos passos do clube e da charmosa praça de lazer. Um verdadeiro refúgio para quem busca conforto, privacidade e integração com a natureza.\n\n Destaques do imóvel:\n Banheiros totalmente reformados, com acabamentos de alto padrão\n Lazer completo com piscina, espaço gourmet reformado integrado e uma linda casinha de boneca suspensa com escorregador ? um encanto para as crianças\n 2 suítes + 2 dormitórios estilo americano\n 4 vagas de garagem (2 cobertas)\n\n Condomínio mais valorizado de Alphaville, com segurança, infraestrutura e qualidade de vida incomparáveis.\n\nEstuda permuta por apartamento de até 150m² nos bairros: Itaim Bibi, Pinheiros ou Moema.\n\nAgende sua visita e encante-se com cada detalhe",
         "specs": {
           "dormitorios": 4,
           "suites": 2,
-          "banheiros": 2,
+          "banheiros": 4,
           "vagas": 4,
           "area_construida": "426m²",
           "area_total": "575m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Copa Cozinha",
@@ -815,34 +823,34 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/9281",
-      "propertyCode": "9281",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/16872",
+      "propertyCode": "16872",
       "page": 2,
-      "price": "R$ 7.440.000,00",
+      "price": "R$ 7.600.000,00",
       "detailedData": {
         "title": "",
-        "description": "Oportunidade Única no Residencial 1 - Alphaville\n\nApresentamos uma excelente oportunidade de investimento no Residencial 1, o melhor e mais tradicional residencial de Alphaville, com localização privilegiada e infraestrutura completa. O condomínio conta com segurança 24h, fácil acesso à Rodovia Castelo Branco e, como grande diferencial, abriga o Alphaville Tênis Clube (ATC) - um dos clubes mais renomados da região, oferecendo lazer e qualidade de vida aos moradores.\n\nEsta casa está localizada em um dos pontos mais valorizados do residencial e oferece alto potencial para retrofit (reforma e modernização), sendo ideal para quem busca valorização patrimonial ou deseja personalizar uma residência para moradia com alto padrão de acabamento.\n\nDestaques:\n\n Excelente estrutura para reforma\n Localização estratégica dentro do condomínio\n Ótimo custo-benefício para valorização futura\n Oportunidade real de lucro com retrofit\n\nSeja para morar com conforto e exclusividade ou para investir com alta rentabilidade, esta é uma oportunidade rara no mercado.\n\n Entre em contato com a nossa equipe e agende sua visita. Essa pode ser a casa que vai transformar seu projeto de vida - ou seu próximo grande negócio.",
+        "description": "Casa clássica, em desejado residencial de Alphaville!! 3 dormitórios, sendo 1 suíte. 4 banheiros. Living para 3 ambientes. Lareira. Sala de estar. Sala de jantar. Sala de Tv. Escritório. Lavabo. \n\nResidencial com total infraestrutura de segurança e lazer para a família, com quadras de Beach tenis, quadra poliesportiva, playground, salão com churrasqueira, área Pet, Nutricar, nova academia, a ser entregue nos próximos meses e ainda, o acesso exclusivo ao Alphaville Tênis Clube. \n\nLocalização privilegiada, próxima à conveniências como Padaria La Ville, St Marchè, Mambo, Pão de Açúcar, Cobasi e muito mais!! \n\nFácil acesso à Rodovia Castello Branco. \n\nVisite!!!",
         "specs": {
           "dormitorios": 3,
-          "suites": 3,
+          "suites": 1,
           "banheiros": 4,
           "vagas": 4,
-          "area_construida": "327m²",
-          "area_total": "560m²"
+          "area_construida": "410m²",
+          "area_total": "890m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
-          "Água Quente Churrasqueira Copa Cozinha Cozinha Montada Piscina Quintal Sala Jantar",
-          "Água Quente",
-          "Churrasqueira",
-          "Copa Cozinha",
-          "Cozinha Montada",
-          "Piscina",
-          "Quintal",
+          "Área Serviço Cozinha Despensa Lareira Lavabo Sala Estar Sala Jantar",
+          "Área Serviço",
+          "Cozinha",
+          "Despensa",
+          "Lareira",
+          "Lavabo",
+          "Sala Estar",
           "Sala Jantar",
           "Portaria 24Hrs Segurança Patrimonial",
           "Portaria 24Hrs",
@@ -850,49 +858,8 @@
           "Apartamentos",
           "Área"
         ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/9281_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/9281_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/2307",
-      "propertyCode": "2307",
-      "page": 2,
-      "price": "R$ 7.500.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "LINDA CASA!\n\nAlto padrão de acabamentos e construção, fim de rua sem saída, próximo à portaria. Condomínio com segurança 24 horas e lazer total! Casa repleta de armários e bem clara.\nLazer total integrado ao social.\n\nAgende sua visita!",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 11,
-          "vagas": 3,
-          "area_construida": "720m²",
-          "area_total": "560m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Churrasqueira",
-          "Closet",
-          "Cozinha",
-          "Cozinha Montada",
-          "Despensa",
-          "Estar Íntimo",
-          "Lareira",
-          "Lavabo",
-          "Piscina",
-          "Sauna",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/2307_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/2307_2.jpg"
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16872_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16872_2.jpg"
       }
     },
     {
@@ -902,7 +869,7 @@
       "price": "R$ 7.800.000,00",
       "detailedData": {
         "title": "",
-        "description": "Excelente oportunidade Alphaville Residencial 01!\n\nCasa com  3 pavimentos.\n\nSendo o 1º no nível da rua, entrada social, entrada de serviços, adega e garagem.\n\n2º piso:  casa com todas as acomodações, atelier, salão de jogos, jardim, piscina e churrasqueira.\n\n3º  piso: mezanino, biblioteca, sala de TV, suíte de hóspedes,sauna e sala.\n\nGaragem coberta para 3 carros e mais 6 vagas descobertas.\n\nEntrada principal, despensa, banheiro, 2 suítes de empregados e área de serviço coberta.\n\nSala de estar, sala de jantar, copa, cozinha, lavanderia, lavabo, 4 suítes sendo a  máster  com closet e amplo banheiro.\n\nChurrasqueira e fogão à lenha, piscina e jardim.\n\nJardim com árvores frutíferas.\n\nAnalisa permuta ate 20% do valor.\n\nDocumentação em ordem.\n\n\nAgende sua visita!",
+        "description": "Excelente oportunidade Alphaville Residencial 01!\n\nCasa com  3 pavimentos.\n\nSendo o 1º no nível da rua, entrada social, entrada de serviços, adega e garagem.\n\n2º piso:  casa com todas as acomodações, atelier, salão de jogos, jardim, piscina e churrasqueira.\n\n3º  piso: mezanino, biblioteca, sala de TV, suíte de hóspedes,sauna e sala.\n\nGaragem coberta para 3 carros e mais 6 vagas descobertas.\n\nEntrada principal, despensa, banheiro, 2 suítes de empregados e área de serviço coberta.\n\nSala de estar, sala de jantar, copa, cozinha, lavanderia, lavabo, 4 suítes sendo a  máster  com closet e amplo banheiro.\n\nChurrasqueira e fogão à lenha, piscina e jardim.\n\nJardim com árvores frutíferas.\n\n\nDocumentação em ordem.\n\n\nAgende sua visita!",
         "specs": {
           "dormitorios": 4,
           "suites": 4,
@@ -912,11 +879,11 @@
           "area_total": "1234.3m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Banheiro Auxiliar",
           "Churrasqueira",
@@ -954,11 +921,11 @@
           "area_total": "1165m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -978,10 +945,50 @@
       }
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17465",
+      "propertyCode": "17465",
+      "page": 2,
+      "price": "R$ 8.000.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Descubra o seu novo lar no Residencial Alphaville 1!\n\n4 Suítes   \nSala de TV   \n2 Salas de Estar, Sala de Jantar   \nÁrea Gourmet Completa com uma vista deslumbrante .\nRua tranquila e sem saída próxima a portaria.",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": null,
+          "area_construida": "500m²",
+          "area_total": "560m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço Churrasqueira Cozinha Despensa Lavabo Piscina Espaço Gourmet Sala Estar Sala Jantar",
+          "Área Serviço",
+          "Churrasqueira",
+          "Cozinha",
+          "Despensa",
+          "Lavabo",
+          "Piscina",
+          "Espaço Gourmet",
+          "Sala Estar",
+          "Sala Jantar",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17465_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17465_2.jpg"
+      }
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/12814",
       "propertyCode": "12814",
       "page": 3,
-      "price": "R$ 7.900.000,00",
+      "price": "R$ 8.500.000,00",
       "detailedData": {
         "title": "",
         "description": "Uma Oportunidade Única de Morar no Coração de Alphaville  \n\nNo Residencial 1, a apenas 200m do Clube ATC, você encontra esta Casa Estilo Toscano, uma verdadeira obra-prima arquitetônica.  \n\n Destaques da Casa:\n 5 Suítes, incluindo uma suíte máster com varanda privativa.  \n Home Theater para momentos de lazer em família.  \n Sala de Estar e Jantar amplas e iluminadas.  \n Cozinha e Sala de Almoço funcionais e acolhedoras.  \n Churrasqueira Integrada para receber amigos e familiares.  \n Área de Serviço completa com lavanderia, quarto de ferramentas e dependência de funcionário com banheiro.  \n Garagem ampla e prática.  \n\n Projeto Assinado pelo renomado arquiteto Ale Mellos @alemellos, que mescla linhas clássicas com modernidade. Grandes vãos, portas de alta qualidade e materiais sofisticados garantem amplitude, claridade e elegância.  \n\n Paisagismo Impecável:\nCriado por João Fladt Queiroz @joaoafq, com destaque para o charmoso jardim de bromélias ao lado do escritório, trazendo harmonia e conexão com a natureza.  \n\n Iluminação e Automação:\n Projeto de iluminação completo (interno e externo) para aconchego e sofisticação.  \n Automação residencial com ativação por voz via Alexa e controle remoto via aplicativo inteligente Intelbras.\n\n Energia Sustentável:\nSistema autossuficiente em energia com módulos fotovoltaicos de 4.4 kWp, inversor interativo Deye Sun - 4K-G e monitoramento remoto, instalado pela Blue Sol Energia Solar.\n\n Detalhes de Qualidade:\n Portas: Casa Mansur @casamansurvidros \n- Portas Internas: Pormade @pormadeoficial \n- Piso: Solarium Classic Travertino 120x120 @solariumrevestimentos\n\nOBS: Estuda permuta em Alphaville até 30%",
@@ -994,11 +1001,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -1020,220 +1027,6 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/1230",
-      "propertyCode": "1230",
-      "page": 3,
-      "price": "R$ 7.900.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "*Linda casa para venda ou locação!\n\nSalas de jantar, estar, de TV com lareira, de almoço e lavabo.\nEscritório com entrada independente e ar-condicionado.\nSalão de festas com banheiro, área gourmet integrada e churrasqueira + cooktop a gás.\n4 suítes sendo uma máster com closet e hidromassagem, todas com varanda e ar-condicionado.\nCozinha, dispensa e lavanderia.\nDormitório e WC de empregada.\nGaragem coberta para 3 carros e descoberta para mais 3.\nPiscina com 13 metros.\nArmários + guarda-roupas embutidos e semi mobiliada.",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 7,
-          "vagas": 6,
-          "area_construida": "520m²",
-          "area_total": "640m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Estar Íntimo",
-          "Home Theater",
-          "Lavabo",
-          "Living Hall",
-          "Piscina",
-          "Espaço Gourmet",
-          "Quintal",
-          "Sala Estar",
-          "Sala Jantar",
-          "Semi Mobiliado",
-          "Suíte Master",
-          "WC Empregada",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/1230_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/1230_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17465",
-      "propertyCode": "17465",
-      "page": 3,
-      "price": "R$ 8.000.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Descubra o seu novo lar no Residencial Alphaville 1!\n\n4 Suítes   \nSala de TV   \n2 Salas de Estar, Sala de Jantar   \nÁrea Gourmet Completa com uma vista deslumbrante .\nRua tranquila e sem saída próxima a portaria.",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 5,
-          "vagas": null,
-          "area_construida": "500m²",
-          "area_total": "560m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço Churrasqueira Cozinha Despensa Lavabo Piscina Espaço Gourmet Sala Estar Sala Jantar",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lavabo",
-          "Piscina",
-          "Espaço Gourmet",
-          "Sala Estar",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17465_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17465_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/15008",
-      "propertyCode": "15008",
-      "page": 3,
-      "price": "R$ 8.000.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Casa  para venda e locação no Alphaville Residencial 1.\n\nCondomínio com localização privilegiada, com academia, quadras de tênis, poliesportiva e beach tênis!\n\n\nCasa com 580 m de área construída.\nArquitetura moderna com 3 amplas suítes no andar superior e uma sala íntima.\nTérreo com sala para 3 ambientes, todos integrados, com lareira e cozinha gourmet. Escritório, lavabo, bar, cozinha de apoio e despensa.\nPiso inferior com ampla lavanderia, quarto de empregada, banheiro de serviço e dois depósitos, além de um estúdio com pé direito duplo e banheiro completo\nGaragem coberta para 3 carros e descoberta para outros 3.\nQuintal charmoso e aconchegante.\n\nNão tem piscina, mas tem espaço pra fazer.\n\nArquiteta Stella Maris.\n\nLocação + despesas!\n\nAgende sua visita!",
-        "specs": {
-          "dormitorios": 3,
-          "suites": 3,
-          "banheiros": 4,
-          "vagas": 6,
-          "area_construida": "580m²",
-          "area_total": "600m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço",
-          "Churrasqueira",
-          "Copa Cozinha",
-          "Cozinha",
-          "Cozinha Montada",
-          "Despensa",
-          "Lareira",
-          "Lavabo",
-          "Mobiliado",
-          "Espaço Gourmet",
-          "Quintal",
-          "Sala Estar",
-          "Sala Jantar",
-          "Suíte Master",
-          "WC Empregada",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/15008_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/15008_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/12668",
-      "propertyCode": "12668",
-      "page": 3,
-      "price": "R$ 8.500.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Localizada no condomínio mais desejado de Alphaville, esta propriedade é ideal para quem busca espaço, conforto e privacidade em uma residência exclusiva.\n\nCom 1.200m² de terreno e 750m² de área construída, o imóvel se destaca pela sua localização, próxima a portaria.\nExcelente investimento para retrofit! \n\nPavimento Superior:\n\t\t03 suítes espaçosas\n\t\t02 quartos adicionais\n\t\tSala íntima de TV\n\t\tMezanino com vista para o térreo\n\t\tSótão versátil para escritório, estúdio ou brinquedoteca\n\nPavimento Térreo:\n\t\t06 salas multifuncionais com integração total\n\t\tSala com bar privativo\n\t\t02 banheiros sociais\n\t\tSala de TV\n\t\tQuarto e banheiro para funcionária\n\t\tQuarto para caseiro\n\t\tSauna seca para relaxamento\n\t\t06 vagas de garagem\n\t\tQuiosque com churrasqueira\n\t\tPiscina com cascata, perfeita para momentos em família e lazer com amigos\n\n\t\tDuas matrículas (facilita projetos de expansão ou regularização)\nNão aceita permuta",
-        "specs": {
-          "dormitorios": 5,
-          "suites": 3,
-          "banheiros": 5,
-          "vagas": 6,
-          "area_construida": "750m²",
-          "area_total": "1200m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lavabo",
-          "Piscina",
-          "Espaço Gourmet",
-          "Sauna",
-          "Sala Estar",
-          "Sala Jantar",
-          "WC Empregada",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12668_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12668_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17654",
-      "propertyCode": "17654",
-      "page": 3,
-      "price": "R$ 8.500.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Casa Térrea à Venda - Alphaville Residencial 1\nConforto, estilo e integração em um só lugar!\n\nEncantadora casa térrea de esquina, impecável e muito bem localizada, próxima à portaria do Residencial 1 - um dos mais desejados de Alphaville.\n\n Destaques do imóvel:\n\n4 suítes espaçosas, todas com closet e móveis planejados\nSuíte máster com closet ampliado e hidromassagem\nCozinha com armários planejados, sala de almoço e despensa\nBanheiros com planejados de excelente qualidade\nDependência  para funcionário\nAmplo espaço gourmet integrado à área externa\ncom Jacuzzi , perfeita para relaxar com estilo\n\nAmbientes amplos, iluminados e bem distribuídos\n\nIdeal para quem busca conforto no dia a dia, com um projeto térreo funcional, elegante e pensado para viver bem.\n\n Agende sua visita e venha conhecer de perto essa oportunidade única em Alphaville!",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 6,
-          "vagas": 4,
-          "area_construida": "400m²",
-          "area_total": "880m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Ar Central",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lareira",
-          "Lavabo",
-          "Espaço Gourmet",
-          "Sala Estar",
-          "Sala Jantar",
-          "Suíte Master",
-          "WC Empregada",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17654_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17654_2.jpg"
-      }
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/14184",
       "propertyCode": "14184",
       "page": 3,
@@ -1250,11 +1043,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -1292,11 +1085,11 @@
           "area_total": "810m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço Churrasqueira Cozinha Lavabo Piscina Espaço Gourmet Sala Jantar",
           "Área Serviço",
           "Churrasqueira",
@@ -1319,7 +1112,7 @@
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/13572",
       "propertyCode": "13572",
       "page": 3,
-      "price": "R$ 9.050.000,00",
+      "price": "R$ 9.000.000,00",
       "detailedData": {
         "title": "",
         "description": "Oportunidade!!\n \nNo térreo:\n-sala para 3 ou 4 ambientes\n-Cozinha ampla\n-Sala de almoço \n-lavabo\n- Área externa com cozinha gourmet, terraço coberto, piscina, banheiro completo para piscina.\n-Garagem coberta para 2 carros  e descoberta para mais 2 carros.\n\nAndar superior:\n-4 suítes\n-escritório \n-sala da família ( bem grande)\n- lavanderia \n-apto para empregados, com quarto, copa/cozinha e banheiro completo\n- entrada independente\nPiscina aquecida com aquecimento solar\nSistema integrado de aquecimento de água com solar, elétrico e a gás\nAspirador central\nSuíte Master com banheiro Sr e Sra \nAr condicionado andar superior\nPiso apicoado em granito.\nDocumentos ok\n\nAgende sua visita!",
@@ -1332,11 +1125,11 @@
           "area_total": "640m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Aquecimento Elétrico",
           "Área Serviço",
           "Churrasqueira",
@@ -1375,11 +1168,11 @@
           "area_total": "571.67m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -1419,11 +1212,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Banheiro Auxiliar",
           "Churrasqueira",
@@ -1456,7 +1249,7 @@
       "price": "R$ 9.500.000,00",
       "detailedData": {
         "title": "",
-        "description": "Excelente opção  para                                                                           quem busca uma casa para retrofit podendo deixar com seu jeito .amplo terreno com 1440 metros ao lado, em anexo, há mais um terreno de 800 m² com uma quadra de tênis oficial, totalizando 1.640 m².  Possui 4 suítes, 3 amplos livings, sala tv, ar-condicionado, armários planejados, ambientes integrados e conectados ao lazer gourmet aconchegante  churrasqueira, piscina e jardim com muito verde, o aconchego e a tranquilidade irão fazer parte do dia dia onde você e sua família ira viver momentos agradáveis e felizes inesquecíveis.",
+        "description": "Excelente opção  para                                                                           quem busca uma casa para retrofit podendo deixar com seu jeito .amplo terreno com 1440 metros ao lado, em anexo, há mais um terreno de 800 m² com uma quadra de tênis oficial.  Possui 4 suítes, 3 amplos livings, sala tv, ar-condicionado, armários planejados, ambientes integrados e conectados ao lazer gourmet aconchegante  churrasqueira, piscina e jardim com muito verde, o aconchego e a tranquilidade irão fazer parte do dia dia onde você e sua família ira viver momentos agradáveis e felizes inesquecíveis.",
         "specs": {
           "dormitorios": 4,
           "suites": 4,
@@ -1466,11 +1259,11 @@
           "area_total": "1440m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Banheiro Auxiliar",
           "Churrasqueira",
@@ -1485,21 +1278,108 @@
           "Living Hall",
           "Mobiliado",
           "Piscina",
+          "Espaço Gourmet",
           "Quintal",
           "Sala Jantar",
           "Suíte Master",
           "Terraço",
-          "WC Empregada",
-          "Portaria 24Hrs Segurança Patrimonial"
+          "WC Empregada"
         ],
         "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/5380_1.jpg",
         "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/5380_2.jpg"
       }
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/18035",
+      "propertyCode": "18035",
+      "page": 3,
+      "price": "R$ 9.900.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Este imóvel está localizado em um dos condomínios mais desejados de Alphaville. A casa traduz elegância e sofisticação em cada detalhe. \n\nCom 583 m² de área construída em um terreno de 631 m², destaca-se pela excelente distribuição dos ambientes. Conta com adega, suíte no térreo e infraestrutura para elevador e aspiração central.\n\n A área social integra-se de forma harmônica ao espaço gourmet e à piscina, emoldurados por um paisagismo deslumbrante.",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 3,
+          "banheiros": 5,
+          "vagas": 3,
+          "area_construida": "583m²",
+          "area_total": "631m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço Churrasqueira Cozinha Lavabo Piscina Espaço Gourmet Sala Jantar",
+          "Área Serviço",
+          "Churrasqueira",
+          "Cozinha",
+          "Lavabo",
+          "Piscina",
+          "Espaço Gourmet",
+          "Sala Jantar",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial",
+          "Apartamentos",
+          "Área"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/18035_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/18035_2.jpg"
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/1148",
+      "propertyCode": "1148",
+      "page": 3,
+      "price": "R$ 9.980.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Casa contemporânea para famílias modernas.\n\nBem construída, projeto muito bem pensado, prática e muito bem arejada. \n\nAr condicionado nos dormitórios. \nBrinquedoteca e escritório. Sala de jantar, estar, home Theater, varanda.\n\nÁrea de lazer com churrasqueira e cozinha completamente integrados e piscina.\n\nAgende sua visita!",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 3,
+          "area_construida": "530m²",
+          "area_total": "950m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço",
+          "Churrasqueira",
+          "Cozinha",
+          "Cozinha Montada",
+          "Despensa",
+          "Estar Íntimo",
+          "Home Theater",
+          "Lareira",
+          "Lavabo",
+          "Living Hall",
+          "Piscina",
+          "Espaço Gourmet",
+          "Quintal",
+          "Sala Armários",
+          "Sala Estar",
+          "Sala Jantar",
+          "Suíte Master",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/1148_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/1148_2.jpg"
+      }
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16117",
       "propertyCode": "16117",
-      "page": 4,
+      "page": 3,
       "price": "R$ 11.000.000,00",
       "detailedData": {
         "title": "",
@@ -1513,11 +1393,11 @@
           "area_total": "706m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -1541,7 +1421,7 @@
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16448",
       "propertyCode": "16448",
-      "page": 4,
+      "page": 3,
       "price": "R$ 11.000.000,00",
       "detailedData": {
         "title": "",
@@ -1555,11 +1435,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -1584,90 +1464,50 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/4659",
-      "propertyCode": "4659",
-      "page": 4,
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/3460",
+      "propertyCode": "3460",
+      "page": 3,
       "price": "R$ 11.000.000,00",
       "detailedData": {
         "title": "",
-        "description": "EXCELENTE CASA COM LOCALIZAÇÃO PRIVILEGIADA! \nLocação pacote com foro, condomínio, IPTU\ne manutenção.\n\nAmbientes amplos e claros, essa casa é ideal para quem busca uma  linda casa confortável e completa. \n\nLiving com lareira para 3 ambientes, copa/cozinha planejada, espaço gourmet, piscina e jardim.\n\nEscritório próximo da entrada\n\n\nAgende sua visita e confira!",
+        "description": "Imponente sobrado, de esquina , com 758m2 de terreno, próximo à portaria.\n\n5 suítes, sendo duas máster, sala para três ambientes,  lareira , home theater, cozinha planejada, dispensa, louçaria, sala de almoço, lavanderia, 2 quartos para funcionários , piscina, churrasqueira, 7 vagas.",
         "specs": {
-          "dormitorios": 4,
-          "suites": 2,
-          "banheiros": 2,
-          "vagas": 3,
-          "area_construida": "480m²",
-          "area_total": "955m²"
+          "dormitorios": 5,
+          "suites": 5,
+          "banheiros": 6,
+          "vagas": 7,
+          "area_construida": "760m²",
+          "area_total": "758m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
-          "Área Serviço",
-          "Banheiro Auxiliar",
           "Churrasqueira",
           "Copa Cozinha",
           "Cozinha",
           "Cozinha Montada",
           "Despensa",
           "Estar Íntimo",
+          "Home Theater",
           "Lareira",
           "Lavabo",
+          "Living Hall",
           "Piscina",
           "Espaço Gourmet",
           "Quintal",
           "Sala Estar",
           "Sala Jantar",
-          "Split",
+          "Suíte Master",
+          "Terraço",
           "WC Empregada",
           "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
+          "Portaria 24Hrs"
         ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/4659_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/4659_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/17397",
-      "propertyCode": "17397",
-      "page": 4,
-      "price": "R$ 11.800.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Novidade Chegando para Venda em Alphavillle!!! Terreno com 880 m2 além de Área não Edificante Internamente e 756 m2 de Construção. São 5 Suítes com Varandas ou Janelões, Ar Condicionado e Closets. Pisos em Madeira Nobre e Mármore Travertino Bruto, Banheiros Também Revestidos em Mármore, Sala para 3 Ambientes, sendo Jantar, Estar e Charmosa Sala de Lareira, além de um Amplo Espaço Multiúso, podendo se Transformar em um Belo Escritório, Home Theater ou Sala de Jogos. Área de Lazer Aconchegante, Possuindo Piscina com SPA, Espaço Gourmet com Churrasqueira e Forno de pizza, e Também Sauna e um Paisagismo Encantador. A Casa conta ainda com Cozinha Kitchens + Copa, Adega, Garagem com Portão Automático para 6 Vagas Cobertas.\nAlameda Tranquila e Sem Saída...\nEla foi Toda Revitalizada e está Pronta para lhe Receber. Agende sua Visita e Venha Conhecer essa Incrível Residência!",
-        "specs": {
-          "dormitorios": 5,
-          "suites": 5,
-          "banheiros": 9,
-          "vagas": 6,
-          "area_construida": "756m²",
-          "area_total": "880m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lareira",
-          "Lavabo",
-          "Espaço Gourmet",
-          "Sauna",
-          "Sala Estar",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17397_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17397_2.jpg"
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/3460_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/3460_2.jpg"
       }
     },
     {
@@ -1687,11 +1527,11 @@
           "area_total": "933m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Cozinha",
           "Despensa",
@@ -1712,46 +1552,6 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17481",
-      "propertyCode": "17481",
-      "page": 4,
-      "price": "R$ 12.000.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Casa à Venda em Alphaville 1 - Conforto, Sustentabilidade e Sofisticação\n\nApresentamos uma excelente oportunidade para quem busca um imóvel novo, moderno e sustentável no tradicional condomínio Alphaville 1. Projeto em andamento com entrega prevista para 14 meses.\n\n 4 suítes amplas\n 6 vagas de garagem\n Salas de estar e jantar integradas\n Espaço gourmet completo\n Dependência de empregada\n\nA casa conta com móveis planejados, sistema de aquecimento a gás e solar, placas fotovoltaicas para geração de energia e carregador para carro elétrico - tudo para oferecer conforto, economia e consciência ambiental.\n\nFluxo facilitado durante período de obras \nCom opção de escolher os acabamentos personalizados !!\n\nAgende sua visita e venha conhecer seu novo lar!",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 5,
-          "vagas": 6,
-          "area_construida": "430m²",
-          "area_total": "560m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço Churrasqueira Cozinha Despensa Lavabo Espaço Gourmet Sala Estar Sala Jantar",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lavabo",
-          "Espaço Gourmet",
-          "Sala Estar",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial",
-          "Apartamentos"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17481_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17481_2.jpg"
-      }
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/15776",
       "propertyCode": "15776",
       "page": 4,
@@ -1768,11 +1568,11 @@
           "area_total": "840m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -1793,55 +1593,13 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16026",
-      "propertyCode": "16026",
-      "page": 4,
-      "price": "R$ 12.500.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Belíssima residência no Alpha 01.\n\nÓtima localização próximo da portaria\nAmplo living para 3 ambientes, sala de jantar, home theater,\nSala de tv, escritório, lavabo, sala de almoço, cozinha gourmet com churrasqueira( a gás, forno eletrico, maquina de fazer gelo, adega, cervejeira) cozinha, lavanderia, dependências de empregada.\nNo andar superior 4 suites com closet, sendo a master com closet sr e sra, sala intima, 2 rouparias, copa intima.\n\nÁrea a interna piso em mármore e piso Brennand.\nBanheiros  em vidrotil\nÁrea externa mármore travertino.\nGazebo , terraço no térreo e no andar superior, piscina.\n\nAcademia com banheiro, sala de máquinas, elevador que serve os 3 andares.\nGaragem fechada para 5 carros repleta de armários\n\nEquipamentos\nAquecimento a gás e elétrico.\nCaixa dágua 30.000 litros.\nAr condicionado central Daikin.\nCalefação no piso.\nAspiração central.\nJanelas alumínio com vidro duplo e persianas elétricas.\nPortões da garagem elétricos.\nBomba de pressurização \ne de circulação .\nGerador a gás para a casa toda.\nSistema de automação para som , imagem e iluminação.\n\nDocumentação Ok\nPlantas elétricas, hidráulicas e estruturais.\n\nAgende sua visita!",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 4,
-          "vagas": 5,
-          "area_construida": "950m²",
-          "area_total": "1000m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Aquecimento Elétrico",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lareira",
-          "Lavabo",
-          "Piscina",
-          "Espaço Gourmet",
-          "Sala Estar",
-          "Sala Jantar",
-          "WC Empregada",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16026_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16026_2.jpg"
-      }
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/17775",
       "propertyCode": "17775",
       "page": 4,
       "price": "R$ 12.500.000,00",
       "detailedData": {
         "title": "",
-        "description": "Casa à Venda no Alphaville 1 - Início de Obra!\n\nExcelente oportunidade para morar em um dos condomínios mais valorizados da região!\n\n  Com projeto já aprovado!\n Personalize os acabamentos de acordo com seu estilo.\n Condições especiais e fluxo de pagamento facilitado durante o período de obra.\n\nMore com segurança, conforto e alto padrão, em localização privilegiada no Residencial Alphaville 1.\n\nEntre em contato e venha conhecer o projeto!",
+        "description": "Casa à Venda no Alphaville 1 - Obra iniciada!\n\nExcelente oportunidade para morar em um dos condomínios mais valorizados da região!\n\n  Com projeto já aprovado!\n Personalize os acabamentos de acordo com seu estilo.\n Condições especiais e fluxo de pagamento facilitado durante o período de obra.\n\nMore com segurança, conforto e alto padrão, em localização privilegiada no Residencial Alphaville 1.\n\nPrevisão da conclusão Outubro/26.\n\nEntre em contato e venha conhecer!",
         "specs": {
           "dormitorios": 5,
           "suites": 5,
@@ -1851,67 +1609,27 @@
           "area_total": "615m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
-          "Área Serviço Cozinha Despensa Lavabo Piscina Piscina Aquecida Sauna Sala Estar Sala Jantar",
+          "Área Serviço Cozinha Despensa Lavabo Piscina Sauna Sala Estar Sala Jantar",
           "Área Serviço",
           "Cozinha",
           "Despensa",
           "Lavabo",
           "Piscina",
-          "Piscina Aquecida",
           "Sauna",
           "Sala Estar",
           "Sala Jantar",
           "Portaria 24Hrs Segurança Patrimonial",
           "Portaria 24Hrs",
-          "Segurança Patrimonial"
+          "Segurança Patrimonial",
+          "Apartamentos"
         ],
         "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17775_1.jpg",
         "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17775_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16882",
-      "propertyCode": "16882",
-      "page": 4,
-      "price": "R$ 13.000.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Uma raridade no Alphaville 1  que a Viva Prime trás com exclusividade pra você.\n \nCasa de campo com mais de 1.500m2 de terreno  + 400m2 de área não edificante no condomínio mais desejado de Alphaville! \n\nFinal de rua sem saída , com muita privacidade, cercada por muito verde.\nCasa totalmente térrea, com 552m2, rodeada de varanda voltada voltada para área de lazer, com piscina, deck e um lindo gramado com pomar.\n\nAgende uma visita!!",
-        "specs": {
-          "dormitorios": 5,
-          "suites": 3,
-          "banheiros": 4,
-          "vagas": 6,
-          "area_construida": "552m²",
-          "area_total": "1574m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço Churrasqueira Cozinha Lareira Lavabo Espaço Gourmet Quintal Sala Estar Sala Jantar",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Lareira",
-          "Lavabo",
-          "Espaço Gourmet",
-          "Quintal",
-          "Sala Estar",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16882_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16882_2.jpg"
       }
     },
     {
@@ -1931,11 +1649,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Ar Central",
           "Área Serviço",
           "Churrasqueira",
@@ -1955,6 +1673,46 @@
       }
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17948",
+      "propertyCode": "17948",
+      "page": 4,
+      "price": "R$ 13.000.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Ótima residência em alameda larga e arborizada, com quatro dormitórios sendo duas suítes, completa de armários, bom acabamento, vagas para quatro carros cobertos, área de lazer com piscina e gourmet.",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 2,
+          "banheiros": 6,
+          "vagas": 4,
+          "area_construida": "576m²",
+          "area_total": "1289m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço Churrasqueira Cozinha Despensa Lavabo Piscina Espaço Gourmet Sala Estar Sala Jantar",
+          "Área Serviço",
+          "Churrasqueira",
+          "Cozinha",
+          "Despensa",
+          "Lavabo",
+          "Piscina",
+          "Espaço Gourmet",
+          "Sala Estar",
+          "Sala Jantar",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17948_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17948_2.jpg"
+      }
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17596",
       "propertyCode": "17596",
       "page": 4,
@@ -1971,11 +1729,11 @@
           "area_total": "570m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -1996,9 +1754,53 @@
       }
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8188",
+      "propertyCode": "8188",
+      "page": 4,
+      "price": "R$ 13.900.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Casa muito bem conservada! \nSala de estar  com lareira aconchegante. Sala de jantar, cozinha repleta de armários e lavanderia grande .4 suítes todas com armários planejados !\n\nAgende sua visita!",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 6,
+          "area_construida": "727m²",
+          "area_total": "890m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço",
+          "Churrasqueira",
+          "Cozinha",
+          "Cozinha Montada",
+          "Despensa",
+          "Home Theater",
+          "Lareira",
+          "Lavabo",
+          "Mobiliado",
+          "Piscina",
+          "Espaço Gourmet",
+          "Sala Estar",
+          "Sala Jantar",
+          "Deck Portaria 24Hrs Segurança Patrimonial",
+          "Deck",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/8188_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/8188_2.jpg"
+      }
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/13254",
       "propertyCode": "13254",
-      "page": 5,
+      "page": 4,
       "price": "R$ 14.000.000,00",
       "detailedData": {
         "title": "",
@@ -2012,11 +1814,11 @@
           "area_total": "1276.23m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Ar Central",
           "Água Quente",
           "Área Serviço",
@@ -2043,89 +1845,9 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16528",
-      "propertyCode": "16528",
-      "page": 5,
-      "price": "R$ 14.000.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Projeto assinado pelo Nietsch, uma casa moderna, com ambientes amplos e integrados. \n\nLiving para 4 ambientes, varanda gourmet, cozinha planejada, brinquedoteca, home theater, escritório, piscina aquecida, garagem coberta para 6 carros com carregador de carro elétrico. \nSão 5 suítes, todas com closet, máster diferenciada. \nLocalização privilegiada no residencial Alphaville 1. \n\n\nAgende sua visita!",
-        "specs": {
-          "dormitorios": 5,
-          "suites": 5,
-          "banheiros": 5,
-          "vagas": null,
-          "area_construida": "646m²",
-          "area_total": "591m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço Cozinha Lavabo Sala Jantar",
-          "Área Serviço",
-          "Cozinha",
-          "Lavabo",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial",
-          "Apartamentos",
-          "Área",
-          "Área Industrial",
-          "Casa",
-          "Coberturas"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16528_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16528_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8188",
-      "propertyCode": "8188",
-      "page": 5,
-      "price": "R$ 14.800.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Casa muito bem conservada! \nSala de estar  com lareira aconchegante. Sala de jantar, cozinha repleta de armários e lavanderia grande .4 suítes todas com armários planejados !\n\nAgende sua visita!",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 4,
-          "vagas": null,
-          "area_construida": "727m²",
-          "area_total": "900m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço Cozinha Cozinha Montada Despensa Lavabo Piscina Sala Jantar",
-          "Área Serviço",
-          "Cozinha",
-          "Cozinha Montada",
-          "Despensa",
-          "Lavabo",
-          "Piscina",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial",
-          "Apartamentos",
-          "Área"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/8188_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/8188_2.jpg"
-      }
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16615",
       "propertyCode": "16615",
-      "page": 5,
+      "page": 4,
       "price": "R$ 14.900.000,00",
       "detailedData": {
         "title": "",
@@ -2139,11 +1861,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -2167,10 +1889,132 @@
       }
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16026",
+      "propertyCode": "16026",
+      "page": 4,
+      "price": "R$ 15.000.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Belíssima residência no Alpha 01.\n\nÓtima localização próximo da portaria\nAmplo living para 3 ambientes, sala de jantar, home theater,\nSala de tv, escritório, lavabo, sala de almoço, cozinha gourmet com churrasqueira( a gás, forno eletrico, maquina de fazer gelo, adega, cervejeira) cozinha, lavanderia, dependências de empregada.\nNo andar superior 4 suites com closet, sendo a master com closet sr e sra, sala intima, 2 rouparias, copa intima.\n\nÁrea a interna piso em mármore e piso Brennand.\nBanheiros  em vidrotil\nÁrea externa mármore travertino.\nGazebo , terraço no térreo e no andar superior, piscina.\n\nAcademia com banheiro, sala de máquinas, elevador que serve os 3 andares.\nGaragem fechada para 5 carros repleta de armários\n\nEquipamentos\nAquecimento a gás e elétrico.\nCaixa dágua 30.000 litros.\nAr condicionado central Daikin.\nCalefação no piso.\nAspiração central.\nJanelas alumínio com vidro duplo e persianas elétricas.\nPortões da garagem elétricos.\nBomba de pressurização \ne de circulação .\nGerador a gás para a casa toda.\nSistema de automação para som , imagem e iluminação.\n\nDocumentação Ok\nPlantas elétricas, hidráulicas e estruturais.\n\nAgende sua visita!",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 4,
+          "vagas": 5,
+          "area_construida": "950m²",
+          "area_total": "1000m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Aquecimento Elétrico",
+          "Área Serviço",
+          "Churrasqueira",
+          "Cozinha",
+          "Despensa",
+          "Lareira",
+          "Lavabo",
+          "Piscina",
+          "Espaço Gourmet",
+          "Sala Estar",
+          "Sala Jantar",
+          "WC Empregada",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16026_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16026_2.jpg"
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16528",
+      "propertyCode": "16528",
+      "page": 4,
+      "price": "R$ 15.000.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Projeto assinado pelo Nietsch, uma casa moderna, com ambientes amplos e integrados. \n\nLiving para 4 ambientes, varanda gourmet, cozinha planejada, brinquedoteca, home theater, escritório, piscina aquecida, garagem coberta para 6 carros com carregador de carro elétrico. \nSão 5 suítes, todas com closet, máster diferenciada. \nLocalização privilegiada no residencial Alphaville 1. \n\n\nAgende sua visita!",
+        "specs": {
+          "dormitorios": 5,
+          "suites": 5,
+          "banheiros": 6,
+          "vagas": 6,
+          "area_construida": "646m²",
+          "area_total": "591m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço Cozinha Lavabo Sala Jantar",
+          "Área Serviço",
+          "Cozinha",
+          "Lavabo",
+          "Sala Jantar",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial",
+          "Apartamentos",
+          "Área",
+          "Área Industrial",
+          "Casa",
+          "Coberturas"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16528_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16528_2.jpg"
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/1115",
+      "propertyCode": "1115",
+      "page": 4,
+      "price": "R$ 16.000.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "PARA MORAR COM ESTILO \n\nPROJETO ASSINADO PELO RENOMADO \n\nARQUITETO ROBERTO VINOGRAD\n\nEnfatizando a amplitude, essa casa com arquitetura focada na integração dos espaços internos, com o exuberante e relaxante jardim resultou num ambiente de muita paz e cheio de luz natural.\n\nÁrea de lazer com raia semi-olimpica aquecida e coberta integrada ao espaço gourmet a ao home, um lugar diferenciado! \n\n4 suites, sendo máster com sala íntima que pode ser configurada como um quinto dormitório. Todas com closets e 3 já com condicionamento de ar tipo split\n\nDocumentação perfeita , casa averbada e foro regularizado",
+        "specs": {
+          "dormitorios": 5,
+          "suites": 4,
+          "banheiros": 4,
+          "vagas": null,
+          "area_construida": "800m²",
+          "area_total": "1125m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Churrasqueira",
+          "Closet",
+          "Copa Cozinha",
+          "Cozinha",
+          "Despensa",
+          "Lareira",
+          "Piscina",
+          "Sala Jantar",
+          "Suíte Master",
+          "WC Empregada",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/1115_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/1115_2.jpg"
+      }
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16998",
       "propertyCode": "16998",
       "page": 5,
-      "price": "R$ 15.500.000,00",
+      "price": "R$ 16.900.000,00",
       "detailedData": {
         "title": "",
         "description": "Belíssima casa a venda no Residencial Alphaville 01!\n\n\n Marcenaria completa em todos os ambientes \n Completo de Eletrodomésticos\n Espaço gourmet completo com maquina de gelo, geladeiras e adega Elettromec\n Pit Fire\n Piscina Aquecida e Spa em pedra Hijau\n Som em todos os ambientes sociais e lazer\n Coifa de teto\n Boxes piso-teto\n Sistema de irrigação nos jardins\n Elevador TKE\n Cortinas, toldos e persianas elétricas na automação\n Churrasqueira Evol a gás\n Espaço gourmet completo com maquina de gelo, geladeiras e adega Elettromec\n Documentação 100% regularizada\n\nAgende sua visita!",
@@ -2183,11 +2027,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Aquecimento Elétrico",
           "Área Serviço",
           "Churrasqueira",
@@ -2208,86 +2052,6 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/1115",
-      "propertyCode": "1115",
-      "page": 5,
-      "price": "R$ 16.000.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "PARA MORAR COM ESTILO \n\nPROJETO ASSINADO PELO RENOMADO \n\nARQUITETO ROBERTO VINOGRAD\n\nEnfatizando a amplitude, essa casa com arquitetura focada na integração dos espaços internos, com o exuberante e relaxante jardim resultou num ambiente de muita paz e cheio de luz natural.\n\nÁrea de lazer com raia semi-olimpica aquecida e coberta integrada ao espaço gourmet a ao home, um lugar diferenciado! \n\n4 suites, sendo máster com sala íntima que pode ser configurada como um quinto dormitório. Todas com closets e 3 já com condicionamento de ar tipo split\n\nDocumentação perfeita , casa averbada e foro regularizado",
-        "specs": {
-          "dormitorios": 5,
-          "suites": 4,
-          "banheiros": 4,
-          "vagas": null,
-          "area_construida": "800m²",
-          "area_total": "1125m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Churrasqueira",
-          "Closet",
-          "Copa Cozinha",
-          "Cozinha",
-          "Despensa",
-          "Lareira",
-          "Piscina",
-          "Sala Jantar",
-          "Suíte Master",
-          "WC Empregada",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/1115_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/1115_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17660",
-      "propertyCode": "17660",
-      "page": 5,
-      "price": "R$ 16.500.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Casa nova no Residencial Alpha 1\nEm um dos condomínios mais modernos e desejados de Alphaville!\n\nLocalizada em alameda tranquila, sem vizinhos de frente e ao lado do clube.\n Diferenciais:\n4 suítes amplas\nLiving para 3 ambientes\nCasa totalmente mobiliada e decorada\nEspaço gourmet integrado\nPiscina com borda infinita na parte superior\nAquecimento solar\n\nAgende já sua visita e encante-se com essa oportunidade!",
-        "specs": {
-          "dormitorios": 4,
-          "suites": 4,
-          "banheiros": 5,
-          "vagas": 4,
-          "area_construida": "680m²",
-          "area_total": "560m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lavabo",
-          "Mobiliado",
-          "Piscina",
-          "Espaço Gourmet",
-          "Sala Estar",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17660_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17660_2.jpg"
-      }
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16886",
       "propertyCode": "16886",
       "page": 5,
@@ -2304,11 +2068,11 @@
           "area_total": "724m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -2345,11 +2109,11 @@
           "area_total": "940m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço Cozinha Lavabo Sala Jantar",
           "Área Serviço",
           "Cozinha",
@@ -2385,11 +2149,11 @@
           "area_total": "560m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço Churrasqueira Cozinha Despensa Lavabo Mobiliado Espaço Gourmet Sala Estar Sala Jantar",
           "Área Serviço",
           "Churrasqueira",
@@ -2409,48 +2173,6 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/17323",
-      "propertyCode": "17323",
-      "page": 5,
-      "price": "R$ 17.800.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Raridade no condomínio mais desejado de Alphaville , este imóvel estilo toscano projetado pelo arquiteto  Ricardo Ramenzoni é um verdadeiro oásis dentro do Alphaville 1. \n\nCom uma área total de 1873 m2, esta casa ocupa três lotes com frente para três alamedas, e duas esquinas. Possui uma área gramada de 680 m2 , com árvores frutíferas, horta e playground, com espaço para campinho de futebol ou quadra de Beach Tennis. \n\nA área de lazer é um convite ao relaxamento, com uma piscina em formato orgânico ilha com som, cachoeira e um projeto de iluminação que é um show a parte.\nAlém disso conta também com sauna seca, área gourmet e gazebo integrados a um lindo jardim que circunda a varanda, proporcionando um ambiente aconchegante e acolhedor.\n\nPossui poço artesiano que garante uma taxa mínima de água, adega, duas despensas, um salão de festas reversível para home theater e uma garagem subterrânea para 10 carros com vão livre de 20 metros.\nAlém disso conta com três dependências para funcionários.  \n\nSala principal com pé direito duplo, revestimentos em mármore travertino além de outros mármores importados e repaginados.\n5 amplas suítes, copa e roupeiro no piso superior.\n\nVenha conhecer este imóvel único e exclusivo! Agende uma visita!",
-        "specs": {
-          "dormitorios": 5,
-          "suites": 5,
-          "banheiros": 7,
-          "vagas": 10,
-          "area_construida": "906m²",
-          "area_total": "1873m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Home Theater",
-          "Lavabo",
-          "Piscina",
-          "Espaço Gourmet",
-          "Sauna",
-          "Sala Estar",
-          "Sala Jantar",
-          "WC Empregada",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17323_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/17323_2.jpg"
-      }
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/12484",
       "propertyCode": "12484",
       "page": 5,
@@ -2467,11 +2189,11 @@
           "area_total": "800m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço Cozinha Lavabo Sala Jantar",
           "Área Serviço",
           "Cozinha",
@@ -2493,7 +2215,7 @@
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16356",
       "propertyCode": "16356",
-      "page": 6,
+      "page": 5,
       "price": "R$ 18.000.000,00",
       "detailedData": {
         "title": "",
@@ -2502,16 +2224,16 @@
           "dormitorios": 4,
           "suites": 4,
           "banheiros": 4,
-          "vagas": 8,
+          "vagas": 3,
           "area_construida": "628.81m²",
           "area_total": "673.62m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço Cozinha Lavabo Mobiliado Sala Jantar",
           "Área Serviço",
           "Cozinha",
@@ -2533,31 +2255,32 @@
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/14502",
       "propertyCode": "14502",
-      "page": 6,
-      "price": "R$ 19.000.000,00",
+      "page": 5,
+      "price": "R$ 19.900.000,00",
       "detailedData": {
         "title": "",
-        "description": "No coração de Alphaville, em um terreno de 744,00m² ergue-se essa  magnífica e deslumbrante residência, com 994,91m² de puro charme, requinte  e sofisticação, prontos para você, sua família e seus amigos desfrutarem do melhor que o Alphaville 1 oferece.\n\nSão 3 pavimentos servidos por elevador, 4 suítes sendo 1 master com Hidro Pretty Jet automatizada, bancada em QUARTZO BRANCO, 2 closets  Sr. e  Sra., e sala íntima. Banheiros com metais Deca, repletos de Armários. Sala íntima, Escritório, Lavabo com cuba esculpida em Mármore Travertino Navona, Área social e escada em Travertino Navona, Revestimentos Decortiles, Roca e Castelatto. Lareira em Mármore Travertino Navona Área íntima em assoalho  Cumaru e Esquadrias de Alumínio linha Eurotop.\n\nLazer\nEspaço Gourmet completo Florense com churrasqueira a gás, Florense  Evol, bar refrigerado Art Grill bancadas em Preto Absoluto  e  revestimento  Oxydem Castellato,  Home  Theater,  Piscina  com  revestimento em  Pedra  Hijau aquecida com Spa, Prainha e deck Castelatto,  Edícula  completa  em  Mármore Travertino com Sauna a vapor, Adega climatizada - 380 rótulos.\n\nServiço\nCozinha Florense com eletrodomésticos Gorenje Linha Stark, bancadas em Quartzo e Techlam e revestimento Cubus Pigues Mosarte, Lavanderia com  Máquinas de Lavar e secar, Dispensa, Louceiro, Copa intima no andar superior, Garagem para 9 carros e previsão de tomada para veículos elétricos, Depósito, Suíte de serviço, escada de serviço.\n\nSistemas\nAquecimento Solar com apoio elétrico, Geração de Energia fotovoltaica com  micro inversores, de 500KWH mês expansíveis até área total do telhado. Recirculação de água quente. Cisterna de 10.000 litros de água de reuso para sistema de irrigação do Jardim. Aspiração central.  Automação da área social e jardim com preparação e infra de Automação central para todos os ambientes. Ar-condicionado dutado nas áreas sociais, Ar-condicionado em todas as suítes, home e escritório, Piscina com trocador de calor  e Hidro.\n\nProjeto Leonice Alves \nTerra Fofa Paisagismo\t\t\t\nFlorence Alphaville\nNext services ar-condicionado\t\t\nSultanum vidros\nPerfect Esquadrias\t\t\t\t\nRodrigues automação\nCentral Asp aspiração central\t\t\nRega Fácil - irrigação\t\nElevadores Villarta\t\t\t\nJoshua Adegas\n\nFinalizando mobília!!",
+        "description": "Esta casa sofisticada foi projetada para oferecer o máximo em conforto, elegância e tecnologia.\n\n Estrutura e Pavimentos\n\n3 pavimentos servidos por elevador\n4 suítes, sendo 1 master com hidro Pretty Jet automatizada, bancada em quartzo branco, 2 closets Sr. e Sra. e sala íntima\nBanheiros com metais Deca e armários planejados\n\n Acabamentos e Ambientes\n\nSala íntima, escritório e lavabo com cuba esculpida em mármore travertino\nÁrea social e escada em travertino, revestimentos Decortiles, Roca e Castelatto\nLareira em mármore travertino\nÁrea íntima em assoalho Cumaru e esquadrias Eurotop\n\n Lazer e Convivência\n\nEspaço gourmet Florense completo com churrasqueira a gás Art Grill, bar refrigerado, bancadas em Preto Absoluto e revestimento Oxydem Castellato\nHome Theater\nPiscina aquecida com revestimento em pedra Hijau, spa, prainha e deck Castelatto\nAdega climatizada para 380 rótulos\n\n Estrutura de Apoio\n\nCozinha Florense com eletrodomésticos Gorenje Linha Stark, bancadas em quartzo e Techlam e revestimento Mosarte\nLavanderia equipada, despensa, louceiro e copa íntima no andar superior\nSuíte de serviço e escada de apoio\nGaragem para 9 veículos com previsão para tomada de carro elétrico\nDepósito\n\n Tecnologia e Sustentabilidade\n\nAquecimento solar com apoio elétrico\nEnergia fotovoltaica com microinversores (500 kWh/mês, expansível)\nSistema de recirculação de água quente\nCisterna de 10.000L de água de reuso para irrigação\nAspiração central\nAutomação da área social e jardim, com infraestrutura para automação total\nAr-condicionado dutado nas áreas sociais e individual em suítes, home e escritório\nPiscina com trocador de calor e hidro.\n\n Um imóvel exclusivo que une sofisticação, tecnologia e sustentabilidade em cada detalhe.",
         "specs": {
           "dormitorios": 4,
           "suites": 4,
           "banheiros": 5,
-          "vagas": 4,
-          "area_construida": "686.78m²",
+          "vagas": 9,
+          "area_construida": "944m²",
           "area_total": "744m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Aquecimento Elétrico",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
           "Despensa",
           "Home Theater",
+          "Lareira",
           "Lavabo",
           "Mobiliado",
           "Piscina",
@@ -2578,7 +2301,7 @@
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-7-dormitorios-alphaville-barueri/6930",
       "propertyCode": "6930",
-      "page": 6,
+      "page": 5,
       "price": "R$ 21.000.000,00",
       "detailedData": {
         "title": "",
@@ -2592,11 +2315,11 @@
           "area_total": "2405m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Banheiro Auxiliar",
           "Churrasqueira",
@@ -2625,7 +2348,7 @@
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/9624",
       "propertyCode": "9624",
-      "page": 6,
+      "page": 5,
       "price": "R$ 22.000.000,00",
       "detailedData": {
         "title": "",
@@ -2639,11 +2362,11 @@
           "area_total": "848.25m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Churrasqueira",
           "Cozinha",
           "Despensa",
@@ -2664,9 +2387,93 @@
       }
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/12854",
+      "propertyCode": "12854",
+      "page": 5,
+      "price": "R$ 25.000.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Espetacular casa nova no Alphaville 1\n\n Um dos mais cobiçados e valorizados residenciais da região. \n5 suítes com closets instalados, sala íntima no piso superior com roupeiro e mini copa de apoio, suíte máster com banhos Sr. e Sra., escritório e sala de TV, academia, gourmet integrado, sala com lareira à gás, cozinha e gourmet com eletrodomésticos e móveis Florense, elevador ThyssenKrup, piscina, spa e sauna úmida, pitch fire na área da piscina, garagem coberta para 12 carros com carregador rápido para carro elétrico, infraestrutura para energia fotovoltaica.",
+        "specs": {
+          "dormitorios": 5,
+          "suites": 5,
+          "banheiros": 5,
+          "vagas": 12,
+          "area_construida": "1100m²",
+          "area_total": "1120m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço",
+          "Churrasqueira",
+          "Cozinha",
+          "Despensa",
+          "Lareira",
+          "Lavabo",
+          "Piscina",
+          "Espaço Gourmet",
+          "Sauna",
+          "Sala Estar",
+          "Sala Jantar",
+          "Suíte Master",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12854_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12854_2.jpg"
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/14127",
+      "propertyCode": "14127",
+      "page": 5,
+      "price": "R$ 26.590.000,00",
+      "detailedData": {
+        "title": "",
+        "description": "Residência Exclusiva à Venda - Alphaville Residencial 1\n\nCom projeto imponente e acabamentos de altíssimo padrão, esta residência une sofisticação, tecnologia e conforto em um dos endereços mais valorizados de Alphaville.\n\nDestaques do Imóvel:\n\t\tVista permanente e exclusiva\n\t\tMármore Travertino Romano Bruto em toda a área social\n\t\tArmários planejados Florense\n\t\tCortinas automatizadas\n\t\t08 vagas de garagem (04 cobertas)\n\t\tPonto de energia para carro elétrico\n\t\n\t\tSistema completo de automação residencial\n\t\tInfraestrutura de ar-condicionado\n\t\tAr-condicionado instalado em todos os ambientes\n\t\tAspiração central\n\t\tSistema de reaproveitamento de água\n\t\tSistema de aquecimento solar e a gás\n\t\tJanelas em alumínio\n\nAmbientes Internos:\n\t\t05 suítes amplas, incluindo:\n\t\tSuíte máster com spa, varanda com lareira, banheiro e closet Sr. e Sra.\n\t\tEscritório\n\t\tHome Theater\n\t        Elevador panorâmico\n\t\tCozinha equipada\n\t\tAdega climatizada\n\t\tLavanderia\n\t\tSuíte para funcionário\n\t\tAssoalho de madeira de 15cm em toda área íntima\n\nLazer e Bem-estar:\n\t\tPiscina com hidromassagem\n\t\tSauna seca\n\t\tÁrea gourmet totalmente integrada",
+        "specs": {
+          "dormitorios": 5,
+          "suites": 5,
+          "banheiros": 5,
+          "vagas": 8,
+          "area_construida": "800m²",
+          "area_total": "886m²"
+        },
+        "features": [
+          "Venda",
+          "Locação",
+          "Anuncie",
+          "Imobiliária",
+          "Contato",
+          "Área Serviço",
+          "Cozinha",
+          "Despensa",
+          "Home Theater",
+          "Lavabo",
+          "Piscina",
+          "Espaço Gourmet",
+          "Sauna",
+          "Sala Estar",
+          "Sala Jantar",
+          "Suíte Master",
+          "WC Empregada",
+          "Portaria 24Hrs Segurança Patrimonial",
+          "Portaria 24Hrs",
+          "Segurança Patrimonial"
+        ],
+        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/14127_1.jpg",
+        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/14127_2.jpg"
+      }
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/15335",
       "propertyCode": "15335",
-      "page": 6,
+      "page": 5,
       "price": "R$ 28.000.000,00",
       "detailedData": {
         "title": "",
@@ -2680,11 +2487,11 @@
           "area_total": "800m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Ar Central",
           "Área Serviço",
           "Churrasqueira",
@@ -2710,91 +2517,6 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/12854",
-      "propertyCode": "12854",
-      "page": 6,
-      "price": "R$ 28.500.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "Espetacular casa nova no Alphaville 1\n\n Um dos mais cobiçados e valorizados residenciais da região. \n5 suítes com closets instalados, sala íntima no piso superior com roupeiro e mini copa de apoio, suíte máster com banhos Sr. e Sra., escritório e sala de TV, academia, gourmet integrado, sala com lareira à gás, cozinha e gourmet com eletrodomésticos e móveis Florense, elevador ThyssenKrup, piscina, spa e sauna úmida, pitch fire na área da piscina, garagem coberta para 12 carros com carregador rápido para carro elétrico, infraestrutura para energia fotovoltaica.",
-        "specs": {
-          "dormitorios": 5,
-          "suites": 5,
-          "banheiros": 5,
-          "vagas": 12,
-          "area_construida": "1100m²",
-          "area_total": "1120m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lareira",
-          "Lavabo",
-          "Piscina",
-          "Espaço Gourmet",
-          "Sauna",
-          "Sala Estar",
-          "Sala Jantar",
-          "Suíte Master",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12854_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/12854_2.jpg"
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16705",
-      "propertyCode": "16705",
-      "page": 6,
-      "price": "R$ 29.950.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "5 amplas suítes com piso de madeira Indusparquet, closets com iluminação natural, som ambiente, banheiros em Silestone e mármore. \n\nSuíte master com 95 m2, closet com ar condicionado, banheiro inclui banheira, TV e som ambiente. Corredor dos dormitórios em mármore Travertino Navona. Andar das suítes ainda possui Copa e varandão de 45m2 com telão e lareira\n\n\tAmplo ambiente de salas de mais de 150 m2, pé direito de 3,5m de altura, lavabo, ar condicionado, som ambiente, cinema 4k, lareira, piso Travertino Navona. Hall de entrada com pé direito duplo e lustre Scatto\n\n\tEscritório completo com TV, sofá, banheiro, frigobar e mesinha de reunião, perfeito para Home Office. Adega Art Des Caves para mais de 300 garrafas de vinho\n\n\tCozinha em ilha com ar condicionado, marcenaria em Laca, bancadas em Dekton e eletrodomésticos de primeira linha (Gorenge e Bertazzoni) integrada com área gourmet.\n?\tÁrea gourmet com ar condicionado, telão, som ambiente, fliperama, churrasqueira (LarGrill), chopeira, cervejeira, frigobar, máquina de gelo e cooktop (Eletromec). Bancadas e ilha gourmet em Dekton\n\n\tAmpla área externa com som ambiente próprio, jardim com mini horta, piscina aquecida revestida em Hijau, deck em Castelato e parede de vidro com borda infinita, academia climatizada, sauna em Hijau com acesso a piscina, spa e área para fogo de chão\n\nAgende uma visita !",
-        "specs": {
-          "dormitorios": 5,
-          "suites": 5,
-          "banheiros": 7,
-          "vagas": 8,
-          "area_construida": "1160m²",
-          "area_total": "1280m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Ar Central",
-          "Área Serviço",
-          "Churrasqueira",
-          "Cozinha",
-          "Despensa",
-          "Lareira",
-          "Lavabo",
-          "Piscina",
-          "Espaço Gourmet",
-          "Sala Estar",
-          "Sala Jantar",
-          "Suíte Master",
-          "WC Empregada",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16705_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/16705_2.jpg"
-      }
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16385",
       "propertyCode": "16385",
       "page": 6,
@@ -2811,11 +2533,11 @@
           "area_total": "1200m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço",
           "Churrasqueira",
           "Cozinha",
@@ -2836,46 +2558,6 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/14127",
-      "propertyCode": "14127",
-      "page": 6,
-      "price": "R$ 35.000.000,00",
-      "detailedData": {
-        "title": "",
-        "description": "-\nMármore Travertino Romano Bruto em\ntoda área social\n\nÁrea construída: 800 m²\n\nÁrea de terreno: 890 m²\n\nEscritório\n\n05 suítes\n\nBanheiro Sr. e Sra.\n\nCloset Sr. e Sra.\n\nSpa e varanda com lareira na suíte\nprincipal\n\nElevador\n\nPiscina com troca de calor e\nhidromassagem\n\nSauna seca\n\nÁrea gourmet integrada\n\n05 vagas cobertas\n\nPonto de energia para carro elétrico\n\nSistema para automação preparada\n\nInfraestrutura de ar condicionado em\ntodos os ambientes para sistema Split e\ndutado\n\nAspiração central\n\nJanelas em alumínio\n\nSistema de reaproveitamento de água\n\nSistema de aquecimento solar e a gás\n\nGerador de energia\n\nAssoalho de madeira de 15 cm em toda\nárea íntima\n\nAdega climatizada\n\n\nIPTU ANUAL R$3900,00",
-        "specs": {
-          "dormitorios": 5,
-          "suites": 5,
-          "banheiros": 5,
-          "vagas": 5,
-          "area_construida": "800m²",
-          "area_total": "890m²"
-        },
-        "features": [
-          "Locação",
-          "Anuncie",
-          "Imobiliária",
-          "Contato",
-          "Venda",
-          "Área Serviço Cozinha Lavabo Sala Jantar",
-          "Área Serviço",
-          "Cozinha",
-          "Lavabo",
-          "Sala Jantar",
-          "Portaria 24Hrs Segurança Patrimonial",
-          "Portaria 24Hrs",
-          "Segurança Patrimonial",
-          "Apartamentos",
-          "Área",
-          "Área Industrial",
-          "Casa",
-          "Coberturas"
-        ],
-        "image1Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/14127_1.jpg",
-        "image2Path": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/vivaprimeimoveis/images/14127_2.jpg"
-      }
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16626",
       "propertyCode": "16626",
       "page": 6,
@@ -2892,11 +2574,11 @@
           "area_total": "2223m²"
         },
         "features": [
+          "Venda",
           "Locação",
           "Anuncie",
           "Imobiliária",
           "Contato",
-          "Venda",
           "Área Serviço Cozinha Lavabo Sala Jantar Semi Mobiliado",
           "Área Serviço",
           "Cozinha",
