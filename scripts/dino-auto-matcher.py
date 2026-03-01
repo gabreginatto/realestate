@@ -164,14 +164,27 @@ def get_images_by_category(site: str, listing_id: str, data_root: Path) -> dict[
     if manifest_path.exists():
         with open(manifest_path) as f:
             manifest = json.load(f)
-        base_dir = manifest_path.parent
+        # Use ALL classified images (not just the selected top N) for a more
+        # stable category mean — pool images esp. benefit from more samples.
+        # Images are sourced from the cache dir (all_categories uses original filenames).
+        cache_dir = data_root / site / "cache" / listing_id
         by_cat: dict[str, list[Path]] = {"pool": [], "facade": [], "garden": []}
-        for entry in manifest.get("selected", []):
-            cat = entry.get("category", "pool")
-            if cat in by_cat:
-                p = base_dir / entry["filename"]
-                if p.exists():
-                    by_cat[cat].append(p)
+        for entry in manifest.get("all_categories", []):
+            cat = entry.get("category", "interior")
+            if cat not in by_cat:
+                continue
+            p = cache_dir / entry["filename"]
+            if p.exists():
+                by_cat[cat].append(p)
+        # If cache dir missing, fall back to selected (in selected_for_matching/)
+        if not any(by_cat.values()):
+            base_dir = manifest_path.parent
+            for entry in manifest.get("selected", []):
+                cat = entry.get("category", "pool")
+                if cat in by_cat:
+                    p = base_dir / entry["filename"]
+                    if p.exists():
+                        by_cat[cat].append(p)
         return by_cat
     # Fallback: treat all images as "pool"
     imgs = get_images_for_listing(site, listing_id, data_root)
@@ -279,8 +292,24 @@ class EmbeddingCache:
                 v /= np.linalg.norm(v)
                 result[cat] = v
             else:
-                result[cat] = mean_embedding(paths, self.dino_url)
+                vecs = [embed_image(p, self.dino_url) for p in paths]
+                vecs = [v for v in vecs if v is not None]
                 self.api_calls += len(paths)
+                if not vecs:
+                    result[cat] = None
+                    continue
+                # For pool (most important category): keep only the TOP-K images
+                # whose embedding is closest to the centroid — removes outlier
+                # shots (e.g., pool construction photos, extreme wide-angle) that
+                # pull the mean away from the canonical pool fingerprint.
+                if cat == "pool" and len(vecs) > 4:
+                    centroid = np.stack(vecs).mean(axis=0)
+                    sims = [float(np.dot(v, centroid) / (np.linalg.norm(v) * np.linalg.norm(centroid) + 1e-9))
+                            for v in vecs]
+                    top_k = max(4, len(vecs) // 2)
+                    top_idx = sorted(range(len(sims)), key=lambda x: sims[x], reverse=True)[:top_k]
+                    vecs = [vecs[idx] for idx in top_idx]
+                result[cat] = np.stack(vecs).mean(axis=0)
 
         self._cache[key] = result
         return result
@@ -392,7 +421,26 @@ def run_optimal_matching(
         for j, c_emb in enumerate(coelho_embs):
             if all(v is None for v in c_emb.values()):
                 continue
-            sim_matrix[i, j] = category_similarity(v_emb, c_emb)
+            vis_sim = category_similarity(v_emb, c_emb)
+            # Soft structural boost: scale visual sim using area (4%), beds (1%),
+            # and price (2%) when available — helps disambiguate near-misses
+            v_area  = viva_listings[i]["area"]
+            c_area  = coelho_listings[j]["area"]
+            v_beds  = viva_listings[i]["beds"]
+            c_beds  = coelho_listings[j]["beds"]
+            v_price = viva_listings[i]["price"]
+            c_price = coelho_listings[j]["price"]
+            boost = 1.0
+            if v_area and c_area and v_area > 0:
+                area_ratio = 1.0 - abs(v_area - c_area) / ((v_area + c_area) / 2)
+                boost += 0.04 * max(0.0, area_ratio)
+            if v_beds is not None and c_beds is not None and v_beds > 0:
+                beds_match = 1.0 if v_beds == c_beds else max(0.0, 1.0 - abs(v_beds - c_beds) * 0.5)
+                boost += 0.01 * beds_match
+            if v_price and c_price and v_price > 0:
+                price_ratio = 1.0 - abs(v_price - c_price) / ((v_price + c_price) / 2)
+                boost += 0.02 * max(0.0, price_ratio)
+            sim_matrix[i, j] = vis_sim * boost
 
     # ── Phase 3: optimal assignment ──────────────────────────────────────────
     log.info("Phase 4 — running optimal assignment (Hungarian algorithm) ...")
