@@ -699,6 +699,10 @@ def parse_args():
                         "greedy: 5-pass progressive loop.")
     p.add_argument("--dry-run",    action="store_true")
     p.add_argument("--verbose",    action="store_true")
+    p.add_argument("--viva-filter", default=None,
+        help="Comma-separated Viva codes to include (for re-match passes)")
+    p.add_argument("--coelho-exclude", default=None,
+        help="Comma-separated Coelho codes to exclude (already confirmed)")
     return p.parse_args()
 
 
@@ -728,6 +732,15 @@ def main():
             sys.exit(1)
 
     viva_listings, coelho_listings = load_listings(data_root)
+
+    if args.viva_filter:
+        allowed = set(args.viva_filter.split(","))
+        viva_listings = [v for v in viva_listings if v["code"] in allowed]
+        log.info(f"viva-filter applied: {len(viva_listings)} listings retained")
+    if args.coelho_exclude:
+        excluded = set(args.coelho_exclude.split(","))
+        coelho_listings = [c for c in coelho_listings if c["code"] not in excluded]
+        log.info(f"coelho-exclude applied: {len(coelho_listings)} listings retained")
 
     run_fn = run_optimal_matching if args.strategy == "optimal" else run_greedy_matching
     result = run_fn(
