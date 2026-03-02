@@ -343,6 +343,45 @@ def build_combined_embedding_matrix(viva, coelho, emb_cache) -> np.ndarray:
     return sim
 
 
+def build_price_multiplier_matrix(viva: list, coelho: list) -> np.ndarray:
+    """Price-ratio multiplier matrix for boosting/penalizing assignment.
+
+    Same property listed on two sites should have similar prices.
+    We use this as a MULTIPLICATIVE factor on the visual similarity matrix
+    so that Hungarian assignment naturally prefers price-compatible pairs.
+
+    Multiplier scale:
+      price diff < 5%  → 1.30 (strong boost — near-certain same property)
+      price diff < 15% → 1.10
+      price diff < 30% → 1.00 (neutral)
+      price diff < 50% → 0.90
+      price diff ≥ 50% → 0.75 (strong penalty)
+      missing price    → 1.00 (neutral — don't penalize unknown)
+    """
+    n, m = len(viva), len(coelho)
+    mat = np.ones((n, m), dtype=np.float32)
+    for i, v in enumerate(viva):
+        vp = v.get("price")
+        if not vp or vp <= 0:
+            continue
+        for j, c in enumerate(coelho):
+            cp = c.get("price")
+            if not cp or cp <= 0:
+                continue
+            rel_diff = abs(vp - cp) / ((vp + cp) / 2.0)
+            if rel_diff < 0.05:
+                mat[i, j] = 1.30
+            elif rel_diff < 0.15:
+                mat[i, j] = 1.10
+            elif rel_diff < 0.30:
+                mat[i, j] = 1.00
+            elif rel_diff < 0.50:
+                mat[i, j] = 0.90
+            else:
+                mat[i, j] = 0.75
+    return mat
+
+
 def hungarian_assign(sim_matrix, viva, coelho, threshold):
     """Optimal one-to-one assignment above threshold."""
     from scipy.optimize import linear_sum_assignment
@@ -1541,6 +1580,35 @@ def strat_structural_boost_pool_verify(pool_mat, facade_mat, garden_mat,
     return filtered
 
 
+def strat_price_weighted_combined(pool_mat, facade_mat, garden_mat,
+                                   viva, coelho, combined_mat=None, **kw):
+    """Price-multiplied combined embedding matrix → Hungarian.
+
+    Multiplies visual similarity by a price-ratio factor before assignment so
+    Hungarian prefers pairs where prices agree, breaking visual ties.
+    Threshold is applied to the ORIGINAL visual sim (not boosted) to avoid
+    inflating the candidate set with low-visual-sim pairs that happen to have
+    matching prices.
+    """
+    if combined_mat is None:
+        return []
+    from scipy.optimize import linear_sum_assignment
+    threshold = kw.get("threshold", 0.80)
+    price_mat = build_price_multiplier_matrix(viva, coelho)
+    boosted = combined_mat * price_mat
+    row_ind, col_ind = linear_sum_assignment(-boosted)
+    matches = []
+    for r, c in zip(row_ind, col_ind):
+        orig_sim = float(combined_mat[r, c])   # filter on original visual sim
+        if orig_sim >= threshold:
+            matches.append({
+                "viva_code": viva[r]["code"],
+                "coelho_code": coelho[c]["code"],
+                "similarity_score": round(orig_sim, 6),
+            })
+    return matches
+
+
 def strat_threshold_sweep(pool_mat, facade_mat, garden_mat,
                           viva, coelho, **kw):
     """Sweep thresholds on the best strategy so far."""
@@ -1657,6 +1725,12 @@ def run_optimization(viva, coelho, pool_mat, facade_mat, garden_mat,
         ("R12  ensemble voting (min=8)",
          strat_ensemble_voting,
          {**cm, "min_votes": 8}),
+        ("R13  price-weighted combined (thresh=0.80)",
+         strat_price_weighted_combined,
+         {**cm, "threshold": 0.80}),
+        ("R14  price-weighted combined (thresh=0.82)",
+         strat_price_weighted_combined,
+         {**cm, "threshold": 0.82}),
     ]
 
     best_f1 = 0.0
@@ -1760,7 +1834,9 @@ def build_ranked_output(viva, coelho, pool_mat, facade_mat, garden_mat,
     viva_map = {v["code"]: v for v in viva}
     coelho_map = {c["code"]: c for c in coelho}
 
-    # Hungarian on combined to get primary assignments
+    # Hungarian on visual similarity only for assignment.
+    # Price is used as a confidence signal (below), not as an assignment bias,
+    # because price-weighted Hungarian degrades high-tier precision.
     row_ind, col_ind = linear_sum_assignment(-combined_mat)
 
     # Compute per-pair confidence scores
@@ -1787,18 +1863,19 @@ def build_ranked_output(viva, coelho, pool_mat, facade_mat, garden_mat,
             rel_diff = abs(v["area"] - c["area"]) / ((v["area"] + c["area"]) / 2)
             area_score = max(0, 1 - rel_diff * 3)
 
-        # Price match
-        price_score = 0.5
+        # Price match — sharper curve: identical prices get 1.0, >30% diff → 0
+        price_score = 0.5  # neutral when missing
         if v["price"] and c["price"] and v["price"] > 0 and c["price"] > 0:
             rel_diff = abs(v["price"] - c["price"]) / ((v["price"] + c["price"]) / 2)
-            price_score = max(0, 1 - rel_diff * 2)
+            price_score = max(0.0, 1.0 - rel_diff * 3.5)
 
-        # Composite confidence
-        confidence = (0.30 * sim +
+        # Composite confidence (weights sum to 1.00)
+        # Price raised 15%→25%, visual lowered 30%→20%: same property = same price
+        confidence = (0.20 * sim +
                       0.20 * (1.0 / max(pool_rank, 1)) +
                       0.15 * (1.0 / max(facade_rank, 1)) +
                       0.20 * area_score +
-                      0.15 * price_score)
+                      0.25 * price_score)
 
         # Tier assignment
         if confidence >= 0.65:
@@ -1844,7 +1921,7 @@ def parse_args():
     p.add_argument("--dino-url", default="http://localhost:8000")
     p.add_argument("--data-root", default="data")
     p.add_argument("--output", default="data/auto-matches-v3.json")
-    p.add_argument("--cache", default="data/embedding-cache-v2.pkl")
+    p.add_argument("--cache", default="data/embedding-cache-v3.pkl")
     p.add_argument("--verbose", action="store_true")
     return p.parse_args()
 

@@ -1,8 +1,8 @@
 """
-DINOv2 + CLIP FastAPI server.
+DINOv2-Large + CLIP FastAPI server.
 
 Endpoints:
-  POST /embed     — DINOv2 CLS token embedding (768-dim) for property matching
+  POST /embed     — DINOv2 CLS token embedding (1024-dim) for property matching
   POST /classify  — CLIP zero-shot image classification (pool/exterior/garden/interior)
   GET  /health    — liveness check for both models
 
@@ -35,7 +35,8 @@ from transformers import (
 logger = logging.getLogger("dino-server")
 logging.basicConfig(level=logging.INFO)
 
-DINO_MODEL_NAME = "facebook/dinov2-base"
+import os
+DINO_MODEL_NAME = os.getenv("DINO_MODEL", "facebook/dinov2-large")
 CLIP_MODEL_NAME = "openai/clip-vit-base-patch32"
 
 # Default CLIP labels for luxury real estate image classification
@@ -140,7 +141,7 @@ async def embed(image: UploadFile = File(...)):
     """
     Returns the DINOv2 CLS token embedding for property matching.
 
-    Response: { "embedding": [float, ...], "dim": 768 }
+    Response: { "embedding": [float, ...], "dim": 1024 }
     """
     if _dino_model is None:
         raise HTTPException(status_code=503, detail="DINOv2 not loaded")
