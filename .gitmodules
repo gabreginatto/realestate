@@ -1,0 +1,3 @@
+[submodule "dino-server/dinov3-repo"]
+	path = dino-server/dinov3-repo
+	url = https://github.com/facebookresearch/dinov3.git
