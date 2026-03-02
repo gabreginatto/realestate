@@ -36,6 +36,9 @@ logger = logging.getLogger("dino-server")
 logging.basicConfig(level=logging.INFO)
 
 import os
+# DINOv3 is gated — run `huggingface-cli login` and accept the license at
+# https://huggingface.co/facebook/dinov3-vitb16-pretrain-lvd1689m
+# then set: DINO_MODEL=facebook/dinov3-vitb16-pretrain-lvd1689m
 DINO_MODEL_NAME = os.getenv("DINO_MODEL", "facebook/dinov2-large")
 CLIP_MODEL_NAME = "openai/clip-vit-base-patch32"
 
