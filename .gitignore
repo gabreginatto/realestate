@@ -108,3 +108,7 @@ wheels/
 *.tmp
 temp/
 tmp/
+
+# Large model checkpoints — download via huggingface_hub
+dino-server/*.pth
+data/embedding-cache*.pkl
