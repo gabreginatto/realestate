@@ -1,13 +1,13 @@
 {
-  "collected_at": "2025-10-15T20:19:48.679Z",
+  "collected_at": "2026-02-28T04:47:30.203Z",
   "expected_total": 0,
-  "actual_collected": 70,
+  "actual_collected": 62,
   "total_pages": 5,
   "search_url": "https://www.vivaprimeimoveis.com.br/imoveis?busca=venda&finalidade=venda&tipo=casa&empreendimento=alphaville-01",
   "listings": [
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17232",
-      "propertyCode": "17232",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17266",
+      "propertyCode": "17266",
       "page": 1
     },
     {
@@ -21,18 +21,13 @@
       "page": 1
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17266",
-      "propertyCode": "17266",
-      "page": 1
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17489",
-      "propertyCode": "17489",
-      "page": 1
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8748",
       "propertyCode": "8748",
+      "page": 1
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17996",
+      "propertyCode": "17996",
       "page": 1
     },
     {
@@ -51,6 +46,16 @@
       "page": 1
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/12252",
+      "propertyCode": "12252",
+      "page": 1
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17388",
+      "propertyCode": "17388",
+      "page": 1
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17378",
       "propertyCode": "17378",
       "page": 1
@@ -59,21 +64,6 @@
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/12441",
       "propertyCode": "12441",
       "page": 1
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8527",
-      "propertyCode": "8527",
-      "page": 1
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/12252",
-      "propertyCode": "12252",
-      "page": 2
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17388",
-      "propertyCode": "17388",
-      "page": 2
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8989",
@@ -91,18 +81,18 @@
       "page": 2
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/4509",
+      "propertyCode": "4509",
+      "page": 2
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8527",
+      "propertyCode": "8527",
+      "page": 2
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17279",
       "propertyCode": "17279",
-      "page": 2
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/16872",
-      "propertyCode": "16872",
-      "page": 2
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8177",
-      "propertyCode": "8177",
       "page": 2
     },
     {
@@ -111,8 +101,13 @@
       "page": 2
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/2307",
-      "propertyCode": "2307",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8177",
+      "propertyCode": "8177",
+      "page": 2
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/16872",
+      "propertyCode": "16872",
       "page": 2
     },
     {
@@ -126,33 +121,13 @@
       "page": 2
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/12814",
-      "propertyCode": "12814",
-      "page": 3
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/1230",
-      "propertyCode": "1230",
-      "page": 3
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17465",
       "propertyCode": "17465",
-      "page": 3
+      "page": 2
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/15008",
-      "propertyCode": "15008",
-      "page": 3
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/12668",
-      "propertyCode": "12668",
-      "page": 3
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17654",
-      "propertyCode": "17654",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/12814",
+      "propertyCode": "12814",
       "page": 3
     },
     {
@@ -186,33 +161,33 @@
       "page": 3
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/18035",
+      "propertyCode": "18035",
+      "page": 3
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/1148",
+      "propertyCode": "1148",
+      "page": 3
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16117",
       "propertyCode": "16117",
-      "page": 4
+      "page": 3
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16448",
       "propertyCode": "16448",
-      "page": 4
+      "page": 3
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/4659",
-      "propertyCode": "4659",
-      "page": 4
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/17397",
-      "propertyCode": "17397",
-      "page": 4
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/3460",
+      "propertyCode": "3460",
+      "page": 3
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/7597",
       "propertyCode": "7597",
-      "page": 4
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17481",
-      "propertyCode": "17481",
       "page": 4
     },
     {
@@ -221,18 +196,8 @@
       "page": 4
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16026",
-      "propertyCode": "16026",
-      "page": 4
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/17775",
       "propertyCode": "17775",
-      "page": 4
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16882",
-      "propertyCode": "16882",
       "page": 4
     },
     {
@@ -241,43 +206,48 @@
       "page": 4
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17948",
+      "propertyCode": "17948",
+      "page": 4
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17596",
       "propertyCode": "17596",
       "page": 4
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/13254",
-      "propertyCode": "13254",
-      "page": 5
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16528",
-      "propertyCode": "16528",
-      "page": 5
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/8188",
       "propertyCode": "8188",
-      "page": 5
+      "page": 4
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/13254",
+      "propertyCode": "13254",
+      "page": 4
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16615",
       "propertyCode": "16615",
-      "page": 5
+      "page": 4
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16998",
-      "propertyCode": "16998",
-      "page": 5
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16026",
+      "propertyCode": "16026",
+      "page": 4
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16528",
+      "propertyCode": "16528",
+      "page": 4
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/1115",
       "propertyCode": "1115",
-      "page": 5
+      "page": 4
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/17660",
-      "propertyCode": "17660",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16998",
+      "propertyCode": "16998",
       "page": 5
     },
     {
@@ -296,11 +266,6 @@
       "page": 5
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/17323",
-      "propertyCode": "17323",
-      "page": 5
-    },
-    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/12484",
       "propertyCode": "12484",
       "page": 5
@@ -308,46 +273,41 @@
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16356",
       "propertyCode": "16356",
-      "page": 6
+      "page": 5
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/14502",
       "propertyCode": "14502",
-      "page": 6
+      "page": 5
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-7-dormitorios-alphaville-barueri/6930",
       "propertyCode": "6930",
-      "page": 6
+      "page": 5
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/9624",
       "propertyCode": "9624",
-      "page": 6
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/15335",
-      "propertyCode": "15335",
-      "page": 6
+      "page": 5
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/12854",
       "propertyCode": "12854",
-      "page": 6
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16705",
-      "propertyCode": "16705",
-      "page": 6
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16385",
-      "propertyCode": "16385",
-      "page": 6
+      "page": 5
     },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/14127",
       "propertyCode": "14127",
+      "page": 5
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/15335",
+      "propertyCode": "15335",
+      "page": 5
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/16385",
+      "propertyCode": "16385",
       "page": 6
     },
     {
