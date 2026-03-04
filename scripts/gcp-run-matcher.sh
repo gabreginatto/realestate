@@ -159,6 +159,8 @@ if $DEPLOY; then
     --zone="$ZONE" --project="$PROJECT"
 
   log "Deploy complete."
+  log "Waiting for SSH to stabilise after SCP ..."
+  sleep 10
 fi
 
 # ── 5. First-time model setup (--setup) ───────────────────────────────────────
@@ -208,29 +210,19 @@ print('Checkpoint downloaded.')
 fi
 
 # ── 6. Start DINOv3+CLIP server on VM ────────────────────────────────────────
-log "Starting DINOv3+CLIP server on VM ..."
-gcloud compute ssh "$INSTANCE" \
-  --zone="$ZONE" --project="$PROJECT" \
-  --ssh-flag="-o ConnectTimeout=30" \
-  --command="
-    source ~/.bashrc 2>/dev/null || true
-    export PATH=\"\$HOME/.local/bin:\$PATH\"
-
-    pkill -f 'uvicorn main:app' 2>/dev/null && echo 'Killed previous server' || true
-
-    [[ -d '${REMOTE_DIR}' ]] || {
-      echo 'ERROR: ${REMOTE_DIR} not found. Run with --deploy --setup first.'
-      exit 1
-    }
-
-    cd '${REMOTE_DIR}'
-    nohup python3 -m uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1 \
-      > /tmp/dino-server.log 2>&1 &
-    echo \"Server PID: \$!\"
-    echo \$! > /tmp/dino-server.pid
-    sleep 1
-    echo 'Server launched.'
-  "
+log "Writing server start script to VM ..."
+cat <<STARTSCRIPT | gcloud compute ssh "$INSTANCE" \
+    --zone="$ZONE" --project="$PROJECT" \
+    -- bash -s
+export PATH="\$HOME/.local/bin:\$PATH"
+pkill -f 'uvicorn main:app' 2>/dev/null || true
+cd '${REMOTE_DIR}'
+nohup python3 -m uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1 \
+  > /tmp/dino-server.log 2>&1 &
+echo \$! > /tmp/dino-server.pid
+echo "Server PID: \$(cat /tmp/dino-server.pid)"
+STARTSCRIPT
+log "Server launch command sent."
 
 # ── 7. Poll /health until ready ───────────────────────────────────────────────
 log "Waiting for DINOv3+CLIP server to be healthy (timeout: ${HEALTH_TIMEOUT}s) ..."
