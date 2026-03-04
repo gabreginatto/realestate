@@ -17,6 +17,9 @@
     "@playwright/test": "^1.56.0"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1"
+    "@google-cloud/storage": "^7.19.0",
+    "@google/generative-ai": "^0.24.1",
+    "express": "^5.2.1",
+    "node-fetch": "^2.7.0"
   }
 }
