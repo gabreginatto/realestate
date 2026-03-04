@@ -27,7 +27,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # ── defaults ──────────────────────────────────────────────────────────────────
 INSTANCE="dino-embed-server"
-ZONE="us-central1-a"
+ZONE="us-east1-d"
 PROJECT=""
 PORT=8000
 DATA_ROOT="${REPO_ROOT}/data"
@@ -277,10 +277,14 @@ gcloud compute scp --recurse \
   "${INSTANCE}:/tmp/data/coelhodafonseca/listings/" \
   --zone="$ZONE" --project="$PROJECT"
 
-gcloud compute scp --recurse \
-  "${DATA_ROOT}/../selected_for_matching" \
-  "${INSTANCE}:/tmp/" \
-  --zone="$ZONE" --project="$PROJECT"
+if [[ -d "${DATA_ROOT}/../selected_for_matching" ]]; then
+  gcloud compute scp --recurse \
+    "${DATA_ROOT}/../selected_for_matching" \
+    "${INSTANCE}:/tmp/" \
+    --zone="$ZONE" --project="$PROJECT"
+else
+  log "No selected_for_matching/ found locally — matcher will use raw images on VM."
+fi
 
 # ── 10. Run recursive matcher on VM ───────────────────────────────────────────
 log "Running recursive matcher on VM ..."
