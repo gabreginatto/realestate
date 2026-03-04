@@ -211,7 +211,11 @@ fi
 log "Starting DINOv3+CLIP server on VM ..."
 gcloud compute ssh "$INSTANCE" \
   --zone="$ZONE" --project="$PROJECT" \
+  --ssh-flag="-o ConnectTimeout=30" \
   --command="
+    source ~/.bashrc 2>/dev/null || true
+    export PATH=\"\$HOME/.local/bin:\$PATH\"
+
     pkill -f 'uvicorn main:app' 2>/dev/null && echo 'Killed previous server' || true
 
     [[ -d '${REMOTE_DIR}' ]] || {
@@ -220,10 +224,12 @@ gcloud compute ssh "$INSTANCE" \
     }
 
     cd '${REMOTE_DIR}'
-    nohup uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1 \
+    nohup python3 -m uvicorn main:app --host 0.0.0.0 --port ${PORT} --workers 1 \
       > /tmp/dino-server.log 2>&1 &
     echo \"Server PID: \$!\"
     echo \$! > /tmp/dino-server.pid
+    sleep 1
+    echo 'Server launched.'
   "
 
 # ── 7. Poll /health until ready ───────────────────────────────────────────────
