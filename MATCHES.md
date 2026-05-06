@@ -71,3 +71,22 @@
 - 🟢 sim ≥ 0.92 — alta confiança
 - 🟡 0.88 ≤ sim < 0.92 — média confiança
 - 🔴 sim < 0.88 — baixa confiança (verificar)
+
+## Ground Truth Expansion — Geometric Review
+
+Confirmed by human review on 2026-05-06:
+
+| Viva | Coelho | Status |
+|---|---|---|
+| [7597](https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/7597) | [358601](https://www.coelhodafonseca.com.br/358601) | confirmed same property |
+| [18035](https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/18035) | [661014](https://www.coelhodafonseca.com.br/661014) | confirmed same property |
+| [14138](https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/14138) | [660058](https://www.coelhodafonseca.com.br/660058) | confirmed same property |
+| [16117](https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-4-dormitorios-alphaville-barueri/16117) | [628299](https://www.coelhodafonseca.com.br/628299) | confirmed same property |
+| [17378](https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-3-dormitorios-alphaville-barueri/17378) | [425516](https://www.coelhodafonseca.com.br/425516) | confirmed same property |
+| [12814](https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-5-dormitorios-alphaville-barueri/12814) | [682781](https://www.coelhodafonseca.com.br/682781) | confirmed same property |
+
+Rejected / excluded:
+
+| Viva | Coelho | Reason |
+|---|---|---|
+| [6930](https://www.vivaprimeimoveis.com.br/imovel/alphaville-01-7-dormitorios-alphaville-barueri/6930) | [395513](https://www.coelhodafonseca.com.br/395513) | Coelho page blank / code not found |

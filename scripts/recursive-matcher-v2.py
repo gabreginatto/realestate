@@ -2,14 +2,16 @@
 """
 Recursive Matcher V2 — Pool-first, facade-second optimization.
 
-Phase 1: Compute per-category embeddings for all listings (cached to disk).
+Phase 1: Compute per-image and per-category embeddings for all listings
+         (cached to disk).
 Phase 2: Run 10 rounds of iterative scoring strategies evaluated against
          15 human-reviewed ground truth pairs.
 
-Key insight: the current weighted-combo approach (pool×0.60 + facade×0.25 +
-garden×0.15) mixes signals and produces 47 false positives out of 62 matches.
-Instead, we use pool similarity as the PRIMARY signal and facade as a
-separate VERIFICATION step.
+Key insight: averaging all selected photos into one vector throws away the
+cross-angle evidence we need. Agencies often photograph the same pool/facade
+from different angles, with different edits, and with different surrounding
+images. The default scorer now uses late interaction: compare the image sets
+pairwise, keep the strongest cross-photo evidence, then combine categories.
 
 Research-inspired strategies:
   - Two-stage matching (VPR literature: global retrieval → local re-ranking)
@@ -57,6 +59,8 @@ CONFIRMED_PAIRS = {
     ("16026", "674557"), ("12854", "616435"), ("13572", "653980"),
     ("16385", "663777"), ("16892", "663984"), ("14127", "663462"),
     ("2075", "502738"), ("17722", "677257"), ("17378", "659639"),
+    ("7597", "358601"), ("18035", "661014"), ("14138", "660058"),
+    ("16117", "628299"), ("17378", "425516"), ("12814", "682781"),
 }
 
 # ─────────────────────────────────────────────────────────────
@@ -195,11 +199,8 @@ def cosine_sim(a: np.ndarray | None, b: np.ndarray | None) -> float:
 # Embedding cache (persisted to disk)
 # ─────────────────────────────────────────────────────────────
 
-def compute_category_embedding(paths: list[Path], dino_url: str,
-                                cat_name: str = "") -> np.ndarray | None:
-    """Embed all images, centroid-filter for pool, return mean vector."""
-    vecs = [embed_image(p, dino_url) for p in paths]
-    vecs = [v for v in vecs if v is not None]
+def _mean_embedding(vecs: list[np.ndarray], cat_name: str = "") -> np.ndarray | None:
+    """Return a robust mean vector for a category."""
     if not vecs:
         return None
     # Pool centroid filtering: remove outlier images
@@ -215,13 +216,46 @@ def compute_category_embedding(paths: list[Path], dino_url: str,
     return np.stack(vecs).mean(axis=0)
 
 
+def compute_category_embedding(paths: list[Path], dino_url: str,
+                                cat_name: str = "") -> dict | None:
+    """Embed all images and return both per-image vectors and a robust mean."""
+    vecs = [embed_image(p, dino_url) for p in paths]
+    vecs = [v for v in vecs if v is not None]
+    if not vecs:
+        return None
+    return {
+        "mean": _mean_embedding(vecs, cat_name),
+        "vectors": vecs,
+        "files": [p.name for p in paths],
+    }
+
+
+def cache_has_image_vectors(cache: dict) -> bool:
+    """True when cache stores per-image vectors, not only legacy mean vectors."""
+    for listing in cache.values():
+        if not isinstance(listing, dict):
+            continue
+        for value in listing.values():
+            if isinstance(value, dict) and value.get("vectors"):
+                return True
+    return False
+
+
 def compute_and_cache_embeddings(viva, coelho, dino_url, data_root,
-                                  cache_path: Path):
+                                  cache_path: Path,
+                                  refresh_cache: bool = False):
     """Compute per-category embeddings for all listings, save to disk."""
-    if cache_path.exists():
+    if cache_path.exists() and not refresh_cache:
         log.info(f"Loading cached embeddings from {cache_path}")
         with open(cache_path, "rb") as f:
-            return pickle.load(f)
+            cache = pickle.load(f)
+        if not cache_has_image_vectors(cache):
+            log.warning(
+                "Embedding cache is legacy mean-only. Late-interaction scoring "
+                "will still run, but for the full cross-photo matcher rerun "
+                "with --refresh-cache while the DINO server is available."
+            )
+        return cache
 
     log.info("Computing embeddings (this takes ~30 min on CPU)...")
     cache = {}
@@ -263,7 +297,24 @@ def get_emb(cache, site, code, cat):
     key = f"{site}/{code}"
     if key not in cache:
         return None
-    return cache[key].get(cat)
+    value = cache[key].get(cat)
+    if isinstance(value, dict):
+        return value.get("mean")
+    return value
+
+
+def get_vecs(cache, site, code, cat):
+    """Retrieve per-image vectors from cache, with legacy mean fallback."""
+    key = f"{site}/{code}"
+    if key not in cache:
+        return []
+    value = cache[key].get(cat)
+    if value is None:
+        return []
+    if isinstance(value, dict):
+        vectors = value.get("vectors") or []
+        return [v for v in vectors if v is not None]
+    return [value]
 
 
 # ─────────────────────────────────────────────────────────────
@@ -340,6 +391,147 @@ def build_combined_embedding_matrix(viva, coelho, emb_cache) -> np.ndarray:
             if coelho_embs[j] is None:
                 continue
             sim[i, j] = cosine_sim(viva_embs[i], coelho_embs[j])
+    return sim
+
+
+def image_set_similarity(a_vecs: list[np.ndarray],
+                         b_vecs: list[np.ndarray],
+                         top_k: int = 5) -> float:
+    """Late-interaction similarity between two photo sets.
+
+    Instead of averaging a listing first, compare every selected Viva image
+    against every selected Coelho image. This preserves strong evidence when
+    only one or two photos overlap semantically, which is common across agents.
+    The score keeps the strongest cross-image match as the primary signal,
+    then blends in top-k and bidirectional coverage so a single accidental high
+    score cannot dominate completely.
+    """
+    if not a_vecs or not b_vecs:
+        return 0.0
+
+    a = np.stack(a_vecs).astype(np.float32)
+    b = np.stack(b_vecs).astype(np.float32)
+    a_norm = np.linalg.norm(a, axis=1, keepdims=True)
+    b_norm = np.linalg.norm(b, axis=1, keepdims=True)
+    a = a / np.maximum(a_norm, 1e-9)
+    b = b / np.maximum(b_norm, 1e-9)
+
+    sims = a @ b.T
+    flat = np.sort(sims.reshape(-1))[::-1]
+    k = max(1, min(top_k, flat.size))
+    best_score = float(flat[0])
+    top_score = float(flat[:k].mean())
+    row_score = float(sims.max(axis=1).mean())
+    col_score = float(sims.max(axis=0).mean())
+    coverage_score = (row_score + col_score) / 2.0
+    return 0.50 * best_score + 0.30 * top_score + 0.20 * coverage_score
+
+
+def build_set_sim_matrix(viva, coelho, emb_cache, cat: str,
+                         top_k: int = 5) -> np.ndarray:
+    """Build NxM late-interaction similarity matrix for one category."""
+    n, m = len(viva), len(coelho)
+    sim = np.zeros((n, m), dtype=np.float32)
+    for i, v in enumerate(viva):
+        v_vecs = get_vecs(emb_cache, "vivaprimeimoveis", v["code"], cat)
+        if not v_vecs:
+            continue
+        for j, c in enumerate(coelho):
+            c_vecs = get_vecs(emb_cache, "coelhodafonseca", c["code"], cat)
+            if not c_vecs:
+                continue
+            sim[i, j] = image_set_similarity(v_vecs, c_vecs, top_k=top_k)
+    return sim
+
+
+def build_late_interaction_matrix(pool_mat, facade_mat, garden_mat) -> np.ndarray:
+    """Weighted category matrix using late-interaction category scores."""
+    n, m = pool_mat.shape
+    combined = np.zeros((n, m), dtype=np.float32)
+    for i in range(n):
+        for j in range(m):
+            present = []
+            for mat, w in ((pool_mat, 0.60), (facade_mat, 0.25),
+                           (garden_mat, 0.15)):
+                if mat[i, j] > 0:
+                    present.append((float(mat[i, j]), w))
+            if not present:
+                continue
+            total_w = sum(w for _, w in present)
+            combined[i, j] = sum(s * w / total_w for s, w in present)
+    return combined
+
+
+def _weighted_listing_vectors(cache, site: str, code: str) -> list[np.ndarray]:
+    """Return category-weighted per-image vectors for a listing."""
+    out = []
+    for cat, weight in (("pool", 0.60), ("facade", 0.25), ("garden", 0.15)):
+        for vec in get_vecs(cache, site, code, cat):
+            out.append(np.asarray(vec, dtype=np.float32) * weight)
+    return out
+
+
+def _l2_normalize_rows(x: np.ndarray) -> np.ndarray:
+    return x / np.maximum(np.linalg.norm(x, axis=1, keepdims=True), 1e-9)
+
+
+def build_vlad_matrix(viva, coelho, emb_cache, n_clusters: int = 64,
+                      seed: int = 7) -> np.ndarray:
+    """Build an AnyLoc-inspired VLAD matrix over per-image DINO vectors.
+
+    AnyLoc uses DINO local features + VLAD for robust visual place recognition.
+    This repo already caches one DINO vector per selected image, so this is the
+    practical first step: aggregate all selected pool/facade/garden image
+    vectors for a listing into a VLAD descriptor. It captures distributional
+    agreement between photo sets better than a simple mean.
+    """
+    from scipy.cluster.vq import kmeans2
+
+    all_vecs = []
+    viva_vecs = []
+    coelho_vecs = []
+
+    for listing in viva:
+        vs = _weighted_listing_vectors(
+            emb_cache, "vivaprimeimoveis", listing["code"])
+        viva_vecs.append(vs)
+        all_vecs.extend(vs)
+    for listing in coelho:
+        vs = _weighted_listing_vectors(
+            emb_cache, "coelhodafonseca", listing["code"])
+        coelho_vecs.append(vs)
+        all_vecs.extend(vs)
+
+    if len(all_vecs) < n_clusters:
+        raise ValueError(
+            f"Not enough vectors for VLAD: {len(all_vecs)} < {n_clusters}")
+
+    train = _l2_normalize_rows(np.stack(all_vecs).astype(np.float32))
+    centers, _ = kmeans2(train, n_clusters, minit="points", iter=25, seed=seed)
+    centers = _l2_normalize_rows(centers.astype(np.float32))
+
+    def encode(vectors: list[np.ndarray]) -> np.ndarray | None:
+        if not vectors:
+            return None
+        x = _l2_normalize_rows(np.stack(vectors).astype(np.float32))
+        assignments = (x @ centers.T).argmax(axis=1)
+        desc = np.zeros((n_clusters, x.shape[1]), dtype=np.float32)
+        for idx, cluster_id in enumerate(assignments):
+            desc[cluster_id] += x[idx] - centers[cluster_id]
+        desc = desc / np.maximum(np.linalg.norm(desc, axis=1, keepdims=True), 1e-9)
+        flat = desc.reshape(-1)
+        return flat / max(float(np.linalg.norm(flat)), 1e-9)
+
+    viva_desc = [encode(vs) for vs in viva_vecs]
+    coelho_desc = [encode(vs) for vs in coelho_vecs]
+
+    sim = np.zeros((len(viva), len(coelho)), dtype=np.float32)
+    for i, a in enumerate(viva_desc):
+        if a is None:
+            continue
+        for j, b in enumerate(coelho_desc):
+            if b is not None:
+                sim[i, j] = float(a @ b)
     return sim
 
 
@@ -1622,7 +1814,10 @@ def strat_threshold_sweep(pool_mat, facade_mat, garden_mat,
     sweep_params = []
 
     # Sweep key params
-    thresholds = [0.70, 0.75, 0.78, 0.80, 0.82, 0.85, 0.87, 0.90]
+    if kw.get("matrix_mode") == "vlad":
+        thresholds = [0.08, 0.10, 0.12, 0.15, 0.18, 0.20, 0.25]
+    else:
+        thresholds = [0.70, 0.75, 0.78, 0.80, 0.82, 0.85, 0.87, 0.90]
     area_tols = [0.20, 0.25, 0.30, 0.35, 0.40, 0.50]
     price_tols = [0.30, 0.40, 0.50, 0.60]
     pool_ranks = [3, 5, 7, 10]
@@ -1670,11 +1865,31 @@ def strat_threshold_sweep(pool_mat, facade_mat, garden_mat,
 # ─────────────────────────────────────────────────────────────
 
 def run_optimization(viva, coelho, pool_mat, facade_mat, garden_mat,
-                     combined_mat):
+                     combined_mat, matrix_mode: str = "mean"):
     # Inject combined_mat into all strategies via kwargs
     cm = {"combined_mat": combined_mat}
 
-    rounds = [
+    if matrix_mode == "vlad":
+        rounds = [
+            ("V0  VLAD baseline (thresh=0.10)",
+             strat_combined_emb, {**cm, "threshold": 0.10}),
+            ("V1  VLAD baseline (thresh=0.12)",
+             strat_combined_emb, {**cm, "threshold": 0.12}),
+            ("V2  VLAD baseline (thresh=0.15)",
+             strat_combined_emb, {**cm, "threshold": 0.15}),
+            ("V3  VLAD + area + pool-verify",
+             strat_combined_area_pool_verify,
+             {**cm, "threshold": 0.10, "area_tol": 0.30,
+              "pool_rank_max": 5}),
+            ("V4  VLAD structural boost",
+             strat_structural_boost,
+             {**cm, "threshold": 0.18, "area_bonus": 0.05,
+              "beds_bonus": 0.03, "price_bonus": 0.03}),
+            ("V5  VLAD price-weighted",
+             strat_price_weighted_combined, {**cm, "threshold": 0.10}),
+        ]
+    else:
+        rounds = [
         # ── Baseline ──
         ("R0  combined embedding (baseline)",
          strat_combined_emb, {**cm, "threshold": 0.85}),
@@ -1731,7 +1946,7 @@ def run_optimization(viva, coelho, pool_mat, facade_mat, garden_mat,
         ("R14  price-weighted combined (thresh=0.82)",
          strat_price_weighted_combined,
          {**cm, "threshold": 0.82}),
-    ]
+        ]
 
     best_f1 = 0.0
     best_name = ""
@@ -1774,7 +1989,7 @@ def run_optimization(viva, coelho, pool_mat, facade_mat, garden_mat,
     log.info("R-SWEEP  threshold sweep on best strategy...")
     sweep_matches = strat_threshold_sweep(
         pool_mat, facade_mat, garden_mat, viva, coelho,
-        best_fn=best_fn, best_params=best_params,
+        best_fn=best_fn, best_params=best_params, matrix_mode=matrix_mode,
     )
     if sweep_matches:
         sweep_result = evaluate(sweep_matches)
@@ -1816,7 +2031,8 @@ def run_optimization(viva, coelho, pool_mat, facade_mat, garden_mat,
 
 
 def build_ranked_output(viva, coelho, pool_mat, facade_mat, garden_mat,
-                        combined_mat):
+                        combined_mat, min_similarity: float = 0.75,
+                        score_mode: str = "cosine"):
     """Build a confidence-ranked list of ALL candidate pairs for human review.
     The review UI shows these sorted by confidence — user's time is optimized
     by reviewing the highest-confidence pairs first.
@@ -1843,7 +2059,7 @@ def build_ranked_output(viva, coelho, pool_mat, facade_mat, garden_mat,
     pairs_scored = []
     for r, c_idx in zip(row_ind, col_ind):
         sim = float(combined_mat[r, c_idx])
-        if sim < 0.75:  # very low threshold to include most candidates
+        if sim < min_similarity:
             continue
 
         v = viva[r]
@@ -1869,9 +2085,15 @@ def build_ranked_output(viva, coelho, pool_mat, facade_mat, garden_mat,
             rel_diff = abs(v["price"] - c["price"]) / ((v["price"] + c["price"]) / 2)
             price_score = max(0.0, 1.0 - rel_diff * 3.5)
 
+        # VLAD scores live on a lower scale than cosine similarities.
+        if score_mode == "vlad":
+            sim_for_conf = min(max((sim - 0.05) / 0.15, 0.0), 1.0)
+        else:
+            sim_for_conf = sim
+
         # Composite confidence (weights sum to 1.00)
         # Price raised 15%→25%, visual lowered 30%→20%: same property = same price
-        confidence = (0.20 * sim +
+        confidence = (0.20 * sim_for_conf +
                       0.20 * (1.0 / max(pool_rank, 1)) +
                       0.15 * (1.0 / max(facade_rank, 1)) +
                       0.20 * area_score +
@@ -1922,6 +2144,17 @@ def parse_args():
     p.add_argument("--data-root", default="data")
     p.add_argument("--output", default="data/auto-matches-v3.json")
     p.add_argument("--cache", default="data/embedding-cache-v3.pkl")
+    p.add_argument("--matrix-mode", choices=["vlad", "late", "mean"],
+                   default="vlad",
+                   help="vlad: AnyLoc-inspired VLAD aggregation over "
+                        "per-image DINO vectors (default). "
+                        "late: compare image sets pairwise. "
+                        "mean: use legacy mean embedding matrix.")
+    p.add_argument("--vlad-clusters", type=int, default=64,
+                   help="Number of clusters for --matrix-mode vlad (default: 64)")
+    p.add_argument("--refresh-cache", action="store_true",
+                   help="Re-embed images and rewrite cache. Required once to "
+                        "upgrade legacy mean-only caches for full late scoring.")
     p.add_argument("--verbose", action="store_true")
     return p.parse_args()
 
@@ -1941,13 +2174,16 @@ def main():
         resp = requests.get(health_url, timeout=5)
         resp.raise_for_status()
         info = resp.json()
-        log.info(f"DINOv2 server: device={info.get('device')}, "
+        log.info(f"DINO server: device={info.get('device')}, "
                  f"model={info.get('dino', info.get('model'))}")
     except Exception as exc:
+        if args.refresh_cache:
+            log.error(f"Cannot refresh embeddings because DINO server is unreachable: {exc}")
+            sys.exit(1)
         if cache_path.exists():
-            log.warning(f"DINOv2 server unreachable ({exc}), using cached embeddings")
+            log.warning(f"DINO server unreachable ({exc}), using cached embeddings")
         else:
-            log.error(f"Cannot reach DINOv2 server: {exc}")
+            log.error(f"Cannot reach DINO server: {exc}")
             sys.exit(1)
 
     # Load data
@@ -1955,13 +2191,27 @@ def main():
 
     # Compute / load embeddings
     emb_cache = compute_and_cache_embeddings(
-        viva, coelho, args.dino_url, data_root, cache_path)
+        viva, coelho, args.dino_url, data_root, cache_path,
+        refresh_cache=args.refresh_cache)
+    effective_matrix_mode = args.matrix_mode
+    if args.matrix_mode in ("late", "vlad") and not cache_has_image_vectors(emb_cache):
+        effective_matrix_mode = "mean"
+        log.warning(
+            "Falling back to --matrix-mode mean for this run because the cache "
+            "does not contain per-image vectors. Run once with --refresh-cache "
+            "to enable late/VLAD scoring."
+        )
 
     # Build per-category similarity matrices
     log.info("Building similarity matrices...")
-    pool_mat   = build_sim_matrix(viva, coelho, emb_cache, "pool")
-    facade_mat = build_sim_matrix(viva, coelho, emb_cache, "facade")
-    garden_mat = build_sim_matrix(viva, coelho, emb_cache, "garden")
+    if effective_matrix_mode in ("late", "vlad"):
+        pool_mat   = build_set_sim_matrix(viva, coelho, emb_cache, "pool")
+        facade_mat = build_set_sim_matrix(viva, coelho, emb_cache, "facade")
+        garden_mat = build_set_sim_matrix(viva, coelho, emb_cache, "garden")
+    else:
+        pool_mat   = build_sim_matrix(viva, coelho, emb_cache, "pool")
+        facade_mat = build_sim_matrix(viva, coelho, emb_cache, "facade")
+        garden_mat = build_sim_matrix(viva, coelho, emb_cache, "garden")
     log.info(f"  pool:   {pool_mat.shape}, "
              f"non-zero: {(pool_mat > 0).sum()}")
     log.info(f"  facade: {facade_mat.shape}, "
@@ -1969,21 +2219,34 @@ def main():
     log.info(f"  garden: {garden_mat.shape}, "
              f"non-zero: {(garden_mat > 0).sum()}")
 
-    # Build combined embedding matrix (weighted-mean per listing → cosine)
-    log.info("Building combined embedding matrix...")
-    combined_mat = build_combined_embedding_matrix(viva, coelho, emb_cache)
+    # Build combined matrix
+    if effective_matrix_mode == "late":
+        log.info("Building late-interaction combined matrix...")
+        combined_mat = build_late_interaction_matrix(
+            pool_mat, facade_mat, garden_mat)
+    elif effective_matrix_mode == "vlad":
+        log.info(f"Building VLAD matrix ({args.vlad_clusters} clusters)...")
+        combined_mat = build_vlad_matrix(
+            viva, coelho, emb_cache, n_clusters=args.vlad_clusters)
+    else:
+        log.info("Building mean-embedding combined matrix...")
+        combined_mat = build_combined_embedding_matrix(viva, coelho, emb_cache)
     log.info(f"  combined: {combined_mat.shape}, "
              f"non-zero: {(combined_mat > 0).sum()}")
 
     # Run optimization (find best strategy)
     best_matches, results_log = run_optimization(
-        viva, coelho, pool_mat, facade_mat, garden_mat, combined_mat)
+        viva, coelho, pool_mat, facade_mat, garden_mat, combined_mat,
+        matrix_mode=effective_matrix_mode)
 
     # Build confidence-ranked output for review UI
     log.info("\n" + "=" * 70)
     log.info("Building confidence-ranked pairs for review...")
     ranked_pairs = build_ranked_output(
-        viva, coelho, pool_mat, facade_mat, garden_mat, combined_mat)
+        viva, coelho, pool_mat, facade_mat, garden_mat, combined_mat,
+        min_similarity=0.10 if effective_matrix_mode == "vlad"
+        else 0.65 if effective_matrix_mode == "late" else 0.75,
+        score_mode=effective_matrix_mode)
     all_eval = evaluate(ranked_pairs)
     log.info(f"Total ranked pairs: {len(ranked_pairs)}  "
              f"P={all_eval['precision']:.0%}  R={all_eval['recall']:.0%}  "
@@ -1995,13 +2258,13 @@ def main():
     result = {
         "session_started": now,
         "session_name": "recursive-v2",
-        "strategy": "confidence-ranked-ensemble",
+        "strategy": f"confidence-ranked-ensemble-{effective_matrix_mode}",
         "optimization_log": results_log,
         "matches": [{
             "viva_code": m["viva_code"],
             "coelho_code": m["coelho_code"],
             "matched_at": now,
-            "reviewer": "dino-v2",
+            "reviewer": "dino-v3",
             "similarity_score": m["similarity_score"],
             "confidence": m.get("tier", "medium"),
             "confidence_score": m.get("confidence", m["similarity_score"]),

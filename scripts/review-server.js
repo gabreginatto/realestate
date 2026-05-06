@@ -78,6 +78,19 @@ function selectedImageUrl(site, code, filename) {
   return `${GCS_BASE}/selected/${fullSite(site)}/${code}/${filename}`;
 }
 
+const OUTDOOR_CATEGORIES = new Set(['pool', 'facade', 'garden']);
+const CATEGORY_PRIORITY = { pool: 0, facade: 1, garden: 2 };
+
+function sortOutdoorImages(entries) {
+  return (entries || [])
+    .filter(e => OUTDOOR_CATEGORIES.has(e.category))
+    .sort((a, b) => {
+      const byCategory = CATEGORY_PRIORITY[a.category] - CATEGORY_PRIORITY[b.category];
+      if (byCategory !== 0) return byCategory;
+      return String(a.filename).localeCompare(String(b.filename), undefined, { numeric: true });
+    });
+}
+
 // ---------------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------------
@@ -221,15 +234,18 @@ app.get('/api/images/:site/:code', async (req, res) => {
   if (!['viva', 'coelho'].includes(site)) return res.status(400).json([]);
 
   const fs = fullSite(site);
+  const mode = req.query.mode === 'expanded' ? 'expanded' : 'standard';
 
   // Try CLIP manifest from GCS
   try {
     const manifest = await gcsRead(`selected/${fs}/${code}/_manifest.json`);
-    const OUTDOOR  = new Set(['facade', 'pool', 'garden']);
-    const urls = (manifest.all_categories || manifest.selected || [])
-      .filter(e => OUTDOOR.has(e.category))
-      .slice(0, 16)
-      .map(e => selectedImageUrl(site, code, e.filename));
+    const entries = mode === 'expanded'
+      ? sortOutdoorImages(manifest.all_categories || manifest.selected).slice(0, 32)
+      : sortOutdoorImages(manifest.selected || []).slice(0, 8);
+    const urls = entries.map(e => mode === 'expanded'
+      ? imageUrl(site, code, e.filename)
+      : selectedImageUrl(site, code, e.filename)
+    );
     if (urls.length) return res.json(urls);
   } catch (_) { /* fall through */ }
 
@@ -660,7 +676,7 @@ function metaHTML(info) {
 async function renderImage(site, code) {
   const container = document.getElementById(site + '-img');
   const hint = '<span class="zoom-hint">🔍 clique para ampliar</span>';
-  const urls = await fetch('/api/images/' + site + '/' + code).then(r => r.json());
+  const urls = await fetch('/api/images/' + site + '/' + code + '?mode=standard').then(r => r.json());
   if (!urls.length) {
     container.innerHTML = '<div class="no-img">Sem imagens disponíveis</div>';
     return;
@@ -675,7 +691,7 @@ async function openLightbox(site) {
   const code  = site === 'viva' ? _state.pair.viva_code : _state.pair.coelho_code;
   const label = site === 'viva' ? 'Viva #' + code : 'Coelho #' + code;
   document.getElementById('lightbox-title').textContent = label;
-  const urls = await fetch('/api/images/' + site + '/' + code).then(r => r.json());
+  const urls = await fetch('/api/images/' + site + '/' + code + '?mode=expanded').then(r => r.json());
   const grid = document.getElementById('lightbox-grid');
   grid.innerHTML = urls.length
     ? urls.map(u => '<img src="' + u + '" loading="lazy" onclick="window.open(this.src)">').join('')

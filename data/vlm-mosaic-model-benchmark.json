@@ -1,0 +1,55 @@
+{
+  "confirmed_pair_count": 21,
+  "unique_viva_count": 20,
+  "max_images_per_listing": 16,
+  "labels": {
+    "pool": "a real estate photo of a swimming pool or pool deck",
+    "facade": "a real estate photo of the outside facade of a house",
+    "garden": "a real estate photo of a garden, yard, trees, or landscaping",
+    "interior": "a real estate photo of an interior room inside a house"
+  },
+  "metric_notes": {
+    "rank_metrics": "Ranks the known true Coelho listing among confirmed Coelho candidates using selected images and top-3 perceptual-hash similarity.",
+    "scope": "Confirmed-pair listing set only, intended for fast model comparison before full reclassification."
+  },
+  "results": [
+    {
+      "model": "openai/clip-vit-base-patch32",
+      "candidate_coelho_count": 21,
+      "evaluated_viva": 20,
+      "recall_at_1": 0.5,
+      "recall_at_3": 0.55,
+      "recall_at_5": 0.55,
+      "mrr": 0.5722464779372675,
+      "median_rank": 1.5,
+      "mean_rank": 5.8,
+      "mean_direct_pair_score": 0.6527777777777778,
+      "mean_selected_images": 3.815909090909091,
+      "category_counts": {
+        "pool": 134,
+        "facade": 32,
+        "garden": 31,
+        "interior": 0
+      }
+    },
+    {
+      "model": "google/siglip-base-patch16-224",
+      "candidate_coelho_count": 21,
+      "evaluated_viva": 20,
+      "recall_at_1": 0.05,
+      "recall_at_3": 0.25,
+      "recall_at_5": 0.3,
+      "mrr": 0.21761740302181476,
+      "median_rank": 10.0,
+      "mean_rank": 8.95,
+      "mean_direct_pair_score": 0.5215773809523809,
+      "mean_selected_images": 1.9090909090909092,
+      "category_counts": {
+        "pool": 0,
+        "facade": 0,
+        "garden": 80,
+        "interior": 0
+      }
+    }
+  ]
+}

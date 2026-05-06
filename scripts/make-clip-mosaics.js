@@ -31,60 +31,74 @@ const SITES = {
 
 // ── Mosaic layout ──────────────────────────────────────────────────────────────
 const COLS = 4;
-const ROWS = 2;
+const STANDARD_ROWS = 2;
+const EXPANDED_ROWS = 4;
 const CW   = 320;
 const CH   = 320;
-const TOTAL_W = COLS * CW; // 1280
-const TOTAL_H = ROWS * CH; // 640
+const OUTDOOR = new Set(['pool', 'facade', 'garden']);
+const CATEGORY_PRIORITY = { pool: 0, facade: 1, garden: 2 };
+
+function byOutdoorPriority(a, b) {
+  const byCategory = CATEGORY_PRIORITY[a.category] - CATEGORY_PRIORITY[b.category];
+  if (byCategory !== 0) return byCategory;
+  return String(a.filename).localeCompare(String(b.filename), undefined, { numeric: true });
+}
 
 // ── Image selection ────────────────────────────────────────────────────────────
 /**
- * Read the manifest and select:
- *   - up to 3 facade images
- *   - up to 5 pool images
- *   - fill remaining slots (up to 8 total) with garden images
- * Images are ordered: facade first, then pool, then garden.
- * Returns an array of absolute file paths (length <= 8).
+ * Read the manifest and return the curated exterior set.
+ * This uses manifest.selected, which is already produced by the pool-first
+ * CLIP selector and copied to selected_for_matching/.
  */
-async function selectImages(manifestPath, cacheDir, code) {
+async function selectStandardImages(manifestPath, cacheDir, code) {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const selected = (manifest.selected || [])
+    .filter(e => OUTDOOR.has(e.category))
+    .sort(byOutdoorPriority);
 
-  // Prefer all_categories; fall back to selected
-  const categories = manifest.all_categories || manifest.selected || [];
+  return selected.map(e => ({
+    category: e.category,
+    path: path.join(cacheDir, code, e.filename),
+  }));
+}
 
-  const byCategory = (cat) => categories.filter(e => e.category === cat);
+/**
+ * Return a larger outdoor-only set for expanded mosaics.
+ * all_categories points at the full image cache, not selected_for_matching/.
+ */
+async function selectExpandedImages(manifestPath, cacheDir, code) {
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const expanded = (manifest.all_categories || manifest.selected || [])
+    .filter(e => OUTDOOR.has(e.category))
+    .sort(byOutdoorPriority);
 
-  const facades = byCategory('facade').slice(0, 3);
-  const pools   = byCategory('pool').slice(0, 5);
-
-  const taken    = facades.length + pools.length;
-  const remaining = Math.max(0, 8 - taken);
-  const gardens  = byCategory('garden').slice(0, remaining);
-
-  const chosen = [...facades, ...pools, ...gardens];
-
-  return chosen.map(e => path.join(cacheDir, code, e.filename));
+  return expanded.map(e => ({
+    category: e.category,
+    path: path.join(cacheDir, code, e.filename),
+  }));
 }
 
 // ── Mosaic builder ─────────────────────────────────────────────────────────────
 /**
- * Build a 2×4 grid mosaic from up to 8 image paths.
- * Missing or non-existent paths are replaced by a dark-grey placeholder cell.
+ * Build a grid mosaic from image paths.
+ * Missing or non-existent paths are replaced by a neutral placeholder cell.
  */
-async function buildMosaic(imagePaths, outputPath) {
-  const slots = imagePaths.slice(0, COLS * ROWS);
-  while (slots.length < COLS * ROWS) slots.push(null);
+async function buildMosaic(imagePaths, outputPath, rows = STANDARD_ROWS) {
+  const totalW = COLS * CW;
+  const totalH = rows * CH;
+  const slots = imagePaths.slice(0, COLS * rows);
+  while (slots.length < COLS * rows) slots.push(null);
 
   const composites = [];
 
-  for (let i = 0; i < COLS * ROWS; i++) {
+  for (let i = 0; i < COLS * rows; i++) {
     const p = slots[i];
     let buf;
 
     if (p && fs.existsSync(p)) {
       buf = await sharp(p)
         .rotate()
-        .resize(CW, CH, { fit: 'contain', background: { r: 245, g: 245, b: 245 } })
+        .resize(CW, CH, { fit: 'cover', position: 'attention' })
         .png()
         .toBuffer();
     } else {
@@ -93,7 +107,7 @@ async function buildMosaic(imagePaths, outputPath) {
           width:    CW,
           height:   CH,
           channels: 3,
-          background: { r: 60, g: 60, b: 70 },
+          background: { r: 245, g: 245, b: 245 },
         },
       })
         .png()
@@ -109,8 +123,8 @@ async function buildMosaic(imagePaths, outputPath) {
 
   await sharp({
     create: {
-      width:    TOTAL_W,
-      height:   TOTAL_H,
+      width:    totalW,
+      height:   totalH,
       channels: 3,
       background: { r: 245, g: 245, b: 245 },
     },
@@ -129,33 +143,34 @@ async function processListing(shortsite, code, force) {
   const site        = SITES[shortsite];
   const manifestPath = path.join(site.selectedDir, code, '_manifest.json');
   const outputPath   = path.join(site.mosaicDir, `${code}.png`);
+  const fullOutputPath = path.join(site.mosaicDir, `${code}_full.png`);
 
   if (!fs.existsSync(manifestPath)) {
     return { code, status: 'no_manifest', images: 0 };
   }
 
-  if (!force && fs.existsSync(outputPath)) {
+  if (!force && fs.existsSync(outputPath) && fs.existsSync(fullOutputPath)) {
     return { code, status: 'skipped', images: 0 };
   }
 
   try {
-    const imagePaths = await selectImages(manifestPath, site.cacheDir, code);
+    const standardImages = await selectStandardImages(manifestPath, site.cacheDir, code);
+    const expandedImages = await selectExpandedImages(manifestPath, site.cacheDir, code);
 
     // Count breakdown for progress line
-    const manifest    = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    const categories  = manifest.all_categories || manifest.selected || [];
-    const nFacade = categories.filter(e => e.category === 'facade').slice(0, 3).length;
-    const nPool   = categories.filter(e => e.category === 'pool').slice(0, 5).length;
-    const taken   = nFacade + nPool;
-    const nGarden = categories.filter(e => e.category === 'garden').slice(0, Math.max(0, 8 - taken)).length;
-    const total   = nFacade + nPool + nGarden;
+    const nPool   = standardImages.filter(e => e.category === 'pool').length;
+    const nFacade = standardImages.filter(e => e.category === 'facade').length;
+    const nGarden = standardImages.filter(e => e.category === 'garden').length;
+    const total   = standardImages.length;
+    const expandedTotal = Math.min(expandedImages.length, COLS * EXPANDED_ROWS);
 
     // Ensure output directory exists
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 
-    await buildMosaic(imagePaths, outputPath);
+    await buildMosaic(standardImages.map(e => e.path), outputPath, STANDARD_ROWS);
+    await buildMosaic(expandedImages.map(e => e.path), fullOutputPath, EXPANDED_ROWS);
 
-    return { code, status: 'ok', images: total, nFacade, nPool, nGarden };
+    return { code, status: 'ok', images: total, nFacade, nPool, nGarden, expandedTotal };
   } catch (err) {
     return { code, status: 'error', images: 0, error: err.message };
   }
@@ -196,7 +211,8 @@ async function processSite(shortsite, force) {
       case 'ok':
         console.log(
           `${prefix} ${shortsite}/${code} → ${result.images} images` +
-          ` (${result.nFacade} facade + ${result.nPool} pool + ${result.nGarden} garden)  ✓`
+          ` (${result.nPool} pool + ${result.nFacade} facade + ${result.nGarden} garden),` +
+          ` expanded ${result.expandedTotal}  ✓`
         );
         nOk++;
         break;
