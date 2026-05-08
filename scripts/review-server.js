@@ -1470,7 +1470,7 @@ function laneSummaryHTML(lanes) {
 }
 
 function nextLaneWithPending(lanes, exclude) {
-  for (const l of ['high', 'normal', 'recall']) {
+  for (const l of ['high', 'normal', 'recall', 'audit']) {
     if (l === exclude) continue;
     if ((lanes && lanes[l] && lanes[l].pending) || 0) return l;
   }
