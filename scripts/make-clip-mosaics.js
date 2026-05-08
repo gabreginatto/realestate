@@ -44,13 +44,19 @@ function byOutdoorPriority(a, b) {
   return String(a.filename).localeCompare(String(b.filename), undefined, { numeric: true });
 }
 
+function resolveImagePath(cacheDir, selectedDir, code, filename) {
+  const cachePath = path.join(cacheDir, code, filename);
+  if (fs.existsSync(cachePath)) return cachePath;
+  return path.join(selectedDir, code, filename);
+}
+
 // ── Image selection ────────────────────────────────────────────────────────────
 /**
  * Read the manifest and return the curated exterior set.
  * This uses manifest.selected, which is already produced by the pool-first
  * CLIP selector and copied to selected_for_matching/.
  */
-async function selectStandardImages(manifestPath, cacheDir, code) {
+async function selectStandardImages(manifestPath, cacheDir, selectedDir, code) {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const selected = (manifest.selected || [])
     .filter(e => OUTDOOR.has(e.category))
@@ -58,7 +64,7 @@ async function selectStandardImages(manifestPath, cacheDir, code) {
 
   return selected.map(e => ({
     category: e.category,
-    path: path.join(cacheDir, code, e.filename),
+    path: resolveImagePath(cacheDir, selectedDir, code, e.filename),
   }));
 }
 
@@ -66,7 +72,7 @@ async function selectStandardImages(manifestPath, cacheDir, code) {
  * Return a larger outdoor-only set for expanded mosaics.
  * all_categories points at the full image cache, not selected_for_matching/.
  */
-async function selectExpandedImages(manifestPath, cacheDir, code) {
+async function selectExpandedImages(manifestPath, cacheDir, selectedDir, code) {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const expanded = (manifest.all_categories || manifest.selected || [])
     .filter(e => OUTDOOR.has(e.category))
@@ -74,7 +80,7 @@ async function selectExpandedImages(manifestPath, cacheDir, code) {
 
   return expanded.map(e => ({
     category: e.category,
-    path: path.join(cacheDir, code, e.filename),
+    path: resolveImagePath(cacheDir, selectedDir, code, e.filename),
   }));
 }
 
@@ -154,8 +160,8 @@ async function processListing(shortsite, code, force) {
   }
 
   try {
-    const standardImages = await selectStandardImages(manifestPath, site.cacheDir, code);
-    const expandedImages = await selectExpandedImages(manifestPath, site.cacheDir, code);
+    const standardImages = await selectStandardImages(manifestPath, site.cacheDir, site.selectedDir, code);
+    const expandedImages = await selectExpandedImages(manifestPath, site.cacheDir, site.selectedDir, code);
 
     // Count breakdown for progress line
     const nPool   = standardImages.filter(e => e.category === 'pool').length;

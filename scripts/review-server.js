@@ -29,6 +29,7 @@ const { Storage } = require('@google-cloud/storage');
 const PORT       = process.env.PORT || 3001;
 const GCS_BUCKET = process.env.GCS_BUCKET || 'realestate-475615-data';
 const GCS_BASE   = `https://storage.googleapis.com/${GCS_BUCKET}`;
+const MOSAIC_VERSION = process.env.K_REVISION || String(Date.now());
 
 const storage = new Storage();
 const bucket  = storage.bucket(GCS_BUCKET);
@@ -86,7 +87,7 @@ function selectedImageUrl(site, code, filename) {
 //   mosaics/{site}/{code}_full.png  — expanded 8x4 outdoor mosaic
 function mosaicUrl(site, code, mode = 'standard') {
   const suffix = mode === 'expanded' ? '_full' : '';
-  return `${GCS_BASE}/mosaics/${site}/${code}${suffix}.png`;
+  return `${GCS_BASE}/mosaics/${site}/${code}${suffix}.png?v=${encodeURIComponent(MOSAIC_VERSION)}`;
 }
 
 // In-memory cache for mosaic existence probes (per process)
