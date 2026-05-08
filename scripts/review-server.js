@@ -196,6 +196,8 @@ function pickEvidence(match) {
 
 let vivaMap    = {};
 let coelhoMap  = {};
+let vivaListings = [];
+let coelhoListings = [];
 let autoMatches = [];    // review queue (lanes high/normal/recall), non-reject pairs
 let auditMatches = [];   // reject-low pairs, accessible via audit lane
 let currentSession = null;  // { pass, pairs, audit, confirmed }
@@ -217,7 +219,8 @@ async function loadListingMaps() {
   const localCoe  = readLocalJson('LOCAL_FIXTURES_COELHO');
   try {
     const vRaw = localViva || await fetchJson(`${GCS_BASE}/listings/vivaprimeimoveis.json`);
-    for (const l of vRaw.listings || []) {
+    vivaListings = vRaw.listings || [];
+    for (const l of vivaListings) {
       const specs  = (l.detailedData || {}).specs || {};
       const areaStr = specs.area_construida || '';
       const areaM  = areaStr.match(/(\d+(?:[.,]\d+)?)/);
@@ -235,7 +238,8 @@ async function loadListingMaps() {
 
   try {
     const cRaw = localCoe || await fetchJson(`${GCS_BASE}/listings/coelhodafonseca.json`);
-    for (const l of cRaw.listings || []) {
+    coelhoListings = cRaw.listings || [];
+    for (const l of coelhoListings) {
       const features = l.features || '';
       const areaM = features.match(/(\d+(?:[.,]\d+)?)\s*m²\s*construída/i);
       const bedsM = features.match(/(\d+)\s*dorms?/i);
@@ -272,23 +276,28 @@ function decorateMatch(m) {
   };
 }
 
+function splitMatches(raw) {
+  const rawMatches = Array.isArray(raw.matches)
+    ? raw.matches
+    : Object.entries(raw.matches || {}).map(([viva_code, v]) => ({ viva_code, ...v }));
+
+  const review = [];
+  const audit  = [];
+  for (const m of rawMatches) {
+    const norm = normalizeTier(m);
+    if (m.include_in_review === false && norm.lane !== 'audit') continue;
+    const decorated = decorateMatch(m);
+    if (norm.lane === 'audit') audit.push(decorated);
+    else                       review.push(decorated);
+  }
+  return { review, audit };
+}
+
 async function loadMatches() {
   const localMatches = readLocalJson('LOCAL_FIXTURES_MATCHES');
   try {
     const raw = localMatches || await fetchJson(`${GCS_BASE}/matches/auto-matches.json`);
-    const rawMatches = Array.isArray(raw.matches)
-      ? raw.matches
-      : Object.entries(raw.matches || {}).map(([viva_code, v]) => ({ viva_code, ...v }));
-
-    const review = [];
-    const audit  = [];
-    for (const m of rawMatches) {
-      const norm = normalizeTier(m);
-      if (m.include_in_review === false && norm.lane !== 'audit') continue;
-      const decorated = decorateMatch(m);
-      if (norm.lane === 'audit') audit.push(decorated);
-      else                       review.push(decorated);
-    }
+    const { review, audit } = splitMatches(raw);
     autoMatches  = review;
     auditMatches = audit;
 
@@ -466,6 +475,7 @@ function buildTrialSummary() {
   const pairs = allSessionPairs();
   const confirmed = currentSession?.confirmed || [];
   const confirmedViva = new Set(confirmed.map(p => p.viva_code));
+  const reviewedViva = new Set(pairs.filter(p => p.status && p.status !== 'pending').map(p => p.viva_code));
   const nonConfirmedReviewed = pairs.filter(p =>
     p.status && p.status !== 'pending' && p.status !== 'confirmed' && !confirmedViva.has(p.viva_code)
   );
@@ -478,14 +488,28 @@ function buildTrialSummary() {
     viva: vivaMap[p.viva_code] || {},
     attempted_coelho: coelhoMap[p.coelho_code] || {},
   }])).values()];
+  const pendingViva = vivaListings
+    .filter(l => !confirmedViva.has(String(l.propertyCode)))
+    .map(l => ({
+      viva_code: String(l.propertyCode),
+      reviewed_in_current_session: reviewedViva.has(String(l.propertyCode)),
+      viva: vivaMap[String(l.propertyCode)] || {},
+    }));
+  const vivaNeverReviewed = pendingViva.filter(p => !p.reviewed_in_current_session);
 
   return {
     generated_at: new Date().toISOString(),
     trial_run_id: currentSession?.trial_run_id || null,
     pass: currentSession?.pass || null,
+    total_viva_listings: vivaListings.length,
+    total_coelho_listings: coelhoListings.length,
     lanes: currentSession ? laneCounts() : {},
     total_candidates: pairs.length,
     total_confirmed: confirmed.length,
+    confirmed_viva_count: confirmedViva.size,
+    pending_viva_count: pendingViva.length,
+    reviewed_unmatched_viva_count: vivaWithoutConfirmedCoelho.length,
+    never_reviewed_viva_count: vivaNeverReviewed.length,
     total_skipped: pairs.filter(p => p.status === 'skipped').length,
     total_unsure: pairs.filter(p => p.status === 'unsure').length,
     total_pending: pairs.filter(p => p.status === 'pending').length,
@@ -499,6 +523,8 @@ function buildTrialSummary() {
       coelho: coelhoMap[p.coelho_code] || {},
     })),
     viva_without_confirmed_coelho: vivaWithoutConfirmedCoelho,
+    pending_viva: pendingViva,
+    viva_never_reviewed: vivaNeverReviewed,
   };
 }
 
@@ -627,7 +653,13 @@ app.get('/api/session', (req, res) => {
   if (!currentSession) return res.status(503).json({ error: 'no session' });
 
   const requested = String(req.query.lane || '').toLowerCase();
-  const lane      = ALL_LANES.includes(requested) ? requested : 'high';
+  let lane = ALL_LANES.includes(requested) ? requested : 'high';
+  const preferredPool = lanePool(lane);
+  if (!ALL_LANES.includes(requested) || preferredPool.length === 0) {
+    lane = ALL_LANES.find(l => lanePool(l).some(p => p.status === 'pending'))
+        || ALL_LANES.find(l => lanePool(l).length > 0)
+        || lane;
+  }
 
   const pool           = lanePool(lane);
   const total          = pool.length;
@@ -661,9 +693,10 @@ app.get('/api/session', (req, res) => {
   }
 
   // Global confirmed count (across review + audit) for header chip
-  const globalConfirmed =
-    (currentSession.pairs || []).filter(p => p.status === 'confirmed').length +
-    (currentSession.audit  || []).filter(p => p.status === 'confirmed').length;
+  const globalConfirmed = Array.isArray(currentSession.confirmed)
+    ? currentSession.confirmed.length
+    : (currentSession.pairs || []).filter(p => p.status === 'confirmed').length +
+      (currentSession.audit  || []).filter(p => p.status === 'confirmed').length;
 
   res.json({
     trial_run_id:      currentSession.trial_run_id,
@@ -816,6 +849,11 @@ app.post('/api/final', async (req, res) => {
     generated_at:    new Date().toISOString(),
     trial_run_id:    currentSession?.trial_run_id || null,
     total_confirmed: confirmed.length,
+    total_viva_listings: trialSummary.total_viva_listings,
+    total_coelho_listings: trialSummary.total_coelho_listings,
+    pending_viva_count: trialSummary.pending_viva_count,
+    reviewed_unmatched_viva_count: trialSummary.reviewed_unmatched_viva_count,
+    never_reviewed_viva_count: trialSummary.never_reviewed_viva_count,
     matches: confirmed.map(p => ({
       viva_code:    p.viva_code,
       coelho_code:  p.coelho_code,
@@ -832,6 +870,62 @@ app.post('/api/final', async (req, res) => {
     elapsed_ms: req.body?.elapsed_ms,
   });
   res.json(output);
+});
+
+app.post('/api/start-next-round', async (req, res) => {
+  if (!currentSession) return res.status(503).json({ error: 'no session' });
+
+  const currentPass = Number(currentSession.pass || 1);
+  const nextPass = currentPass + 1;
+  const trialRunId = currentSession.trial_run_id || null;
+  const summary = buildTrialSummary();
+  const command = `node scripts/prepare-next-review-round.js --summary-url ${GCS_BASE}/review-sessions/trial-summaries/${trialRunId || 'no-session'}.json --round ${nextPass} --output data/auto-matches-round-${nextPass}.json --report data/review-round-${nextPass}-plan.json && ./scripts/sync-to-gcs.sh --matches data/auto-matches-round-${nextPass}.json --skip-assets`;
+
+  if (!summary.pending_viva_count) {
+    return res.json({
+      ok: false,
+      done: true,
+      message: 'Todas as propriedades Viva desta sessão já têm match confirmado.',
+      summary,
+    });
+  }
+
+  try {
+    const raw = await fetchJson(`${GCS_BASE}/matches/auto-matches-round-${nextPass}.json?v=${Date.now()}`);
+    const { review, audit } = splitMatches(raw);
+    const carryConfirmed = Array.isArray(currentSession.confirmed) ? currentSession.confirmed : [];
+    currentSession = buildNewSession(review, audit, nextPass, carryConfirmed);
+    await saveSession();
+    await logEvent(req, 'round_started', {
+      from_pass: currentPass,
+      next_pass: nextPass,
+      session_review_count: currentSession.pairs.length,
+      session_audit_count: currentSession.audit.length,
+      pending_viva_count: summary.pending_viva_count,
+    });
+    return res.json({
+      ok: true,
+      pass: nextPass,
+      review_count: currentSession.pairs.length,
+      audit_count: currentSession.audit.length,
+      lanes: laneCounts(),
+      summary,
+    });
+  } catch (e) {
+    await logEvent(req, 'next_round_not_ready', {
+      next_pass: nextPass,
+      pending_viva_count: summary.pending_viva_count,
+      error: e.message,
+    });
+    return res.status(404).json({
+      ok: false,
+      needs_local_matching: true,
+      next_pass: nextPass,
+      pending_viva_count: summary.pending_viva_count,
+      command,
+      message: `Rodada ${nextPass} ainda não foi preparada. Rode o comando no Mac e tente de novo.`,
+    });
+  }
 });
 
 app.get('/api/trial-summary', async (req, res) => {
@@ -1124,6 +1218,7 @@ const HTML = /* html */`<!DOCTYPE html>
     </div>
     <p id="final-breakdown"></p>
     <div class="modal-row">
+      <button class="btn-accent" id="next-round-btn" onclick="startNextRound()">🔁 Preparar Rodada 2</button>
       <button class="btn-green" onclick="downloadFinal()">⬇ Baixar JSON</button>
     </div>
   </div>
@@ -1529,9 +1624,39 @@ async function finalize() {
   _finalData = r;
   document.getElementById('final-count').textContent = r.total_confirmed;
   const lanes = (_state && _state.lanes) || null;
+  const vivaLine = r.total_viva_listings != null
+    ? '<br><strong>' + r.total_confirmed + '</strong> de <strong>' + r.total_viva_listings + '</strong> Viva confirmadas. ' +
+      '<strong>' + (r.pending_viva_count || 0) + '</strong> seguem para a próxima rodada.'
+    : '';
   document.getElementById('final-breakdown').innerHTML =
-    r.total_confirmed + ' pares confirmados salvos no GCS.' + laneSummaryHTML(lanes);
+    r.total_confirmed + ' pares confirmados salvos no GCS.' + vivaLine + laneSummaryHTML(lanes);
+  document.getElementById('next-round-btn').style.display = (r.pending_viva_count || 0) > 0 ? '' : 'none';
   document.getElementById('final-modal').classList.remove('hidden');
+}
+
+async function startNextRound() {
+  const btn = document.getElementById('next-round-btn');
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Preparando...';
+  try {
+    const resp = await fetch('/api/start-next-round', { method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ lane: _lane, page_elapsed_ms: Date.now() - _pageStartedAt }) });
+    const r = await resp.json();
+    if (r.ok) {
+      document.getElementById('final-modal').classList.add('hidden');
+      await fetchSession();
+      return;
+    }
+    const commandHtml = r.command
+      ? '<br><br><strong>Rodada ' + r.next_pass + ' ainda precisa ser gerada no Mac.</strong><br>' +
+        '<code>' + r.command.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</code>'
+      : '<br><br>' + (r.message || 'Não foi possível iniciar a próxima rodada.');
+    document.getElementById('final-breakdown').innerHTML += commandHtml;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
 }
 
 function downloadFinal() {

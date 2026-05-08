@@ -4,6 +4,7 @@
 # Push local Mac results to GCS after every matcher run.
 # Run from the repo root:
 #   ./scripts/sync-to-gcs.sh
+#   ./scripts/sync-to-gcs.sh --matches data/auto-matches-round-2.json --reset-session --skip-assets
 #
 # What gets synced:
 #   data/{site}/listings/all-listings.json  → gs://BUCKET/listings/{site}.json
@@ -21,13 +22,25 @@ DATA_ROOT="$REPO_ROOT/data"
 SITES=("vivaprimeimoveis" "coelhodafonseca")
 MOSAIC_SITES=("viva" "coelho")
 RESET_SESSION=false
+SKIP_ASSETS=false
+MATCHES_FILE=""
 
-for arg in "$@"; do
+while [[ $# -gt 0 ]]; do
+  arg="$1"
   case "$arg" in
-    --reset-session) RESET_SESSION=true ;;
+    --reset-session) RESET_SESSION=true; shift ;;
+    --skip-assets) SKIP_ASSETS=true; shift ;;
+    --matches)
+      if [[ $# -lt 2 ]]; then
+        echo "--matches requires a file path" >&2
+        exit 2
+      fi
+      MATCHES_FILE="$2"
+      shift 2
+      ;;
     *)
       echo "Unknown argument: $arg" >&2
-      echo "Usage: ./scripts/sync-to-gcs.sh [--reset-session]" >&2
+      echo "Usage: ./scripts/sync-to-gcs.sh [--matches data/auto-matches-round-2.json] [--reset-session] [--skip-assets]" >&2
       exit 2
       ;;
   esac
@@ -55,7 +68,19 @@ done
 
 # ── 2. auto-matches.json ──────────────────────────────────────────────────────
 log "Syncing review matches ..."
-if [[ -f "$DATA_ROOT/auto-matches-tiered.json" ]]; then
+if [[ -n "$MATCHES_FILE" ]]; then
+  if [[ "$MATCHES_FILE" != /* ]]; then
+    MATCHES_FILE="$REPO_ROOT/$MATCHES_FILE"
+  fi
+  if [[ ! -f "$MATCHES_FILE" ]]; then
+    echo "Match file not found: $MATCHES_FILE" >&2
+    exit 2
+  fi
+  match_name="$(basename "$MATCHES_FILE")"
+  gcs_cp "$MATCHES_FILE" "$BUCKET/matches/auto-matches.json"
+  gcs_cp "$MATCHES_FILE" "$BUCKET/matches/$match_name"
+  log "  $match_name → $BUCKET/matches/auto-matches.json and $BUCKET/matches/$match_name"
+elif [[ -f "$DATA_ROOT/auto-matches-tiered.json" ]]; then
   gcs_cp "$DATA_ROOT/auto-matches-tiered.json" "$BUCKET/matches/auto-matches.json"
   gcs_cp "$DATA_ROOT/auto-matches-tiered.json" "$BUCKET/matches/auto-matches-tiered.json"
   log "  auto-matches-tiered.json → $BUCKET/matches/auto-matches.json"
@@ -65,6 +90,10 @@ elif [[ -f "$DATA_ROOT/auto-matches.json" ]]; then
 else
   log "  No match file found — skipping."
 fi
+
+if [[ "$SKIP_ASSETS" == true ]]; then
+  log "Skipping image, selected-image, and mosaic assets."
+else
 
 # ── 3. Full image cache (data/{site}/cache/) ──────────────────────────────────
 log "Syncing image cache (this may take a while on first run) ..."
@@ -102,6 +131,8 @@ if [[ -d "$mosaic_root" ]]; then
   done
 else
   log "  No $mosaic_root found — skipping."
+fi
+
 fi
 
 # ── 6. Optional session reset ────────────────────────────────────────────────
