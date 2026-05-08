@@ -19,6 +19,7 @@ const https   = require('https');
 const http    = require('http');
 const fs      = require('fs');
 const path    = require('path');
+const crypto  = require('crypto');
 const { Storage } = require('@google-cloud/storage');
 
 // ---------------------------------------------------------------------------
@@ -197,6 +198,7 @@ let coelhoMap  = {};
 let autoMatches = [];    // review queue (lanes high/normal/recall), non-reject pairs
 let auditMatches = [];   // reject-low pairs, accessible via audit lane
 let currentSession = null;  // { pass, pairs, audit, confirmed }
+let eventCounter = 0;
 
 // ---------------------------------------------------------------------------
 // Load listings from GCS
@@ -316,15 +318,25 @@ async function ensureSession() {
   try {
     currentSession = await gcsRead('review-sessions/current.json');
     if (!Array.isArray(currentSession.audit)) currentSession.audit = [];
+    let changed = false;
+    if (!currentSession.trial_run_id) {
+      currentSession.trial_run_id = crypto.randomUUID();
+      changed = true;
+    }
     // Backfill lane / tier_label / evidence on legacy persisted pairs
     for (const p of currentSession.pairs || []) {
       if (!p.lane || !p.tier_label) {
         const norm = normalizeTier(p);
         p.lane       = p.lane || norm.lane;
         p.tier_label = p.tier_label || norm.label;
+        changed = true;
       }
-      if (!p.evidence) p.evidence = pickEvidence(p);
+      if (!p.evidence) {
+        p.evidence = pickEvidence(p);
+        changed = true;
+      }
     }
+    if (changed) await saveSession();
     console.log(`✓ Resumed session: pass-${currentSession.pass}, ${currentSession.pairs.length} review pairs, ${currentSession.audit.length} audit`);
     return;
   } catch (e) {
@@ -349,6 +361,7 @@ function buildNewSession(reviewMatches, auditMatches_, passN, carryConfirmed) {
     pairs,
     audit,
     confirmed: [...carryConfirmed],
+    trial_run_id: crypto.randomUUID(),
     created_at: new Date().toISOString(),
   };
 }
@@ -397,6 +410,95 @@ function laneCounts() {
     unsure:    audit.filter(p => p.status === 'unsure').length,
   };
   return counts;
+}
+
+function requestMeta(req) {
+  return {
+    ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress || null,
+    user_agent: req.headers['user-agent'] || null,
+    referer: req.headers.referer || null,
+  };
+}
+
+function pairSnapshot(pair) {
+  if (!pair) return null;
+  return {
+    viva_code: pair.viva_code,
+    coelho_code: pair.coelho_code,
+    lane: pair.lane || normalizeTier(pair).lane,
+    tier: pair.tier || null,
+    similarity: pair.similarity ?? null,
+    confidence_score: pair.confidence_score ?? null,
+    evidence: pair.evidence || pickEvidence(pair),
+    viva: vivaMap[pair.viva_code] || {},
+    coelho: coelhoMap[pair.coelho_code] || {},
+  };
+}
+
+async function logEvent(req, type, payload = {}) {
+  const now = new Date().toISOString();
+  const trialRunId = currentSession?.trial_run_id || 'no-session';
+  const event = {
+    ts: now,
+    type,
+    trial_run_id: trialRunId,
+    pass: currentSession?.pass ?? null,
+    sequence: ++eventCounter,
+    ...payload,
+    request: requestMeta(req),
+  };
+  console.log(`[event] ${type} trial=${trialRunId} viva=${payload.viva_code || ''} coelho=${payload.coelho_code || ''} lane=${payload.lane || ''}`);
+  try {
+    const stamp = now.replace(/[:.]/g, '-');
+    await gcsWrite(`review-sessions/events/${trialRunId}/${stamp}-${String(eventCounter).padStart(6, '0')}.json`, event);
+  } catch (e) {
+    console.warn('Could not write analytics event to GCS:', e.message);
+  }
+}
+
+function allSessionPairs() {
+  if (!currentSession) return [];
+  return [...(currentSession.pairs || []), ...(currentSession.audit || [])];
+}
+
+function buildTrialSummary() {
+  const pairs = allSessionPairs();
+  const confirmed = currentSession?.confirmed || [];
+  const confirmedViva = new Set(confirmed.map(p => p.viva_code));
+  const nonConfirmedReviewed = pairs.filter(p =>
+    p.status && p.status !== 'pending' && p.status !== 'confirmed' && !confirmedViva.has(p.viva_code)
+  );
+  const vivaWithoutConfirmedCoelho = [...new Map(nonConfirmedReviewed.map(p => [p.viva_code, {
+    viva_code: p.viva_code,
+    attempted_coelho_code: p.coelho_code,
+    status: p.status,
+    lane: p.lane || normalizeTier(p).lane,
+    reviewed_at: p.reviewed_at || null,
+    viva: vivaMap[p.viva_code] || {},
+    attempted_coelho: coelhoMap[p.coelho_code] || {},
+  }])).values()];
+
+  return {
+    generated_at: new Date().toISOString(),
+    trial_run_id: currentSession?.trial_run_id || null,
+    pass: currentSession?.pass || null,
+    lanes: currentSession ? laneCounts() : {},
+    total_candidates: pairs.length,
+    total_confirmed: confirmed.length,
+    total_skipped: pairs.filter(p => p.status === 'skipped').length,
+    total_unsure: pairs.filter(p => p.status === 'unsure').length,
+    total_pending: pairs.filter(p => p.status === 'pending').length,
+    confirmed_matches: confirmed.map(p => ({
+      viva_code: p.viva_code,
+      coelho_code: p.coelho_code,
+      lane: p.lane || normalizeTier(p).lane,
+      similarity: p.similarity,
+      confirmed_at: p.confirmed_at,
+      viva: vivaMap[p.viva_code] || {},
+      coelho: coelhoMap[p.coelho_code] || {},
+    })),
+    viva_without_confirmed_coelho: vivaWithoutConfirmedCoelho,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -496,12 +598,17 @@ app.get('/api/mosaic/:site/:code', async (req, res) => {
 
 app.post('/api/reload', async (req, res) => {
   await loadMatches();
+  const trialRunId = currentSession?.trial_run_id;
   const carryConfirmed = Array.isArray(currentSession && currentSession.confirmed)
     ? currentSession.confirmed
     : [];
   currentSession = buildNewSession(autoMatches, auditMatches, currentSession?.pass || 1, carryConfirmed);
+  if (trialRunId) currentSession.trial_run_id = trialRunId;
   await saveSession();
   _mosaicAvail.clear();
+  await logEvent(req, 'session_reloaded', {
+    client: req.body || {},
+  });
   res.json({
     ok: true,
     match_count: autoMatches.length,
@@ -558,6 +665,7 @@ app.get('/api/session', (req, res) => {
     (currentSession.audit  || []).filter(p => p.status === 'confirmed').length;
 
   res.json({
+    trial_run_id:      currentSession.trial_run_id,
     pass:             currentSession.pass,
     lane,
     current_index:    allDone ? total : currentIndex,
@@ -570,6 +678,23 @@ app.get('/api/session', (req, res) => {
     lanes:            laneCounts(),
     global_confirmed: globalConfirmed,
   });
+});
+
+app.post('/api/event', async (req, res) => {
+  const body = req.body || {};
+  const type = String(body.type || '').slice(0, 80);
+  if (!type) return res.status(400).json({ error: 'missing event type' });
+  await logEvent(req, type, {
+    lane: body.lane || null,
+    viva_code: body.viva_code || null,
+    coelho_code: body.coelho_code || null,
+    mode: body.mode || null,
+    source: body.source || null,
+    elapsed_ms: Number.isFinite(body.elapsed_ms) ? body.elapsed_ms : null,
+    pair: body.pair || null,
+    client: body.client || null,
+  });
+  res.json({ ok: true });
 });
 
 // Audit-only listing — returns the reject-low pool for the audit lane UI
@@ -599,6 +724,13 @@ app.post('/api/confirm', async (req, res) => {
   currentSession.confirmed.push({ ...pair, confirmed_at: pair.reviewed_at });
   console.log(`✓ confirmed  Viva ${viva_code} ↔ Coelho ${coelho_code} (lane=${pair.lane || 'unknown'})`);
   await saveSession();
+  await logEvent(req, 'decision_confirmed', {
+    viva_code,
+    coelho_code,
+    lane: pair.lane || normalizeTier(pair).lane,
+    elapsed_ms: req.body.elapsed_ms,
+    pair: pairSnapshot(pair),
+  });
   res.json({ ok: true });
 });
 
@@ -610,6 +742,13 @@ app.post('/api/skip', async (req, res) => {
   pair.reviewed_at = new Date().toISOString();
   console.log(`✗ skipped    Viva ${viva_code} ↔ Coelho ${coelho_code} (lane=${pair.lane || 'unknown'})`);
   await saveSession();
+  await logEvent(req, 'decision_skipped', {
+    viva_code,
+    coelho_code,
+    lane: pair.lane || normalizeTier(pair).lane,
+    elapsed_ms: req.body.elapsed_ms,
+    pair: pairSnapshot(pair),
+  });
   res.json({ ok: true });
 });
 
@@ -622,6 +761,13 @@ app.post('/api/unsure', async (req, res) => {
   if (note) pair.note = String(note).slice(0, 500);
   console.log(`? unsure     Viva ${viva_code} ↔ Coelho ${coelho_code} (lane=${pair.lane || 'unknown'})`);
   await saveSession();
+  await logEvent(req, 'decision_unsure', {
+    viva_code,
+    coelho_code,
+    lane: pair.lane || normalizeTier(pair).lane,
+    elapsed_ms: req.body.elapsed_ms,
+    pair: pairSnapshot(pair),
+  });
   res.json({ ok: true });
 });
 
@@ -664,8 +810,10 @@ app.post('/api/done', async (req, res) => {
 
 app.post('/api/final', async (req, res) => {
   const confirmed = currentSession ? currentSession.confirmed : [];
+  const trialSummary = buildTrialSummary();
   const output = {
     generated_at:    new Date().toISOString(),
+    trial_run_id:    currentSession?.trial_run_id || null,
     total_confirmed: confirmed.length,
     matches: confirmed.map(p => ({
       viva_code:    p.viva_code,
@@ -676,7 +824,18 @@ app.post('/api/final', async (req, res) => {
     })),
   };
   await gcsWrite('review-sessions/final-matches.json', output);
+  await gcsWrite(`review-sessions/trial-summaries/${trialSummary.trial_run_id || 'no-session'}.json`, trialSummary);
+  await logEvent(req, 'trial_finalized', {
+    client: req.body || {},
+    lane: req.body?.lane || null,
+    elapsed_ms: req.body?.elapsed_ms,
+  });
   res.json(output);
+});
+
+app.get('/api/trial-summary', async (req, res) => {
+  const summary = buildTrialSummary();
+  res.json(summary);
 });
 
 // ---------------------------------------------------------------------------
@@ -998,9 +1157,57 @@ const HTML = /* html */`<!DOCTYPE html>
 let _state = null;
 let _finalData = null;
 let _lane = 'high';
+let _pageStartedAt = Date.now();
+let _pairStartedAt = Date.now();
+let _lastPairKey = null;
+
+function currentPairKey() {
+  return _state && _state.pair ? _state.pair.viva_code + ':' + _state.pair.coelho_code : null;
+}
+
+function pairPayload() {
+  if (!_state || !_state.pair) return null;
+  return {
+    viva_code: _state.pair.viva_code,
+    coelho_code: _state.pair.coelho_code,
+    lane: _state.pair.lane,
+    tier: _state.pair.tier,
+    confidence_score: _state.pair.confidence_score,
+  };
+}
+
+function logClientEvent(type, extra) {
+  const p = pairPayload();
+  const body = Object.assign({
+    type,
+    lane: _lane,
+    viva_code: p && p.viva_code,
+    coelho_code: p && p.coelho_code,
+    elapsed_ms: Date.now() - _pairStartedAt,
+    pair: p,
+    client: {
+      page_elapsed_ms: Date.now() - _pageStartedAt,
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+    },
+  }, extra || {});
+  try {
+    const json = JSON.stringify(body);
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/event', new Blob([json], { type: 'application/json' }));
+      return;
+    }
+  } catch (_) {}
+  fetch('/api/event', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(body),
+    keepalive: true,
+  }).catch(() => {});
+}
 
 function switchLane(lane) {
   if (!['high', 'normal', 'recall', 'audit'].includes(lane)) return;
+  logClientEvent('lane_switch', { source: _lane + '->' + lane });
   _lane = lane;
   fetchSession();
 }
@@ -1009,6 +1216,12 @@ async function fetchSession() {
   const s = await fetch('/api/session?lane=' + encodeURIComponent(_lane)).then(r => r.json());
   _state = s;
   render(s);
+  const key = currentPairKey();
+  if (key && key !== _lastPairKey) {
+    _lastPairKey = key;
+    _pairStartedAt = Date.now();
+    logClientEvent('pair_viewed', { elapsed_ms: 0 });
+  }
 }
 
 function renderLaneTabs(s) {
@@ -1162,6 +1375,7 @@ let _compareMode = 'expanded';
 
 async function openComparison() {
   if (!_state || !_state.pair) return;
+  logClientEvent('comparison_opened', { mode: _compareMode });
   document.getElementById('cmp-viva-code').textContent   = '#' + _state.pair.viva_code;
   document.getElementById('cmp-coelho-code').textContent = '#' + _state.pair.coelho_code;
   document.getElementById('compare').classList.remove('hidden');
@@ -1169,11 +1383,13 @@ async function openComparison() {
 }
 
 function closeComparison() {
+  logClientEvent('comparison_closed', { mode: _compareMode });
   document.getElementById('compare').classList.add('hidden');
 }
 
 function setComparisonMode(mode) {
   if (!['standard', 'expanded', 'all'].includes(mode)) mode = 'expanded';
+  if (mode !== _compareMode) logClientEvent('comparison_mode_changed', { mode });
   _compareMode = mode;
   for (const m of ['standard', 'expanded', 'all']) {
     document.getElementById('cmp-mode-' + m).classList.toggle('active', m === mode);
@@ -1215,22 +1431,25 @@ async function renderComparisonSide(site, code, mode) {
 
 async function doMatch() {
   if (!_state || !_state.pair || _state.all_done) return;
+  const elapsed = Date.now() - _pairStartedAt;
   await fetch('/api/confirm', { method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code }) });
+    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code, elapsed_ms: elapsed }) });
   fetchSession();
 }
 
 async function doSkip() {
   if (!_state || !_state.pair || _state.all_done) return;
+  const elapsed = Date.now() - _pairStartedAt;
   await fetch('/api/skip', { method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code }) });
+    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code, elapsed_ms: elapsed }) });
   fetchSession();
 }
 
 async function doUnsure() {
   if (!_state || !_state.pair || _state.all_done) return;
+  const elapsed = Date.now() - _pairStartedAt;
   await fetch('/api/unsure', { method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code }) });
+    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code, elapsed_ms: elapsed }) });
   fetchSession();
 }
 
@@ -1281,7 +1500,8 @@ function showPassComplete(s) {
 
 async function reloadAndContinue() {
   document.getElementById('pass-complete-modal').classList.add('hidden');
-  await fetch('/api/reload', { method: 'POST' });
+  await fetch('/api/reload', { method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ lane: _lane, page_elapsed_ms: Date.now() - _pageStartedAt }) });
   await fetchSession();
 }
 
@@ -1298,7 +1518,8 @@ function closeDoneModal() { document.getElementById('done-confirm-modal').classL
 async function finalize() {
   closeDoneModal();
   document.getElementById('pass-complete-modal').classList.add('hidden');
-  const r = await fetch('/api/final', { method: 'POST' }).then(r => r.json());
+  const r = await fetch('/api/final', { method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ lane: _lane, page_elapsed_ms: Date.now() - _pageStartedAt }) }).then(r => r.json());
   _finalData = r;
   document.getElementById('final-count').textContent = r.total_confirmed;
   const lanes = (_state && _state.lanes) || null;
@@ -1332,6 +1553,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'd') askDone();
 });
 
+logClientEvent('page_loaded', { elapsed_ms: 0, client: { page_elapsed_ms: 0, viewport: { width: window.innerWidth, height: window.innerHeight } } });
 fetchSession();
 </script>
 </body>
