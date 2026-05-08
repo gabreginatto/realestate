@@ -1,0 +1,14 @@
+# Keep Cloud Build uploads small and deterministic. The review server image only
+# needs the files copied by Dockerfile; all real data is loaded from GCS.
+*
+
+!Dockerfile
+!package.json
+!package-lock.json
+!scripts/
+!scripts/review-server.js
+!scripts/review-session.js
+
+.git/
+.gitignore
+.gcloudignore
