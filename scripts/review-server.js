@@ -1477,24 +1477,29 @@ function nextLaneWithPending(lanes, exclude) {
 }
 
 function showPassComplete(s) {
+  const next = nextLaneWithPending(s.lanes, s.lane);
+  if (next) {
+    document.getElementById('pass-complete-modal').classList.add('hidden');
+    logClientEvent('lane_auto_advanced', { source: s.lane + '->' + next });
+    _lane = next;
+    fetchSession();
+    return;
+  }
+
   document.getElementById('pc-pass').textContent      = s.pass;
   document.getElementById('pc-confirmed').textContent = s.confirmed_count;
   document.getElementById('pc-skipped').textContent   = s.skipped_count;
   const notice = document.getElementById('pc-notice');
-  const next   = nextLaneWithPending(s.lanes, s.lane);
   let html = 'Raia <strong>' + (LANE_LABELS[s.lane] || s.lane) + '</strong> concluída.';
   html += laneSummaryHTML(s.lanes);
-  if (next) {
-    html += '<p style="margin-top:10px">Próxima raia com pendências: <strong>' + LANE_LABELS[next] +
-            '</strong>. <a href="#" onclick="switchLane(\\'' + next + '\\');return false;" style="color:var(--accent)">Ir para a raia →</a></p>';
-  } else if (s.skipped_count > 0) {
+  if (s.skipped_count > 0) {
     html += '<p style="margin-top:10px">Para re-matcher pares skipped: rode <code>recursive-matcher-v2.py</code>, depois <code>./scripts/sync-to-gcs.sh</code>, depois "Recarregar matches".</p>';
   } else {
     html += '<p style="margin-top:10px">Todas as raias de revisão concluídas!</p>';
   }
   notice.innerHTML = html;
   document.getElementById('pc-reload-btn').style.display =
-    (s.skipped_count > 0 && !next) ? '' : 'none';
+    s.skipped_count > 0 ? '' : 'none';
   document.getElementById('pass-complete-modal').classList.remove('hidden');
 }
 
