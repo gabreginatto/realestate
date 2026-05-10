@@ -8,8 +8,8 @@
 #
 # What gets synced:
 #   data/{site}/listings/all-listings.json  → gs://BUCKET/listings/{site}.json
-#   data/auto-matches-tiered.json           → gs://BUCKET/matches/auto-matches.json
-#     fallback: data/auto-matches.json
+#   newest data/auto-matches*.json          → gs://BUCKET/matches/auto-matches.json
+#     override with --matches for an exact pass/round file
 #   data/{site}/cache/{code}/*.jpg          → gs://BUCKET/images/{site}/{code}/
 #   selected_for_matching/{site}/{code}/    → gs://BUCKET/selected/{site}/{code}/
 #   data/alphaville-1/mosaics/{site}/*.png  → gs://BUCKET/mosaics/{site}/
@@ -48,6 +48,20 @@ done
 
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
 
+pick_default_matches_file() {
+  local newest=""
+  local candidate
+  for candidate in "$DATA_ROOT"/auto-matches-round-*.json \
+                   "$DATA_ROOT"/auto-matches-tiered.json \
+                   "$DATA_ROOT"/auto-matches.json; do
+    [[ -f "$candidate" ]] || continue
+    if [[ -z "$newest" || "$candidate" -nt "$newest" ]]; then
+      newest="$candidate"
+    fi
+  done
+  [[ -n "$newest" ]] && printf '%s\n' "$newest"
+}
+
 gcs_cp() {
   gcloud storage cp "$1" "$2" --quiet
 }
@@ -84,15 +98,16 @@ if [[ -n "$MATCHES_FILE" ]]; then
   gcs_cp "$MATCHES_FILE" "$BUCKET/matches/auto-matches.json"
   gcs_cp "$MATCHES_FILE" "$BUCKET/matches/$match_name"
   log "  $match_name → $BUCKET/matches/auto-matches.json and $BUCKET/matches/$match_name"
-elif [[ -f "$DATA_ROOT/auto-matches-tiered.json" ]]; then
-  gcs_cp "$DATA_ROOT/auto-matches-tiered.json" "$BUCKET/matches/auto-matches.json"
-  gcs_cp "$DATA_ROOT/auto-matches-tiered.json" "$BUCKET/matches/auto-matches-tiered.json"
-  log "  auto-matches-tiered.json → $BUCKET/matches/auto-matches.json"
-elif [[ -f "$DATA_ROOT/auto-matches.json" ]]; then
-  gcs_cp "$DATA_ROOT/auto-matches.json" "$BUCKET/matches/auto-matches.json"
-  log "  auto-matches.json → $BUCKET/matches/auto-matches.json"
 else
-  log "  No match file found — skipping."
+  default_matches="$(pick_default_matches_file || true)"
+  if [[ -n "$default_matches" ]]; then
+    match_name="$(basename "$default_matches")"
+    gcs_cp "$default_matches" "$BUCKET/matches/auto-matches.json"
+    gcs_cp "$default_matches" "$BUCKET/matches/$match_name"
+    log "  $match_name → $BUCKET/matches/auto-matches.json and $BUCKET/matches/$match_name"
+  else
+    log "  No match file found — skipping."
+  fi
 fi
 
 if [[ "$SKIP_ASSETS" == true ]]; then

@@ -1014,7 +1014,7 @@ const HTML = /* html */`<!DOCTYPE html>
   .prop-img { position: relative; cursor: pointer; border-radius: 8px; overflow: hidden;
               background: var(--surface); aspect-ratio: 2 / 1; min-height: 200px;
               display: flex; align-items: center; justify-content: center; }
-  .prop-img .mosaic-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .prop-img .mosaic-img { width: 100%; height: 100%; object-fit: contain; display: block; }
   .prop-img.is-fallback { aspect-ratio: auto; min-height: 260px; }
   .prop-img .img-grid { display: flex; flex-wrap: wrap; gap: 2px; width: 100%; }
   .prop-img .img-grid img { width: calc(33.33% - 2px); height: 130px; object-fit: cover; }
