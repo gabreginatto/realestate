@@ -1,0 +1,578 @@
+{
+  "session_started": "2026-05-06T17:58:10.172666+00:00",
+  "session_name": "patch-vlad-experiment",
+  "strategy": "dino-v3-patch-token-vlad",
+  "model": {
+    "backbone": "dinov3-vitb16",
+    "clusters": 32,
+    "max_train_tokens": 40000,
+    "device": "cpu"
+  },
+  "threshold_sweep": [
+    {
+      "threshold": 0.2,
+      "tp": 19,
+      "fp": 43,
+      "fn": 2,
+      "precision": 0.3064516129032258,
+      "recall": 0.9047619047619048,
+      "f1": 0.4578313253012048,
+      "total": 62
+    },
+    {
+      "threshold": 0.225,
+      "tp": 19,
+      "fp": 43,
+      "fn": 2,
+      "precision": 0.3064516129032258,
+      "recall": 0.9047619047619048,
+      "f1": 0.4578313253012048,
+      "total": 62
+    },
+    {
+      "threshold": 0.25,
+      "tp": 19,
+      "fp": 41,
+      "fn": 2,
+      "precision": 0.31666666666666665,
+      "recall": 0.9047619047619048,
+      "f1": 0.4691358024691357,
+      "total": 60
+    },
+    {
+      "threshold": 0.275,
+      "tp": 19,
+      "fp": 37,
+      "fn": 2,
+      "precision": 0.3392857142857143,
+      "recall": 0.9047619047619048,
+      "f1": 0.49350649350649356,
+      "total": 56
+    },
+    {
+      "threshold": 0.3,
+      "tp": 19,
+      "fp": 28,
+      "fn": 2,
+      "precision": 0.40425531914893614,
+      "recall": 0.9047619047619048,
+      "f1": 0.5588235294117647,
+      "total": 47
+    },
+    {
+      "threshold": 0.325,
+      "tp": 18,
+      "fp": 25,
+      "fn": 3,
+      "precision": 0.4186046511627907,
+      "recall": 0.8571428571428571,
+      "f1": 0.5625000000000001,
+      "total": 43
+    },
+    {
+      "threshold": 0.35,
+      "tp": 17,
+      "fp": 21,
+      "fn": 4,
+      "precision": 0.4473684210526316,
+      "recall": 0.8095238095238095,
+      "f1": 0.576271186440678,
+      "total": 38
+    },
+    {
+      "threshold": 0.375,
+      "tp": 17,
+      "fp": 16,
+      "fn": 4,
+      "precision": 0.5151515151515151,
+      "recall": 0.8095238095238095,
+      "f1": 0.6296296296296297,
+      "total": 33
+    },
+    {
+      "threshold": 0.4,
+      "tp": 17,
+      "fp": 12,
+      "fn": 4,
+      "precision": 0.5862068965517241,
+      "recall": 0.8095238095238095,
+      "f1": 0.68,
+      "total": 29
+    },
+    {
+      "threshold": 0.425,
+      "tp": 17,
+      "fp": 9,
+      "fn": 4,
+      "precision": 0.6538461538461539,
+      "recall": 0.8095238095238095,
+      "f1": 0.7234042553191489,
+      "total": 26
+    },
+    {
+      "threshold": 0.45,
+      "tp": 15,
+      "fp": 6,
+      "fn": 6,
+      "precision": 0.7142857142857143,
+      "recall": 0.7142857142857143,
+      "f1": 0.7142857142857143,
+      "total": 21
+    },
+    {
+      "threshold": 0.475,
+      "tp": 13,
+      "fp": 4,
+      "fn": 8,
+      "precision": 0.7647058823529411,
+      "recall": 0.6190476190476191,
+      "f1": 0.6842105263157895,
+      "total": 17
+    },
+    {
+      "threshold": 0.5,
+      "tp": 13,
+      "fp": 2,
+      "fn": 8,
+      "precision": 0.8666666666666667,
+      "recall": 0.6190476190476191,
+      "f1": 0.7222222222222222,
+      "total": 15
+    },
+    {
+      "threshold": 0.525,
+      "tp": 11,
+      "fp": 2,
+      "fn": 10,
+      "precision": 0.8461538461538461,
+      "recall": 0.5238095238095238,
+      "f1": 0.6470588235294118,
+      "total": 13
+    },
+    {
+      "threshold": 0.55,
+      "tp": 10,
+      "fp": 2,
+      "fn": 11,
+      "precision": 0.8333333333333334,
+      "recall": 0.47619047619047616,
+      "f1": 0.6060606060606061,
+      "total": 12
+    },
+    {
+      "threshold": 0.575,
+      "tp": 9,
+      "fp": 2,
+      "fn": 12,
+      "precision": 0.8181818181818182,
+      "recall": 0.42857142857142855,
+      "f1": 0.5625,
+      "total": 11
+    },
+    {
+      "threshold": 0.6,
+      "tp": 8,
+      "fp": 1,
+      "fn": 13,
+      "precision": 0.8888888888888888,
+      "recall": 0.38095238095238093,
+      "f1": 0.5333333333333333,
+      "total": 9
+    },
+    {
+      "threshold": 0.625,
+      "tp": 8,
+      "fp": 0,
+      "fn": 13,
+      "precision": 1.0,
+      "recall": 0.38095238095238093,
+      "f1": 0.5517241379310345,
+      "total": 8
+    },
+    {
+      "threshold": 0.65,
+      "tp": 8,
+      "fp": 0,
+      "fn": 13,
+      "precision": 1.0,
+      "recall": 0.38095238095238093,
+      "f1": 0.5517241379310345,
+      "total": 8
+    },
+    {
+      "threshold": 0.675,
+      "tp": 8,
+      "fp": 0,
+      "fn": 13,
+      "precision": 1.0,
+      "recall": 0.38095238095238093,
+      "f1": 0.5517241379310345,
+      "total": 8
+    },
+    {
+      "threshold": 0.7,
+      "tp": 8,
+      "fp": 0,
+      "fn": 13,
+      "precision": 1.0,
+      "recall": 0.38095238095238093,
+      "f1": 0.5517241379310345,
+      "total": 8
+    },
+    {
+      "threshold": 0.725,
+      "tp": 6,
+      "fp": 0,
+      "fn": 15,
+      "precision": 1.0,
+      "recall": 0.2857142857142857,
+      "f1": 0.4444444444444445,
+      "total": 6
+    },
+    {
+      "threshold": 0.75,
+      "tp": 4,
+      "fp": 0,
+      "fn": 17,
+      "precision": 1.0,
+      "recall": 0.19047619047619047,
+      "f1": 0.32,
+      "total": 4
+    },
+    {
+      "threshold": 0.775,
+      "tp": 2,
+      "fp": 0,
+      "fn": 19,
+      "precision": 1.0,
+      "recall": 0.09523809523809523,
+      "f1": 0.17391304347826084,
+      "total": 2
+    },
+    {
+      "threshold": 0.8,
+      "tp": 1,
+      "fp": 0,
+      "fn": 20,
+      "precision": 1.0,
+      "recall": 0.047619047619047616,
+      "f1": 0.0909090909090909,
+      "total": 1
+    },
+    {
+      "threshold": 0.825,
+      "tp": 1,
+      "fp": 0,
+      "fn": 20,
+      "precision": 1.0,
+      "recall": 0.047619047619047616,
+      "f1": 0.0909090909090909,
+      "total": 1
+    },
+    {
+      "threshold": 0.85,
+      "tp": 0,
+      "fp": 0,
+      "fn": 21,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "total": 0
+    },
+    {
+      "threshold": 0.875,
+      "tp": 0,
+      "fp": 0,
+      "fn": 21,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "total": 0
+    },
+    {
+      "threshold": 0.9,
+      "tp": 0,
+      "fp": 0,
+      "fn": 21,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "total": 0
+    }
+  ],
+  "matches": [
+    {
+      "viva_code": "12854",
+      "coelho_code": "616435",
+      "similarity_score": 0.833767,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.833767,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "5380",
+      "coelho_code": "467562",
+      "similarity_score": 0.786642,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.786642,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "17116",
+      "coelho_code": "674139",
+      "similarity_score": 0.755049,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.755049,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "18035",
+      "coelho_code": "661014",
+      "similarity_score": 0.754217,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.754217,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "14138",
+      "coelho_code": "660058",
+      "similarity_score": 0.741346,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.741346,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "7597",
+      "coelho_code": "358601",
+      "similarity_score": 0.726923,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.726923,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "16892",
+      "coelho_code": "663984",
+      "similarity_score": 0.707952,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.707952,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "17378",
+      "coelho_code": "425516",
+      "similarity_score": 0.702852,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.702852,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "17697",
+      "coelho_code": "685663",
+      "similarity_score": 0.61253,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.61253,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "12814",
+      "coelho_code": "682781",
+      "similarity_score": 0.595909,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.595909,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "6930",
+      "coelho_code": "395513",
+      "similarity_score": 0.586715,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.586715,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "17388",
+      "coelho_code": "354149",
+      "similarity_score": 0.561058,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.561058,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "16626",
+      "coelho_code": "597308",
+      "similarity_score": 0.527944,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.527944,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "16886",
+      "coelho_code": "617978",
+      "similarity_score": 0.51593,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.51593,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "14127",
+      "coelho_code": "663462",
+      "similarity_score": 0.512375,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.512375,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "17996",
+      "coelho_code": "351722",
+      "similarity_score": 0.492021,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.492021,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "3460",
+      "coelho_code": "353980",
+      "similarity_score": 0.490441,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.490441,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "16998",
+      "coelho_code": "677355",
+      "similarity_score": 0.457938,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.457938,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "13254",
+      "coelho_code": "356006",
+      "similarity_score": 0.454961,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.454961,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "8527",
+      "coelho_code": "429865",
+      "similarity_score": 0.453375,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.453375,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "16026",
+      "coelho_code": "674557",
+      "similarity_score": 0.451984,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.451984,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "8188",
+      "coelho_code": "433739",
+      "similarity_score": 0.442818,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.442818,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "17722",
+      "coelho_code": "677257",
+      "similarity_score": 0.442011,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.442011,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "2075",
+      "coelho_code": "581091",
+      "similarity_score": 0.439196,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.439196,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "16117",
+      "coelho_code": "628299",
+      "similarity_score": 0.433999,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.433999,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "8682",
+      "coelho_code": "381684",
+      "similarity_score": 0.431823,
+      "matched_at": "2026-05-06T17:58:10.172666+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.431823,
+      "strategy": "patch-token-vlad"
+    }
+  ],
+  "stats": {
+    "total_viva": 62,
+    "total_coelho": 91,
+    "matched": 26,
+    "ground_truth_confirmed": 21,
+    "tp": 17,
+    "fp": 9,
+    "fn": 4,
+    "precision": 0.6538461538461539,
+    "recall": 0.8095238095238095,
+    "f1": 0.7234042553191489,
+    "total": 26
+  }
+}

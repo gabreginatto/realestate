@@ -1,0 +1,105 @@
+{
+  "confirmed_pair_count": 21,
+  "unique_viva_count": 20,
+  "metric_notes": {
+    "rank_metrics": "Rank true Coelho listing among all Coelho candidates using top-3 perceptual-hash image-set similarity.",
+    "interior_rate": "Weak semantic leakage estimate from the current CLIP all_categories labels."
+  },
+  "results": [
+    {
+      "selector": "clip_selected_8",
+      "evaluated_viva": 20,
+      "recall_at_1": 0.5,
+      "recall_at_3": 0.55,
+      "recall_at_5": 0.65,
+      "mrr": 0.5579164884798298,
+      "median_rank": 1.5,
+      "mean_rank": 15.3,
+      "mean_selected_images": 6.913043478260869,
+      "category_counts": {
+        "pool": 349,
+        "facade": 170,
+        "garden": 117,
+        "interior": 0,
+        "unknown": 0
+      },
+      "interior_rate": 0.0
+    },
+    {
+      "selector": "clip_expanded_outdoor_16",
+      "evaluated_viva": 20,
+      "recall_at_1": 0.4,
+      "recall_at_3": 0.5,
+      "recall_at_5": 0.55,
+      "mrr": 0.48327668636664634,
+      "median_rank": 3.5,
+      "mean_rank": 11.7,
+      "mean_selected_images": 12.228260869565217,
+      "category_counts": {
+        "pool": 724,
+        "facade": 302,
+        "garden": 99,
+        "interior": 0,
+        "unknown": 0
+      },
+      "interior_rate": 0.0
+    },
+    {
+      "selector": "source_first_8",
+      "evaluated_viva": 20,
+      "recall_at_1": 0.4,
+      "recall_at_3": 0.45,
+      "recall_at_5": 0.5,
+      "mrr": 0.4571654146678399,
+      "median_rank": 6.5,
+      "mean_rank": 18.4,
+      "mean_selected_images": 8.0,
+      "category_counts": {
+        "pool": 185,
+        "facade": 137,
+        "garden": 45,
+        "interior": 369,
+        "unknown": 0
+      },
+      "interior_rate": 0.501358695652174
+    },
+    {
+      "selector": "source_first_16",
+      "evaluated_viva": 20,
+      "recall_at_1": 0.4,
+      "recall_at_3": 0.5,
+      "recall_at_5": 0.55,
+      "mrr": 0.4942994346918872,
+      "median_rank": 3.0,
+      "mean_rank": 11.4,
+      "mean_selected_images": 15.945652173913043,
+      "category_counts": {
+        "pool": 247,
+        "facade": 225,
+        "garden": 78,
+        "interior": 917,
+        "unknown": 0
+      },
+      "interior_rate": 0.6250852079072938
+    },
+    {
+      "selector": "legacy_heuristic_12",
+      "evaluated_viva": 17,
+      "recall_at_1": 0.47058823529411764,
+      "recall_at_3": 0.5294117647058824,
+      "recall_at_5": 0.5882352941176471,
+      "mrr": 0.5217225728516465,
+      "median_rank": 3.0,
+      "mean_rank": 13.529411764705882,
+      "mean_selected_images": 11.076086956521738,
+      "category_counts": {
+        "pool": 0,
+        "facade": 0,
+        "garden": 0,
+        "interior": 0,
+        "unknown": 1019
+      },
+      "interior_rate": 0.0
+    }
+  ]
+}

@@ -1,0 +1,478 @@
+{
+  "session_started": "2026-05-05T13:05:08.843785+00:00",
+  "session_name": "patch-vlad-experiment",
+  "strategy": "dino-v3-patch-token-vlad",
+  "model": {
+    "backbone": "dinov3-vitb16",
+    "clusters": 64,
+    "max_train_tokens": 50000,
+    "device": "cpu"
+  },
+  "threshold_sweep": [
+    {
+      "threshold": 0.2,
+      "tp": 13,
+      "fp": 48,
+      "fn": 2,
+      "precision": 0.21311475409836064,
+      "recall": 0.8666666666666667,
+      "f1": 0.3421052631578947,
+      "total": 61
+    },
+    {
+      "threshold": 0.225,
+      "tp": 13,
+      "fp": 41,
+      "fn": 2,
+      "precision": 0.24074074074074073,
+      "recall": 0.8666666666666667,
+      "f1": 0.37681159420289856,
+      "total": 54
+    },
+    {
+      "threshold": 0.25,
+      "tp": 13,
+      "fp": 31,
+      "fn": 2,
+      "precision": 0.29545454545454547,
+      "recall": 0.8666666666666667,
+      "f1": 0.44067796610169496,
+      "total": 44
+    },
+    {
+      "threshold": 0.275,
+      "tp": 13,
+      "fp": 26,
+      "fn": 2,
+      "precision": 0.3333333333333333,
+      "recall": 0.8666666666666667,
+      "f1": 0.48148148148148145,
+      "total": 39
+    },
+    {
+      "threshold": 0.3,
+      "tp": 12,
+      "fp": 24,
+      "fn": 3,
+      "precision": 0.3333333333333333,
+      "recall": 0.8,
+      "f1": 0.47058823529411764,
+      "total": 36
+    },
+    {
+      "threshold": 0.325,
+      "tp": 11,
+      "fp": 20,
+      "fn": 4,
+      "precision": 0.3548387096774194,
+      "recall": 0.7333333333333333,
+      "f1": 0.47826086956521735,
+      "total": 31
+    },
+    {
+      "threshold": 0.35,
+      "tp": 10,
+      "fp": 17,
+      "fn": 5,
+      "precision": 0.37037037037037035,
+      "recall": 0.6666666666666666,
+      "f1": 0.47619047619047616,
+      "total": 27
+    },
+    {
+      "threshold": 0.375,
+      "tp": 9,
+      "fp": 15,
+      "fn": 6,
+      "precision": 0.375,
+      "recall": 0.6,
+      "f1": 0.4615384615384615,
+      "total": 24
+    },
+    {
+      "threshold": 0.4,
+      "tp": 8,
+      "fp": 13,
+      "fn": 7,
+      "precision": 0.38095238095238093,
+      "recall": 0.5333333333333333,
+      "f1": 0.4444444444444444,
+      "total": 21
+    },
+    {
+      "threshold": 0.425,
+      "tp": 8,
+      "fp": 12,
+      "fn": 7,
+      "precision": 0.4,
+      "recall": 0.5333333333333333,
+      "f1": 0.4571428571428572,
+      "total": 20
+    },
+    {
+      "threshold": 0.45,
+      "tp": 8,
+      "fp": 8,
+      "fn": 7,
+      "precision": 0.5,
+      "recall": 0.5333333333333333,
+      "f1": 0.5161290322580646,
+      "total": 16
+    },
+    {
+      "threshold": 0.475,
+      "tp": 5,
+      "fp": 7,
+      "fn": 10,
+      "precision": 0.4166666666666667,
+      "recall": 0.3333333333333333,
+      "f1": 0.3703703703703704,
+      "total": 12
+    },
+    {
+      "threshold": 0.5,
+      "tp": 4,
+      "fp": 6,
+      "fn": 11,
+      "precision": 0.4,
+      "recall": 0.26666666666666666,
+      "f1": 0.32,
+      "total": 10
+    },
+    {
+      "threshold": 0.525,
+      "tp": 4,
+      "fp": 6,
+      "fn": 11,
+      "precision": 0.4,
+      "recall": 0.26666666666666666,
+      "f1": 0.32,
+      "total": 10
+    },
+    {
+      "threshold": 0.55,
+      "tp": 4,
+      "fp": 4,
+      "fn": 11,
+      "precision": 0.5,
+      "recall": 0.26666666666666666,
+      "f1": 0.3478260869565218,
+      "total": 8
+    },
+    {
+      "threshold": 0.575,
+      "tp": 4,
+      "fp": 4,
+      "fn": 11,
+      "precision": 0.5,
+      "recall": 0.26666666666666666,
+      "f1": 0.3478260869565218,
+      "total": 8
+    },
+    {
+      "threshold": 0.6,
+      "tp": 4,
+      "fp": 4,
+      "fn": 11,
+      "precision": 0.5,
+      "recall": 0.26666666666666666,
+      "f1": 0.3478260869565218,
+      "total": 8
+    },
+    {
+      "threshold": 0.625,
+      "tp": 4,
+      "fp": 4,
+      "fn": 11,
+      "precision": 0.5,
+      "recall": 0.26666666666666666,
+      "f1": 0.3478260869565218,
+      "total": 8
+    },
+    {
+      "threshold": 0.65,
+      "tp": 4,
+      "fp": 4,
+      "fn": 11,
+      "precision": 0.5,
+      "recall": 0.26666666666666666,
+      "f1": 0.3478260869565218,
+      "total": 8
+    },
+    {
+      "threshold": 0.675,
+      "tp": 4,
+      "fp": 3,
+      "fn": 11,
+      "precision": 0.5714285714285714,
+      "recall": 0.26666666666666666,
+      "f1": 0.36363636363636365,
+      "total": 7
+    },
+    {
+      "threshold": 0.7,
+      "tp": 3,
+      "fp": 3,
+      "fn": 12,
+      "precision": 0.5,
+      "recall": 0.2,
+      "f1": 0.28571428571428575,
+      "total": 6
+    },
+    {
+      "threshold": 0.725,
+      "tp": 2,
+      "fp": 1,
+      "fn": 13,
+      "precision": 0.6666666666666666,
+      "recall": 0.13333333333333333,
+      "f1": 0.2222222222222222,
+      "total": 3
+    },
+    {
+      "threshold": 0.75,
+      "tp": 1,
+      "fp": 0,
+      "fn": 14,
+      "precision": 1.0,
+      "recall": 0.06666666666666667,
+      "f1": 0.125,
+      "total": 1
+    },
+    {
+      "threshold": 0.775,
+      "tp": 1,
+      "fp": 0,
+      "fn": 14,
+      "precision": 1.0,
+      "recall": 0.06666666666666667,
+      "f1": 0.125,
+      "total": 1
+    },
+    {
+      "threshold": 0.8,
+      "tp": 1,
+      "fp": 0,
+      "fn": 14,
+      "precision": 1.0,
+      "recall": 0.06666666666666667,
+      "f1": 0.125,
+      "total": 1
+    },
+    {
+      "threshold": 0.825,
+      "tp": 0,
+      "fp": 0,
+      "fn": 15,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "total": 0
+    },
+    {
+      "threshold": 0.85,
+      "tp": 0,
+      "fp": 0,
+      "fn": 15,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "total": 0
+    },
+    {
+      "threshold": 0.875,
+      "tp": 0,
+      "fp": 0,
+      "fn": 15,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "total": 0
+    },
+    {
+      "threshold": 0.9,
+      "tp": 0,
+      "fp": 0,
+      "fn": 15,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "total": 0
+    }
+  ],
+  "matches": [
+    {
+      "viva_code": "12854",
+      "coelho_code": "616435",
+      "similarity_score": 0.818643,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.818643,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "5380",
+      "coelho_code": "467562",
+      "similarity_score": 0.736935,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.736935,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "18035",
+      "coelho_code": "661014",
+      "similarity_score": 0.735545,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.735545,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "17116",
+      "coelho_code": "674139",
+      "similarity_score": 0.723941,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.723941,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "7597",
+      "coelho_code": "358601",
+      "similarity_score": 0.716083,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.716083,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "14138",
+      "coelho_code": "660058",
+      "similarity_score": 0.707433,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.707433,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "16892",
+      "coelho_code": "663984",
+      "similarity_score": 0.680385,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.680385,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "17378",
+      "coelho_code": "425516",
+      "similarity_score": 0.664202,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.664202,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "12814",
+      "coelho_code": "682781",
+      "similarity_score": 0.541258,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.541258,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "17697",
+      "coelho_code": "685663",
+      "similarity_score": 0.538812,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "high",
+      "confidence_score": 0.538812,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "6930",
+      "coelho_code": "395513",
+      "similarity_score": 0.486558,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.486558,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "17388",
+      "coelho_code": "354149",
+      "similarity_score": 0.480598,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.480598,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "16886",
+      "coelho_code": "617978",
+      "similarity_score": 0.473315,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.473315,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "14127",
+      "coelho_code": "663462",
+      "similarity_score": 0.467043,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.467043,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "16626",
+      "coelho_code": "597308",
+      "similarity_score": 0.463278,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.463278,
+      "strategy": "patch-token-vlad"
+    },
+    {
+      "viva_code": "3460",
+      "coelho_code": "353980",
+      "similarity_score": 0.450787,
+      "matched_at": "2026-05-05T13:05:08.843785+00:00",
+      "reviewer": "dino-v3-patch-vlad",
+      "confidence": "medium",
+      "confidence_score": 0.450787,
+      "strategy": "patch-token-vlad"
+    }
+  ],
+  "stats": {
+    "total_viva": 62,
+    "total_coelho": 91,
+    "matched": 16,
+    "ground_truth_confirmed": 15,
+    "tp": 8,
+    "fp": 8,
+    "fn": 7,
+    "precision": 0.5,
+    "recall": 0.5333333333333333,
+    "f1": 0.5161290322580646,
+    "total": 16
+  }
+}

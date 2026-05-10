@@ -1,0 +1,423 @@
+{
+  "session_started": "2026-05-06T17:58:09.045315+00:00",
+  "session_name": "megaloc",
+  "strategy": "megaloc-set-similarity",
+  "best_threshold": 0.525,
+  "threshold_sweep": [
+    {
+      "threshold": 0.45,
+      "tp": 16,
+      "fp": 9,
+      "fn": 5,
+      "precision": 0.64,
+      "recall": 0.7619047619047619,
+      "f1": 0.6956521739130435,
+      "total": 25
+    },
+    {
+      "threshold": 0.475,
+      "tp": 15,
+      "fp": 8,
+      "fn": 6,
+      "precision": 0.6521739130434783,
+      "recall": 0.7142857142857143,
+      "f1": 0.6818181818181819,
+      "total": 23
+    },
+    {
+      "threshold": 0.5,
+      "tp": 15,
+      "fp": 8,
+      "fn": 6,
+      "precision": 0.6521739130434783,
+      "recall": 0.7142857142857143,
+      "f1": 0.6818181818181819,
+      "total": 23
+    },
+    {
+      "threshold": 0.525,
+      "tp": 15,
+      "fp": 4,
+      "fn": 6,
+      "precision": 0.7894736842105263,
+      "recall": 0.7142857142857143,
+      "f1": 0.7500000000000001,
+      "total": 19
+    },
+    {
+      "threshold": 0.55,
+      "tp": 13,
+      "fp": 3,
+      "fn": 8,
+      "precision": 0.8125,
+      "recall": 0.6190476190476191,
+      "f1": 0.7027027027027026,
+      "total": 16
+    },
+    {
+      "threshold": 0.575,
+      "tp": 12,
+      "fp": 2,
+      "fn": 9,
+      "precision": 0.8571428571428571,
+      "recall": 0.5714285714285714,
+      "f1": 0.6857142857142857,
+      "total": 14
+    },
+    {
+      "threshold": 0.6,
+      "tp": 11,
+      "fp": 2,
+      "fn": 10,
+      "precision": 0.8461538461538461,
+      "recall": 0.5238095238095238,
+      "f1": 0.6470588235294118,
+      "total": 13
+    },
+    {
+      "threshold": 0.625,
+      "tp": 9,
+      "fp": 1,
+      "fn": 12,
+      "precision": 0.9,
+      "recall": 0.42857142857142855,
+      "f1": 0.5806451612903225,
+      "total": 10
+    },
+    {
+      "threshold": 0.65,
+      "tp": 8,
+      "fp": 1,
+      "fn": 13,
+      "precision": 0.8888888888888888,
+      "recall": 0.38095238095238093,
+      "f1": 0.5333333333333333,
+      "total": 9
+    },
+    {
+      "threshold": 0.675,
+      "tp": 8,
+      "fp": 1,
+      "fn": 13,
+      "precision": 0.8888888888888888,
+      "recall": 0.38095238095238093,
+      "f1": 0.5333333333333333,
+      "total": 9
+    },
+    {
+      "threshold": 0.7,
+      "tp": 8,
+      "fp": 0,
+      "fn": 13,
+      "precision": 1.0,
+      "recall": 0.38095238095238093,
+      "f1": 0.5517241379310345,
+      "total": 8
+    },
+    {
+      "threshold": 0.725,
+      "tp": 7,
+      "fp": 0,
+      "fn": 14,
+      "precision": 1.0,
+      "recall": 0.3333333333333333,
+      "f1": 0.5,
+      "total": 7
+    },
+    {
+      "threshold": 0.75,
+      "tp": 7,
+      "fp": 0,
+      "fn": 14,
+      "precision": 1.0,
+      "recall": 0.3333333333333333,
+      "f1": 0.5,
+      "total": 7
+    },
+    {
+      "threshold": 0.775,
+      "tp": 5,
+      "fp": 0,
+      "fn": 16,
+      "precision": 1.0,
+      "recall": 0.23809523809523808,
+      "f1": 0.3846153846153846,
+      "total": 5
+    },
+    {
+      "threshold": 0.8,
+      "tp": 3,
+      "fp": 0,
+      "fn": 18,
+      "precision": 1.0,
+      "recall": 0.14285714285714285,
+      "f1": 0.25,
+      "total": 3
+    },
+    {
+      "threshold": 0.825,
+      "tp": 1,
+      "fp": 0,
+      "fn": 20,
+      "precision": 1.0,
+      "recall": 0.047619047619047616,
+      "f1": 0.0909090909090909,
+      "total": 1
+    },
+    {
+      "threshold": 0.85,
+      "tp": 1,
+      "fp": 0,
+      "fn": 20,
+      "precision": 1.0,
+      "recall": 0.047619047619047616,
+      "f1": 0.0909090909090909,
+      "total": 1
+    },
+    {
+      "threshold": 0.875,
+      "tp": 1,
+      "fp": 0,
+      "fn": 20,
+      "precision": 1.0,
+      "recall": 0.047619047619047616,
+      "f1": 0.0909090909090909,
+      "total": 1
+    },
+    {
+      "threshold": 0.9,
+      "tp": 0,
+      "fp": 0,
+      "fn": 21,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "total": 0
+    },
+    {
+      "threshold": 0.925,
+      "tp": 0,
+      "fp": 0,
+      "fn": 21,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "total": 0
+    },
+    {
+      "threshold": 0.95,
+      "tp": 0,
+      "fp": 0,
+      "fn": 21,
+      "precision": 0,
+      "recall": 0.0,
+      "f1": 0,
+      "total": 0
+    }
+  ],
+  "matches": [
+    {
+      "viva_code": "12854",
+      "coelho_code": "616435",
+      "similarity_score": 0.877067,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.877067,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "5380",
+      "coelho_code": "467562",
+      "similarity_score": 0.823368,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.823368,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "17116",
+      "coelho_code": "674139",
+      "similarity_score": 0.81882,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.81882,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "18035",
+      "coelho_code": "661014",
+      "similarity_score": 0.794946,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.794946,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "7597",
+      "coelho_code": "358601",
+      "similarity_score": 0.777559,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.777559,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "14138",
+      "coelho_code": "660058",
+      "similarity_score": 0.769921,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.769921,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "17378",
+      "coelho_code": "425516",
+      "similarity_score": 0.757152,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.757152,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "16892",
+      "coelho_code": "663984",
+      "similarity_score": 0.720872,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.720872,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "6930",
+      "coelho_code": "395513",
+      "similarity_score": 0.677458,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.677458,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "12814",
+      "coelho_code": "682781",
+      "similarity_score": 0.635955,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.635955,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "17388",
+      "coelho_code": "354149",
+      "similarity_score": 0.618614,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.618614,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "17697",
+      "coelho_code": "685663",
+      "similarity_score": 0.614701,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.614701,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "16117",
+      "coelho_code": "628299",
+      "similarity_score": 0.608,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.608,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "16886",
+      "coelho_code": "617978",
+      "similarity_score": 0.594906,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "high",
+      "confidence_score": 0.594906,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "16626",
+      "coelho_code": "597308",
+      "similarity_score": 0.569594,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "medium",
+      "confidence_score": 0.569594,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "17996",
+      "coelho_code": "351722",
+      "similarity_score": 0.55589,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "medium",
+      "confidence_score": 0.55589,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "14127",
+      "coelho_code": "663462",
+      "similarity_score": 0.533915,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "medium",
+      "confidence_score": 0.533915,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "8527",
+      "coelho_code": "429865",
+      "similarity_score": 0.527457,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "medium",
+      "confidence_score": 0.527457,
+      "strategy": "megaloc-set-similarity"
+    },
+    {
+      "viva_code": "13254",
+      "coelho_code": "356006",
+      "similarity_score": 0.525202,
+      "matched_at": "2026-05-06T17:58:09.045315+00:00",
+      "reviewer": "megaloc",
+      "confidence": "medium",
+      "confidence_score": 0.525202,
+      "strategy": "megaloc-set-similarity"
+    }
+  ],
+  "stats": {
+    "total_viva": 62,
+    "total_coelho": 91,
+    "matched": 19,
+    "ground_truth_confirmed": 21,
+    "tp": 15,
+    "fp": 4,
+    "fn": 6,
+    "precision": 0.7894736842105263,
+    "recall": 0.7142857142857143,
+    "f1": 0.7500000000000001,
+    "total": 19
+  }
+}

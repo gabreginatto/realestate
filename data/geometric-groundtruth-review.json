@@ -1,0 +1,25 @@
+{
+  "session_started": "2026-05-06T17:58:59.849884+00:00",
+  "session_name": "geometric-groundtruth-review",
+  "source": "data/auto-matches-geometric-rerank.json",
+  "purpose": "Review high-geometric-evidence pairs currently absent from active ground truth.",
+  "filters": {
+    "min_score": 0.75,
+    "min_inliers": 25,
+    "min_ratio": 0.5,
+    "include_reviewed": false
+  },
+  "excluded_rejected_pairs": [
+    [
+      "6930",
+      "395513"
+    ]
+  ],
+  "count": 0,
+  "review_instructions": {
+    "confirm": "Set review_status to confirmed if the pair is the same physical property.",
+    "reject": "Set review_status to rejected if the pair is only visually similar or shares a reused marketing image.",
+    "then": "Confirmed pairs should be added to CONFIRMED_PAIRS in matcher scripts and MATCHES.md before rerunning benchmarks."
+  },
+  "candidates": []
+}

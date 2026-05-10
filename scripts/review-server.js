@@ -17,6 +17,9 @@
 const express = require('express');
 const https   = require('https');
 const http    = require('http');
+const fs      = require('fs');
+const path    = require('path');
+const crypto  = require('crypto');
 const { Storage } = require('@google-cloud/storage');
 
 // ---------------------------------------------------------------------------
@@ -26,6 +29,7 @@ const { Storage } = require('@google-cloud/storage');
 const PORT       = process.env.PORT || 3001;
 const GCS_BUCKET = process.env.GCS_BUCKET || 'realestate-475615-data';
 const GCS_BASE   = `https://storage.googleapis.com/${GCS_BUCKET}`;
+const MOSAIC_VERSION = process.env.K_REVISION || String(Date.now());
 
 const storage = new Storage();
 const bucket  = storage.bucket(GCS_BUCKET);
@@ -78,23 +82,145 @@ function selectedImageUrl(site, code, filename) {
   return `${GCS_BASE}/selected/${fullSite(site)}/${code}/${filename}`;
 }
 
+// Mosaic URLs follow the make-clip-mosaics.js output:
+//   mosaics/{site}/{code}.png       — standard 4x2 outdoor mosaic
+//   mosaics/{site}/{code}_full.png  — expanded 8x4 outdoor mosaic
+function mosaicUrl(site, code, mode = 'standard') {
+  const suffix = mode === 'expanded' ? '_full' : '';
+  return `${GCS_BASE}/mosaics/${site}/${code}${suffix}.png?v=${encodeURIComponent(MOSAIC_VERSION)}`;
+}
+
+// In-memory cache for mosaic existence probes (per process)
+const _mosaicAvail = new Map();
+function mosaicCacheKey(site, code, mode) { return `${site}/${code}/${mode}`; }
+
+const LOCAL_DATA_ROOT = process.env.LOCAL_DATA_ROOT || null;
+
+function localMosaicPath(site, code, mode) {
+  if (!LOCAL_DATA_ROOT) return null;
+  const suffix = mode === 'expanded' ? '_full' : '';
+  return path.join(LOCAL_DATA_ROOT, 'mosaics', site, `${code}${suffix}.png`);
+}
+function localImagesDir(site, code) {
+  if (!LOCAL_DATA_ROOT) return null;
+  return path.join(LOCAL_DATA_ROOT, fullSite(site), 'images', code);
+}
+
+function fixturePlaceholderMosaic(site, code, mode) {
+  if (LOCAL_DATA_ROOT) {
+    const suffix = mode === 'expanded' ? '_full' : '';
+    return `/local-mosaics/${site}/${code}${suffix}.png`;
+  }
+  const w = mode === 'expanded' ? 1600 : 800;
+  const h = mode === 'expanded' ? 800  : 400;
+  return `https://picsum.photos/seed/${site}-${code}-${mode}/${w}/${h}`;
+}
+
+async function probeMosaic(site, code, mode) {
+  if (LOCAL_DATA_ROOT) {
+    const p = localMosaicPath(site, code, mode);
+    return !!(p && fs.existsSync(p));
+  }
+  if (process.env.LOCAL_FIXTURES_MATCHES) return true;
+  const key = mosaicCacheKey(site, code, mode);
+  if (_mosaicAvail.has(key)) return _mosaicAvail.get(key);
+  const suffix = mode === 'expanded' ? '_full' : '';
+  const gcsPath = `mosaics/${site}/${code}${suffix}.png`;
+  let available = false;
+  try { [available] = await bucket.file(gcsPath).exists(); }
+  catch (_) { available = false; }
+  _mosaicAvail.set(key, available);
+  return available;
+}
+
+const OUTDOOR_CATEGORIES = new Set(['pool', 'facade', 'garden']);
+const CATEGORY_PRIORITY = { pool: 0, facade: 1, garden: 2 };
+
+function sortOutdoorImages(entries) {
+  return (entries || [])
+    .filter(e => OUTDOOR_CATEGORIES.has(e.category))
+    .sort((a, b) => {
+      const byCategory = CATEGORY_PRIORITY[a.category] - CATEGORY_PRIORITY[b.category];
+      if (byCategory !== 0) return byCategory;
+      return String(a.filename).localeCompare(String(b.filename), undefined, { numeric: true });
+    });
+}
+
+// ---------------------------------------------------------------------------
+// Tier normalization — maps tiered + legacy tier values to lanes and labels
+// ---------------------------------------------------------------------------
+
+const TIER_MAP = {
+  'auto-review-high': { lane: 'high',   label: 'High confidence' },
+  'review-normal':    { lane: 'normal', label: 'Normal review'   },
+  'review-recall':    { lane: 'recall', label: 'Recall candidate' },
+  'reject-low':       { lane: 'audit',  label: 'Audit only'      },
+  high:               { lane: 'high',   label: 'High confidence' },
+  medium:             { lane: 'normal', label: 'Normal review'   },
+  low:                { lane: 'recall', label: 'Recall candidate' },
+};
+
+const REVIEW_LANES = ['high', 'normal', 'recall'];
+const ALL_LANES    = ['high', 'normal', 'recall', 'audit'];
+
+function normalizeTier(match) {
+  const raw = match && (match.tier || match.legacy_tier);
+  const mapped = raw && TIER_MAP[raw];
+  if (mapped) return { ...mapped, raw };
+  return { lane: 'normal', label: 'Normal review', raw: raw || null };
+}
+
+const EVIDENCE_FIELDS = [
+  'sources',
+  'source_scores',
+  'geometric_score',
+  'best_inliers',
+  'best_inlier_ratio',
+  'support_pairs_8',
+  'support_pairs_12',
+  'top_image_pairs',
+  'legacy_tier',
+];
+
+function pickEvidence(match) {
+  const out = {};
+  for (const k of EVIDENCE_FIELDS) {
+    if (match[k] !== undefined && match[k] !== null) out[k] = match[k];
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------------
 
 let vivaMap    = {};
 let coelhoMap  = {};
-let autoMatches = [];    // array of match objects from auto-matches.json
-let currentSession = null;  // { pass, pairs, confirmed }
+let vivaListings = [];
+let coelhoListings = [];
+let autoMatches = [];    // review queue (lanes high/normal/recall), non-reject pairs
+let auditMatches = [];   // reject-low pairs, accessible via audit lane
+let currentSession = null;  // { pass, pairs, audit, confirmed }
+let eventCounter = 0;
 
 // ---------------------------------------------------------------------------
 // Load listings from GCS
 // ---------------------------------------------------------------------------
 
+function readLocalJson(envVar) {
+  const p = process.env[envVar];
+  if (!p) return null;
+  try { return JSON.parse(fs.readFileSync(p, 'utf8')); }
+  catch (e) { console.warn(`Could not read ${envVar}=${p}:`, e.message); return null; }
+}
+
 async function loadListingMaps() {
+  const localViva = readLocalJson('LOCAL_FIXTURES_VIVA');
+  const localCoe  = readLocalJson('LOCAL_FIXTURES_COELHO');
   try {
-    const vRaw = await fetchJson(`${GCS_BASE}/listings/vivaprimeimoveis.json`);
-    for (const l of vRaw.listings || []) {
+    const vRaw = localViva || await fetchJson(`${GCS_BASE}/listings/vivaprimeimoveis.json`);
+    vivaListings = vRaw.listings || [];
+    for (const l of vivaListings) {
       const specs  = (l.detailedData || {}).specs || {};
       const areaStr = specs.area_construida || '';
       const areaM  = areaStr.match(/(\d+(?:[.,]\d+)?)/);
@@ -111,8 +237,9 @@ async function loadListingMaps() {
   }
 
   try {
-    const cRaw = await fetchJson(`${GCS_BASE}/listings/coelhodafonseca.json`);
-    for (const l of cRaw.listings || []) {
+    const cRaw = localCoe || await fetchJson(`${GCS_BASE}/listings/coelhodafonseca.json`);
+    coelhoListings = cRaw.listings || [];
+    for (const l of coelhoListings) {
       const features = l.features || '';
       const areaM = features.match(/(\d+(?:[.,]\d+)?)\s*m²\s*construída/i);
       const bedsM = features.match(/(\d+)\s*dorms?/i);
@@ -133,20 +260,56 @@ async function loadListingMaps() {
 // Load auto-matches from GCS + build session
 // ---------------------------------------------------------------------------
 
+function decorateMatch(m) {
+  const norm = normalizeTier(m);
+  return {
+    viva_code:        m.viva_code,
+    coelho_code:      m.coelho_code,
+    similarity:       m.similarity ?? m.confidence_score ?? m.confidence ?? null,
+    confidence_score: m.confidence_score ?? m.similarity ?? null,
+    tier:             m.tier || norm.raw || null,
+    tier_label:       norm.label,
+    lane:             norm.lane,
+    pool_rank:        m.pool_rank ?? null,
+    facade_rank:      m.facade_rank ?? null,
+    evidence:         pickEvidence(m),
+  };
+}
+
+function splitMatches(raw) {
+  const rawMatches = Array.isArray(raw.matches)
+    ? raw.matches
+    : Object.entries(raw.matches || {}).map(([viva_code, v]) => ({ viva_code, ...v }));
+
+  const review = [];
+  const audit  = [];
+  for (const m of rawMatches) {
+    const norm = normalizeTier(m);
+    if (m.include_in_review === false && norm.lane !== 'audit') continue;
+    const decorated = decorateMatch(m);
+    if (norm.lane === 'audit') audit.push(decorated);
+    else                       review.push(decorated);
+  }
+  return { review, audit };
+}
+
 async function loadMatches() {
+  const localMatches = readLocalJson('LOCAL_FIXTURES_MATCHES');
   try {
-    const raw = await fetchJson(`${GCS_BASE}/matches/auto-matches.json`);
-    autoMatches = Array.isArray(raw.matches) ? raw.matches : Object.entries(raw.matches || {}).map(([viva_code, v]) => ({
-      viva_code,
-      coelho_code: v.coelho_code,
-      similarity:  v.similarity,
-      tier:        v.tier,
-      confidence_score: v.confidence_score,
-    }));
-    console.log(`✓ Loaded ${autoMatches.length} matches from GCS`);
+    const raw = localMatches || await fetchJson(`${GCS_BASE}/matches/auto-matches.json`);
+    const { review, audit } = splitMatches(raw);
+    autoMatches  = review;
+    auditMatches = audit;
+
+    const byLane = REVIEW_LANES.reduce((acc, l) => (acc[l] = review.filter(m => m.lane === l).length, acc), {});
+    console.log(
+      `✓ Loaded ${review.length} review matches from GCS ` +
+      `(high=${byLane.high}, normal=${byLane.normal}, recall=${byLane.recall}; audit=${audit.length})`
+    );
   } catch (e) {
     console.warn('Could not load auto-matches from GCS:', e.message);
     autoMatches = [];
+    auditMatches = [];
   }
 }
 
@@ -155,29 +318,60 @@ async function loadMatches() {
 // ---------------------------------------------------------------------------
 
 async function ensureSession() {
+  // When running on local fixtures, always rebuild — never resume a stale GCS session
+  if (process.env.LOCAL_FIXTURES_MATCHES) {
+    currentSession = buildNewSession(autoMatches, auditMatches, 1, []);
+    console.log(`✓ Created local-fixture session: ${currentSession.pairs.length} review pairs, ${currentSession.audit.length} audit`);
+    return;
+  }
   // Try to load existing session from GCS
   try {
     currentSession = await gcsRead('review-sessions/current.json');
-    console.log(`✓ Resumed session: pass-${currentSession.pass}, ${currentSession.pairs.length} pairs`);
+    if (!Array.isArray(currentSession.audit)) currentSession.audit = [];
+    let changed = false;
+    if (!currentSession.trial_run_id) {
+      currentSession.trial_run_id = crypto.randomUUID();
+      changed = true;
+    }
+    // Backfill lane / tier_label / evidence on legacy persisted pairs
+    for (const p of currentSession.pairs || []) {
+      if (!p.lane || !p.tier_label) {
+        const norm = normalizeTier(p);
+        p.lane       = p.lane || norm.lane;
+        p.tier_label = p.tier_label || norm.label;
+        changed = true;
+      }
+      if (!p.evidence) {
+        p.evidence = pickEvidence(p);
+        changed = true;
+      }
+    }
+    if (changed) await saveSession();
+    console.log(`✓ Resumed session: pass-${currentSession.pass}, ${currentSession.pairs.length} review pairs, ${currentSession.audit.length} audit`);
     return;
   } catch (e) {
     // No existing session — build from matches
   }
 
-  currentSession = buildNewSession(autoMatches, 1, []);
+  currentSession = buildNewSession(autoMatches, auditMatches, 1, []);
   await saveSession();
-  console.log(`✓ Created pass-1 session: ${currentSession.pairs.length} pairs`);
+  console.log(`✓ Created pass-1 session: ${currentSession.pairs.length} review pairs, ${currentSession.audit.length} audit`);
 }
 
-function buildNewSession(matches, passN, carryConfirmed) {
+function buildNewSession(reviewMatches, auditMatches_, passN, carryConfirmed) {
   const confirmedSet = new Set(carryConfirmed.map(p => p.viva_code));
-  const pairs = matches
+  const pairs = reviewMatches
+    .filter(m => !confirmedSet.has(m.viva_code))
+    .map(m => ({ ...m, status: 'pending' }));
+  const audit = (auditMatches_ || [])
     .filter(m => !confirmedSet.has(m.viva_code))
     .map(m => ({ ...m, status: 'pending' }));
   return {
     pass:      passN,
     pairs,
+    audit,
     confirmed: [...carryConfirmed],
+    trial_run_id: crypto.randomUUID(),
     created_at: new Date().toISOString(),
   };
 }
@@ -190,8 +384,148 @@ async function saveSession() {
   }
 }
 
-function currentPair() {
-  return currentSession.pairs.find(p => p.status === 'pending') || null;
+function lanePool(lane) {
+  if (lane === 'audit') return currentSession.audit || [];
+  return (currentSession.pairs || []).filter(p => !lane || p.lane === lane);
+}
+
+function currentPair(lane) {
+  const pool = lanePool(lane);
+  return pool.find(p => p.status === 'pending') || null;
+}
+
+function findPair(viva_code, coelho_code) {
+  const all = [...(currentSession.pairs || []), ...(currentSession.audit || [])];
+  return all.find(p => p.viva_code === viva_code && p.coelho_code === coelho_code) || null;
+}
+
+function laneCounts() {
+  const counts = {};
+  for (const lane of REVIEW_LANES) {
+    const pool = (currentSession.pairs || []).filter(p => p.lane === lane);
+    counts[lane] = {
+      total:     pool.length,
+      pending:   pool.filter(p => p.status === 'pending').length,
+      confirmed: pool.filter(p => p.status === 'confirmed').length,
+      skipped:   pool.filter(p => p.status === 'skipped').length,
+      unsure:    pool.filter(p => p.status === 'unsure').length,
+    };
+  }
+  const audit = currentSession.audit || [];
+  counts.audit = {
+    total:     audit.length,
+    pending:   audit.filter(p => p.status === 'pending').length,
+    confirmed: audit.filter(p => p.status === 'confirmed').length,
+    skipped:   audit.filter(p => p.status === 'skipped').length,
+    unsure:    audit.filter(p => p.status === 'unsure').length,
+  };
+  return counts;
+}
+
+function requestMeta(req) {
+  return {
+    ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress || null,
+    user_agent: req.headers['user-agent'] || null,
+    referer: req.headers.referer || null,
+  };
+}
+
+function pairSnapshot(pair) {
+  if (!pair) return null;
+  return {
+    viva_code: pair.viva_code,
+    coelho_code: pair.coelho_code,
+    lane: pair.lane || normalizeTier(pair).lane,
+    tier: pair.tier || null,
+    similarity: pair.similarity ?? null,
+    confidence_score: pair.confidence_score ?? null,
+    evidence: pair.evidence || pickEvidence(pair),
+    viva: vivaMap[pair.viva_code] || {},
+    coelho: coelhoMap[pair.coelho_code] || {},
+  };
+}
+
+async function logEvent(req, type, payload = {}) {
+  const now = new Date().toISOString();
+  const trialRunId = currentSession?.trial_run_id || 'no-session';
+  const event = {
+    ts: now,
+    type,
+    trial_run_id: trialRunId,
+    pass: currentSession?.pass ?? null,
+    sequence: ++eventCounter,
+    ...payload,
+    request: requestMeta(req),
+  };
+  console.log(`[event] ${type} trial=${trialRunId} viva=${payload.viva_code || ''} coelho=${payload.coelho_code || ''} lane=${payload.lane || ''}`);
+  try {
+    const stamp = now.replace(/[:.]/g, '-');
+    await gcsWrite(`review-sessions/events/${trialRunId}/${stamp}-${String(eventCounter).padStart(6, '0')}.json`, event);
+  } catch (e) {
+    console.warn('Could not write analytics event to GCS:', e.message);
+  }
+}
+
+function allSessionPairs() {
+  if (!currentSession) return [];
+  return [...(currentSession.pairs || []), ...(currentSession.audit || [])];
+}
+
+function buildTrialSummary() {
+  const pairs = allSessionPairs();
+  const confirmed = currentSession?.confirmed || [];
+  const confirmedViva = new Set(confirmed.map(p => p.viva_code));
+  const reviewedViva = new Set(pairs.filter(p => p.status && p.status !== 'pending').map(p => p.viva_code));
+  const nonConfirmedReviewed = pairs.filter(p =>
+    p.status && p.status !== 'pending' && p.status !== 'confirmed' && !confirmedViva.has(p.viva_code)
+  );
+  const vivaWithoutConfirmedCoelho = [...new Map(nonConfirmedReviewed.map(p => [p.viva_code, {
+    viva_code: p.viva_code,
+    attempted_coelho_code: p.coelho_code,
+    status: p.status,
+    lane: p.lane || normalizeTier(p).lane,
+    reviewed_at: p.reviewed_at || null,
+    viva: vivaMap[p.viva_code] || {},
+    attempted_coelho: coelhoMap[p.coelho_code] || {},
+  }])).values()];
+  const pendingViva = vivaListings
+    .filter(l => !confirmedViva.has(String(l.propertyCode)))
+    .map(l => ({
+      viva_code: String(l.propertyCode),
+      reviewed_in_current_session: reviewedViva.has(String(l.propertyCode)),
+      viva: vivaMap[String(l.propertyCode)] || {},
+    }));
+  const vivaNeverReviewed = pendingViva.filter(p => !p.reviewed_in_current_session);
+
+  return {
+    generated_at: new Date().toISOString(),
+    trial_run_id: currentSession?.trial_run_id || null,
+    pass: currentSession?.pass || null,
+    total_viva_listings: vivaListings.length,
+    total_coelho_listings: coelhoListings.length,
+    lanes: currentSession ? laneCounts() : {},
+    total_candidates: pairs.length,
+    total_confirmed: confirmed.length,
+    confirmed_viva_count: confirmedViva.size,
+    pending_viva_count: pendingViva.length,
+    reviewed_unmatched_viva_count: vivaWithoutConfirmedCoelho.length,
+    never_reviewed_viva_count: vivaNeverReviewed.length,
+    total_skipped: pairs.filter(p => p.status === 'skipped').length,
+    total_unsure: pairs.filter(p => p.status === 'unsure').length,
+    total_pending: pairs.filter(p => p.status === 'pending').length,
+    confirmed_matches: confirmed.map(p => ({
+      viva_code: p.viva_code,
+      coelho_code: p.coelho_code,
+      lane: p.lane || normalizeTier(p).lane,
+      similarity: p.similarity,
+      confirmed_at: p.confirmed_at,
+      viva: vivaMap[p.viva_code] || {},
+      coelho: coelhoMap[p.coelho_code] || {},
+    })),
+    viva_without_confirmed_coelho: vivaWithoutConfirmedCoelho,
+    pending_viva: pendingViva,
+    viva_never_reviewed: vivaNeverReviewed,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -220,22 +554,45 @@ app.get('/api/images/:site/:code', async (req, res) => {
   const { site, code } = req.params;
   if (!['viva', 'coelho'].includes(site)) return res.status(400).json([]);
 
-  const fs = fullSite(site);
+  const fsName = fullSite(site);
+  const requested = String(req.query.mode || 'standard').toLowerCase();
+  const mode = ['standard', 'expanded', 'all'].includes(requested) ? requested : 'standard';
 
-  // Try CLIP manifest from GCS
+  if (process.env.LOCAL_FIXTURES_MATCHES) {
+    const n = mode === 'all' ? 16 : (mode === 'expanded' ? 12 : 6);
+    const urls = Array.from({ length: n }, (_, i) =>
+      `https://picsum.photos/seed/${site}-${code}-${mode}-${i}/400/300`);
+    return res.json(urls);
+  }
+
+  if (mode === 'all') {
+    // Intentionally include interiors — caller asked for everything
+    try {
+      const [files] = await bucket.getFiles({ prefix: `images/${fsName}/${code}/` });
+      const urls = files
+        .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f.name))
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }))
+        .map(f => `${GCS_BASE}/${f.name}`);
+      return res.json(urls);
+    } catch (e) { return res.json([]); }
+  }
+
+  // Try CLIP manifest from GCS for outdoor-filtered modes
   try {
-    const manifest = await gcsRead(`selected/${fs}/${code}/_manifest.json`);
-    const OUTDOOR  = new Set(['facade', 'pool', 'garden']);
-    const urls = (manifest.all_categories || manifest.selected || [])
-      .filter(e => OUTDOOR.has(e.category))
-      .slice(0, 16)
-      .map(e => selectedImageUrl(site, code, e.filename));
+    const manifest = await gcsRead(`selected/${fsName}/${code}/_manifest.json`);
+    const entries = mode === 'expanded'
+      ? sortOutdoorImages(manifest.all_categories || manifest.selected).slice(0, 32)
+      : sortOutdoorImages(manifest.selected || []).slice(0, 8);
+    const urls = entries.map(e => mode === 'expanded'
+      ? imageUrl(site, code, e.filename)
+      : selectedImageUrl(site, code, e.filename)
+    );
     if (urls.length) return res.json(urls);
   } catch (_) { /* fall through */ }
 
   // Fallback: list images from GCS cache prefix
   try {
-    const [files] = await bucket.getFiles({ prefix: `images/${fs}/${code}/` });
+    const [files] = await bucket.getFiles({ prefix: `images/${fsName}/${code}/` });
     const urls = files
       .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f.name))
       .sort((a, b) => a.name.localeCompare(b.name))
@@ -247,12 +604,45 @@ app.get('/api/images/:site/:code', async (req, res) => {
 });
 
 // ---------------------------------------------------------------------------
+// API: mosaic availability — checks GCS for the generated mosaic PNG
+// ---------------------------------------------------------------------------
+
+app.get('/api/mosaic/:site/:code', async (req, res) => {
+  const { site, code } = req.params;
+  if (!['viva', 'coelho'].includes(site)) return res.status(400).json({ available: false });
+  const mode = req.query.mode === 'expanded' ? 'expanded' : 'standard';
+  const available = await probeMosaic(site, code, mode);
+  if (!available) return res.json({ available: false, url: null, mode });
+  const url = process.env.LOCAL_FIXTURES_MATCHES
+    ? fixturePlaceholderMosaic(site, code, mode)
+    : mosaicUrl(site, code, mode);
+  res.json({ available: true, url, mode });
+});
+
+// ---------------------------------------------------------------------------
 // API: reload matches from GCS (call after running sync-to-gcs.sh on Mac)
 // ---------------------------------------------------------------------------
 
 app.post('/api/reload', async (req, res) => {
   await loadMatches();
-  res.json({ ok: true, match_count: autoMatches.length });
+  const trialRunId = currentSession?.trial_run_id;
+  const carryConfirmed = Array.isArray(currentSession && currentSession.confirmed)
+    ? currentSession.confirmed
+    : [];
+  currentSession = buildNewSession(autoMatches, auditMatches, currentSession?.pass || 1, carryConfirmed);
+  if (trialRunId) currentSession.trial_run_id = trialRunId;
+  await saveSession();
+  _mosaicAvail.clear();
+  await logEvent(req, 'session_reloaded', {
+    client: req.body || {},
+  });
+  res.json({
+    ok: true,
+    match_count: autoMatches.length,
+    audit_count: auditMatches.length,
+    session_review_count: currentSession.pairs.length,
+    session_audit_count: currentSession.audit.length,
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -262,15 +652,28 @@ app.post('/api/reload', async (req, res) => {
 app.get('/api/session', (req, res) => {
   if (!currentSession) return res.status(503).json({ error: 'no session' });
 
-  const pair          = currentPair();
-  const total         = currentSession.pairs.length;
-  const confirmedCount = currentSession.pairs.filter(p => p.status === 'confirmed').length;
-  const skippedCount   = currentSession.pairs.filter(p => p.status === 'skipped').length;
-  const currentIndex   = confirmedCount + skippedCount + 1;
+  const requested = String(req.query.lane || '').toLowerCase();
+  let lane = ALL_LANES.includes(requested) ? requested : 'high';
+  const preferredPool = lanePool(lane);
+  if (!ALL_LANES.includes(requested) || preferredPool.length === 0) {
+    lane = ALL_LANES.find(l => lanePool(l).some(p => p.status === 'pending'))
+        || ALL_LANES.find(l => lanePool(l).length > 0)
+        || lane;
+  }
+
+  const pool           = lanePool(lane);
+  const total          = pool.length;
+  const confirmedCount = pool.filter(p => p.status === 'confirmed').length;
+  const skippedCount   = pool.filter(p => p.status === 'skipped').length;
+  const unsureCount    = pool.filter(p => p.status === 'unsure').length;
+  const completed      = confirmedCount + skippedCount + unsureCount;
+  const pair           = currentPair(lane);
+  const currentIndex   = completed + 1;
   const allDone        = !pair;
 
   let pairData = null;
   if (pair) {
+    const norm   = normalizeTier(pair);
     const viva   = vivaMap[pair.viva_code]   || {};
     const coelho = coelhoMap[pair.coelho_code] || {};
     pairData = {
@@ -278,23 +681,68 @@ app.get('/api/session', (req, res) => {
       coelho_code:      pair.coelho_code,
       similarity:       pair.similarity,
       confidence_score: pair.confidence_score ?? pair.similarity,
-      tier:             pair.tier ?? 'medium',
+      tier:             pair.tier ?? norm.raw ?? 'medium',
+      tier_label:       pair.tier_label || norm.label,
+      lane:             pair.lane || norm.lane,
       pool_rank:        pair.pool_rank ?? null,
       facade_rank:      pair.facade_rank ?? null,
+      evidence:         pair.evidence || pickEvidence(pair),
       viva,
       coelho,
     };
   }
 
+  // Global confirmed count (across review + audit) for header chip
+  const globalConfirmed = Array.isArray(currentSession.confirmed)
+    ? currentSession.confirmed.length
+    : (currentSession.pairs || []).filter(p => p.status === 'confirmed').length +
+      (currentSession.audit  || []).filter(p => p.status === 'confirmed').length;
+
   res.json({
-    pass:            currentSession.pass,
-    current_index:   allDone ? total : currentIndex,
+    trial_run_id:      currentSession.trial_run_id,
+    pass:             currentSession.pass,
+    lane,
+    current_index:    allDone ? total : currentIndex,
     total,
-    confirmed_count: confirmedCount,
-    skipped_count:   skippedCount,
-    pair:            pairData,
-    all_done:        allDone,
+    confirmed_count:  confirmedCount,
+    skipped_count:    skippedCount,
+    unsure_count:     unsureCount,
+    pair:             pairData,
+    all_done:         allDone,
+    lanes:            laneCounts(),
+    global_confirmed: globalConfirmed,
   });
+});
+
+app.post('/api/event', async (req, res) => {
+  const body = req.body || {};
+  const type = String(body.type || '').slice(0, 80);
+  if (!type) return res.status(400).json({ error: 'missing event type' });
+  await logEvent(req, type, {
+    lane: body.lane || null,
+    viva_code: body.viva_code || null,
+    coelho_code: body.coelho_code || null,
+    mode: body.mode || null,
+    source: body.source || null,
+    elapsed_ms: Number.isFinite(body.elapsed_ms) ? body.elapsed_ms : null,
+    pair: body.pair || null,
+    client: body.client || null,
+  });
+  res.json({ ok: true });
+});
+
+// Audit-only listing — returns the reject-low pool for the audit lane UI
+app.get('/api/audit', (req, res) => {
+  if (!currentSession) return res.status(503).json({ error: 'no session' });
+  const audit = (currentSession.audit || []).map(p => ({
+    viva_code:   p.viva_code,
+    coelho_code: p.coelho_code,
+    tier:        p.tier,
+    tier_label:  p.tier_label,
+    status:      p.status,
+    evidence:    p.evidence || pickEvidence(p),
+  }));
+  res.json({ count: audit.length, audit });
 });
 
 // ---------------------------------------------------------------------------
@@ -303,22 +751,57 @@ app.get('/api/session', (req, res) => {
 
 app.post('/api/confirm', async (req, res) => {
   const { viva_code, coelho_code } = req.body;
-  const pair = currentSession.pairs.find(p => p.viva_code === viva_code && p.coelho_code === coelho_code);
+  const pair = findPair(viva_code, coelho_code);
   if (!pair) return res.status(400).json({ error: 'pair not found' });
   pair.status = 'confirmed';
-  currentSession.confirmed.push({ ...pair, confirmed_at: new Date().toISOString() });
-  console.log(`✓ confirmed  Viva ${viva_code} ↔ Coelho ${coelho_code}`);
+  pair.reviewed_at = new Date().toISOString();
+  currentSession.confirmed.push({ ...pair, confirmed_at: pair.reviewed_at });
+  console.log(`✓ confirmed  Viva ${viva_code} ↔ Coelho ${coelho_code} (lane=${pair.lane || 'unknown'})`);
   await saveSession();
+  await logEvent(req, 'decision_confirmed', {
+    viva_code,
+    coelho_code,
+    lane: pair.lane || normalizeTier(pair).lane,
+    elapsed_ms: req.body.elapsed_ms,
+    pair: pairSnapshot(pair),
+  });
   res.json({ ok: true });
 });
 
 app.post('/api/skip', async (req, res) => {
   const { viva_code, coelho_code } = req.body;
-  const pair = currentSession.pairs.find(p => p.viva_code === viva_code && p.coelho_code === coelho_code);
+  const pair = findPair(viva_code, coelho_code);
   if (!pair) return res.status(400).json({ error: 'pair not found' });
   pair.status = 'skipped';
-  console.log(`✗ skipped    Viva ${viva_code} ↔ Coelho ${coelho_code}`);
+  pair.reviewed_at = new Date().toISOString();
+  console.log(`✗ skipped    Viva ${viva_code} ↔ Coelho ${coelho_code} (lane=${pair.lane || 'unknown'})`);
   await saveSession();
+  await logEvent(req, 'decision_skipped', {
+    viva_code,
+    coelho_code,
+    lane: pair.lane || normalizeTier(pair).lane,
+    elapsed_ms: req.body.elapsed_ms,
+    pair: pairSnapshot(pair),
+  });
+  res.json({ ok: true });
+});
+
+app.post('/api/unsure', async (req, res) => {
+  const { viva_code, coelho_code, note } = req.body;
+  const pair = findPair(viva_code, coelho_code);
+  if (!pair) return res.status(400).json({ error: 'pair not found' });
+  pair.status = 'unsure';
+  pair.reviewed_at = new Date().toISOString();
+  if (note) pair.note = String(note).slice(0, 500);
+  console.log(`? unsure     Viva ${viva_code} ↔ Coelho ${coelho_code} (lane=${pair.lane || 'unknown'})`);
+  await saveSession();
+  await logEvent(req, 'decision_unsure', {
+    viva_code,
+    coelho_code,
+    lane: pair.lane || normalizeTier(pair).lane,
+    elapsed_ms: req.body.elapsed_ms,
+    pair: pairSnapshot(pair),
+  });
   res.json({ ok: true });
 });
 
@@ -361,9 +844,16 @@ app.post('/api/done', async (req, res) => {
 
 app.post('/api/final', async (req, res) => {
   const confirmed = currentSession ? currentSession.confirmed : [];
+  const trialSummary = buildTrialSummary();
   const output = {
     generated_at:    new Date().toISOString(),
+    trial_run_id:    currentSession?.trial_run_id || null,
     total_confirmed: confirmed.length,
+    total_viva_listings: trialSummary.total_viva_listings,
+    total_coelho_listings: trialSummary.total_coelho_listings,
+    pending_viva_count: trialSummary.pending_viva_count,
+    reviewed_unmatched_viva_count: trialSummary.reviewed_unmatched_viva_count,
+    never_reviewed_viva_count: trialSummary.never_reviewed_viva_count,
     matches: confirmed.map(p => ({
       viva_code:    p.viva_code,
       coelho_code:  p.coelho_code,
@@ -373,7 +863,74 @@ app.post('/api/final', async (req, res) => {
     })),
   };
   await gcsWrite('review-sessions/final-matches.json', output);
+  await gcsWrite(`review-sessions/trial-summaries/${trialSummary.trial_run_id || 'no-session'}.json`, trialSummary);
+  await logEvent(req, 'trial_finalized', {
+    client: req.body || {},
+    lane: req.body?.lane || null,
+    elapsed_ms: req.body?.elapsed_ms,
+  });
   res.json(output);
+});
+
+app.post('/api/start-next-round', async (req, res) => {
+  if (!currentSession) return res.status(503).json({ error: 'no session' });
+
+  const currentPass = Number(currentSession.pass || 1);
+  const nextPass = currentPass + 1;
+  const trialRunId = currentSession.trial_run_id || null;
+  const summary = buildTrialSummary();
+  const command = `./scripts/run-next-review-round.sh --summary-url ${GCS_BASE}/review-sessions/trial-summaries/${trialRunId || 'no-session'}.json --round ${nextPass}`;
+
+  if (!summary.pending_viva_count) {
+    return res.json({
+      ok: false,
+      done: true,
+      message: 'Todas as propriedades Viva desta sessão já têm match confirmado.',
+      summary,
+    });
+  }
+
+  try {
+    const raw = await fetchJson(`${GCS_BASE}/matches/auto-matches-round-${nextPass}.json?v=${Date.now()}`);
+    const { review, audit } = splitMatches(raw);
+    const carryConfirmed = Array.isArray(currentSession.confirmed) ? currentSession.confirmed : [];
+    currentSession = buildNewSession(review, audit, nextPass, carryConfirmed);
+    await saveSession();
+    await logEvent(req, 'round_started', {
+      from_pass: currentPass,
+      next_pass: nextPass,
+      session_review_count: currentSession.pairs.length,
+      session_audit_count: currentSession.audit.length,
+      pending_viva_count: summary.pending_viva_count,
+    });
+    return res.json({
+      ok: true,
+      pass: nextPass,
+      review_count: currentSession.pairs.length,
+      audit_count: currentSession.audit.length,
+      lanes: laneCounts(),
+      summary,
+    });
+  } catch (e) {
+    await logEvent(req, 'next_round_not_ready', {
+      next_pass: nextPass,
+      pending_viva_count: summary.pending_viva_count,
+      error: e.message,
+    });
+    return res.status(404).json({
+      ok: false,
+      needs_local_matching: true,
+      next_pass: nextPass,
+      pending_viva_count: summary.pending_viva_count,
+      command,
+      message: `Rodada ${nextPass} ainda não foi preparada. Rode o comando no Mac e tente de novo.`,
+    });
+  }
+});
+
+app.get('/api/trial-summary', async (req, res) => {
+  const summary = buildTrialSummary();
+  res.json(summary);
 });
 
 // ---------------------------------------------------------------------------
@@ -421,8 +978,21 @@ const HTML = /* html */`<!DOCTYPE html>
   body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif;
          min-height: 100vh; display: flex; flex-direction: column; }
   header { background: var(--surface); border-bottom: 1px solid var(--border);
-           padding: 12px 24px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+           padding: 12px 24px; display: flex; flex-direction: column; gap: 10px; }
+  .header-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
   header h1 { font-size: 1.1rem; font-weight: 700; white-space: nowrap; }
+  .lane-tabs { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .lane-tab { background: var(--card); border: 1px solid var(--border); color: var(--muted);
+              border-radius: 6px; padding: 6px 12px; font-size: 0.85rem; font-weight: 600;
+              cursor: pointer; display: inline-flex; gap: 6px; align-items: center;
+              transition: all 0.15s; }
+  .lane-tab:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+  .lane-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .lane-tab .lane-count { font-size: 0.75rem; opacity: 0.85; }
+  .lane-tab.is-empty { opacity: 0.55; }
+  .lane-tab.is-audit { margin-left: auto; border-style: dashed; }
+  .lane-tab.is-audit.active { border-style: solid; }
+  @media (max-width: 700px) { .lane-tab.is-audit { margin-left: 0; } }
   .badge { background: var(--card); border: 1px solid var(--border);
            border-radius: 6px; padding: 4px 10px; font-size: 0.85rem; color: var(--muted); }
   .badge span { color: var(--text); font-weight: 600; }
@@ -442,8 +1012,10 @@ const HTML = /* html */`<!DOCTYPE html>
   .prop-meta { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
   .prop-meta strong { color: var(--text); }
   .prop-img { position: relative; cursor: pointer; border-radius: 8px; overflow: hidden;
-              background: var(--surface); min-height: 260px;
+              background: var(--surface); aspect-ratio: 2 / 1; min-height: 200px;
               display: flex; align-items: center; justify-content: center; }
+  .prop-img .mosaic-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .prop-img.is-fallback { aspect-ratio: auto; min-height: 260px; }
   .prop-img .img-grid { display: flex; flex-wrap: wrap; gap: 2px; width: 100%; }
   .prop-img .img-grid img { width: calc(33.33% - 2px); height: 130px; object-fit: cover; }
   .prop-img .zoom-hint { position: absolute; bottom: 8px; right: 8px;
@@ -454,6 +1026,24 @@ const HTML = /* html */`<!DOCTYPE html>
   .prop-link:hover { text-decoration: underline; }
   footer { background: var(--surface); border-top: 1px solid var(--border);
            padding: 16px 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .evidence-panel { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
+                    justify-content: center; max-width: 1100px; width: 100%;
+                    background: var(--card); border: 1px solid var(--border);
+                    border-radius: 8px; padding: 8px 14px; font-size: 0.8rem;
+                    color: var(--muted); }
+  .evidence-panel .ev-group { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .evidence-panel .ev-label { font-size: 0.7rem; text-transform: uppercase;
+                              letter-spacing: 0.05em; color: var(--muted); }
+  .evidence-panel .ev-val   { color: var(--text); font-weight: 600; }
+  .ev-chip { display: inline-flex; align-items: center; gap: 4px;
+             background: var(--surface); border: 1px solid var(--border);
+             border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; color: var(--text); }
+  .ev-chip.is-active { border-color: var(--accent); color: var(--accent); }
+  .ev-chip .ev-score { color: var(--muted); font-weight: 400; font-size: 0.7rem; }
+  .ev-pairs { width: 100%; display: flex; flex-wrap: wrap; gap: 4px 10px; justify-content: center;
+              border-top: 1px dashed var(--border); padding-top: 6px; margin-top: 2px; }
+  .ev-pairs .ev-pair { font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.72rem; color: var(--muted); }
+  .ev-pairs .ev-pair strong { color: var(--text); font-weight: 600; }
   .sim-badge { font-size: 0.9rem; color: var(--muted); }
   .sim-val { font-weight: 700; font-size: 1rem; }
   .sim-val.high { color: var(--green); } .sim-val.medium { color: var(--yellow); } .sim-val.low { color: var(--red); }
@@ -466,9 +1056,17 @@ const HTML = /* html */`<!DOCTYPE html>
   button { cursor: pointer; border: none; border-radius: 8px;
            padding: 10px 28px; font-size: 0.95rem; font-weight: 600; transition: opacity 0.15s; }
   button:hover { opacity: 0.85; }
-  #btn-skip  { background: var(--red); color: #fff; }
-  #btn-match { background: var(--green); color: #fff; }
-  #btn-done  { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+  #btn-skip   { background: var(--red); color: #fff; }
+  #btn-unsure { background: var(--yellow); color: #1a1d27; }
+  #btn-match  { background: var(--green); color: #fff; }
+  #btn-done   { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .lane-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+  .lane-summary .lane-cell { background: var(--surface); border: 1px solid var(--border);
+                             border-radius: 6px; padding: 8px; text-align: left; font-size: 0.8rem; }
+  .lane-summary .lane-cell strong { display: block; font-size: 0.7rem; color: var(--muted);
+                                    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  @media (max-width: 700px) { .lane-summary { grid-template-columns: repeat(2, 1fr); } }
   .kbd { display: inline-block; background: var(--card); border: 1px solid var(--border);
          border-radius: 4px; padding: 1px 6px; font-size: 0.75rem; color: var(--muted); }
   .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75);
@@ -486,17 +1084,37 @@ const HTML = /* html */`<!DOCTYPE html>
   .stat-val { font-size: 1.8rem; font-weight: 700; }
   .stat-lbl { font-size: 0.8rem; color: var(--muted); }
   .green { color: var(--green); } .red { color: var(--red); }
-  .lightbox-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-                 overflow-y: auto; z-index: 200; padding: 20px; }
-  .lightbox-bg.hidden { display: none; }
-  .lightbox-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .lightbox-header h3 { font-size: 1rem; }
-  .lightbox-close { background: var(--card); border: 1px solid var(--border); color: var(--text);
-                    border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 0.9rem; }
-  .lightbox-grid { display: flex; flex-wrap: wrap; gap: 6px; }
-  .lightbox-grid img { max-width: calc(25% - 6px); height: 200px; object-fit: cover;
-                       border-radius: 6px; cursor: zoom-in; }
-  @media (max-width: 700px) { .lightbox-grid img { max-width: calc(50% - 6px); } }
+  .compare-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+                overflow-y: auto; z-index: 200; padding: 20px; }
+  .compare-bg.hidden { display: none; }
+  .compare-header { position: sticky; top: -20px; background: rgba(15,17,23,0.95);
+                    padding: 12px 0; margin: -20px -20px 16px -20px; padding: 16px 20px;
+                    z-index: 1; display: flex; flex-direction: column; gap: 12px;
+                    border-bottom: 1px solid var(--border); }
+  .compare-titlebar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .compare-titlebar h3 { font-size: 1rem; }
+  .compare-close { background: var(--card); border: 1px solid var(--border); color: var(--text);
+                   border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 0.9rem; }
+  .compare-modes { display: inline-flex; background: var(--card); border: 1px solid var(--border);
+                   border-radius: 8px; padding: 2px; }
+  .compare-modes button { background: transparent; border: none; color: var(--muted);
+                          padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
+                          border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+  .compare-modes button.active { background: var(--accent); color: #fff; }
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .compare-col { background: var(--card); border: 1px solid var(--border);
+                 border-radius: var(--radius); padding: 12px; }
+  .compare-col h4 { font-size: 0.9rem; margin-bottom: 8px; color: var(--muted); }
+  .compare-col h4 strong { color: var(--text); }
+  .compare-mosaic { width: 100%; border-radius: 8px; display: block; }
+  .compare-images { display: flex; flex-wrap: wrap; gap: 6px; }
+  .compare-images img { max-width: calc(50% - 6px); height: 160px; object-fit: cover;
+                        border-radius: 6px; cursor: zoom-in; }
+  .compare-empty { color: var(--muted); font-size: 0.85rem; padding: 16px; text-align: center; }
+  @media (max-width: 700px) {
+    .compare-grid { grid-template-columns: 1fr; }
+    .compare-images img { max-width: calc(50% - 6px); height: 130px; }
+  }
   .notice { background: #6366f122; border: 1px solid var(--accent); border-radius: 8px;
             padding: 12px 16px; font-size: 0.85rem; color: var(--text); line-height: 1.5; }
   .notice code { color: var(--accent); font-size: 0.8rem; }
@@ -505,11 +1123,20 @@ const HTML = /* html */`<!DOCTYPE html>
 <body>
 
 <header>
-  <h1>🏠 Match Review</h1>
-  <div class="badge">Pass <span id="hdr-pass">1</span></div>
-  <div class="badge"><span id="hdr-current">1</span> / <span id="hdr-total">?</span></div>
-  <div class="badge">✅ <span id="hdr-confirmed">0</span>  ❌ <span id="hdr-skipped">0</span></div>
-  <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="header-row">
+    <h1>🏠 Match Review</h1>
+    <div class="badge">Pass <span id="hdr-pass">1</span></div>
+    <div class="badge"><span id="hdr-current">1</span> / <span id="hdr-total">?</span></div>
+    <div class="badge">✅ <span id="hdr-confirmed">0</span>  ❌ <span id="hdr-skipped">0</span></div>
+    <div class="badge" title="Confirmados em todas as raias">Total ✅ <span id="hdr-global">0</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+  <div class="lane-tabs" role="tablist" aria-label="Raias de revisão">
+    <button class="lane-tab" id="lane-high"   role="tab" onclick="switchLane('high')"  >Alta <span class="lane-count" id="lane-count-high">0/0</span></button>
+    <button class="lane-tab" id="lane-normal" role="tab" onclick="switchLane('normal')">Normal <span class="lane-count" id="lane-count-normal">0/0</span></button>
+    <button class="lane-tab" id="lane-recall" role="tab" onclick="switchLane('recall')">Recall <span class="lane-count" id="lane-count-recall">0/0</span></button>
+    <button class="lane-tab is-audit" id="lane-audit" role="tab" onclick="switchLane('audit')">Auditoria <span class="lane-count" id="lane-count-audit">0/0</span></button>
+  </div>
 </header>
 
 <main id="review-panel">
@@ -519,7 +1146,7 @@ const HTML = /* html */`<!DOCTYPE html>
       <span class="prop-code" id="viva-code"></span>
     </div>
     <div class="prop-meta" id="viva-meta"></div>
-    <div class="prop-img" id="viva-img" onclick="openLightbox('viva')">
+    <div class="prop-img" id="viva-img" onclick="openComparison()">
       <span class="zoom-hint">🔍 clique para ampliar</span>
     </div>
     <a class="prop-link" id="viva-link" href="#" target="_blank" rel="noopener">🔗 Abrir no Viva Prime Imóveis</a>
@@ -531,7 +1158,7 @@ const HTML = /* html */`<!DOCTYPE html>
       <span class="prop-code" id="coelho-code"></span>
     </div>
     <div class="prop-meta" id="coelho-meta"></div>
-    <div class="prop-img" id="coelho-img" onclick="openLightbox('coelho')">
+    <div class="prop-img" id="coelho-img" onclick="openComparison()">
       <span class="zoom-hint">🔍 clique para ampliar</span>
     </div>
     <a class="prop-link" id="coelho-link" href="#" target="_blank" rel="noopener">🔗 Abrir no Coelho da Fonseca</a>
@@ -545,17 +1172,19 @@ const HTML = /* html */`<!DOCTYPE html>
     &nbsp;|&nbsp; par <span id="footer-current">1</span> de <span id="footer-total">?</span>,
     pass <span id="footer-pass">1</span>
   </div>
+  <div class="evidence-panel" id="evidence-panel" hidden></div>
   <div class="actions">
-    <button id="btn-skip"  onclick="doSkip()">❌ SKIP <span class="kbd">← s</span></button>
-    <button id="btn-match" onclick="doMatch()">✅ MATCH <span class="kbd">→ m</span></button>
-    <button id="btn-done"  onclick="askDone()">🏁 I'M DONE <span class="kbd">d</span></button>
+    <button id="btn-skip"   onclick="doSkip()"   aria-label="Não é o mesmo imóvel">❌ Não match <span class="kbd">← s</span></button>
+    <button id="btn-unsure" onclick="doUnsure()" aria-label="Marcar como incerto">❓ Incerto <span class="kbd">u</span></button>
+    <button id="btn-match"  onclick="doMatch()"  aria-label="Confirmar match">✅ Match <span class="kbd">→ m</span></button>
+    <button id="btn-done"   onclick="askDone()"  aria-label="Finalizar revisão">🏁 Finalizar <span class="kbd">d</span></button>
   </div>
 </footer>
 
 <!-- Pass complete modal -->
-<div class="modal-bg hidden" id="pass-complete-modal">
+<div class="modal-bg hidden" id="pass-complete-modal" role="dialog" aria-modal="true" aria-labelledby="pc-heading">
   <div class="modal">
-    <h2>Pass <span id="pc-pass">1</span> completo ✅</h2>
+    <h2 id="pc-heading">Pass <span id="pc-pass">1</span> completo ✅</h2>
     <div class="stat-row">
       <div class="stat"><span class="stat-val green" id="pc-confirmed">0</span><span class="stat-lbl">Confirmados</span></div>
       <div class="stat"><span class="stat-val red"   id="pc-skipped">0</span><span class="stat-lbl">Skipped</span></div>
@@ -569,9 +1198,9 @@ const HTML = /* html */`<!DOCTYPE html>
 </div>
 
 <!-- Done confirm modal -->
-<div class="modal-bg hidden" id="done-confirm-modal">
+<div class="modal-bg hidden" id="done-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="dc-heading">
   <div class="modal">
-    <h2>⚠️ Tem certeza?</h2>
+    <h2 id="dc-heading">⚠️ Tem certeza?</h2>
     <p id="done-confirm-text"></p>
     <div class="modal-row">
       <button class="btn-outline" onclick="closeDoneModal()">Não, voltar</button>
@@ -581,45 +1210,142 @@ const HTML = /* html */`<!DOCTYPE html>
 </div>
 
 <!-- Final modal -->
-<div class="modal-bg hidden" id="final-modal">
+<div class="modal-bg hidden" id="final-modal" role="dialog" aria-modal="true" aria-labelledby="final-heading">
   <div class="modal">
-    <h2>🎉 Revisão concluída!</h2>
+    <h2 id="final-heading">🎉 Revisão concluída!</h2>
     <div class="stat-row">
       <div class="stat"><span class="stat-val green" id="final-count">0</span><span class="stat-lbl">Pares confirmados</span></div>
     </div>
     <p id="final-breakdown"></p>
     <div class="modal-row">
+      <button class="btn-accent" id="next-round-btn" onclick="startNextRound()">🔁 Preparar Rodada 2</button>
       <button class="btn-green" onclick="downloadFinal()">⬇ Baixar JSON</button>
     </div>
   </div>
 </div>
 
-<!-- Lightbox -->
-<div class="lightbox-bg hidden" id="lightbox">
-  <div class="lightbox-header">
-    <h3 id="lightbox-title">Imagens</h3>
-    <button class="lightbox-close" onclick="closeLightbox()">✕ Fechar</button>
+<!-- Comparison modal -->
+<div class="compare-bg hidden" id="compare" role="dialog" aria-modal="true" aria-labelledby="compare-title">
+  <div class="compare-header">
+    <div class="compare-titlebar">
+      <h3 id="compare-title">Comparar mosaicos expandidos</h3>
+      <button class="compare-close" onclick="closeComparison()" aria-label="Fechar comparação">✕ Fechar</button>
+    </div>
+    <div class="compare-modes" role="tablist" aria-label="Modo de comparação">
+      <button id="cmp-mode-standard" role="tab" onclick="setComparisonMode('standard')">Padrão</button>
+      <button id="cmp-mode-expanded" role="tab" onclick="setComparisonMode('expanded')" class="active">Outdoor expandido</button>
+      <button id="cmp-mode-all"      role="tab" onclick="setComparisonMode('all')">Todas as fotos</button>
+    </div>
   </div>
-  <div class="lightbox-grid" id="lightbox-grid"></div>
+  <div class="compare-grid">
+    <section class="compare-col" aria-labelledby="cmp-viva-title">
+      <h4 id="cmp-viva-title">Viva <strong id="cmp-viva-code"></strong></h4>
+      <div id="cmp-viva-body"></div>
+    </section>
+    <section class="compare-col" aria-labelledby="cmp-coelho-title">
+      <h4 id="cmp-coelho-title">Coelho <strong id="cmp-coelho-code"></strong></h4>
+      <div id="cmp-coelho-body"></div>
+    </section>
+  </div>
 </div>
 
 <script>
 let _state = null;
 let _finalData = null;
+let _lane = 'high';
+let _pageStartedAt = Date.now();
+let _pairStartedAt = Date.now();
+let _lastPairKey = null;
+
+function currentPairKey() {
+  return _state && _state.pair ? _state.pair.viva_code + ':' + _state.pair.coelho_code : null;
+}
+
+function pairPayload() {
+  if (!_state || !_state.pair) return null;
+  return {
+    viva_code: _state.pair.viva_code,
+    coelho_code: _state.pair.coelho_code,
+    lane: _state.pair.lane,
+    tier: _state.pair.tier,
+    confidence_score: _state.pair.confidence_score,
+  };
+}
+
+function logClientEvent(type, extra) {
+  const p = pairPayload();
+  const body = Object.assign({
+    type,
+    lane: _lane,
+    viva_code: p && p.viva_code,
+    coelho_code: p && p.coelho_code,
+    elapsed_ms: Date.now() - _pairStartedAt,
+    pair: p,
+    client: {
+      page_elapsed_ms: Date.now() - _pageStartedAt,
+      viewport: { width: window.innerWidth, height: window.innerHeight },
+    },
+  }, extra || {});
+  try {
+    const json = JSON.stringify(body);
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/api/event', new Blob([json], { type: 'application/json' }));
+      return;
+    }
+  } catch (_) {}
+  fetch('/api/event', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(body),
+    keepalive: true,
+  }).catch(() => {});
+}
+
+function switchLane(lane) {
+  if (!['high', 'normal', 'recall', 'audit'].includes(lane)) return;
+  logClientEvent('lane_switch', { source: _lane + '->' + lane });
+  _lane = lane;
+  fetchSession();
+}
 
 async function fetchSession() {
-  const s = await fetch('/api/session').then(r => r.json());
+  const s = await fetch('/api/session?lane=' + encodeURIComponent(_lane)).then(r => r.json());
   _state = s;
   render(s);
+  const key = currentPairKey();
+  if (key && key !== _lastPairKey) {
+    _lastPairKey = key;
+    _pairStartedAt = Date.now();
+    logClientEvent('pair_viewed', { elapsed_ms: 0 });
+  }
+}
+
+function renderLaneTabs(s) {
+  const lanes = s.lanes || {};
+  for (const lane of ['high', 'normal', 'recall', 'audit']) {
+    const tab   = document.getElementById('lane-' + lane);
+    const count = document.getElementById('lane-count-' + lane);
+    const info  = lanes[lane] || { total: 0, pending: 0 };
+    if (count) count.textContent = info.pending + '/' + info.total;
+    if (tab) {
+      tab.classList.toggle('active', s.lane === lane);
+      tab.classList.toggle('is-empty', !info.total);
+      tab.setAttribute('aria-selected', s.lane === lane ? 'true' : 'false');
+    }
+  }
 }
 
 function render(s) {
+  if (s.lane) _lane = s.lane;
+  renderLaneTabs(s);
   document.getElementById('hdr-pass').textContent      = s.pass;
   document.getElementById('hdr-current').textContent   = s.current_index;
   document.getElementById('hdr-total').textContent     = s.total;
   document.getElementById('hdr-confirmed').textContent = s.confirmed_count;
   document.getElementById('hdr-skipped').textContent   = s.skipped_count;
-  const pct = s.total > 0 ? ((s.confirmed_count + s.skipped_count) / s.total * 100).toFixed(1) : 0;
+  document.getElementById('hdr-global').textContent    = s.global_confirmed != null ? s.global_confirmed : s.confirmed_count;
+  const completed = (s.confirmed_count || 0) + (s.skipped_count || 0) + (s.unsure_count || 0);
+  const pct = s.total > 0 ? (completed / s.total * 100).toFixed(1) : 0;
   document.getElementById('progress-fill').style.width = pct + '%';
   document.getElementById('footer-current').textContent = s.current_index;
   document.getElementById('footer-total').textContent   = s.total;
@@ -638,15 +1364,72 @@ function render(s) {
   renderImage('viva',   p.viva_code);
   renderImage('coelho', p.coelho_code);
 
-  const conf = p.confidence_score || p.similarity;
-  const tier = p.tier || 'medium';
+  const conf = p.confidence_score || p.similarity || 0;
+  const lane = p.lane || 'normal';
   const simEl = document.getElementById('sim-val');
-  simEl.textContent = conf.toFixed(4);
-  simEl.className   = 'sim-val ' + (tier === 'high' ? 'high' : tier === 'medium' ? 'medium' : 'low');
+  simEl.textContent = (typeof conf === 'number' ? conf : 0).toFixed(4);
+  simEl.className   = 'sim-val ' + (lane === 'high' ? 'high' : lane === 'recall' ? 'low' : 'medium');
   const infoEl = document.getElementById('sim-extra');
-  const tierLabel = tier === 'high' ? 'ALTA' : tier === 'medium' ? 'MEDIA' : 'BAIXA';
-  infoEl.textContent = tierLabel;
-  infoEl.className   = 'tier-label tier-' + tier;
+  infoEl.textContent = (p.tier_label || '').toUpperCase() || (LANE_LABELS[lane] || lane).toUpperCase();
+  infoEl.className   = 'tier-label tier-' + (lane === 'high' ? 'high' : lane === 'recall' ? 'low' : 'medium');
+
+  renderEvidence(p);
+}
+
+const SOURCE_LABELS = { megaloc: 'MegaLoc', vlad: 'VLAD', 'patch-vlad': 'patch-VLAD' };
+
+function renderEvidence(pair) {
+  const panel = document.getElementById('evidence-panel');
+  const ev = pair.evidence || {};
+  const groups = [];
+
+  // Source chips with per-source scores (compact)
+  const sources = Array.isArray(ev.sources) ? ev.sources : [];
+  const scores  = ev.source_scores || {};
+  if (sources.length || Object.keys(scores).length) {
+    const keys = sources.length ? sources : Object.keys(scores);
+    const chips = keys.map(k => {
+      const label = SOURCE_LABELS[k] || k;
+      const s = scores[k];
+      const score = (typeof s === 'number') ? '<span class="ev-score">' + s.toFixed(3) + '</span>' : '';
+      return '<span class="ev-chip is-active">' + label + ' ' + score + '</span>';
+    }).join('');
+    groups.push('<div class="ev-group"><span class="ev-label">Modelos</span>' + chips + '</div>');
+  }
+
+  // Geometry block
+  const geomBits = [];
+  if (typeof ev.geometric_score === 'number')   geomBits.push('score <span class="ev-val">' + ev.geometric_score.toFixed(3) + '</span>');
+  if (typeof ev.best_inliers === 'number')      geomBits.push('inliers <span class="ev-val">' + ev.best_inliers + '</span>');
+  if (typeof ev.best_inlier_ratio === 'number') geomBits.push('ratio <span class="ev-val">' + ev.best_inlier_ratio.toFixed(2) + '</span>');
+  if (typeof ev.support_pairs_8 === 'number' || typeof ev.support_pairs_12 === 'number') {
+    const sp8  = ev.support_pairs_8  != null ? ev.support_pairs_8  : '–';
+    const sp12 = ev.support_pairs_12 != null ? ev.support_pairs_12 : '–';
+    geomBits.push('support <span class="ev-val">' + sp8 + '/' + sp12 + '</span>');
+  }
+  if (geomBits.length) {
+    groups.push('<div class="ev-group"><span class="ev-label">Geometria</span>' + geomBits.join(' &middot; ') + '</div>');
+  }
+
+  // Top image pairs
+  const pairs = Array.isArray(ev.top_image_pairs) ? ev.top_image_pairs.slice(0, 3) : [];
+  let pairsHTML = '';
+  if (pairs.length) {
+    pairsHTML = '<div class="ev-pairs">' + pairs.map(p => {
+      const a = p.a_image || '?';
+      const b = p.b_image || '?';
+      const sc = (typeof p.score === 'number') ? ' <span class="ev-score">(' + p.score.toFixed(2) + ')</span>' : '';
+      return '<span class="ev-pair"><strong>Viva ' + a + '</strong> ↔ <strong>Coelho ' + b + '</strong>' + sc + '</span>';
+    }).join('') + '</div>';
+  }
+
+  if (!groups.length && !pairsHTML) {
+    panel.hidden = true;
+    panel.innerHTML = '';
+    return;
+  }
+  panel.hidden = false;
+  panel.innerHTML = groups.join('') + pairsHTML;
 }
 
 function metaHTML(info) {
@@ -660,7 +1443,21 @@ function metaHTML(info) {
 async function renderImage(site, code) {
   const container = document.getElementById(site + '-img');
   const hint = '<span class="zoom-hint">🔍 clique para ampliar</span>';
-  const urls = await fetch('/api/images/' + site + '/' + code).then(r => r.json());
+
+  // Try the generated standard mosaic first
+  try {
+    const probe = await fetch('/api/mosaic/' + site + '/' + code + '?mode=standard').then(r => r.json());
+    if (probe && probe.available && probe.url) {
+      container.classList.remove('is-fallback');
+      container.innerHTML =
+        '<img class="mosaic-img" src="' + probe.url + '" alt="Mosaico padrão ' + site + ' ' + code + '" loading="lazy">' + hint;
+      return;
+    }
+  } catch (_) { /* fall through to image grid */ }
+
+  // Fallback: legacy outdoor image grid
+  const urls = await fetch('/api/images/' + site + '/' + code + '?mode=standard').then(r => r.json());
+  container.classList.add('is-fallback');
   if (!urls.length) {
     container.innerHTML = '<div class="no-img">Sem imagens disponíveis</div>';
     return;
@@ -670,55 +1467,142 @@ async function renderImage(site, code) {
   container.innerHTML = '<div class="img-grid">' + imgs + '</div>' + hint;
 }
 
-async function openLightbox(site) {
+let _compareMode = 'expanded';
+
+async function openComparison() {
   if (!_state || !_state.pair) return;
-  const code  = site === 'viva' ? _state.pair.viva_code : _state.pair.coelho_code;
-  const label = site === 'viva' ? 'Viva #' + code : 'Coelho #' + code;
-  document.getElementById('lightbox-title').textContent = label;
-  const urls = await fetch('/api/images/' + site + '/' + code).then(r => r.json());
-  const grid = document.getElementById('lightbox-grid');
-  grid.innerHTML = urls.length
-    ? urls.map(u => '<img src="' + u + '" loading="lazy" onclick="window.open(this.src)">').join('')
-    : '<p style="color:var(--muted)">Sem imagens.</p>';
-  document.getElementById('lightbox').classList.remove('hidden');
+  logClientEvent('comparison_opened', { mode: _compareMode });
+  document.getElementById('cmp-viva-code').textContent   = '#' + _state.pair.viva_code;
+  document.getElementById('cmp-coelho-code').textContent = '#' + _state.pair.coelho_code;
+  document.getElementById('compare').classList.remove('hidden');
+  setComparisonMode(_compareMode);
 }
-function closeLightbox() { document.getElementById('lightbox').classList.add('hidden'); }
+
+function closeComparison() {
+  logClientEvent('comparison_closed', { mode: _compareMode });
+  document.getElementById('compare').classList.add('hidden');
+}
+
+function setComparisonMode(mode) {
+  if (!['standard', 'expanded', 'all'].includes(mode)) mode = 'expanded';
+  if (mode !== _compareMode) logClientEvent('comparison_mode_changed', { mode });
+  _compareMode = mode;
+  for (const m of ['standard', 'expanded', 'all']) {
+    document.getElementById('cmp-mode-' + m).classList.toggle('active', m === mode);
+  }
+  if (!_state || !_state.pair) return;
+  renderComparisonSide('viva',   _state.pair.viva_code,   mode);
+  renderComparisonSide('coelho', _state.pair.coelho_code, mode);
+}
+
+async function renderComparisonSide(site, code, mode) {
+  const body = document.getElementById('cmp-' + site + '-body');
+  body.innerHTML = '<p class="compare-empty">Carregando…</p>';
+
+  // Standard / Expanded prefer the generated mosaic
+  if (mode === 'standard' || mode === 'expanded') {
+    try {
+      const probe = await fetch('/api/mosaic/' + site + '/' + code + '?mode=' + mode).then(r => r.json());
+      if (probe && probe.available && probe.url) {
+        body.innerHTML =
+          '<img class="compare-mosaic" src="' + probe.url +
+          '" alt="Mosaico ' + mode + ' ' + site + ' ' + code +
+          '" loading="lazy" onclick="window.open(this.src)">';
+        return;
+      }
+    } catch (_) { /* fall through to image grid */ }
+  }
+
+  // Fallback or "all": image grid from /api/images
+  const apiMode = mode === 'all' ? 'all' : (mode === 'standard' ? 'standard' : 'expanded');
+  const urls = await fetch('/api/images/' + site + '/' + code + '?mode=' + apiMode).then(r => r.json());
+  if (!Array.isArray(urls) || !urls.length) {
+    body.innerHTML = '<p class="compare-empty">Sem imagens.</p>';
+    return;
+  }
+  body.innerHTML = '<div class="compare-images">' +
+    urls.map(u => '<img src="' + u + '" loading="lazy" onclick="window.open(this.src)">').join('') +
+    '</div>';
+}
 
 async function doMatch() {
   if (!_state || !_state.pair || _state.all_done) return;
+  const elapsed = Date.now() - _pairStartedAt;
   await fetch('/api/confirm', { method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code }) });
+    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code, elapsed_ms: elapsed }) });
   fetchSession();
 }
 
 async function doSkip() {
   if (!_state || !_state.pair || _state.all_done) return;
+  const elapsed = Date.now() - _pairStartedAt;
   await fetch('/api/skip', { method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code }) });
+    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code, elapsed_ms: elapsed }) });
   fetchSession();
 }
 
+async function doUnsure() {
+  if (!_state || !_state.pair || _state.all_done) return;
+  const elapsed = Date.now() - _pairStartedAt;
+  await fetch('/api/unsure', { method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ viva_code: _state.pair.viva_code, coelho_code: _state.pair.coelho_code, elapsed_ms: elapsed }) });
+  fetchSession();
+}
+
+const LANE_LABELS = { high: 'Alta confiança', normal: 'Normal', recall: 'Recall', audit: 'Auditoria' };
+
+function laneSummaryHTML(lanes) {
+  if (!lanes) return '';
+  return '<div class="lane-summary">' +
+    ['high', 'normal', 'recall', 'audit'].map(l => {
+      const c = lanes[l] || {};
+      return '<div class="lane-cell"><strong>' + LANE_LABELS[l] + '</strong>' +
+        '✅ ' + (c.confirmed || 0) +
+        ' &middot; ❌ ' + (c.skipped || 0) +
+        ' &middot; ❓ ' + (c.unsure || 0) +
+        ' &middot; ⏳ ' + (c.pending || 0) + '</div>';
+    }).join('') + '</div>';
+}
+
+function nextLaneWithPending(lanes, exclude) {
+  for (const l of ['high', 'normal', 'recall', 'audit']) {
+    if (l === exclude) continue;
+    if ((lanes && lanes[l] && lanes[l].pending) || 0) return l;
+  }
+  return null;
+}
+
 function showPassComplete(s) {
+  const next = nextLaneWithPending(s.lanes, s.lane);
+  if (next) {
+    document.getElementById('pass-complete-modal').classList.add('hidden');
+    logClientEvent('lane_auto_advanced', { source: s.lane + '->' + next });
+    _lane = next;
+    fetchSession();
+    return;
+  }
+
   document.getElementById('pc-pass').textContent      = s.pass;
   document.getElementById('pc-confirmed').textContent = s.confirmed_count;
   document.getElementById('pc-skipped').textContent   = s.skipped_count;
   const notice = document.getElementById('pc-notice');
+  let html = 'Raia <strong>' + (LANE_LABELS[s.lane] || s.lane) + '</strong> concluída.';
+  html += laneSummaryHTML(s.lanes);
   if (s.skipped_count > 0) {
-    notice.innerHTML = 'Para re-matcher os <strong>' + s.skipped_count + '</strong> pares skipped:<br>' +
-      '1. Rode <code>recursive-matcher-v2.py</code> no Mac<br>' +
-      '2. Rode <code>./scripts/sync-to-gcs.sh</code><br>' +
-      '3. Clique em "Recarregar matches" abaixo';
-    document.getElementById('pc-reload-btn').style.display = '';
+    html += '<p style="margin-top:10px">Para re-matcher pares skipped: rode <code>recursive-matcher-v2.py</code>, depois <code>./scripts/sync-to-gcs.sh</code>, depois "Recarregar matches".</p>';
   } else {
-    notice.innerHTML = 'Todos os pares foram confirmados!';
-    document.getElementById('pc-reload-btn').style.display = 'none';
+    html += '<p style="margin-top:10px">Todas as raias de revisão concluídas!</p>';
   }
+  notice.innerHTML = html;
+  document.getElementById('pc-reload-btn').style.display =
+    s.skipped_count > 0 ? '' : 'none';
   document.getElementById('pass-complete-modal').classList.remove('hidden');
 }
 
 async function reloadAndContinue() {
   document.getElementById('pass-complete-modal').classList.add('hidden');
-  await fetch('/api/reload', { method: 'POST' });
+  await fetch('/api/reload', { method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ lane: _lane, page_elapsed_ms: Date.now() - _pageStartedAt }) });
   await fetchSession();
 }
 
@@ -735,12 +1619,49 @@ function closeDoneModal() { document.getElementById('done-confirm-modal').classL
 async function finalize() {
   closeDoneModal();
   document.getElementById('pass-complete-modal').classList.add('hidden');
-  const r = await fetch('/api/final', { method: 'POST' }).then(r => r.json());
+  const r = await fetch('/api/final', { method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ lane: _lane, page_elapsed_ms: Date.now() - _pageStartedAt }) }).then(r => r.json());
   _finalData = r;
   document.getElementById('final-count').textContent = r.total_confirmed;
-  document.getElementById('final-breakdown').textContent =
-    r.total_confirmed + ' pares confirmados salvos no GCS.';
+  const lanes = (_state && _state.lanes) || null;
+  const vivaLine = r.total_viva_listings != null
+    ? '<br><strong>' + r.total_confirmed + '</strong> de <strong>' + r.total_viva_listings + '</strong> Viva confirmadas. ' +
+      '<strong>' + (r.pending_viva_count || 0) + '</strong> seguem para a próxima rodada.'
+    : '';
+  document.getElementById('final-breakdown').innerHTML =
+    r.total_confirmed + ' pares confirmados salvos no GCS.' + vivaLine + laneSummaryHTML(lanes);
+  const nextRoundBtn = document.getElementById('next-round-btn');
+  const nextPass = ((_state && Number(_state.pass)) || 1) + 1;
+  nextRoundBtn.textContent = '🔁 Preparar Rodada ' + nextPass;
+  nextRoundBtn.style.display = (r.pending_viva_count || 0) > 0 ? '' : 'none';
   document.getElementById('final-modal').classList.remove('hidden');
+}
+
+async function startNextRound() {
+  const btn = document.getElementById('next-round-btn');
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Preparando...';
+  try {
+    const resp = await fetch('/api/start-next-round', { method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ lane: _lane, page_elapsed_ms: Date.now() - _pageStartedAt }) });
+    const r = await resp.json();
+    if (r.ok) {
+      document.getElementById('final-modal').classList.add('hidden');
+      await fetchSession();
+      return;
+    }
+    const previousHelp = document.getElementById('next-round-help');
+    if (previousHelp) previousHelp.remove();
+    const commandHtml = r.command
+      ? '<div id="next-round-help"><br><strong>Rodada ' + r.next_pass + ' ainda precisa ser gerada no Mac.</strong><br>' +
+        '<code>' + r.command.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</code></div>'
+      : '<div id="next-round-help"><br>' + (r.message || 'Não foi possível iniciar a próxima rodada.') + '</div>';
+    document.getElementById('final-breakdown').insertAdjacentHTML('beforeend', commandHtml);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
 }
 
 function downloadFinal() {
@@ -758,15 +1679,17 @@ document.addEventListener('keydown', e => {
     !document.getElementById('done-confirm-modal').classList.contains('hidden')  ||
     !document.getElementById('final-modal').classList.contains('hidden');
   if (modalOpen) return;
-  if (!document.getElementById('lightbox').classList.contains('hidden')) {
-    if (e.key === 'Escape') closeLightbox();
+  if (!document.getElementById('compare').classList.contains('hidden')) {
+    if (e.key === 'Escape') closeComparison();
     return;
   }
   if (e.key === 'ArrowRight' || e.key === 'm') doMatch();
   if (e.key === 'ArrowLeft'  || e.key === 's') doSkip();
+  if (e.key === 'u') doUnsure();
   if (e.key === 'd') askDone();
 });
 
+logClientEvent('page_loaded', { elapsed_ms: 0, client: { page_elapsed_ms: 0, viewport: { width: window.innerWidth, height: window.innerHeight } } });
 fetchSession();
 </script>
 </body>
