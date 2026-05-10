@@ -68,9 +68,14 @@ function resolveImage(compound, siteFull, code, filename) {
   return path.join(DATA_ROOT, compound, 'fresh-images', siteFull, code, filename);
 }
 
-async function buildMosaic(imagePaths, outputFile, rows) {
-  const slots = imagePaths.slice(0, COLS * rows);
-  while (slots.length < COLS * rows) slots.push(null);
+async function buildMosaic(imagePaths, outputFile, rows, options = {}) {
+  const maxSlots = COLS * rows;
+  const present = imagePaths.slice(0, maxSlots).filter((imagePath) => imagePath && fs.existsSync(imagePath));
+  const slotCount = options.compact ? Math.max(1, present.length) : maxSlots;
+  const cols = options.compact ? Math.min(COLS, slotCount) : COLS;
+  const actualRows = options.compact ? Math.ceil(slotCount / cols) : rows;
+  const slots = options.compact ? present : imagePaths.slice(0, maxSlots);
+  while (slots.length < slotCount) slots.push(null);
 
   const composites = [];
   for (let i = 0; i < slots.length; i++) {
@@ -94,16 +99,16 @@ async function buildMosaic(imagePaths, outputFile, rows) {
     }
     composites.push({
       input,
-      left: (i % COLS) * CELL_W,
-      top: Math.floor(i / COLS) * CELL_H,
+      left: (i % cols) * CELL_W,
+      top: Math.floor(i / cols) * CELL_H,
     });
   }
 
   fs.mkdirSync(path.dirname(outputFile), { recursive: true });
   await sharp({
     create: {
-      width: COLS * CELL_W,
-      height: rows * CELL_H,
+      width: cols * CELL_W,
+      height: actualRows * CELL_H,
       channels: 3,
       background: { r: 245, g: 245, b: 245 },
     },
@@ -163,8 +168,8 @@ async function processSite(compound, shortSite, force, cleanExtra) {
         .map((entry) => resolveImage(compound, siteFull, code, entry.filename));
       const expanded = selectedRecords(manifest, 'all_categories')
         .map((entry) => resolveImage(compound, siteFull, code, entry.filename));
-      await buildMosaic(standard, outputFile, STANDARD_ROWS);
-      await buildMosaic(expanded, fullOutputFile, EXPANDED_ROWS);
+      await buildMosaic(standard, outputFile, STANDARD_ROWS, { compact: true });
+      await buildMosaic(expanded, fullOutputFile, EXPANDED_ROWS, { compact: true });
       generated++;
       console.log(`[${i + 1}/${manifestCodes.length}] ${shortSite}/${code}: standard=${standard.length}, expanded=${Math.min(expanded.length, COLS * EXPANDED_ROWS)}`);
     } catch (err) {

@@ -191,15 +191,20 @@ async function selectExpandedImages(manifestPath, cacheDir, selectedDir, compoun
  * Build a grid mosaic from image paths.
  * Missing or non-existent paths are replaced by a neutral placeholder cell.
  */
-async function buildMosaic(imagePaths, outputPath, rows = STANDARD_ROWS) {
-  const totalW = COLS * CW;
-  const totalH = rows * CH;
-  const slots = imagePaths.slice(0, COLS * rows);
-  while (slots.length < COLS * rows) slots.push(null);
+async function buildMosaic(imagePaths, outputPath, rows = STANDARD_ROWS, options = {}) {
+  const maxSlots = COLS * rows;
+  const present = imagePaths.slice(0, maxSlots).filter((p) => p && fs.existsSync(p));
+  const slotCount = options.compact ? Math.max(1, present.length) : maxSlots;
+  const cols = options.compact ? Math.min(COLS, slotCount) : COLS;
+  const actualRows = options.compact ? Math.ceil(slotCount / cols) : rows;
+  const totalW = cols * CW;
+  const totalH = actualRows * CH;
+  const slots = options.compact ? present : imagePaths.slice(0, maxSlots);
+  while (slots.length < slotCount) slots.push(null);
 
   const composites = [];
 
-  for (let i = 0; i < COLS * rows; i++) {
+  for (let i = 0; i < slotCount; i++) {
     const p = slots[i];
     let buf;
 
@@ -224,8 +229,8 @@ async function buildMosaic(imagePaths, outputPath, rows = STANDARD_ROWS) {
 
     composites.push({
       input: buf,
-      left:  (i % COLS) * CW,
-      top:   Math.floor(i / COLS) * CH,
+      left:  (i % cols) * CW,
+      top:   Math.floor(i / cols) * CH,
     });
   }
 
@@ -277,8 +282,8 @@ async function processListing(shortsite, code, force, compound, officialImageMap
     // Ensure output directory exists
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 
-    await buildMosaic(standardImages.map(e => e.path), outputPath, STANDARD_ROWS);
-    await buildMosaic(expandedImages.map(e => e.path), fullOutputPath, EXPANDED_ROWS);
+    await buildMosaic(standardImages.map(e => e.path), outputPath, STANDARD_ROWS, { compact: true });
+    await buildMosaic(expandedImages.map(e => e.path), fullOutputPath, EXPANDED_ROWS, { compact: true });
 
     return { code, status: 'ok', images: total, nFacade, nPool, nGarden, expandedTotal };
   } catch (err) {
