@@ -879,7 +879,7 @@ app.post('/api/start-next-round', async (req, res) => {
   const nextPass = currentPass + 1;
   const trialRunId = currentSession.trial_run_id || null;
   const summary = buildTrialSummary();
-  const command = `node scripts/prepare-next-review-round.js --summary-url ${GCS_BASE}/review-sessions/trial-summaries/${trialRunId || 'no-session'}.json --round ${nextPass} --output data/auto-matches-round-${nextPass}.json --report data/review-round-${nextPass}-plan.json && ./scripts/sync-to-gcs.sh --matches data/auto-matches-round-${nextPass}.json --skip-assets`;
+  const command = `./scripts/run-next-review-round.sh --summary-url ${GCS_BASE}/review-sessions/trial-summaries/${trialRunId || 'no-session'}.json --round ${nextPass}`;
 
   if (!summary.pending_viva_count) {
     return res.json({
@@ -1630,7 +1630,10 @@ async function finalize() {
     : '';
   document.getElementById('final-breakdown').innerHTML =
     r.total_confirmed + ' pares confirmados salvos no GCS.' + vivaLine + laneSummaryHTML(lanes);
-  document.getElementById('next-round-btn').style.display = (r.pending_viva_count || 0) > 0 ? '' : 'none';
+  const nextRoundBtn = document.getElementById('next-round-btn');
+  const nextPass = ((_state && Number(_state.pass)) || 1) + 1;
+  nextRoundBtn.textContent = '🔁 Preparar Rodada ' + nextPass;
+  nextRoundBtn.style.display = (r.pending_viva_count || 0) > 0 ? '' : 'none';
   document.getElementById('final-modal').classList.remove('hidden');
 }
 
@@ -1648,11 +1651,13 @@ async function startNextRound() {
       await fetchSession();
       return;
     }
+    const previousHelp = document.getElementById('next-round-help');
+    if (previousHelp) previousHelp.remove();
     const commandHtml = r.command
-      ? '<br><br><strong>Rodada ' + r.next_pass + ' ainda precisa ser gerada no Mac.</strong><br>' +
-        '<code>' + r.command.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</code>'
-      : '<br><br>' + (r.message || 'Não foi possível iniciar a próxima rodada.');
-    document.getElementById('final-breakdown').innerHTML += commandHtml;
+      ? '<div id="next-round-help"><br><strong>Rodada ' + r.next_pass + ' ainda precisa ser gerada no Mac.</strong><br>' +
+        '<code>' + r.command.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</code></div>'
+      : '<div id="next-round-help"><br>' + (r.message || 'Não foi possível iniciar a próxima rodada.') + '</div>';
+    document.getElementById('final-breakdown').insertAdjacentHTML('beforeend', commandHtml);
   } finally {
     btn.disabled = false;
     btn.textContent = old;

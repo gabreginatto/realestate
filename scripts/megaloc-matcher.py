@@ -18,6 +18,7 @@ import argparse
 import importlib.util
 import json
 import logging
+import os
 import pickle
 import sys
 from datetime import datetime, timezone
@@ -60,6 +61,9 @@ def selected_images(repo_root: Path, site: str, code: str) -> list[Path]:
 
 
 def select_device() -> str:
+    requested = os.environ.get("MEGALOC_DEVICE")
+    if requested:
+        return requested
     if torch.cuda.is_available():
         return "cuda"
     if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
@@ -222,6 +226,8 @@ def parse_args():
     p.add_argument("--data-root", default="data")
     p.add_argument("--cache", default="data/embedding-cache-megaloc.pkl")
     p.add_argument("--output", default="data/auto-matches-megaloc.json")
+    p.add_argument("--threshold", type=float, default=None,
+                   help="Use a fixed assignment threshold instead of sweeping ground truth.")
     p.add_argument("--image-size", type=int, default=518)
     p.add_argument("--batch-size", type=int, default=2)
     p.add_argument("--refresh-cache", action="store_true")
@@ -244,7 +250,13 @@ def main():
     sim_matrix = build_matrix(viva, coelho, cache)
     log.info(f"matrix={sim_matrix.shape} nonzero={(sim_matrix > 0).sum()}")
 
-    best, sweep = threshold_sweep(sim_matrix, viva, coelho, matcher)
+    if args.threshold is None:
+        best, sweep = threshold_sweep(sim_matrix, viva, coelho, matcher)
+    else:
+        threshold = round(float(args.threshold), 3)
+        matches_at_threshold = assign(sim_matrix, viva, coelho, threshold)
+        best = {"threshold": threshold, **matcher.evaluate(matches_at_threshold)}
+        sweep = [best]
     log.info(
         f"Best threshold={best['threshold']:.3f} "
         f"P={best['precision']:.0%} R={best['recall']:.0%} "

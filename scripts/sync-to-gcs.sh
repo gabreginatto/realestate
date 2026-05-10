@@ -56,6 +56,10 @@ gcs_rsync() {
   gcloud storage rsync "$1" "$2" --recursive --quiet
 }
 
+gcs_rsync_mirror() {
+  gcloud storage rsync "$1" "$2" --recursive --quiet --delete-unmatched-destination-objects
+}
+
 # ── 1. Listings JSON ──────────────────────────────────────────────────────────
 log "Syncing listings JSON ..."
 for site in "${SITES[@]}"; do
@@ -111,7 +115,7 @@ sfm_dir="$REPO_ROOT/selected_for_matching"
 if [[ -d "$sfm_dir" ]]; then
   for site in "${SITES[@]}"; do
     if [[ -d "$sfm_dir/$site" ]]; then
-      gcs_rsync "$sfm_dir/$site" "$BUCKET/selected/$site"
+      gcs_rsync_mirror "$sfm_dir/$site" "$BUCKET/selected/$site"
       log "  selected/$site → $BUCKET/selected/$site"
     fi
   done
@@ -125,7 +129,7 @@ mosaic_root="$DATA_ROOT/alphaville-1/mosaics"
 if [[ -d "$mosaic_root" ]]; then
   for site in "${MOSAIC_SITES[@]}"; do
     if [[ -d "$mosaic_root/$site" ]]; then
-      gcs_rsync "$mosaic_root/$site" "$BUCKET/mosaics/$site"
+      gcs_rsync_mirror "$mosaic_root/$site" "$BUCKET/mosaics/$site"
       log "  mosaics/$site → $BUCKET/mosaics/$site"
     fi
   done

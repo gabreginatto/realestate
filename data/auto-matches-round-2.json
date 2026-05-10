@@ -1,2553 +1,2285 @@
 {
-  "session_started": "2026-05-08T19:34:14.591Z",
-  "session_name": "alphaville-1-round-2",
-  "strategy": "next-round-recall-from-unreviewed-candidate-pool",
+  "session_started": "2026-05-10T20:45:30.784061+00:00",
+  "session_name": "tiered-matcher-pass-2",
+  "strategy": "tiered-megaloc-patch-geometry",
+  "source": "data/review-rounds/pass-2/auto-matches-geometric-rerank.json",
   "round": 2,
-  "source_trial_run_id": "fd8040fa-88f1-470d-a189-5399c8072174",
   "policy": {
-    "confirmed_viva_removed": true,
-    "confirmed_coelho_removed": true,
-    "previously_reviewed_pairs_removed": true,
-    "top_k_per_pending_viva": 3,
-    "min_score": 0.08
+    "auto-review-high": "MegaLoc candidate with geometric_score >= 0.7 and best_inliers >= 14",
+    "review-normal": "MegaLoc candidate without strong geometry",
+    "review-recall": "patch-VLAD candidate without MegaLoc",
+    "reject-low": "weak geometry + weak model agreement; kept for audit but not review",
+    "excluded": [
+      [
+        "6930",
+        "395513"
+      ]
+    ],
+    "confirmed_viva_removed": 25,
+    "confirmed_coelho_removed": 25,
+    "reviewed_pairs_removed": 25
   },
   "matches": [
     {
-      "viva_code": "1034",
-      "coelho_code": "675453",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.924158,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r4.json",
-      "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r4",
-        "r6",
-        "r7"
-      ],
-      "similarity": 0.924158,
-      "confidence_score": 0.924158,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.924158,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "1034",
-      "coelho_code": "353980",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.887714,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r9"
-      ],
-      "similarity": 0.887714,
-      "confidence_score": 0.887714,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.887714,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "1034",
-      "coelho_code": "415340",
-      "matched_at": "2026-05-08T19:34:14.587Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.883676,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r8.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "price-weighted",
-        "r8",
-        "v3"
-      ],
-      "similarity": 0.883676,
-      "confidence_score": 0.883676,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.883676,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "1115",
-      "coelho_code": "671661",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.930402,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r8",
-        "r9"
-      ],
-      "similarity": 0.930402,
-      "confidence_score": 0.930402,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.930402,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "1115",
-      "coelho_code": "497009",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.914693,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r4.json",
-      "sources": [
-        "dino-v1",
-        "r4",
-        "r5",
-        "r6"
-      ],
-      "similarity": 0.914693,
-      "confidence_score": 0.914693,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.914693,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "1115",
-      "coelho_code": "395516",
-      "matched_at": "2026-05-08T19:34:14.585Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.902948,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r3.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "r3"
-      ],
-      "similarity": 0.902948,
-      "confidence_score": 0.902948,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.902948,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "1148",
-      "coelho_code": "358241",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.95906,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "price-weighted",
-        "r10",
-        "r4",
-        "r5",
-        "r6",
-        "r8",
-        "v3"
-      ],
-      "similarity": 0.95906,
-      "confidence_score": 0.95906,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.95906,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "1148",
-      "coelho_code": "429865",
-      "matched_at": "2026-05-08T19:34:14.588Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.881126,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r9.json",
-      "sources": [
-        "dino-v1",
-        "r9"
-      ],
-      "similarity": 0.881126,
-      "confidence_score": 0.881126,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.881126,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "1148",
-      "coelho_code": "565110",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.861697,
-      "confidence": "low",
-      "confidence_score": 0.2275,
-      "pool_rank": 3,
-      "facade_rank": 29,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large"
-      ],
-      "similarity": 0.861697,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.861697
-    },
-    {
-      "viva_code": "2075",
-      "coelho_code": "502738",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.939005,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "price-weighted",
-        "r1",
-        "r10",
-        "r2",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r7",
-        "r8",
-        "v3"
-      ],
-      "similarity": 0.939005,
-      "confidence_score": 0.939005,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.939005,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "3460",
-      "coelho_code": "686383",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.944174,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov3",
-        "r1",
-        "r2",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r7",
-        "r9"
-      ],
-      "similarity": 0.944174,
-      "confidence_score": 0.944174,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.944174,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "3460",
-      "coelho_code": "356808",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.928283,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r8"
-      ],
-      "similarity": 0.928283,
-      "confidence_score": 0.928283,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.928283,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "3460",
-      "coelho_code": "476081",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.867265,
-      "confidence": "low",
-      "confidence_score": 0.3285,
-      "pool_rank": 3,
-      "facade_rank": 30,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large",
-        "price-weighted",
-        "v3"
-      ],
-      "similarity": 0.867265,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.867265
-    },
-    {
-      "viva_code": "4509",
-      "coelho_code": "403934",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.948038,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10"
-      ],
-      "similarity": 0.948038,
-      "confidence_score": 0.948038,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.948038,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "4509",
-      "coelho_code": "686383",
-      "matched_at": "2026-05-08T19:34:14.587Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.91488,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r8.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "price-weighted",
-        "r8",
-        "v3"
-      ],
-      "similarity": 0.91488,
-      "confidence_score": 0.91488,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.91488,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "4509",
-      "coelho_code": "353414",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.912486,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r7"
-      ],
-      "similarity": 0.912486,
-      "confidence_score": 0.912486,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.912486,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "4657",
-      "coelho_code": "653980",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.972297,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r7",
-        "r9"
-      ],
-      "similarity": 0.972297,
-      "confidence_score": 0.972297,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.972297,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "4657",
-      "coelho_code": "422399",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.822091,
-      "confidence": "low",
-      "confidence_score": 0.2677,
-      "pool_rank": 2,
-      "facade_rank": 71,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "auto-matches",
-        "dino-v2",
-        "dinov2-large",
-        "dinov3"
-      ],
-      "similarity": 0.822091,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.822091
-    },
-    {
-      "viva_code": "6930",
-      "coelho_code": "652122",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.910356,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "r10",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r8",
-        "r9"
-      ],
-      "similarity": 0.910356,
-      "confidence_score": 0.910356,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.910356,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "6930",
+      "viva_code": "14502",
       "coelho_code": "663614",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.90619,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r1.json",
       "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r7"
+        "megaloc",
+        "patch-vlad"
       ],
-      "similarity": 0.90619,
-      "confidence_score": 0.90619,
-      "tier": "review-normal",
+      "source_scores": {
+        "megaloc": 0.592666,
+        "patch-vlad": 0.523657
+      },
+      "geometric_score": 0.819333,
+      "best_inliers": 52,
+      "best_inlier_ratio": 0.65,
+      "support_pairs_8": 1,
+      "support_pairs_12": 1,
+      "top_image_pairs": [
+        {
+          "good_matches": 80,
+          "inliers": 52,
+          "inlier_ratio": 0.65,
+          "score": 1.0,
+          "a_image": "15.jpg",
+          "b_image": "05.jpg"
+        },
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "37.jpg",
+          "b_image": "07.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 7,
+          "inlier_ratio": 0.5,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "09.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "15.jpg",
+          "b_image": "06.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "15.jpg",
+          "b_image": "04.jpg"
+        }
+      ],
+      "tier": "auto-review-high",
+      "legacy_tier": "high",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.90619,
-      "pool_rank": 2
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.819333,
+      "confidence_score": 0.819333,
+      "confidence": "high",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "6930",
-      "coelho_code": "671661",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.879758,
-      "confidence": "low",
-      "confidence_score": 0.441,
-      "pool_rank": 3,
-      "facade_rank": 59,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-price-weighted.json",
+      "viva_code": "14533",
+      "coelho_code": "425124",
       "sources": [
-        "dino-v2",
-        "price-weighted",
-        "v3"
+        "megaloc",
+        "patch-vlad"
       ],
-      "similarity": 0.879758,
+      "source_scores": {
+        "megaloc": 0.466481,
+        "patch-vlad": 0.391695
+      },
+      "geometric_score": 0.672333,
+      "best_inliers": 25,
+      "best_inlier_ratio": 0.641,
+      "support_pairs_8": 1,
+      "support_pairs_12": 1,
+      "top_image_pairs": [
+        {
+          "good_matches": 39,
+          "inliers": 25,
+          "inlier_ratio": 0.641,
+          "score": 0.8,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "05.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "05.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 5,
+          "inlier_ratio": 0.4545,
+          "score": 0.4,
+          "a_image": "05.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 8,
+          "inliers": 4,
+          "inlier_ratio": 0.5,
+          "score": 0.38,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        }
+      ],
       "tier": "review-normal",
+      "legacy_tier": "normal",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.879758
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.672333,
+      "confidence_score": 0.672333,
+      "confidence": "medium",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "8177",
-      "coelho_code": "403934",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.943716,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
+      "viva_code": "3460",
+      "coelho_code": "353980",
       "sources": [
-        "dino-v1",
-        "r5"
+        "megaloc",
+        "patch-vlad"
       ],
-      "similarity": 0.943716,
-      "confidence_score": 0.943716,
+      "source_scores": {
+        "megaloc": 0.538484,
+        "patch-vlad": 0.526261
+      },
+      "geometric_score": 0.573333,
+      "best_inliers": 18,
+      "best_inlier_ratio": 0.45,
+      "support_pairs_8": 1,
+      "support_pairs_12": 1,
+      "top_image_pairs": [
+        {
+          "good_matches": 40,
+          "inliers": 18,
+          "inlier_ratio": 0.45,
+          "score": 0.66,
+          "a_image": "04.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "05.jpg"
+        },
+        {
+          "good_matches": 9,
+          "inliers": 5,
+          "inlier_ratio": 0.5556,
+          "score": 0.4,
+          "a_image": "24.jpg",
+          "b_image": "05.jpg"
+        },
+        {
+          "good_matches": 9,
+          "inliers": 4,
+          "inlier_ratio": 0.4444,
+          "score": 0.38,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 9,
+          "inliers": 4,
+          "inlier_ratio": 0.4444,
+          "score": 0.38,
+          "a_image": "02.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
       "tier": "review-normal",
+      "legacy_tier": "normal",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.943716,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "8177",
-      "coelho_code": "392768",
-      "matched_at": "2026-05-08T19:34:14.585Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.926023,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r3.json",
-      "sources": [
-        "dino-v1",
-        "r3"
-      ],
-      "similarity": 0.926023,
-      "confidence_score": 0.926023,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.926023,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "8177",
-      "coelho_code": "422399",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.918872,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "price-weighted",
-        "r10",
-        "r4",
-        "r6",
-        "r8",
-        "r9",
-        "v3"
-      ],
-      "similarity": 0.918872,
-      "confidence_score": 0.918872,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.918872,
-      "pool_rank": 3
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.573333,
+      "confidence_score": 0.573333,
+      "confidence": "medium",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
       "viva_code": "8527",
-      "coelho_code": "353414",
-      "matched_at": "2026-05-08T19:34:14.588Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.886127,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r9.json",
+      "coelho_code": "429865",
       "sources": [
-        "dino-v1",
-        "r9"
+        "megaloc",
+        "patch-vlad"
       ],
-      "similarity": 0.886127,
-      "confidence_score": 0.886127,
+      "source_scores": {
+        "megaloc": 0.531133,
+        "patch-vlad": 0.474801
+      },
+      "geometric_score": 0.439333,
+      "best_inliers": 8,
+      "best_inlier_ratio": 0.4211,
+      "support_pairs_8": 1,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 19,
+          "inliers": 8,
+          "inlier_ratio": 0.4211,
+          "score": 0.46,
+          "a_image": "03.jpg",
+          "b_image": "8331356.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "04.jpg",
+          "b_image": "8331356.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "13.jpg",
+          "b_image": "8331356.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "8331367.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 6,
+          "inlier_ratio": 0.5,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "8331362.jpg"
+        }
+      ],
       "tier": "review-normal",
+      "legacy_tier": "normal",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.886127,
-      "pool_rank": 1
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.439333,
+      "confidence_score": 0.439333,
+      "confidence": "medium",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "8682",
-      "coelho_code": "459916",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.940763,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
+      "viva_code": "17316",
+      "coelho_code": "432594",
       "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r7",
-        "r8",
-        "r9"
+        "megaloc",
+        "patch-vlad"
       ],
-      "similarity": 0.940763,
-      "confidence_score": 0.940763,
+      "source_scores": {
+        "megaloc": 0.460933,
+        "patch-vlad": 0.419085
+      },
+      "geometric_score": 0.391,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.3684,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 7,
+          "inlier_ratio": 0.5385,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "15.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 6,
+          "inlier_ratio": 0.4286,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "15.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "04.jpg",
+          "b_image": "04.jpg"
+        }
+      ],
       "tier": "review-normal",
+      "legacy_tier": "normal",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.940763,
-      "pool_rank": 1
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.391,
+      "confidence_score": 0.391,
+      "confidence": "medium",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "8682",
-      "coelho_code": "686383",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.937084,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
+      "viva_code": "8177",
+      "coelho_code": "650074",
       "sources": [
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "r10"
+        "patch-vlad"
       ],
-      "similarity": 0.937084,
-      "confidence_score": 0.937084,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.399828
+      },
+      "geometric_score": 0.736,
+      "best_inliers": 24,
+      "best_inlier_ratio": 0.5581,
+      "support_pairs_8": 3,
+      "support_pairs_12": 1,
+      "top_image_pairs": [
+        {
+          "good_matches": 43,
+          "inliers": 24,
+          "inlier_ratio": 0.5581,
+          "score": 0.78,
+          "a_image": "02.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 18,
+          "inliers": 8,
+          "inlier_ratio": 0.4444,
+          "score": 0.46,
+          "a_image": "01.jpg",
+          "b_image": "28.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 8,
+          "inlier_ratio": 0.5333,
+          "score": 0.46,
+          "a_image": "03.jpg",
+          "b_image": "27.jpg"
+        },
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "03.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.937084,
-      "pool_rank": 2
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.736,
+      "confidence_score": 0.736,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "8748",
+      "viva_code": "12441",
+      "coelho_code": "403934",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.387968
+      },
+      "geometric_score": 0.475667,
+      "best_inliers": 8,
+      "best_inlier_ratio": 0.4444,
+      "support_pairs_8": 2,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 18,
+          "inliers": 8,
+          "inlier_ratio": 0.4444,
+          "score": 0.46,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 8,
+          "inlier_ratio": 0.4706,
+          "score": 0.46,
+          "a_image": "03.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 7,
+          "inlier_ratio": 0.6364,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "03.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 2,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.475667,
+      "confidence_score": 0.475667,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "12252",
       "coelho_code": "681867",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.927743,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
       "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov3",
-        "price-weighted",
-        "r1",
-        "r10",
-        "r2",
-        "r5",
-        "r7",
-        "r8",
-        "r9",
-        "v3"
+        "patch-vlad"
       ],
-      "similarity": 0.927743,
-      "confidence_score": 0.927743,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.358367
+      },
+      "geometric_score": 0.424864,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.5,
+      "support_pairs_8": 1,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 14,
+          "inliers": 7,
+          "inlier_ratio": 0.5,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "17.jpg"
+        },
+        {
+          "good_matches": 8,
+          "inliers": 7,
+          "inlier_ratio": 0.875,
+          "score": 0.44,
+          "a_image": "25.jpg",
+          "b_image": "16.jpg"
+        },
+        {
+          "good_matches": 21,
+          "inliers": 7,
+          "inlier_ratio": 0.3333,
+          "score": 0.425714,
+          "a_image": "01.jpg",
+          "b_image": "16.jpg"
+        },
+        {
+          "good_matches": 28,
+          "inliers": 8,
+          "inlier_ratio": 0.2857,
+          "score": 0.404898,
+          "a_image": "02.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "25.jpg",
+          "b_image": "03.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.927743,
-      "pool_rank": 1
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.424864,
+      "confidence_score": 0.424864,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "8748",
+      "viva_code": "2075",
+      "coelho_code": "581091",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.388091
+      },
+      "geometric_score": 0.39,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.3684,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "03.jpg",
+          "b_image": "10489029.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "10489015.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "10489030.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "10489014.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "10489031.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 2,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.39,
+      "confidence_score": 0.39,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "8682",
       "coelho_code": "381684",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.920052,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r6.json",
       "sources": [
-        "dino-v1",
-        "r3",
-        "r4",
-        "r6"
+        "patch-vlad"
       ],
-      "similarity": 0.920052,
-      "confidence_score": 0.920052,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.406571
+      },
+      "geometric_score": 0.39,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.5833,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 12,
+          "inliers": 7,
+          "inlier_ratio": 0.5833,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "9219861.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "9219856.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "07.jpg",
+          "b_image": "9219862.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "9219860.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "07.jpg",
+          "b_image": "9219857.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.920052,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "8748",
-      "coelho_code": "494094",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.831414,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.39,
+      "confidence_score": 0.39,
       "confidence": "low",
-      "confidence_score": 0.1936,
-      "pool_rank": 3,
-      "facade_rank": 64,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large"
-      ],
-      "similarity": 0.831414,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.831414
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "9281",
-      "coelho_code": "686049",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.893974,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r6.json",
+      "viva_code": "16448",
+      "coelho_code": "569097",
       "sources": [
-        "dino-v1",
-        "r3",
-        "r4",
-        "r6"
+        "patch-vlad"
       ],
-      "similarity": 0.893974,
-      "confidence_score": 0.893974,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.382168
+      },
+      "geometric_score": 0.389,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.6364,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 11,
+          "inliers": 7,
+          "inlier_ratio": 0.6364,
+          "score": 0.44,
+          "a_image": "08.jpg",
+          "b_image": "16.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 6,
+          "inlier_ratio": 0.4286,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "05.jpg",
+          "b_image": "16.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "08.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.893974,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "9281",
-      "coelho_code": "392768",
-      "matched_at": "2026-05-08T19:34:14.576Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.835379,
-      "confidence": "ai_approved",
-      "pass": 5,
-      "pass_label": "hail_mary",
-      "_candidate_source_file": "auto-matches-0.80.json",
-      "sources": [
-        "0.80",
-        "dino-v1"
-      ],
-      "similarity": 0.835379,
-      "confidence_score": 0.835379,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.835379,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "9281",
-      "coelho_code": "403934",
-      "matched_at": "2026-05-08T19:34:14.578Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.828127,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.389,
+      "confidence_score": 0.389,
       "confidence": "low",
-      "confidence_score": 0.3903,
-      "pool_rank": 3,
-      "facade_rank": 12,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov3.json",
-      "sources": [
-        "auto-matches",
-        "dino-v2",
-        "dinov3"
-      ],
-      "similarity": 0.828127,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.828127
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "9624",
-      "coelho_code": "670241",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.93869,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10"
-      ],
-      "similarity": 0.93869,
-      "confidence_score": 0.93869,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.93869,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "9624",
+      "viva_code": "16356",
       "coelho_code": "671661",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.935816,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
       "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov3",
-        "r1",
-        "r2",
-        "r3",
-        "r4",
-        "r5",
-        "r7"
+        "patch-vlad"
       ],
-      "similarity": 0.935816,
-      "confidence_score": 0.935816,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.378535
+      },
+      "geometric_score": 0.388286,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.5,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 14,
+          "inliers": 7,
+          "inlier_ratio": 0.5,
+          "score": 0.44,
+          "a_image": "04.jpg",
+          "b_image": "29.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "04.jpg",
+          "b_image": "20.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 5,
+          "inlier_ratio": 0.4545,
+          "score": 0.4,
+          "a_image": "04.jpg",
+          "b_image": "21.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 5,
+          "inlier_ratio": 0.5,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "20.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 5,
+          "inlier_ratio": 0.3333,
+          "score": 0.385714,
+          "a_image": "04.jpg",
+          "b_image": "15.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.935816,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "9624",
-      "coelho_code": "497009",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.871312,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.388286,
+      "confidence_score": 0.388286,
       "confidence": "low",
-      "confidence_score": 0.2734,
-      "pool_rank": 3,
-      "facade_rank": 3,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-price-weighted.json",
-      "sources": [
-        "dino-v2",
-        "price-weighted",
-        "v3"
-      ],
-      "similarity": 0.871312,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.871312
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "12252",
-      "coelho_code": "661974",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.913366,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
+      "viva_code": "4657",
+      "coelho_code": "429709",
       "sources": [
-        "dino-v1",
-        "r4",
-        "r5",
-        "r6"
+        "patch-vlad"
       ],
-      "similarity": 0.913366,
-      "confidence_score": 0.913366,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.380273
+      },
+      "geometric_score": 0.388,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.4375,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 16,
+          "inliers": 7,
+          "inlier_ratio": 0.4375,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 9,
+          "inliers": 6,
+          "inlier_ratio": 0.6667,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 4,
+          "inlier_ratio": 0.4,
+          "score": 0.38,
+          "a_image": "03.jpg",
+          "b_image": "30.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.913366,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "12252",
-      "coelho_code": "403934",
-      "matched_at": "2026-05-08T19:34:14.585Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.908126,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r3.json",
-      "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r3",
-        "r7"
-      ],
-      "similarity": 0.908126,
-      "confidence_score": 0.908126,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.908126,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "12252",
-      "coelho_code": "665488",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.828142,
-      "confidence": "medium",
-      "confidence_score": 0.6225,
-      "pool_rank": 3,
-      "facade_rank": 51,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large"
-      ],
-      "similarity": 0.828142,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.828142
-    },
-    {
-      "viva_code": "12441",
-      "coelho_code": "381684",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.937872,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r5",
-        "r8",
-        "r9"
-      ],
-      "similarity": 0.937872,
-      "confidence_score": 0.937872,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.937872,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "12441",
-      "coelho_code": "685118",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.882329,
-      "confidence": "medium",
-      "confidence_score": 0.6174,
-      "pool_rank": 2,
-      "facade_rank": 6,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large"
-      ],
-      "similarity": 0.882329,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.882329
-    },
-    {
-      "viva_code": "12441",
-      "coelho_code": "353414",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.858122,
-      "confidence": "medium",
-      "confidence_score": 0.5114,
-      "pool_rank": 3,
-      "facade_rank": 1,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-price-weighted.json",
-      "sources": [
-        "dino-v2",
-        "price-weighted",
-        "v3"
-      ],
-      "similarity": 0.858122,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.858122
-    },
-    {
-      "viva_code": "12484",
-      "coelho_code": "663614",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.976336,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r5",
-        "r9"
-      ],
-      "similarity": 0.976336,
-      "confidence_score": 0.976336,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.976336,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "12484",
-      "coelho_code": "675789",
-      "matched_at": "2026-05-08T19:34:14.587Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.933323,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r6.json",
-      "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r3",
-        "r4",
-        "r6",
-        "r7"
-      ],
-      "similarity": 0.933323,
-      "confidence_score": 0.933323,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.933323,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "12484",
-      "coelho_code": "448313",
-      "matched_at": "2026-05-08T19:34:14.587Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.922404,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r8.json",
-      "sources": [
-        "dino-v1",
-        "r8"
-      ],
-      "similarity": 0.922404,
-      "confidence_score": 0.922404,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.922404,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "12752",
-      "coelho_code": "395516",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.95665,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "r4",
-        "r5",
-        "r6",
-        "r9"
-      ],
-      "similarity": 0.95665,
-      "confidence_score": 0.95665,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.95665,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "12752",
-      "coelho_code": "660536",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.926517,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.388,
+      "confidence_score": 0.388,
       "confidence": "low",
-      "confidence_score": 0.3691,
-      "pool_rank": 2,
-      "facade_rank": 8,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "dinov3",
-        "r1",
-        "r2",
-        "r7"
-      ],
-      "similarity": 0.926517,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.926517
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "12752",
-      "coelho_code": "497009",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.91415,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
+      "viva_code": "16615",
+      "coelho_code": "663487",
       "sources": [
-        "dino-v1",
-        "r10",
-        "r8"
+        "patch-vlad"
       ],
-      "similarity": 0.91415,
-      "confidence_score": 0.91415,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.380386
+      },
+      "geometric_score": 0.377286,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.375,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "31.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "31.jpg"
+        },
+        {
+          "good_matches": 18,
+          "inliers": 6,
+          "inlier_ratio": 0.3333,
+          "score": 0.405714,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.91415,
-      "pool_rank": 3
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.377286,
+      "confidence_score": 0.377286,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
       "viva_code": "13572",
       "coelho_code": "653980",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.943618,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
       "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "dinov3",
-        "price-weighted",
-        "r10",
-        "r8",
-        "v3"
+        "patch-vlad"
       ],
-      "similarity": 0.943618,
-      "confidence_score": 0.943618,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.366778
+      },
+      "geometric_score": 0.376,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.4,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "29.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 6,
+          "inlier_ratio": 0.4286,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "07.jpg",
+          "b_image": "17.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "07.jpg",
+          "b_image": "30.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.943618,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "13572",
-      "coelho_code": "356808",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.93454,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r7",
-        "r9"
-      ],
-      "similarity": 0.93454,
-      "confidence_score": 0.93454,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.93454,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "14184",
-      "coelho_code": "392768",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.94288,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "r4",
-        "r5",
-        "r6",
-        "r8"
-      ],
-      "similarity": 0.94288,
-      "confidence_score": 0.94288,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.94288,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "14184",
-      "coelho_code": "670241",
-      "matched_at": "2026-05-08T19:34:14.585Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.879701,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r3.json",
-      "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r3",
-        "r7"
-      ],
-      "similarity": 0.879701,
-      "confidence_score": 0.879701,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.879701,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "14184",
-      "coelho_code": "352803",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.82296,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.376,
+      "confidence_score": 0.376,
       "confidence": "low",
-      "confidence_score": 0.3336,
-      "pool_rank": 3,
-      "facade_rank": 11,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-price-weighted.json",
-      "sources": [
-        "dino-v2",
-        "price-weighted",
-        "v3"
-      ],
-      "similarity": 0.82296,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.82296
-    },
-    {
-      "viva_code": "14502",
-      "coelho_code": "395516",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.944603,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r8"
-      ],
-      "similarity": 0.944603,
-      "confidence_score": 0.944603,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.944603,
-      "pool_rank": 1
-    },
+      "strategy": "tiered-megaloc-patch-geometry"
+    }
+  ],
+  "review_matches": [
     {
       "viva_code": "14502",
       "coelho_code": "663614",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.921328,
+      "sources": [
+        "megaloc",
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "megaloc": 0.592666,
+        "patch-vlad": 0.523657
+      },
+      "geometric_score": 0.819333,
+      "best_inliers": 52,
+      "best_inlier_ratio": 0.65,
+      "support_pairs_8": 1,
+      "support_pairs_12": 1,
+      "top_image_pairs": [
+        {
+          "good_matches": 80,
+          "inliers": 52,
+          "inlier_ratio": 0.65,
+          "score": 1.0,
+          "a_image": "15.jpg",
+          "b_image": "05.jpg"
+        },
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "37.jpg",
+          "b_image": "07.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 7,
+          "inlier_ratio": 0.5,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "09.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "15.jpg",
+          "b_image": "06.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "15.jpg",
+          "b_image": "04.jpg"
+        }
+      ],
+      "tier": "auto-review-high",
+      "legacy_tier": "high",
+      "include_in_review": true,
+      "round": 2,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.819333,
+      "confidence_score": 0.819333,
       "confidence": "high",
-      "confidence_score": 0.7264,
-      "pool_rank": 2,
-      "facade_rank": 4,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large"
-      ],
-      "similarity": 0.921328,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.921328
-    },
-    {
-      "viva_code": "14502",
-      "coelho_code": "448313",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.892501,
-      "confidence": "low",
-      "confidence_score": 0.2208,
-      "pool_rank": 3,
-      "facade_rank": 65,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-price-weighted.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "price-weighted",
-        "r1",
-        "r2",
-        "r3",
-        "r7",
-        "v3"
-      ],
-      "similarity": 0.892501,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.892501
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
       "viva_code": "14533",
-      "coelho_code": "392768",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.893568,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r1.json",
+      "coelho_code": "425124",
       "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r7"
+        "megaloc",
+        "patch-vlad"
       ],
-      "similarity": 0.893568,
-      "confidence_score": 0.893568,
+      "source_scores": {
+        "megaloc": 0.466481,
+        "patch-vlad": 0.391695
+      },
+      "geometric_score": 0.672333,
+      "best_inliers": 25,
+      "best_inlier_ratio": 0.641,
+      "support_pairs_8": 1,
+      "support_pairs_12": 1,
+      "top_image_pairs": [
+        {
+          "good_matches": 39,
+          "inliers": 25,
+          "inlier_ratio": 0.641,
+          "score": 0.8,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "05.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "05.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 5,
+          "inlier_ratio": 0.4545,
+          "score": 0.4,
+          "a_image": "05.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 8,
+          "inliers": 4,
+          "inlier_ratio": 0.5,
+          "score": 0.38,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        }
+      ],
       "tier": "review-normal",
+      "legacy_tier": "normal",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.893568,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "14533",
-      "coelho_code": "403934",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.891841,
-      "confidence": "low",
-      "confidence_score": 0.4964,
-      "pool_rank": 2,
-      "facade_rank": 2,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large"
-      ],
-      "similarity": 0.891841,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.891841
-    },
-    {
-      "viva_code": "14533",
-      "coelho_code": "685484",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.87669,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r8"
-      ],
-      "similarity": 0.87669,
-      "confidence_score": 0.87669,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.87669,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "15335",
-      "coelho_code": "656562",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.94849,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "price-weighted",
-        "r10",
-        "r4",
-        "r5",
-        "r6",
-        "r8",
-        "r9",
-        "v3"
-      ],
-      "similarity": 0.94849,
-      "confidence_score": 0.94849,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.94849,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "15335",
-      "coelho_code": "497009",
-      "matched_at": "2026-05-08T19:34:14.585Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.908972,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r3.json",
-      "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov3",
-        "r1",
-        "r2",
-        "r3",
-        "r7"
-      ],
-      "similarity": 0.908972,
-      "confidence_score": 0.908972,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.908972,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "15776",
-      "coelho_code": "565110",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.944661,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov3",
-        "price-weighted",
-        "r1",
-        "r10",
-        "r2",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r7",
-        "r8",
-        "r9",
-        "v3"
-      ],
-      "similarity": 0.944661,
-      "confidence_score": 0.944661,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.944661,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "15776",
-      "coelho_code": "392768",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.886085,
-      "confidence": "low",
-      "confidence_score": 0.4071,
-      "pool_rank": 2,
-      "facade_rank": 31,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large"
-      ],
-      "similarity": 0.886085,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.886085
-    },
-    {
-      "viva_code": "16113",
-      "coelho_code": "661974",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.920182,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "r10"
-      ],
-      "similarity": 0.920182,
-      "confidence_score": 0.920182,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.920182,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "16113",
-      "coelho_code": "353980",
-      "matched_at": "2026-05-08T19:34:14.587Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.892067,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r8.json",
-      "sources": [
-        "dino-v1",
-        "r4",
-        "r5",
-        "r6",
-        "r8"
-      ],
-      "similarity": 0.892067,
-      "confidence_score": 0.892067,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.892067,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "16113",
-      "coelho_code": "685118",
-      "matched_at": "2026-05-08T19:34:14.585Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.890372,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r3.json",
-      "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r3",
-        "r7"
-      ],
-      "similarity": 0.890372,
-      "confidence_score": 0.890372,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.890372,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "16356",
-      "coelho_code": "675789",
-      "matched_at": "2026-05-08T19:34:14.587Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.930785,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r8.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "price-weighted",
-        "r8",
-        "v3"
-      ],
-      "similarity": 0.930785,
-      "confidence_score": 0.930785,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.930785,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "16356",
-      "coelho_code": "448313",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.925868,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "dinov3",
-        "r10",
-        "r5",
-        "r9"
-      ],
-      "similarity": 0.925868,
-      "confidence_score": 0.925868,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.925868,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "16356",
-      "coelho_code": "644559",
-      "matched_at": "2026-05-08T19:34:14.587Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.897748,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r6.json",
-      "sources": [
-        "dino-v1",
-        "r3",
-        "r4",
-        "r6"
-      ],
-      "similarity": 0.897748,
-      "confidence_score": 0.897748,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.897748,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "16448",
-      "coelho_code": "358241",
-      "matched_at": "2026-05-08T19:34:14.588Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.92303,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r9.json",
-      "sources": [
-        "dino-v1",
-        "r9"
-      ],
-      "similarity": 0.92303,
-      "confidence_score": 0.92303,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.92303,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "16448",
-      "coelho_code": "644559",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.911462,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "r5"
-      ],
-      "similarity": 0.911462,
-      "confidence_score": 0.911462,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.911462,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "16448",
-      "coelho_code": "429709",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.89568,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r6.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r3",
-        "r4",
-        "r6",
-        "r8"
-      ],
-      "similarity": 0.89568,
-      "confidence_score": 0.89568,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.89568,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "16528",
-      "coelho_code": "661093",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.941808,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "r4",
-        "r5"
-      ],
-      "similarity": 0.941808,
-      "confidence_score": 0.941808,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.941808,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "16528",
-      "coelho_code": "448313",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.896498,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r6.json",
-      "sources": [
-        "dino-v1",
-        "r6"
-      ],
-      "similarity": 0.896498,
-      "confidence_score": 0.896498,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.896498,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "16528",
-      "coelho_code": "494094",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.884589,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r8"
-      ],
-      "similarity": 0.884589,
-      "confidence_score": 0.884589,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.884589,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "16615",
-      "coelho_code": "379860",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.871303,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r8",
-        "r9"
-      ],
-      "similarity": 0.871303,
-      "confidence_score": 0.871303,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.871303,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "16615",
-      "coelho_code": "302330",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.863411,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r6.json",
-      "sources": [
-        "dino-v1",
-        "r6"
-      ],
-      "similarity": 0.863411,
-      "confidence_score": 0.863411,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.863411,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "16615",
-      "coelho_code": "395516",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.857247,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r1.json",
-      "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r7"
-      ],
-      "similarity": 0.857247,
-      "confidence_score": 0.857247,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.857247,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "16872",
-      "coelho_code": "403934",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.929469,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r6.json",
-      "sources": [
-        "dino-v1",
-        "r4",
-        "r6"
-      ],
-      "similarity": 0.929469,
-      "confidence_score": 0.929469,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.929469,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "16872",
-      "coelho_code": "661974",
-      "matched_at": "2026-05-08T19:34:14.587Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.916585,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r8.json",
-      "sources": [
-        "dino-v1",
-        "r8",
-        "r9"
-      ],
-      "similarity": 0.916585,
-      "confidence_score": 0.916585,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.916585,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "16872",
-      "coelho_code": "302330",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.884069,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10"
-      ],
-      "similarity": 0.884069,
-      "confidence_score": 0.884069,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.884069,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "17076",
-      "coelho_code": "352803",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.901834,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
-      "sources": [
-        "dino-v1",
-        "r3",
-        "r4",
-        "r5",
-        "r6"
-      ],
-      "similarity": 0.901834,
-      "confidence_score": 0.901834,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.901834,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "17076",
-      "coelho_code": "356808",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.877468,
-      "confidence": "low",
-      "confidence_score": 0.2304,
-      "pool_rank": 2,
-      "facade_rank": 3,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-price-weighted.json",
-      "sources": [
-        "dino-v2",
-        "price-weighted",
-        "v3"
-      ],
-      "similarity": 0.877468,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.877468
-    },
-    {
-      "viva_code": "17076",
-      "coelho_code": "381684",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.877226,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r1.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "r1",
-        "r2",
-        "r7"
-      ],
-      "similarity": 0.877226,
-      "confidence_score": 0.877226,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.877226,
-      "pool_rank": 3
-    },
-    {
-      "viva_code": "17266",
-      "coelho_code": "392768",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.903837,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.672333,
+      "confidence_score": 0.672333,
       "confidence": "medium",
-      "confidence_score": 0.6175,
-      "pool_rank": 1,
-      "facade_rank": 26,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-price-weighted.json",
-      "sources": [
-        "dino-v2",
-        "price-weighted",
-        "v3"
-      ],
-      "similarity": 0.903837,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.903837
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17266",
-      "coelho_code": "476081",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.903512,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov3",
-        "r1",
-        "r10",
-        "r2",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r7",
-        "r8",
-        "r9"
-      ],
-      "similarity": 0.903512,
-      "confidence_score": 0.903512,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.903512,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "17266",
-      "coelho_code": "649921",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.815544,
-      "confidence": "low",
-      "confidence_score": 0.3425,
-      "pool_rank": 3,
-      "facade_rank": 13,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large"
-      ],
-      "similarity": 0.815544,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.815544
-    },
-    {
-      "viva_code": "17279",
+      "viva_code": "3460",
       "coelho_code": "353980",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.852445,
-      "confidence": "low",
-      "confidence_score": 0.3145,
-      "pool_rank": 1,
-      "facade_rank": 19,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-price-weighted.json",
       "sources": [
-        "dino-v2",
-        "price-weighted",
-        "v3"
+        "megaloc",
+        "patch-vlad"
       ],
-      "similarity": 0.852445,
+      "source_scores": {
+        "megaloc": 0.538484,
+        "patch-vlad": 0.526261
+      },
+      "geometric_score": 0.573333,
+      "best_inliers": 18,
+      "best_inlier_ratio": 0.45,
+      "support_pairs_8": 1,
+      "support_pairs_12": 1,
+      "top_image_pairs": [
+        {
+          "good_matches": 40,
+          "inliers": 18,
+          "inlier_ratio": 0.45,
+          "score": 0.66,
+          "a_image": "04.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "05.jpg"
+        },
+        {
+          "good_matches": 9,
+          "inliers": 5,
+          "inlier_ratio": 0.5556,
+          "score": 0.4,
+          "a_image": "24.jpg",
+          "b_image": "05.jpg"
+        },
+        {
+          "good_matches": 9,
+          "inliers": 4,
+          "inlier_ratio": 0.4444,
+          "score": 0.38,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 9,
+          "inliers": 4,
+          "inlier_ratio": 0.4444,
+          "score": 0.38,
+          "a_image": "02.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
       "tier": "review-normal",
+      "legacy_tier": "normal",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.852445
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.573333,
+      "confidence_score": 0.573333,
+      "confidence": "medium",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17279",
-      "coelho_code": "356808",
-      "matched_at": "2026-05-08T19:34:14.578Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.793778,
-      "confidence": "low",
-      "confidence_score": 0.2983,
-      "pool_rank": 2,
-      "facade_rank": 2,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov3.json",
+      "viva_code": "8527",
+      "coelho_code": "429865",
       "sources": [
-        "auto-matches",
-        "dino-v2",
-        "dinov3"
+        "megaloc",
+        "patch-vlad"
       ],
-      "similarity": 0.793778,
+      "source_scores": {
+        "megaloc": 0.531133,
+        "patch-vlad": 0.474801
+      },
+      "geometric_score": 0.439333,
+      "best_inliers": 8,
+      "best_inlier_ratio": 0.4211,
+      "support_pairs_8": 1,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 19,
+          "inliers": 8,
+          "inlier_ratio": 0.4211,
+          "score": 0.46,
+          "a_image": "03.jpg",
+          "b_image": "8331356.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "04.jpg",
+          "b_image": "8331356.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "13.jpg",
+          "b_image": "8331356.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "8331367.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 6,
+          "inlier_ratio": 0.5,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "8331362.jpg"
+        }
+      ],
       "tier": "review-normal",
+      "legacy_tier": "normal",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.793778
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.439333,
+      "confidence_score": 0.439333,
+      "confidence": "medium",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
       "viva_code": "17316",
-      "coelho_code": "685118",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.933713,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "r10",
-        "r4",
-        "r5",
-        "r6",
-        "r8",
-        "r9"
-      ],
-      "similarity": 0.933713,
-      "confidence_score": 0.933713,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.933713,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "17316",
-      "coelho_code": "656562",
-      "matched_at": "2026-05-08T19:34:14.585Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.860933,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r3.json",
-      "sources": [
-        "dino-v1",
-        "r3"
-      ],
-      "similarity": 0.860933,
-      "confidence_score": 0.860933,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.860933,
-      "pool_rank": 2
-    },
-    {
-      "viva_code": "17316",
-      "coelho_code": "659639",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.83698,
-      "confidence": "low",
-      "confidence_score": 0.4316,
-      "pool_rank": 3,
-      "facade_rank": 69,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-price-weighted.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large",
-        "price-weighted",
-        "v3"
-      ],
-      "similarity": 0.83698,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.83698
-    },
-    {
-      "viva_code": "17465",
-      "coelho_code": "687641",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.916055,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
-      "sources": [
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "r10",
-        "r6",
-        "r8",
-        "r9"
-      ],
-      "similarity": 0.916055,
-      "confidence_score": 0.916055,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.916055,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "17465",
       "coelho_code": "432594",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.911107,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
       "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov3",
-        "r3",
-        "r4",
-        "r5"
+        "megaloc",
+        "patch-vlad"
       ],
-      "similarity": 0.911107,
-      "confidence_score": 0.911107,
+      "source_scores": {
+        "megaloc": 0.460933,
+        "patch-vlad": 0.419085
+      },
+      "geometric_score": 0.391,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.3684,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 7,
+          "inlier_ratio": 0.5385,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "15.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 6,
+          "inlier_ratio": 0.4286,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "15.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "04.jpg",
+          "b_image": "04.jpg"
+        }
+      ],
       "tier": "review-normal",
+      "legacy_tier": "normal",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.911107,
-      "pool_rank": 2
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.391,
+      "confidence_score": 0.391,
+      "confidence": "medium",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17465",
-      "coelho_code": "459916",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.888053,
+      "viva_code": "8177",
+      "coelho_code": "650074",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.399828
+      },
+      "geometric_score": 0.736,
+      "best_inliers": 24,
+      "best_inlier_ratio": 0.5581,
+      "support_pairs_8": 3,
+      "support_pairs_12": 1,
+      "top_image_pairs": [
+        {
+          "good_matches": 43,
+          "inliers": 24,
+          "inlier_ratio": 0.5581,
+          "score": 0.78,
+          "a_image": "02.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 18,
+          "inliers": 8,
+          "inlier_ratio": 0.4444,
+          "score": 0.46,
+          "a_image": "01.jpg",
+          "b_image": "28.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 8,
+          "inlier_ratio": 0.5333,
+          "score": 0.46,
+          "a_image": "03.jpg",
+          "b_image": "27.jpg"
+        },
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "03.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 2,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.736,
+      "confidence_score": 0.736,
       "confidence": "low",
-      "confidence_score": 0.2193,
-      "pool_rank": 3,
-      "facade_rank": 91,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-price-weighted.json",
-      "sources": [
-        "dino-v2",
-        "price-weighted",
-        "v3"
-      ],
-      "similarity": 0.888053,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.888053
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17596",
-      "coelho_code": "660536",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.930362,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
+      "viva_code": "12441",
+      "coelho_code": "403934",
       "sources": [
-        "dino-v1",
-        "dino-v2",
-        "price-weighted",
-        "r10",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r8",
-        "r9",
-        "v3"
+        "patch-vlad"
       ],
-      "similarity": 0.930362,
-      "confidence_score": 0.930362,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.387968
+      },
+      "geometric_score": 0.475667,
+      "best_inliers": 8,
+      "best_inlier_ratio": 0.4444,
+      "support_pairs_8": 2,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 18,
+          "inliers": 8,
+          "inlier_ratio": 0.4444,
+          "score": 0.46,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 8,
+          "inlier_ratio": 0.4706,
+          "score": 0.46,
+          "a_image": "03.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 7,
+          "inlier_ratio": 0.6364,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "03.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.930362,
-      "pool_rank": 1
-    },
-    {
-      "viva_code": "17596",
-      "coelho_code": "356808",
-      "matched_at": "2026-05-08T19:34:14.577Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.847273,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.475667,
+      "confidence_score": 0.475667,
       "confidence": "low",
-      "confidence_score": 0.2565,
-      "pool_rank": 2,
-      "facade_rank": 5,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov2-large.json",
-      "sources": [
-        "dino-v2",
-        "dinov2-large"
-      ],
-      "similarity": 0.847273,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.847273
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17596",
-      "coelho_code": "459916",
-      "matched_at": "2026-05-08T19:34:14.578Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.75288,
+      "viva_code": "12252",
+      "coelho_code": "681867",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.358367
+      },
+      "geometric_score": 0.424864,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.5,
+      "support_pairs_8": 1,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 14,
+          "inliers": 7,
+          "inlier_ratio": 0.5,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "17.jpg"
+        },
+        {
+          "good_matches": 8,
+          "inliers": 7,
+          "inlier_ratio": 0.875,
+          "score": 0.44,
+          "a_image": "25.jpg",
+          "b_image": "16.jpg"
+        },
+        {
+          "good_matches": 21,
+          "inliers": 7,
+          "inlier_ratio": 0.3333,
+          "score": 0.425714,
+          "a_image": "01.jpg",
+          "b_image": "16.jpg"
+        },
+        {
+          "good_matches": 28,
+          "inliers": 8,
+          "inlier_ratio": 0.2857,
+          "score": 0.404898,
+          "a_image": "02.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "25.jpg",
+          "b_image": "03.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 2,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.424864,
+      "confidence_score": 0.424864,
       "confidence": "low",
-      "confidence_score": 0.1722,
-      "pool_rank": 3,
-      "facade_rank": 91,
-      "strategy": "recursive-v2",
-      "_candidate_source_file": "auto-matches-dinov3.json",
-      "sources": [
-        "auto-matches",
-        "dino-v2",
-        "dinov3"
-      ],
-      "similarity": 0.75288,
-      "tier": "review-normal",
-      "include_in_review": true,
-      "round": 2,
-      "round_candidate_score": 0.75288
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17670",
-      "coelho_code": "675789",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.940061,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
+      "viva_code": "2075",
+      "coelho_code": "581091",
       "sources": [
-        "auto-matches",
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "dinov3",
-        "r10",
-        "r5",
-        "r9"
+        "patch-vlad"
       ],
-      "similarity": 0.940061,
-      "confidence_score": 0.940061,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.388091
+      },
+      "geometric_score": 0.39,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.3684,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "03.jpg",
+          "b_image": "10489029.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "10489015.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "10489030.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "10489014.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "10489031.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.940061,
-      "pool_rank": 1
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.39,
+      "confidence_score": 0.39,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17775",
-      "coelho_code": "661093",
-      "matched_at": "2026-05-08T19:34:14.584Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.93734,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r10.json",
+      "viva_code": "8682",
+      "coelho_code": "381684",
       "sources": [
-        "dino-v1",
-        "dino-v2",
-        "price-weighted",
-        "r10",
-        "r8",
-        "r9",
-        "v3"
+        "patch-vlad"
       ],
-      "similarity": 0.93734,
-      "confidence_score": 0.93734,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.406571
+      },
+      "geometric_score": 0.39,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.5833,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 12,
+          "inliers": 7,
+          "inlier_ratio": 0.5833,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "9219861.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "9219856.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "07.jpg",
+          "b_image": "9219862.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "9219860.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "07.jpg",
+          "b_image": "9219857.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.93734,
-      "pool_rank": 1
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.39,
+      "confidence_score": 0.39,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17775",
-      "coelho_code": "379860",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.916506,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r5.json",
+      "viva_code": "16448",
+      "coelho_code": "569097",
       "sources": [
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "r3",
-        "r5"
+        "patch-vlad"
       ],
-      "similarity": 0.916506,
-      "confidence_score": 0.916506,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.382168
+      },
+      "geometric_score": 0.389,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.6364,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 11,
+          "inliers": 7,
+          "inlier_ratio": 0.6364,
+          "score": 0.44,
+          "a_image": "08.jpg",
+          "b_image": "16.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 6,
+          "inlier_ratio": 0.4286,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "05.jpg",
+          "b_image": "16.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "08.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.916506,
-      "pool_rank": 2
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.389,
+      "confidence_score": 0.389,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17775",
-      "coelho_code": "448313",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.89646,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r4.json",
+      "viva_code": "16356",
+      "coelho_code": "671661",
       "sources": [
-        "dino-v1",
-        "r4"
+        "patch-vlad"
       ],
-      "similarity": 0.89646,
-      "confidence_score": 0.89646,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.378535
+      },
+      "geometric_score": 0.388286,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.5,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 14,
+          "inliers": 7,
+          "inlier_ratio": 0.5,
+          "score": 0.44,
+          "a_image": "04.jpg",
+          "b_image": "29.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "04.jpg",
+          "b_image": "20.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 5,
+          "inlier_ratio": 0.4545,
+          "score": 0.4,
+          "a_image": "04.jpg",
+          "b_image": "21.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 5,
+          "inlier_ratio": 0.5,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "20.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 5,
+          "inlier_ratio": 0.3333,
+          "score": 0.385714,
+          "a_image": "04.jpg",
+          "b_image": "15.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.89646,
-      "pool_rank": 3
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.388286,
+      "confidence_score": 0.388286,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17948",
-      "coelho_code": "685484",
-      "matched_at": "2026-05-08T19:34:14.586Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.930925,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r6.json",
+      "viva_code": "4657",
+      "coelho_code": "429709",
       "sources": [
-        "dino-v1",
-        "r1",
-        "r2",
-        "r3",
-        "r4",
-        "r5",
-        "r6",
-        "r7"
+        "patch-vlad"
       ],
-      "similarity": 0.930925,
-      "confidence_score": 0.930925,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.380273
+      },
+      "geometric_score": 0.388,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.4375,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 16,
+          "inliers": 7,
+          "inlier_ratio": 0.4375,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 9,
+          "inliers": 6,
+          "inlier_ratio": 0.6667,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 4,
+          "inlier_ratio": 0.4,
+          "score": 0.38,
+          "a_image": "03.jpg",
+          "b_image": "30.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.930925,
-      "pool_rank": 1
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.388,
+      "confidence_score": 0.388,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
     },
     {
-      "viva_code": "17948",
-      "coelho_code": "302330",
-      "matched_at": "2026-05-08T19:34:14.587Z",
-      "reviewer": "round-recall-generator",
-      "similarity_score": 0.903786,
-      "confidence": "ai_approved",
-      "strategy": "optimal",
-      "_candidate_source_file": "auto-matches-r8.json",
+      "viva_code": "16615",
+      "coelho_code": "663487",
       "sources": [
-        "dino-v1",
-        "dino-v2",
-        "dinov2-large",
-        "price-weighted",
-        "r8",
-        "r9",
-        "v3"
+        "patch-vlad"
       ],
-      "similarity": 0.903786,
-      "confidence_score": 0.903786,
-      "tier": "review-normal",
+      "source_scores": {
+        "patch-vlad": 0.380386
+      },
+      "geometric_score": 0.377286,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.375,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "31.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "31.jpg"
+        },
+        {
+          "good_matches": 18,
+          "inliers": 6,
+          "inlier_ratio": 0.3333,
+          "score": 0.405714,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
       "include_in_review": true,
       "round": 2,
-      "round_candidate_score": 0.903786,
-      "pool_rank": 2
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.377286,
+      "confidence_score": 0.377286,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "13572",
+      "coelho_code": "653980",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.366778
+      },
+      "geometric_score": 0.376,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.4,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "29.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 6,
+          "inlier_ratio": 0.4286,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "07.jpg",
+          "b_image": "17.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "07.jpg",
+          "b_image": "30.jpg"
+        }
+      ],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 2,
+      "matched_at": "2026-05-10T20:45:30.784061+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.376,
+      "confidence_score": 0.376,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
     }
   ],
+  "low_rejected": [],
   "stats": {
-    "generated_at": "2026-05-08T19:34:14.591Z",
-    "source_trial_run_id": "fd8040fa-88f1-470d-a189-5399c8072174",
-    "source_pass": 1,
-    "round": 2,
-    "top_k_per_viva": 3,
-    "min_score": 0.08,
-    "total_viva": 62,
-    "total_coelho": 91,
-    "confirmed_from_previous_rounds": 23,
-    "pending_viva": 39,
-    "pending_viva_with_candidates": 39,
-    "pending_viva_without_candidates": 0,
-    "reviewed_unmatched_from_previous_round": 5,
-    "emitted_candidate_pairs": 104,
-    "straggler_viva_codes": []
+    "ground_truth_confirmed": 21,
+    "entity_count": 20,
+    "matched": 15,
+    "pair": {
+      "tp": 1,
+      "fp": 14,
+      "fn": 20,
+      "precision": 0.06666666666666667,
+      "recall": 0.047619047619047616,
+      "f1": 0.05555555555555555
+    },
+    "entity_edge": {
+      "tp": 1,
+      "fp": 14,
+      "fn": 20,
+      "precision": 0.06666666666666667,
+      "recall": 0.047619047619047616,
+      "f1": 0.05555555555555555
+    },
+    "entity": {
+      "found": 1,
+      "total": 20,
+      "recall": 0.05
+    },
+    "tiers": {
+      "auto-review-high": {
+        "count": 1,
+        "matched": 1,
+        "pair": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity_edge": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity": {
+          "found": 0,
+          "total": 20,
+          "recall": 0.0
+        }
+      },
+      "through_auto-review-high": {
+        "count": 1,
+        "matched": 1,
+        "pair": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity_edge": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity": {
+          "found": 0,
+          "total": 20,
+          "recall": 0.0
+        }
+      },
+      "review-normal": {
+        "count": 4,
+        "matched": 4,
+        "pair": {
+          "tp": 0,
+          "fp": 4,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity_edge": {
+          "tp": 0,
+          "fp": 4,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity": {
+          "found": 0,
+          "total": 20,
+          "recall": 0.0
+        }
+      },
+      "through_review-normal": {
+        "count": 5,
+        "matched": 5,
+        "pair": {
+          "tp": 0,
+          "fp": 5,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity_edge": {
+          "tp": 0,
+          "fp": 5,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity": {
+          "found": 0,
+          "total": 20,
+          "recall": 0.0
+        }
+      },
+      "review-recall": {
+        "count": 10,
+        "matched": 10,
+        "pair": {
+          "tp": 1,
+          "fp": 9,
+          "fn": 20,
+          "precision": 0.1,
+          "recall": 0.047619047619047616,
+          "f1": 0.06451612903225806
+        },
+        "entity_edge": {
+          "tp": 1,
+          "fp": 9,
+          "fn": 20,
+          "precision": 0.1,
+          "recall": 0.047619047619047616,
+          "f1": 0.06451612903225806
+        },
+        "entity": {
+          "found": 1,
+          "total": 20,
+          "recall": 0.05
+        }
+      },
+      "through_review-recall": {
+        "count": 15,
+        "matched": 15,
+        "pair": {
+          "tp": 1,
+          "fp": 14,
+          "fn": 20,
+          "precision": 0.06666666666666667,
+          "recall": 0.047619047619047616,
+          "f1": 0.05555555555555555
+        },
+        "entity_edge": {
+          "tp": 1,
+          "fp": 14,
+          "fn": 20,
+          "precision": 0.06666666666666667,
+          "recall": 0.047619047619047616,
+          "f1": 0.05555555555555555
+        },
+        "entity": {
+          "found": 1,
+          "total": 20,
+          "recall": 0.05
+        }
+      },
+      "reject-low": {
+        "count": 0,
+        "matched": 0,
+        "pair": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity_edge": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity": {
+          "found": 0,
+          "total": 20,
+          "recall": 0.0
+        }
+      },
+      "review-output": {
+        "count": 15,
+        "matched": 15,
+        "pair": {
+          "tp": 1,
+          "fp": 14,
+          "fn": 20,
+          "precision": 0.06666666666666667,
+          "recall": 0.047619047619047616,
+          "f1": 0.05555555555555555
+        },
+        "entity_edge": {
+          "tp": 1,
+          "fp": 14,
+          "fn": 20,
+          "precision": 0.06666666666666667,
+          "recall": 0.047619047619047616,
+          "f1": 0.05555555555555555
+        },
+        "entity": {
+          "found": 1,
+          "total": 20,
+          "recall": 0.05
+        }
+      }
+    }
   }
 }

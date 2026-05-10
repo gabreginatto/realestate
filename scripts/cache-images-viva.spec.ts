@@ -4,10 +4,20 @@ import * as path from 'path';
 import * as https from 'https';
 import * as http from 'http';
 
+type VivaListing = {
+  url: string;
+  propertyCode?: string;
+  code?: string | number;
+  images?: string[];
+};
+
 /**
  * Viva Prime Imóveis — Full Image Cache Downloader
  *
  * Reads data/vivaprimeimoveis/listings/all-listings.json (already scraped).
+ * If the Alphaville listing snapshot has explicit gallery URLs, those are used
+ * as the source of truth. The rendered page includes related-listing images,
+ * so broad DOM scraping is only a fallback.
  * Visits each listing page and downloads ALL gallery images to:
  *   data/vivaprimeimoveis/cache/{propertyCode}/01.jpg, 02.jpg, ...
  *
@@ -56,7 +66,24 @@ test('Download all images for every Viva listing', async ({ page }) => {
   }
 
   const data = JSON.parse(fs.readFileSync(listingsFile, 'utf-8'));
-  const listings: Array<{ url: string; propertyCode: string }> = data.listings ?? data;
+  const listings: VivaListing[] = data.listings ?? data;
+
+  const officialImagesByCode = new Map<string, string[]>();
+  const compound = process.env.COMPOUND || 'alphaville-1';
+  const officialListingsFile = [
+    path.join(process.cwd(), 'data', compound, 'listings', 'vivaprimeimoveis_listings.json'),
+    path.join(process.cwd(), 'data', compound, 'vivaprimeimoveis', 'listings', 'all-listings.json'),
+  ].find((file) => fs.existsSync(file));
+  if (officialListingsFile) {
+    const officialData = JSON.parse(fs.readFileSync(officialListingsFile, 'utf-8'));
+    const officialListings: VivaListing[] = officialData.listings ?? officialData;
+    for (const official of officialListings) {
+      const officialCode = String(official.propertyCode || official.code || '').trim();
+      if (officialCode && Array.isArray(official.images) && official.images.length > 0) {
+        officialImagesByCode.set(officialCode, official.images);
+      }
+    }
+  }
 
   const cacheRoot = path.join(process.cwd(), 'data', 'vivaprimeimoveis', 'cache');
   fs.mkdirSync(cacheRoot, { recursive: true });
@@ -85,59 +112,57 @@ test('Download all images for every Viva listing', async ({ page }) => {
     console.log(`  URL: ${listingUrl}`);
 
     try {
-      await page.goto(listingUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
-      await page.waitForTimeout(2000);
+      const officialUrls = officialImagesByCode.get(code);
+      let validUrls = officialUrls ? Array.from(new Set(officialUrls)) : [];
 
-      // Scroll to trigger lazy loading
-      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
-      await page.waitForTimeout(500);
+      if (validUrls.length > 0) {
+        console.log(`  Using ${validUrls.length} official gallery URLs`);
+      } else {
+        await page.goto(listingUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await page.waitForTimeout(2000);
 
-      // Collect all image URLs from multiple sources
-      const imgUrls: Set<string> = new Set();
+        // Scroll to trigger lazy loading
+        await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight / 2));
+        await page.waitForTimeout(500);
 
-      // Strategy 1: src attribute on img elements matching viva domain
-      const srcs = await page.$$eval(
-        'img[src*="vivaprimeimoveis"], img[src*="cdn"], img[src*="storage"]',
-        (imgs) => imgs
-          .map((img) => (img as HTMLImageElement).src || img.getAttribute('data-src') || '')
-          .filter(Boolean)
-      );
-      srcs.forEach((s) => { if (!s.startsWith('data:')) imgUrls.add(s); });
+        // Collect only image URLs scoped to this listing code. The page also
+        // renders related listings, so generic CDN selectors contaminate caches.
+        const imgUrls: Set<string> = new Set();
 
-      // Strategy 2: data-src / data-lazy-src (carousel lazy loading)
-      const dataSrcs = await page.$$eval(
-        'img[data-src], img[data-lazy-src], img[data-original]',
-        (imgs) => imgs.flatMap((img) => [
-          img.getAttribute('data-src'),
-          img.getAttribute('data-lazy-src'),
-          img.getAttribute('data-original'),
-        ]).filter(Boolean) as string[]
-      );
-      dataSrcs.forEach((s) => { if (!s.startsWith('data:')) imgUrls.add(s); });
-
-      // Strategy 3: background-image in style attributes (some carousels use this)
-      const bgImgs = await page.$$eval(
-        '[style*="background-image"]',
-        (els) => els.map((el) => {
-          const style = (el as HTMLElement).style.backgroundImage;
-          const m = style.match(/url\(["']?(.+?)["']?\)/);
-          return m ? m[1] : '';
-        }).filter(Boolean)
-      );
-      bgImgs.forEach((s) => { if (!s.startsWith('data:')) imgUrls.add(s); });
-
-      // Filter to only property photo URLs (skip logos, icons, thumbnails < 200px)
-      const validUrls = Array.from(imgUrls).filter((u) => {
-        const lower = u.toLowerCase();
-        return (
-          !lower.includes('logo') &&
-          !lower.includes('icon') &&
-          !lower.includes('favicon') &&
-          !lower.includes('thumb') &&
-          !lower.includes('avatar') &&
-          !lower.includes('placeholder')
+        const srcs = await page.$$eval(
+          `img[src*="/${code}/"], img[data-src*="/${code}/"], img[data-lazy-src*="/${code}/"], img[data-original*="/${code}/"]`,
+          (imgs) => imgs.flatMap((img) => [
+            (img as HTMLImageElement).src,
+            img.getAttribute('data-src'),
+            img.getAttribute('data-lazy-src'),
+            img.getAttribute('data-original'),
+          ]).filter(Boolean) as string[]
         );
-      });
+        srcs.forEach((s) => { if (!s.startsWith('data:')) imgUrls.add(s); });
+
+        const bgImgs = await page.$$eval(
+          `[style*="/${code}/"]`,
+          (els) => els.map((el) => {
+            const style = (el as HTMLElement).style.backgroundImage;
+            const m = style.match(/url\(["']?(.+?)["']?\)/);
+            return m ? m[1] : '';
+          }).filter(Boolean)
+        );
+        bgImgs.forEach((s) => { if (!s.startsWith('data:')) imgUrls.add(s); });
+
+        // Filter to only property photo URLs.
+        validUrls = Array.from(imgUrls).filter((u) => {
+          const lower = u.toLowerCase();
+          return (
+            !lower.includes('logo') &&
+            !lower.includes('icon') &&
+            !lower.includes('favicon') &&
+            !lower.includes('thumb') &&
+            !lower.includes('avatar') &&
+            !lower.includes('placeholder')
+          );
+        });
+      }
 
       console.log(`  Found ${validUrls.length} candidate image URLs`);
 

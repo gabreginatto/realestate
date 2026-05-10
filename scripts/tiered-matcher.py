@@ -62,6 +62,11 @@ def parse_args():
     p = argparse.ArgumentParser(description="Tiered property matcher")
     p.add_argument("--geometric", default="data/auto-matches-geometric-rerank.json")
     p.add_argument("--output", default="data/auto-matches-tiered.json")
+    p.add_argument("--exclude-summary", default=None,
+                   help="Trial summary JSON whose confirmed/reviewed pairs should be excluded.")
+    p.add_argument("--exclusions", default=None,
+                   help="Exclusions JSON produced by prepare-next-review-round.js.")
+    p.add_argument("--round", type=int, default=1)
     p.add_argument("--high-score", type=float, default=0.76)
     p.add_argument("--high-inliers", type=int, default=20)
     return p.parse_args()
@@ -180,6 +185,37 @@ def tier_priority(tier: str) -> int:
     }.get(tier, 4)
 
 
+def pair_key(viva_code: str, coelho_code: str) -> str:
+    return f"{viva_code}::{coelho_code}"
+
+
+def load_exclusions(args):
+    confirmed_viva = set()
+    confirmed_coelho = set()
+    reviewed_pairs = set()
+
+    if args.exclude_summary:
+        summary = json.loads(Path(args.exclude_summary).read_text())
+        for p in summary.get("confirmed_matches", []):
+            if p.get("viva_code"):
+                confirmed_viva.add(str(p["viva_code"]))
+            if p.get("coelho_code"):
+                confirmed_coelho.add(str(p["coelho_code"]))
+            if p.get("viva_code") and p.get("coelho_code"):
+                reviewed_pairs.add(pair_key(str(p["viva_code"]), str(p["coelho_code"])))
+        for p in summary.get("viva_without_confirmed_coelho", []):
+            if p.get("viva_code") and p.get("attempted_coelho_code"):
+                reviewed_pairs.add(pair_key(str(p["viva_code"]), str(p["attempted_coelho_code"])))
+
+    if args.exclusions:
+        exclusions = json.loads(Path(args.exclusions).read_text())
+        confirmed_viva.update(map(str, exclusions.get("confirmed_viva_codes", [])))
+        confirmed_coelho.update(map(str, exclusions.get("confirmed_coelho_codes", [])))
+        reviewed_pairs.update(map(str, exclusions.get("reviewed_pair_keys", [])))
+
+    return confirmed_viva, confirmed_coelho, reviewed_pairs
+
+
 def print_tier_stats(tier_stats: dict, key: str):
     s = tier_stats[key]
     pair = s["pair"]
@@ -194,11 +230,19 @@ def main():
     args = parse_args()
     payload = json.loads(Path(args.geometric).read_text())
     now = datetime.now(timezone.utc).isoformat()
+    confirmed_viva, confirmed_coelho, reviewed_pairs = load_exclusions(args)
 
     matches = []
     for candidate in payload.get("all_candidates", []):
         pair = (candidate["viva_code"], candidate["coelho_code"])
+        key = pair_key(str(candidate["viva_code"]), str(candidate["coelho_code"]))
         if pair in REJECTED_PAIRS:
+            continue
+        if str(candidate["viva_code"]) in confirmed_viva:
+            continue
+        if str(candidate["coelho_code"]) in confirmed_coelho:
+            continue
+        if key in reviewed_pairs:
             continue
         tier = tier_for(candidate, args.high_score, args.high_inliers)
         include_in_review = is_review_tier(tier)
@@ -207,6 +251,7 @@ def main():
             "tier": tier,
             "legacy_tier": legacy_tier(tier),
             "include_in_review": include_in_review,
+            "round": args.round,
             "matched_at": now,
             "reviewer": "tiered-megaloc-patch-geometry",
             "similarity_score": candidate.get("geometric_score", 0.0),
@@ -251,9 +296,10 @@ def main():
 
     output = {
         "session_started": now,
-        "session_name": "tiered-matcher-experiment",
+        "session_name": f"tiered-matcher-pass-{args.round}",
         "strategy": "tiered-megaloc-patch-geometry",
         "source": args.geometric,
+        "round": args.round,
         "policy": {
             "auto-review-high": (
                 "MegaLoc candidate with geometric_score >= "
@@ -263,6 +309,9 @@ def main():
             "review-recall": "patch-VLAD candidate without MegaLoc",
             "reject-low": "weak geometry + weak model agreement; kept for audit but not review",
             "excluded": sorted([list(p) for p in REJECTED_PAIRS]),
+            "confirmed_viva_removed": len(confirmed_viva),
+            "confirmed_coelho_removed": len(confirmed_coelho),
+            "reviewed_pairs_removed": len(reviewed_pairs),
         },
         "matches": matches,
         "review_matches": review_matches,

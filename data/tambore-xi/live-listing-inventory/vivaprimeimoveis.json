@@ -1,0 +1,156 @@
+{
+  "scraped_at": "2026-05-10T20:28:02.929Z",
+  "compound": "tambore-xi",
+  "site": "vivaprimeimoveis",
+  "source_url": "https://www.vivaprimeimoveis.com.br/imoveis?busca=venda&finalidade=venda&tipo=casa&cidade=&empreendimento=tambore-11",
+  "declared_count": 29,
+  "total_listings": 29,
+  "total_unique_codes": 29,
+  "listings": [
+    {
+      "code": "15061",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/15061",
+      "page": 1
+    },
+    {
+      "code": "17651",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17651",
+      "page": 1
+    },
+    {
+      "code": "16870",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/16870",
+      "page": 1
+    },
+    {
+      "code": "10755",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/10755",
+      "page": 1
+    },
+    {
+      "code": "17747",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17747",
+      "page": 1
+    },
+    {
+      "code": "17826",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17826",
+      "page": 1
+    },
+    {
+      "code": "17646",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17646",
+      "page": 1
+    },
+    {
+      "code": "6001",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/6001",
+      "page": 1
+    },
+    {
+      "code": "14449",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/14449",
+      "page": 1
+    },
+    {
+      "code": "17599",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-3-dormitorios-tambore-santana-de-parnaiba/17599",
+      "page": 1
+    },
+    {
+      "code": "15510",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/15510",
+      "page": 1
+    },
+    {
+      "code": "14374",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/14374",
+      "page": 1
+    },
+    {
+      "code": "17787",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17787",
+      "page": 2
+    },
+    {
+      "code": "17916",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/17916",
+      "page": 2
+    },
+    {
+      "code": "15859",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/15859",
+      "page": 2
+    },
+    {
+      "code": "18177",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18177",
+      "page": 2
+    },
+    {
+      "code": "17480",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/17480",
+      "page": 2
+    },
+    {
+      "code": "17359",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/17359",
+      "page": 2
+    },
+    {
+      "code": "17804",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17804",
+      "page": 2
+    },
+    {
+      "code": "17391",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17391",
+      "page": 2
+    },
+    {
+      "code": "16485",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/16485",
+      "page": 2
+    },
+    {
+      "code": "15910",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/15910",
+      "page": 2
+    },
+    {
+      "code": "17600",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17600",
+      "page": 2
+    },
+    {
+      "code": "17121",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17121",
+      "page": 2
+    },
+    {
+      "code": "16197",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/16197",
+      "page": 3
+    },
+    {
+      "code": "13552",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/13552",
+      "page": 3
+    },
+    {
+      "code": "16670",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/16670",
+      "page": 3
+    },
+    {
+      "code": "12762",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/12762",
+      "page": 3
+    },
+    {
+      "code": "14858",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/14858",
+      "page": 3
+    }
+  ]
+}

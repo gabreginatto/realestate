@@ -1,17 +1,15 @@
 {
-  "generated_at": "2026-05-08T19:34:14.591Z",
-  "source_trial_run_id": "fd8040fa-88f1-470d-a189-5399c8072174",
-  "source_pass": 1,
+  "generated_at": "2026-05-10T20:41:12.845Z",
+  "source_trial_run_id": "3c83f9f4-1391-4efb-aa20-8934fe527d0b",
+  "source_pass": 2,
   "round": 2,
-  "top_k_per_viva": 3,
-  "min_score": 0.08,
+  "mode": "progressive-filtered-rerun",
+  "filtered_data_root": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/review-rounds/pass-2/input",
+  "exclusions_file": "/Users/gabrielreginatto/Desktop/Code/RealEstate/data/review-rounds/pass-2/exclusions.json",
   "total_viva": 62,
   "total_coelho": 91,
-  "confirmed_from_previous_rounds": 23,
-  "pending_viva": 39,
-  "pending_viva_with_candidates": 39,
-  "pending_viva_without_candidates": 0,
-  "reviewed_unmatched_from_previous_round": 5,
-  "emitted_candidate_pairs": 104,
-  "straggler_viva_codes": []
+  "confirmed_from_previous_rounds": 25,
+  "reviewed_pair_exclusions": 25,
+  "remaining_viva": 37,
+  "remaining_coelho": 66
 }

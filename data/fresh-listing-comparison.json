@@ -1,0 +1,186 @@
+{
+  "generated_at": "2026-05-10T22:43:56.661Z",
+  "compounds": {
+    "alphaville-1": {
+      "vivaprimeimoveis": {
+        "previous_file": "data/alphaville-1/listings/vivaprimeimoveis_listings.json",
+        "fresh_file": "data/alphaville-1/fresh-listings/vivaprimeimoveis.json",
+        "previous_count": 60,
+        "fresh_count": 76,
+        "delta_fresh_vs_previous": 16,
+        "new_on_live_count": 21,
+        "missing_from_live_count": 5,
+        "new_on_live": [
+          "1695",
+          "4666",
+          "12030",
+          "12229",
+          "12414",
+          "13920",
+          "14844",
+          "15008",
+          "15335",
+          "16228",
+          "16341",
+          "16385",
+          "16607",
+          "16626",
+          "18035",
+          "18093",
+          "18115",
+          "18155",
+          "18159",
+          "18179",
+          "18240"
+        ],
+        "missing_from_live": [
+          "2307",
+          "3460",
+          "13572",
+          "14127",
+          "16882"
+        ],
+        "previous_images": {
+          "total_images": 1785,
+          "with_images": 60,
+          "min_images": 3,
+          "max_images": 73,
+          "avg_images": 29.75
+        },
+        "fresh_images": {
+          "total_images": 2447,
+          "with_images": 76,
+          "min_images": 6,
+          "max_images": 84,
+          "avg_images": 32.2
+        }
+      },
+      "coelhodafonseca": {
+        "previous_file": "data/alphaville-1/listings/coelhodafonseca_listings.json",
+        "fresh_file": "data/alphaville-1/fresh-listings/coelhodafonseca.json",
+        "previous_count": 72,
+        "fresh_count": 79,
+        "delta_fresh_vs_previous": 7,
+        "new_on_live_count": 17,
+        "missing_from_live_count": 10,
+        "new_on_live": [
+          "352241",
+          "356129",
+          "381684",
+          "445169",
+          "448325",
+          "461901",
+          "471646",
+          "639051",
+          "643279",
+          "648903",
+          "660804",
+          "673351",
+          "675453",
+          "677355",
+          "687641",
+          "687658",
+          "688696"
+        ],
+        "missing_from_live": [
+          "353980",
+          "356808",
+          "408539",
+          "415340",
+          "425124",
+          "467562",
+          "569859",
+          "649968",
+          "663462",
+          "663614"
+        ],
+        "previous_images": {
+          "total_images": 1924,
+          "with_images": 72,
+          "min_images": 6,
+          "max_images": 40,
+          "avg_images": 26.72
+        },
+        "fresh_images": {
+          "total_images": 2259,
+          "with_images": 79,
+          "min_images": 6,
+          "max_images": 40,
+          "avg_images": 28.59
+        }
+      }
+    },
+    "tambore-xi": {
+      "vivaprimeimoveis": {
+        "previous_file": "data/tambore-xi/vivaprimeimoveis/listings/all-listings.json",
+        "fresh_file": "data/tambore-xi/fresh-listings/vivaprimeimoveis.json",
+        "previous_count": 31,
+        "fresh_count": 29,
+        "delta_fresh_vs_previous": -2,
+        "new_on_live_count": 3,
+        "missing_from_live_count": 5,
+        "new_on_live": [
+          "16485",
+          "17804",
+          "18177"
+        ],
+        "missing_from_live": [
+          "14713",
+          "14952",
+          "16347",
+          "16499",
+          "17125"
+        ],
+        "previous_images": {
+          "total_images": 1147,
+          "with_images": 31,
+          "min_images": 7,
+          "max_images": 100,
+          "avg_images": 37
+        },
+        "fresh_images": {
+          "total_images": 1045,
+          "with_images": 29,
+          "min_images": 7,
+          "max_images": 100,
+          "avg_images": 36.03
+        }
+      },
+      "coelhodafonseca": {
+        "previous_file": "data/tambore-xi/coelhodafonseca/listings/all-listings.json",
+        "fresh_file": "data/tambore-xi/fresh-listings/coelhodafonseca.json",
+        "previous_count": 28,
+        "fresh_count": 28,
+        "delta_fresh_vs_previous": 0,
+        "new_on_live_count": 4,
+        "missing_from_live_count": 4,
+        "new_on_live": [
+          "617568",
+          "644999",
+          "688142",
+          "688583"
+        ],
+        "missing_from_live": [
+          "655823",
+          "675677",
+          "675899",
+          "680772"
+        ],
+        "previous_images": {
+          "total_images": 729,
+          "with_images": 28,
+          "min_images": 8,
+          "max_images": 37,
+          "avg_images": 26.04
+        },
+        "fresh_images": {
+          "total_images": 745,
+          "with_images": 28,
+          "min_images": 8,
+          "max_images": 40,
+          "avg_images": 26.61
+        }
+      }
+    }
+  }
+}

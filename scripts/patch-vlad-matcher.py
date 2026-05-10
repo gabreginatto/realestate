@@ -288,6 +288,8 @@ def parse_args():
     p.add_argument("--data-root", default="data")
     p.add_argument("--cache", default="data/embedding-cache-patch-vlad.pkl")
     p.add_argument("--output", default="data/auto-matches-patch-vlad.json")
+    p.add_argument("--threshold", type=float, default=None,
+                   help="Use a fixed assignment threshold instead of sweeping ground truth.")
     p.add_argument("--clusters", type=int, default=32)
     p.add_argument("--max-train-tokens", type=int, default=40000)
     p.add_argument("--seed", type=int, default=7)
@@ -315,7 +317,13 @@ def main():
     sim_matrix = build_matrix(viva, coelho, cache)
     log.info(f"matrix={sim_matrix.shape} nonzero={(sim_matrix > 0).sum()}")
 
-    best, sweep = threshold_sweep(sim_matrix, viva, coelho, matcher)
+    if args.threshold is None:
+        best, sweep = threshold_sweep(sim_matrix, viva, coelho, matcher)
+    else:
+        threshold = round(float(args.threshold), 3)
+        matches_at_threshold = assign(sim_matrix, viva, coelho, threshold)
+        best = {"threshold": threshold, **matcher.evaluate(matches_at_threshold)}
+        sweep = [best]
     log.info(
         f"Best threshold={best['threshold']:.3f} "
         f"P={best['precision']:.0%} R={best['recall']:.0%} "
@@ -331,6 +339,7 @@ def main():
         "session_started": now,
         "session_name": "patch-vlad-experiment",
         "strategy": "dino-v3-patch-token-vlad",
+        "best_threshold": best["threshold"],
         "model": {
             "backbone": "dinov3-vitb16",
             "clusters": args.clusters,

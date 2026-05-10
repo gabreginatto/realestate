@@ -73,6 +73,85 @@ otherwise CPU. Either way it works — MPS is just faster (~10×).
 
 ---
 
+## Step 0.5 — Fresh live listing inventory audit
+
+Before replacing official listing JSON, run a read-only live scrape of listing
+codes and URLs for each compound/site:
+
+```bash
+node scripts/audit-live-listing-counts.js --compound all --site both --max-pages 10
+```
+
+Outputs:
+- `data/live-listing-count-audit.json`
+- `data/<compound>/live-listing-inventory/vivaprimeimoveis.json`
+- `data/<compound>/live-listing-inventory/coelhodafonseca.json`
+
+This does not overwrite official listing JSON. It compares current live counts
+against the local listing files and writes fresh code/URL inventories for review.
+Coelho's current production search uses the newer query model:
+`category`, `transaction`, `purpose`, `location=enterprise_name:<name>`, and
+`propertyType`; do not use the old `enterprises`/`kind_of` URL as proof of live
+inventory because production now treats it as a generic search.
+
+To collect full detail-page listing JSON from those live inventories without
+touching production listing files, run:
+
+```bash
+node scripts/scrape-live-listing-details.js --compound all --site both
+node scripts/compare-fresh-listings.js
+node scripts/download-fresh-listing-images.js --compound all --site both --concurrency 10
+```
+
+Outputs:
+- `data/<compound>/fresh-listings/vivaprimeimoveis.json`
+- `data/<compound>/fresh-listings/coelhodafonseca.json`
+- `data/live-listing-detail-scrape-report.json`
+- `data/fresh-listing-comparison.json`
+- `data/fresh-image-download-report.json`
+- `data/<compound>/fresh-images/<site>/<code>/01.jpg`
+
+The detail scraper is intentionally source-scoped:
+- Viva image URLs must come from `/vista.imobi/fotos/<propertyCode>/`.
+- Coelho image URLs come from the property hero gallery, not recommendation
+  sections further down the page.
+
+To classify those fresh downloads and build reviewable fresh mosaics without
+touching the production selected-image directories, keep the DINOv3+CLIP server
+running and run:
+
+```bash
+python3 scripts/dino-select-exteriors.py \
+  --source-type fresh-images \
+  --source-root data \
+  --compound alphaville-1 \
+  --sites vivaprimeimoveis coelhodafonseca \
+  --output-dir selected_for_matching_fresh
+
+python3 scripts/dino-select-exteriors.py \
+  --source-type fresh-images \
+  --source-root data \
+  --compound tambore-xi \
+  --sites vivaprimeimoveis coelhodafonseca \
+  --output-dir selected_for_matching_fresh
+
+node scripts/make-fresh-mosaics.js both --compound alphaville-1 --force --clean-extra
+node scripts/make-fresh-mosaics.js both --compound tambore-xi --force --clean-extra
+```
+
+Outputs:
+- `selected_for_matching_fresh/<site>/<code>/_manifest.json`
+- `data/<compound>/fresh-mosaics/viva/<code>.png`
+- `data/<compound>/fresh-mosaics/viva/<code>_full.png`
+- `data/<compound>/fresh-mosaics/coelho/<code>.png`
+- `data/<compound>/fresh-mosaics/coelho/<code>_full.png`
+
+`selected_for_matching_fresh` is intentionally separate from
+`selected_for_matching`, so this audit path can be compared before promoting any
+fresh scrape into the active review pipeline.
+
+---
+
 ## Step 1 — Scrape all images (skip if cache already exists)
 
 Run only if `data/{site}/cache/` is empty or you want fresh images.
@@ -80,6 +159,16 @@ Run only if `data/{site}/cache/` is empty or you want fresh images.
 ```bash
 # Both sites in parallel — takes 20-40 min
 npx playwright test \
+  scripts/cache-images-viva.spec.ts \
+  scripts/cache-images-coelho.spec.ts \
+  --project=chromium --workers=2
+```
+
+For another compound, set `COMPOUND=<slug>` so the scraper uses that compound's
+official listing JSON as the gallery source, for example:
+
+```bash
+COMPOUND=tambore-xi npx playwright test \
   scripts/cache-images-viva.spec.ts \
   scripts/cache-images-coelho.spec.ts \
   --project=chromium --workers=2
@@ -101,11 +190,37 @@ Discards interiors. Pools are the strongest fingerprint for luxury properties.
 ```bash
 python scripts/dino-select-exteriors.py \
   --source-type cache \
-  --data-root data/ \
-  --dino-url http://localhost:8000
+  --source-root data/ \
+  --dino-url http://localhost:8000 \
+  --official-listings data/alphaville-1/listings/vivaprimeimoveis_listings.json \
+  --official-listings data/alphaville-1/listings/coelhodafonseca_listings.json
 ```
 
 Output: `selected_for_matching/{site}/{code}/` + `_manifest.json`
+
+The `--official-listings` guard is important: it prevents page-level or
+related-listing images from polluted cache directories being classified into a
+property's manifest.
+
+For compounds that store images under `data/<compound>/<site>/images/{code}/`,
+use `compound-images` mode and restrict selection to the current official
+listing JSON:
+
+```bash
+python3 scripts/dino-select-exteriors.py \
+  --source-type compound-images \
+  --source-root data \
+  --compound tambore-xi \
+  --sites vivaprimeimoveis coelhodafonseca \
+  --official-listings data/tambore-xi/vivaprimeimoveis/listings/all-listings.json \
+  --official-listings data/tambore-xi/coelhodafonseca/listings/all-listings.json \
+  --only-listed \
+  --clean-extra-output
+```
+
+`--clean-extra-output` only removes generated output directories that also exist
+in the current compound image source but are absent from that compound's listing
+JSON. It must not be used without `--official-listings`.
 
 ### Mosaic selector decision — 2026-05-06
 
@@ -141,7 +256,7 @@ screen because it ranked worse and adds more visual workload.
 Reproduce:
 
 ```bash
-node scripts/make-clip-mosaics.js both --force
+node scripts/make-clip-mosaics.js both --force --compound alphaville-1 --only-listed --clean-extra
 python3 scripts/mosaic-selector-benchmark.py
 python3 scripts/vlm-mosaic-model-benchmark.py \
   --models openai/clip-vit-base-patch32 google/siglip-base-patch16-224 \
@@ -384,27 +499,76 @@ Run from repo root.
 
 Open: `https://match-review-n3z7pwcwsa-ue.a.run.app`
 
-Controls:
-- `→` or `M` — confirm match
-- `←` or `S` — skip (not a match)
-- `D` — done
-- Click image area → lightbox with all images
+### Lane order (work top to bottom)
 
-Session is saved to GCS after every action. Close and reopen anytime — it resumes.
+The reviewer ships precision first, recall second:
 
-When all pairs are reviewed, click **Finalizar** → downloads `final-matches.json`.
+1. **Alta confiança** (`auto-review-high`) — MegaLoc + strong geometry. Most matches here are correct; confirm fast.
+2. **Normal** (`review-normal`) — MegaLoc without strong geometry. Slower; expect mixed quality.
+3. **Recall** (`review-recall`) — patch-VLAD candidates without MegaLoc. Lower yield, kept to recover near-misses.
+4. **Auditoria** (`reject-low`) — kept for audit only; not part of the normal flow. Open it explicitly when you want to spot-check what the system rejected.
+
+Switch lanes with the header tabs. Each lane has its own progress bar and pending count. Finishing one lane does **not** auto-advance you to the next.
+
+### Visual surface (default)
+
+The first-screen view is the generated **standard mosaic** for each property — `mosaics/viva/{code}.png` and `mosaics/coelho/{code}.png`. If the mosaic PNG isn't in GCS yet, the UI falls back to the CLIP-selected outdoor image grid.
+
+Click either mosaic to open the **side-by-side comparison modal**. The modal opens in **Outdoor expandido** mode by default, which prefers the expanded mosaic (`{code}_full.png`) and falls back to up to 32 outdoor photos.
+
+Modal modes:
+- **Padrão** — standard outdoor mosaic.
+- **Outdoor expandido** *(default)* — expanded outdoor mosaic; the right tool for confirming pool/facade/garden.
+- **Todas as fotos** — fallback that intentionally includes interiors. Use when the outdoor evidence is ambiguous and you need interior context.
+
+### Evidence panel
+
+A compact strip above the action buttons surfaces what the matcher saw:
+- Source chips (`MegaLoc`, `VLAD`, `patch-VLAD`) with per-source scores.
+- Geometry: `score`, `inliers`, `ratio`, `support_pairs_8/12`.
+- Top image-to-image evidence pairs (`Viva 04.jpg ↔ Coelho 02.jpg`).
+
+Fields are hidden when not available, so legacy match files still render cleanly.
+
+### Keyboard
+
+- `→` or `M` — Match
+- `←` or `S` — Não match (skip)
+- `U` — Incerto (revisit later)
+- `D` — Finalizar
+- `Esc` — fecha o modal de comparação
+
+Session is saved to GCS after every action. Close and reopen anytime — it resumes, restoring per-lane progress.
+
+When all lanes you care about are reviewed, click **Finalizar** → downloads `final-matches.json`.
 
 ---
 
 ## Step 6 — Re-matching skipped pairs (optional)
 
-If you skipped pairs you want to retry at a lower threshold:
+If you need another review pass, use the round runner. It filters out already
+confirmed properties, progressively relaxes the thresholds for the remaining
+ambiguous pairs, rebuilds matcher evidence, uploads the new match file, and can
+reset the live session pointer.
 
-1. Note the skipped Viva codes from the review UI
-2. Mac on, server running
-3. Re-run recursive matcher (it will pick up the skipped ones)
-4. `./scripts/sync-to-gcs.sh`
-5. Open review UI → click **Recarregar matches**
+Use `--refresh-cache` whenever selected images, manifests, caches, or mosaic
+inputs changed. Otherwise stale embedding caches can keep deleted image names in
+Pass 2 evidence.
+
+```bash
+curl -sS https://match-review-n3z7pwcwsa-ue.a.run.app/api/trial-summary \
+  -o /private/tmp/live-trial-summary.json
+
+./scripts/run-next-review-round.sh \
+  --summary /private/tmp/live-trial-summary.json \
+  --round 2 \
+  --refresh-cache \
+  --reset-session
+
+curl -sS -X POST https://match-review-n3z7pwcwsa-ue.a.run.app/api/reload \
+  -H 'Content-Type: application/json' \
+  -d '{"source":"local-round-regeneration"}'
+```
 
 ---
 
@@ -426,7 +590,12 @@ Takes ~3 min. Prints the new URL (usually stays the same).
 | `dino-server/SETUP.md` | How to download the DINOv3 checkpoint |
 | `scripts/cache-images-viva.spec.ts` | Playwright: scrape all Viva images |
 | `scripts/cache-images-coelho.spec.ts` | Playwright: scrape all Coelho images |
+| `scripts/audit-live-listing-counts.js` | Read-only live listing inventory audit |
+| `scripts/scrape-live-listing-details.js` | Detail-page fresh listing scraper |
+| `scripts/compare-fresh-listings.js` | Fresh-vs-previous listing count comparison |
+| `scripts/download-fresh-listing-images.js` | Fresh listing image downloader |
 | `scripts/dino-select-exteriors.py` | CLIP pool-first image selector |
+| `scripts/make-fresh-mosaics.js` | Fresh selected-image mosaic generator |
 | `scripts/recursive-matcher-v2.py` | DINOv3 recursive matching (10 rounds) |
 | `scripts/ensemble-matcher.py` | Conservative VLAD + MegaLoc consensus |
 | `scripts/patch-vlad-matcher.py` | Experimental DINOv3 patch-token VLAD matcher |

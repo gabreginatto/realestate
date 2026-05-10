@@ -7,7 +7,6 @@ const fs    = require('fs');
 const REPO_ROOT     = path.join(__dirname, '..');
 const SELECTED_ROOT = path.join(REPO_ROOT, 'selected_for_matching');
 const DATA_ROOT     = path.join(REPO_ROOT, 'data');
-const MOSAICS_ROOT  = path.join(DATA_ROOT, 'alphaville-1', 'mosaics');
 const VIVA_CACHE    = path.join(DATA_ROOT, 'vivaprimeimoveis', 'cache');
 const COELHO_CACHE  = path.join(DATA_ROOT, 'coelhodafonseca', 'cache');
 const VIVA_SELECTED = path.join(SELECTED_ROOT, 'vivaprimeimoveis');
@@ -19,13 +18,13 @@ const SITES = {
     fullsite:  'vivaprimeimoveis',
     cacheDir:  VIVA_CACHE,
     selectedDir: VIVA_SELECTED,
-    mosaicDir: path.join(MOSAICS_ROOT, 'viva'),
+    listingFiles: ['vivaprimeimoveis_listings.json', 'all-listings.json'],
   },
   coelho: {
     fullsite:  'coelhodafonseca',
     cacheDir:  COELHO_CACHE,
     selectedDir: COELHO_SELECTED,
-    mosaicDir: path.join(MOSAICS_ROOT, 'coelho'),
+    listingFiles: ['coelhodafonseca_listings.json', 'all-listings.json'],
   },
 };
 
@@ -39,15 +38,118 @@ const OUTDOOR = new Set(['pool', 'facade', 'garden']);
 const CATEGORY_PRIORITY = { pool: 0, facade: 1, garden: 2 };
 
 function byOutdoorPriority(a, b) {
-  const byCategory = CATEGORY_PRIORITY[a.category] - CATEGORY_PRIORITY[b.category];
+  const byCategory = (CATEGORY_PRIORITY[a.category] ?? 99) - (CATEGORY_PRIORITY[b.category] ?? 99);
   if (byCategory !== 0) return byCategory;
   return String(a.filename).localeCompare(String(b.filename), undefined, { numeric: true });
 }
 
-function resolveImagePath(cacheDir, selectedDir, code, filename) {
-  const cachePath = path.join(cacheDir, code, filename);
-  if (fs.existsSync(cachePath)) return cachePath;
-  return path.join(selectedDir, code, filename);
+function imageBasename(url) {
+  try {
+    return path.basename(new URL(url).pathname);
+  } catch {
+    return path.basename(String(url).split('?')[0]);
+  }
+}
+
+function canonicalFilename(index, ext = '.jpg') {
+  return `${String(index).padStart(2, '0')}${ext}`;
+}
+
+function buildOfficialImageMap(shortsite, compound) {
+  const site = SITES[shortsite];
+  const files = [
+    path.join(DATA_ROOT, compound, 'listings', site.listingFiles[0]),
+    path.join(DATA_ROOT, compound, site.fullsite, 'listings', site.listingFiles[1]),
+  ];
+
+  const byCode = new Map();
+  for (const filePath of files) {
+    for (const listing of readListings(filePath)) {
+      const code = listingCode(listing);
+      const images = Array.isArray(listing.images) ? listing.images : [];
+      if (!code || images.length === 0) continue;
+
+      const map = byCode.get(code) || new Map();
+      for (let i = 0; i < images.length; i++) {
+        const basename = imageBasename(images[i]);
+        const ext = path.extname(basename) || '.jpg';
+        const officialPath = path.join(DATA_ROOT, compound, site.fullsite, 'images', code, basename);
+        if (fs.existsSync(officialPath)) {
+          map.set(basename, officialPath);
+          map.set(canonicalFilename(i + 1, ext), officialPath);
+          map.set(canonicalFilename(i + 1, '.jpg'), officialPath);
+        }
+      }
+      byCode.set(code, map);
+    }
+  }
+  return byCode;
+}
+
+function resolveImagePath(cacheDir, selectedDir, compoundImageDir, officialImageMap, code, filename) {
+  const officialPath = officialImageMap.get(code)?.get(filename);
+  if (officialPath && fs.existsSync(officialPath)) return officialPath;
+  const compoundPath = path.join(compoundImageDir, code, filename);
+  if (fs.existsSync(compoundPath)) return compoundPath;
+  const selectedPath = path.join(selectedDir, code, filename);
+  if (fs.existsSync(selectedPath)) return selectedPath;
+  return path.join(cacheDir, code, filename);
+}
+
+function parseArgs(argv) {
+  const args = {
+    site: 'both',
+    compound: 'alphaville-1',
+    force: false,
+    onlyListed: false,
+    cleanExtra: false,
+  };
+
+  for (let i = 2; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === '--force') {
+      args.force = true;
+    } else if (arg === '--only-listed') {
+      args.onlyListed = true;
+    } else if (arg === '--clean-extra') {
+      args.cleanExtra = true;
+    } else if (arg === '--compound') {
+      args.compound = argv[++i];
+    } else if (arg.startsWith('--compound=')) {
+      args.compound = arg.slice('--compound='.length);
+    } else if (!arg.startsWith('--')) {
+      args.site = arg;
+    }
+  }
+
+  return args;
+}
+
+function listingCode(listing) {
+  return String(listing.propertyCode || listing.code || listing.id || '').trim();
+}
+
+function readListings(filePath) {
+  if (!fs.existsSync(filePath)) return [];
+  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  return Array.isArray(data) ? data : (data.listings || []);
+}
+
+function listedCodesFor(shortsite, compound) {
+  const site = SITES[shortsite];
+  const candidates = [
+    path.join(DATA_ROOT, compound, 'listings', site.listingFiles[0]),
+    path.join(DATA_ROOT, compound, site.fullsite, 'listings', site.listingFiles[1]),
+  ];
+
+  const codes = new Set();
+  for (const filePath of candidates) {
+    for (const listing of readListings(filePath)) {
+      const code = listingCode(listing);
+      if (code) codes.add(code);
+    }
+  }
+  return codes;
 }
 
 // ── Image selection ────────────────────────────────────────────────────────────
@@ -56,15 +158,15 @@ function resolveImagePath(cacheDir, selectedDir, code, filename) {
  * This uses manifest.selected, which is already produced by the pool-first
  * CLIP selector and copied to selected_for_matching/.
  */
-async function selectStandardImages(manifestPath, cacheDir, selectedDir, code) {
+async function selectStandardImages(manifestPath, cacheDir, selectedDir, compoundImageDir, officialImageMap, code) {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  const selected = (manifest.selected || [])
-    .filter(e => OUTDOOR.has(e.category))
-    .sort(byOutdoorPriority);
+  const selectedRecords = manifest.selected || [];
+  const outdoor = selectedRecords.filter(e => OUTDOOR.has(e.category));
+  const selected = (outdoor.length ? outdoor : selectedRecords).sort(byOutdoorPriority);
 
   return selected.map(e => ({
     category: e.category,
-    path: resolveImagePath(cacheDir, selectedDir, code, e.filename),
+    path: resolveImagePath(cacheDir, selectedDir, compoundImageDir, officialImageMap, code, e.filename),
   }));
 }
 
@@ -72,15 +174,15 @@ async function selectStandardImages(manifestPath, cacheDir, selectedDir, code) {
  * Return a larger outdoor-only set for expanded mosaics.
  * all_categories points at the full image cache, not selected_for_matching/.
  */
-async function selectExpandedImages(manifestPath, cacheDir, selectedDir, code) {
+async function selectExpandedImages(manifestPath, cacheDir, selectedDir, compoundImageDir, officialImageMap, code) {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  const expanded = (manifest.all_categories || manifest.selected || [])
-    .filter(e => OUTDOOR.has(e.category))
-    .sort(byOutdoorPriority);
+  const records = manifest.all_categories || manifest.selected || [];
+  const outdoor = records.filter(e => OUTDOOR.has(e.category));
+  const expanded = (outdoor.length ? outdoor : records).sort(byOutdoorPriority);
 
   return expanded.map(e => ({
     category: e.category,
-    path: resolveImagePath(cacheDir, selectedDir, code, e.filename),
+    path: resolveImagePath(cacheDir, selectedDir, compoundImageDir, officialImageMap, code, e.filename),
   }));
 }
 
@@ -145,11 +247,13 @@ async function buildMosaic(imagePaths, outputPath, rows = STANDARD_ROWS) {
  * Returns { code, status, images } where status is one of:
  *   'ok' | 'skipped' | 'no_manifest' | 'error'
  */
-async function processListing(shortsite, code, force) {
-  const site        = SITES[shortsite];
+async function processListing(shortsite, code, force, compound, officialImageMap) {
+  const site = SITES[shortsite];
   const manifestPath = path.join(site.selectedDir, code, '_manifest.json');
-  const outputPath   = path.join(site.mosaicDir, `${code}.png`);
-  const fullOutputPath = path.join(site.mosaicDir, `${code}_full.png`);
+  const compoundImageDir = path.join(DATA_ROOT, compound, site.fullsite, 'images');
+  const mosaicDir = path.join(DATA_ROOT, compound, 'mosaics', shortsite);
+  const outputPath   = path.join(mosaicDir, `${code}.png`);
+  const fullOutputPath = path.join(mosaicDir, `${code}_full.png`);
 
   if (!fs.existsSync(manifestPath)) {
     return { code, status: 'no_manifest', images: 0 };
@@ -160,8 +264,8 @@ async function processListing(shortsite, code, force) {
   }
 
   try {
-    const standardImages = await selectStandardImages(manifestPath, site.cacheDir, site.selectedDir, code);
-    const expandedImages = await selectExpandedImages(manifestPath, site.cacheDir, site.selectedDir, code);
+    const standardImages = await selectStandardImages(manifestPath, site.cacheDir, site.selectedDir, compoundImageDir, officialImageMap, code);
+    const expandedImages = await selectExpandedImages(manifestPath, site.cacheDir, site.selectedDir, compoundImageDir, officialImageMap, code);
 
     // Count breakdown for progress line
     const nPool   = standardImages.filter(e => e.category === 'pool').length;
@@ -183,8 +287,25 @@ async function processListing(shortsite, code, force) {
 }
 
 // ── Site-level processor ───────────────────────────────────────────────────────
-async function processSite(shortsite, force) {
+function cleanExtraMosaics(shortsite, compound, listedCodes) {
+  const mosaicDir = path.join(DATA_ROOT, compound, 'mosaics', shortsite);
+  if (!fs.existsSync(mosaicDir)) return 0;
+
+  let removed = 0;
+  for (const file of fs.readdirSync(mosaicDir)) {
+    if (!file.endsWith('.png')) continue;
+    const code = file.replace(/_full\.png$/, '').replace(/\.png$/, '');
+    if (!listedCodes.has(code)) {
+      fs.unlinkSync(path.join(mosaicDir, file));
+      removed++;
+    }
+  }
+  return removed;
+}
+
+async function processSite(shortsite, force, compound, onlyListed, cleanExtra) {
   const site = SITES[shortsite];
+  const officialImageMap = buildOfficialImageMap(shortsite, compound);
 
   if (!fs.existsSync(site.selectedDir)) {
     console.log(`[${shortsite}] selected_for_matching directory not found: ${site.selectedDir}`);
@@ -193,25 +314,34 @@ async function processSite(shortsite, force) {
 
   // Each subdirectory in selectedDir that contains a _manifest.json is a code
   const entries = fs.readdirSync(site.selectedDir, { withFileTypes: true });
-  const codes   = entries
+  let codes   = entries
     .filter(e => e.isDirectory())
     .map(e => e.name)
     .filter(name => fs.existsSync(path.join(site.selectedDir, name, '_manifest.json')))
     .sort();
+
+  if (onlyListed) {
+    const listedCodes = listedCodesFor(shortsite, compound);
+    codes = codes.filter(code => listedCodes.has(code));
+    if (cleanExtra) {
+      const removed = cleanExtraMosaics(shortsite, compound, listedCodes);
+      if (removed) console.log(`[${shortsite}] removed ${removed} stale mosaic file(s)`);
+    }
+  }
 
   if (codes.length === 0) {
     console.log(`[${shortsite}] No listings with manifests found.`);
     return;
   }
 
-  console.log(`\n=== ${shortsite.toUpperCase()} — ${codes.length} listing(s) ===`);
+  console.log(`\n=== ${compound}/${shortsite.toUpperCase()} — ${codes.length} listing(s) ===`);
 
   let nOk = 0, nSkipped = 0, nFailed = 0, nNoManifest = 0;
 
   for (let i = 0; i < codes.length; i++) {
     const code   = codes[i];
     const prefix = `[${i + 1}/${codes.length}]`;
-    const result = await processListing(shortsite, code, force);
+    const result = await processListing(shortsite, code, force, compound, officialImageMap);
 
     switch (result.status) {
       case 'ok':
@@ -248,16 +378,19 @@ async function processSite(shortsite, force) {
 
 // ── Entry point ────────────────────────────────────────────────────────────────
 async function main() {
-  const arg   = process.argv[2] || 'both';
-  const force = process.argv.includes('--force');
+  const args = parseArgs(process.argv);
 
-  if (!['viva', 'coelho', 'both'].includes(arg)) {
-    console.log('Usage: node make-clip-mosaics.js [viva|coelho|both] [--force]');
+  if (!['viva', 'coelho', 'both'].includes(args.site)) {
+    console.log('Usage: node make-clip-mosaics.js [viva|coelho|both] [--force] [--compound alphaville-1] [--only-listed] [--clean-extra]');
     process.exit(0);
   }
 
-  if (arg === 'viva'   || arg === 'both') await processSite('viva',   force);
-  if (arg === 'coelho' || arg === 'both') await processSite('coelho', force);
+  if (args.site === 'viva'   || args.site === 'both') {
+    await processSite('viva', args.force, args.compound, args.onlyListed, args.cleanExtra);
+  }
+  if (args.site === 'coelho' || args.site === 'both') {
+    await processSite('coelho', args.force, args.compound, args.onlyListed, args.cleanExtra);
+  }
 
   console.log('\nDone!');
 }

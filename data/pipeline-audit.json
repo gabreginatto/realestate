@@ -1,0 +1,302 @@
+{
+  "generated_at": "2026-05-10T22:44:07.945Z",
+  "compounds": {
+    "alphaville-1": {
+      "vivaprimeimoveis": {
+        "listing_file": "data/alphaville-1/listings/vivaprimeimoveis_listings.json",
+        "listings": 60,
+        "unique_codes": 60,
+        "duplicate_codes": 0,
+        "pipeline_state_codes": 60,
+        "delta_vs_pipeline_state": 0,
+        "legacy_root_listings": 62,
+        "delta_vs_legacy_root": -2,
+        "official_gallery_images": 1785,
+        "local_image_dirs": 69,
+        "local_images": 2155,
+        "root_cache_dirs": 62,
+        "cache_over_official_count": 58,
+        "cache_over_official_top": [
+          {
+            "code": "17996",
+            "official": 28,
+            "cached": 246,
+            "extra": 218
+          },
+          {
+            "code": "17116",
+            "official": 47,
+            "cached": 178,
+            "extra": 131
+          },
+          {
+            "code": "17076",
+            "official": 25,
+            "cached": 154,
+            "extra": 129
+          },
+          {
+            "code": "14138",
+            "official": 17,
+            "cached": 142,
+            "extra": 125
+          },
+          {
+            "code": "8748",
+            "official": 14,
+            "cached": 132,
+            "extra": 118
+          },
+          {
+            "code": "2075",
+            "official": 6,
+            "cached": 120,
+            "extra": 114
+          },
+          {
+            "code": "17697",
+            "official": 39,
+            "cached": 150,
+            "extra": 111
+          },
+          {
+            "code": "8989",
+            "official": 38,
+            "cached": 100,
+            "extra": 62
+          },
+          {
+            "code": "16528",
+            "official": 22,
+            "cached": 84,
+            "extra": 62
+          },
+          {
+            "code": "8527",
+            "official": 25,
+            "cached": 84,
+            "extra": 59
+          },
+          {
+            "code": "6930",
+            "official": 18,
+            "cached": 76,
+            "extra": 58
+          },
+          {
+            "code": "17266",
+            "official": 18,
+            "cached": 73,
+            "extra": 55
+          }
+        ],
+        "missing_official_images_count": 0,
+        "missing_official_images_top": [],
+        "selected_for_matching": {
+          "listing_dirs": 104,
+          "manifests": 104,
+          "official_manifests": 60,
+          "missing_official_manifests": 0,
+          "selected_images": 735,
+          "official_selected_images": 326,
+          "manifests_over_official": []
+        },
+        "mosaics": {
+          "standard": 60,
+          "expanded": 60,
+          "official_standard": 60,
+          "official_expanded": 60,
+          "extra_standard": 0,
+          "extra_expanded": 0
+        }
+      },
+      "coelhodafonseca": {
+        "listing_file": "data/alphaville-1/listings/coelhodafonseca_listings.json",
+        "listings": 72,
+        "unique_codes": 72,
+        "duplicate_codes": 0,
+        "pipeline_state_codes": 72,
+        "delta_vs_pipeline_state": 0,
+        "legacy_root_listings": 91,
+        "delta_vs_legacy_root": -19,
+        "official_gallery_images": 1924,
+        "local_image_dirs": 87,
+        "local_images": 2289,
+        "root_cache_dirs": 72,
+        "cache_over_official_count": 68,
+        "cache_over_official_top": [
+          {
+            "code": "497009",
+            "official": 31,
+            "cached": 37,
+            "extra": 6
+          },
+          {
+            "code": "663777",
+            "official": 34,
+            "cached": 39,
+            "extra": 5
+          },
+          {
+            "code": "652122",
+            "official": 29,
+            "cached": 34,
+            "extra": 5
+          },
+          {
+            "code": "616435",
+            "official": 34,
+            "cached": 39,
+            "extra": 5
+          },
+          {
+            "code": "661093",
+            "official": 38,
+            "cached": 43,
+            "extra": 5
+          },
+          {
+            "code": "448313",
+            "official": 38,
+            "cached": 43,
+            "extra": 5
+          },
+          {
+            "code": "663984",
+            "official": 30,
+            "cached": 35,
+            "extra": 5
+          },
+          {
+            "code": "677791",
+            "official": 6,
+            "cached": 11,
+            "extra": 5
+          },
+          {
+            "code": "302330",
+            "official": 16,
+            "cached": 21,
+            "extra": 5
+          },
+          {
+            "code": "432594",
+            "official": 21,
+            "cached": 26,
+            "extra": 5
+          },
+          {
+            "code": "395516",
+            "official": 38,
+            "cached": 43,
+            "extra": 5
+          },
+          {
+            "code": "670241",
+            "official": 17,
+            "cached": 22,
+            "extra": 5
+          }
+        ],
+        "missing_official_images_count": 1,
+        "missing_official_images_top": [
+          {
+            "code": "356006",
+            "official": 30,
+            "local": 29,
+            "missing": 1
+          }
+        ],
+        "selected_for_matching": {
+          "listing_dirs": 112,
+          "manifests": 112,
+          "official_manifests": 72,
+          "missing_official_manifests": 0,
+          "selected_images": 739,
+          "official_selected_images": 385,
+          "manifests_over_official": []
+        },
+        "mosaics": {
+          "standard": 72,
+          "expanded": 72,
+          "official_standard": 72,
+          "official_expanded": 72,
+          "extra_standard": 0,
+          "extra_expanded": 0
+        }
+      }
+    },
+    "tambore-xi": {
+      "vivaprimeimoveis": {
+        "listing_file": "data/tambore-xi/vivaprimeimoveis/listings/all-listings.json",
+        "listings": 31,
+        "unique_codes": 31,
+        "duplicate_codes": 0,
+        "pipeline_state_codes": 31,
+        "delta_vs_pipeline_state": 0,
+        "legacy_root_listings": 62,
+        "delta_vs_legacy_root": -31,
+        "official_gallery_images": 1147,
+        "local_image_dirs": 32,
+        "local_images": 1176,
+        "root_cache_dirs": 62,
+        "cache_over_official_count": 0,
+        "cache_over_official_top": [],
+        "missing_official_images_count": 0,
+        "missing_official_images_top": [],
+        "selected_for_matching": {
+          "listing_dirs": 104,
+          "manifests": 104,
+          "official_manifests": 31,
+          "missing_official_manifests": 0,
+          "selected_images": 735,
+          "official_selected_images": 329,
+          "manifests_over_official": []
+        },
+        "mosaics": {
+          "standard": 31,
+          "expanded": 31,
+          "official_standard": 31,
+          "official_expanded": 31,
+          "extra_standard": 0,
+          "extra_expanded": 0
+        }
+      },
+      "coelhodafonseca": {
+        "listing_file": "data/tambore-xi/coelhodafonseca/listings/all-listings.json",
+        "listings": 28,
+        "unique_codes": 28,
+        "duplicate_codes": 0,
+        "pipeline_state_codes": 28,
+        "delta_vs_pipeline_state": 0,
+        "legacy_root_listings": 91,
+        "delta_vs_legacy_root": -63,
+        "official_gallery_images": 729,
+        "local_image_dirs": 29,
+        "local_images": 763,
+        "root_cache_dirs": 72,
+        "cache_over_official_count": 0,
+        "cache_over_official_top": [],
+        "missing_official_images_count": 0,
+        "missing_official_images_top": [],
+        "selected_for_matching": {
+          "listing_dirs": 112,
+          "manifests": 112,
+          "official_manifests": 28,
+          "missing_official_manifests": 0,
+          "selected_images": 739,
+          "official_selected_images": 284,
+          "manifests_over_official": []
+        },
+        "mosaics": {
+          "standard": 28,
+          "expanded": 28,
+          "official_standard": 28,
+          "official_expanded": 28,
+          "extra_standard": 0,
+          "extra_expanded": 0
+        }
+      }
+    }
+  }
+}

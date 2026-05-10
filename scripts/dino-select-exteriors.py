@@ -18,6 +18,8 @@ This produces better DINOv2 embeddings than the HSV-only selector because:
 Works with two image sources (--source-type):
   selected      Use existing selected_exteriors/{site}/{code}/ (fast, no re-scrape)
   cache         Use full image cache data/{site}/cache/{code}/ (after full re-scrape)
+  compound-images
+                Use compound-local images data/{compound}/{site}/images/{code}/
 
 The dino-server must be running (--dino-url, default http://localhost:8000).
 
@@ -30,8 +32,10 @@ Usage:
     # From existing selected_exteriors (fast path):
     python scripts/dino-select-exteriors.py
 
-    # From full image cache after re-scrape:
-    python scripts/dino-select-exteriors.py --source-type cache --data-root data/
+    # From full image cache after re-scrape, constrained to official galleries:
+    python scripts/dino-select-exteriors.py --source-type cache --data-root data/ \
+      --official-listings data/alphaville-1/listings/vivaprimeimoveis_listings.json \
+      --official-listings data/alphaville-1/listings/coelhodafonseca_listings.json
 
     # Dry-run (prints classification without writing files):
     python scripts/dino-select-exteriors.py --dry-run
@@ -115,6 +119,84 @@ def select_pool_first(records: list, max_pool: int,
 
 
 # ---------------------------------------------------------------------------
+# Official gallery limits
+# ---------------------------------------------------------------------------
+
+def image_index(path: Path) -> int:
+    stem = path.stem
+    return int(stem) if stem.isdigit() else 10**9
+
+
+def listing_code(row: dict) -> str:
+    return str(
+        row.get("propertyCode")
+        or row.get("code")
+        or row.get("id")
+        or ""
+    ).strip()
+
+
+def site_from_listing_file(file_path: Path) -> str | None:
+    name = file_path.name.lower()
+    if "vivaprime" in name:
+        return "vivaprimeimoveis"
+    if "coelho" in name:
+        return "coelhodafonseca"
+    parts = [p.lower() for p in file_path.parts]
+    if "vivaprimeimoveis" in parts:
+        return "vivaprimeimoveis"
+    if "coelhodafonseca" in parts:
+        return "coelhodafonseca"
+    return None
+
+
+def load_official_counts(files: list[str] | None) -> dict:
+    counts: dict[str, dict[str, int]] = {}
+    if not files:
+        return counts
+
+    for raw in files:
+        file_path = Path(raw)
+        if not file_path.exists():
+            print(f"[WARN] official listings file not found: {file_path}")
+            continue
+
+        site = site_from_listing_file(file_path)
+        if not site:
+            print(f"[WARN] cannot infer site from official listings file: {file_path}")
+            continue
+
+        data = json.loads(file_path.read_text())
+        listings = data if isinstance(data, list) else data.get("listings", [])
+        for row in listings:
+            code = listing_code(row)
+            images = row.get("images")
+            if code and isinstance(images, list) and images:
+                counts.setdefault(site, {})[code] = len(images)
+
+    return counts
+
+
+def filter_to_official_gallery(site: str, code: str, img_paths: list,
+                               official_counts: dict, verbose: bool) -> list:
+    official_count = official_counts.get(site, {}).get(code)
+    if not official_count:
+        return img_paths
+
+    filtered = [p for p in img_paths if image_index(p) <= official_count]
+    dropped = len(img_paths) - len(filtered)
+    if dropped and verbose:
+        print(f"  [{code}] official gallery filter: dropped {dropped} cache image(s)")
+    return filtered
+
+
+def listed_codes_for(site: str, official_counts: dict | None) -> set:
+    if not official_counts:
+        return set()
+    return set(official_counts.get(site, {}).keys())
+
+
+# ---------------------------------------------------------------------------
 # Source directory resolution
 # ---------------------------------------------------------------------------
 
@@ -122,6 +204,10 @@ def find_listing_dirs(source_type: str, source_root: Path, site: str) -> list:
     """Return per-listing image directories for a site."""
     if source_type == "selected":
         base = source_root / site
+    elif source_type == "compound-images":
+        base = source_root / site / "images"
+    elif source_type == "fresh-images":
+        base = source_root / "fresh-images" / site
     else:  # cache
         base = source_root / site / "cache"
 
@@ -137,17 +223,40 @@ def find_listing_dirs(source_type: str, source_root: Path, site: str) -> list:
 def process_site(site: str, source_type: str, source_root: Path,
                  output_root: Path, dino_url: str,
                  max_pool: int, max_facade: int, max_garden: int,
-                 dry_run: bool, verbose: bool) -> dict:
+                 dry_run: bool, verbose: bool,
+                 official_counts: dict | None = None,
+                 only_listed: bool = False,
+                 clean_extra_output: bool = False) -> dict:
     listing_dirs = find_listing_dirs(source_type, source_root, site)
     if not listing_dirs:
         print(f"[{site}] No listing directories found in source")
         return {}
+
+    source_codes = {d.name for d in listing_dirs}
+    listed_codes = listed_codes_for(site, official_counts)
+    if only_listed:
+        if not listed_codes:
+            print(f"[{site}] ERROR: --only-listed requires --official-listings for this site")
+            return {}
+        before = len(listing_dirs)
+        listing_dirs = [d for d in listing_dirs if d.name in listed_codes]
+        skipped_unlisted = before - len(listing_dirs)
+    else:
+        skipped_unlisted = 0
+
+    if clean_extra_output and listed_codes and not dry_run:
+        out_site = output_root / site
+        if out_site.is_dir():
+            for out_dir in out_site.iterdir():
+                if out_dir.is_dir() and out_dir.name in source_codes and out_dir.name not in listed_codes:
+                    shutil.rmtree(out_dir)
 
     print(f"\n[{site}] Processing {len(listing_dirs)} listings ...")
     stats = {
         "total": len(listing_dirs),
         "with_pool": 0, "facade_only": 0, "garden_only": 0,
         "fallback": 0, "empty": 0, "total_selected": 0,
+        "skipped_unlisted": skipped_unlisted,
     }
 
     for listing_dir in listing_dirs:
@@ -156,6 +265,9 @@ def process_site(site: str, source_type: str, source_root: Path,
             p for p in listing_dir.iterdir()
             if p.suffix.lower() in IMG_EXTS and not p.name.startswith("_")
         )
+        if source_type == "cache" and official_counts:
+            img_paths = filter_to_official_gallery(site, code, img_paths,
+                                                   official_counts, verbose)
 
         if not img_paths:
             if verbose:
@@ -240,10 +352,17 @@ def main():
     )
     p.add_argument("--dino-url", default=DEFAULT_DINO_URL,
                    help=f"DINOv2/CLIP server URL (default: {DEFAULT_DINO_URL})")
-    p.add_argument("--source-type", choices=["selected", "cache"], default="selected",
-                   help="selected: use selected_exteriors/ (default). cache: use data/{site}/cache/")
+    p.add_argument("--source-type", choices=["selected", "cache", "compound-images", "fresh-images"], default="selected",
+                   help=(
+                       "selected: use selected_exteriors/ (default). "
+                       "cache: use data/{site}/cache/. "
+                       "compound-images: use data/{compound}/{site}/images/. "
+                       "fresh-images: use data/{compound}/fresh-images/{site}/."
+                   ))
     p.add_argument("--source-root", default=".",
                    help="Root containing selected_exteriors/ or data/ (default: .)")
+    p.add_argument("--compound", default=None,
+                   help="Compound slug for --source-type compound-images, e.g. tambore-xi")
     p.add_argument("--output-dir", default="selected_for_matching",
                    help="Output directory (default: selected_for_matching/)")
     p.add_argument("--sites", nargs="+", default=SITES,
@@ -258,6 +377,16 @@ def main():
                    help="Print classification without writing files")
     p.add_argument("--verbose", action="store_true",
                    help="Print per-image classification")
+    p.add_argument("--official-listings", action="append", default=[],
+                   help=(
+                       "Listing JSON with an images[] gallery. Repeat for each "
+                       "site. When using --source-type cache, images beyond the "
+                       "official gallery count are ignored."
+                   ))
+    p.add_argument("--only-listed", action="store_true",
+                   help="Process only codes present in --official-listings")
+    p.add_argument("--clean-extra-output", action="store_true",
+                   help="Remove output dirs for codes not present in --official-listings")
     args = p.parse_args()
 
     source_root = Path(args.source_root).resolve()
@@ -267,6 +396,14 @@ def main():
         source_root = source_root / "selected_exteriors"
         if not source_root.is_dir():
             print(f"ERROR: selected_exteriors/ not found at {source_root}")
+            sys.exit(1)
+    elif args.source_type in {"compound-images", "fresh-images"}:
+        if not args.compound:
+            print(f"ERROR: --compound is required with --source-type {args.source_type}")
+            sys.exit(1)
+        source_root = source_root / args.compound
+        if not source_root.is_dir():
+            print(f"ERROR: compound data directory not found at {source_root}")
             sys.exit(1)
 
     # Verify server is reachable
@@ -287,6 +424,11 @@ def main():
     else:
         print(f"Output → {output_root}\n")
 
+    official_counts = load_official_counts(args.official_listings)
+    if official_counts:
+        total_counts = sum(len(v) for v in official_counts.values())
+        print(f"Official gallery guard loaded for {total_counts} listing(s)\n")
+
     all_stats = {}
     for site in args.sites:
         stats = process_site(
@@ -300,6 +442,9 @@ def main():
             max_garden=args.max_garden,
             dry_run=args.dry_run,
             verbose=args.verbose,
+            official_counts=official_counts,
+            only_listed=args.only_listed,
+            clean_extra_output=args.clean_extra_output,
         )
         all_stats[site] = stats
 
@@ -316,6 +461,7 @@ def main():
         print(f"    Garden-only:         {s['garden_only']}")
         print(f"    Fallback (no ext):   {s['fallback']}")
         print(f"    No images:           {s['empty']}")
+        print(f"    Skipped unlisted:    {s['skipped_unlisted']}")
         print(f"    Avg selected/listing:{avg:.1f}")
 
     if not args.dry_run:
