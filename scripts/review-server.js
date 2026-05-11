@@ -892,6 +892,7 @@ app.post('/api/start-next-round', async (req, res) => {
   const trialRunId = currentSession.trial_run_id || null;
   const summary = buildTrialSummary();
   const command = `./scripts/run-next-review-round.sh --summary-url ${GCS_BASE}/review-sessions/trial-summaries/${trialRunId || 'no-session'}.json --round ${nextPass}`;
+  await gcsWrite(`review-sessions/trial-summaries/${trialRunId || 'no-session'}.json`, summary);
 
   if (!summary.pending_viva_count) {
     return res.json({
@@ -1202,8 +1203,10 @@ const HTML = /* html */`<!DOCTYPE html>
       <div class="stat"><span class="stat-val red"   id="pc-skipped">0</span><span class="stat-lbl">Skipped</span></div>
     </div>
     <div class="notice" id="pc-notice"></div>
+    <div id="pc-next-round-help"></div>
     <div class="modal-row">
       <button class="btn-outline" onclick="finalize()">🏁 Finalizar</button>
+      <button class="btn-accent" id="pc-next-round-btn" onclick="startNextRound('pass-complete')">🔁 Preparar próxima rodada</button>
       <button class="btn-accent"  id="pc-reload-btn" onclick="reloadAndContinue()">🔄 Recarregar matches</button>
     </div>
   </div>
@@ -1230,7 +1233,7 @@ const HTML = /* html */`<!DOCTYPE html>
     </div>
     <p id="final-breakdown"></p>
     <div class="modal-row">
-      <button class="btn-accent" id="next-round-btn" onclick="startNextRound()">🔁 Preparar Rodada 2</button>
+      <button class="btn-accent" id="next-round-btn" onclick="startNextRound('final')">🔁 Preparar Rodada 2</button>
       <button class="btn-green" onclick="downloadFinal()">⬇ Baixar JSON</button>
     </div>
   </div>
@@ -1606,6 +1609,12 @@ function showPassComplete(s) {
     html += '<p style="margin-top:10px">Todas as raias de revisão concluídas!</p>';
   }
   notice.innerHTML = html;
+  const nextPass = (Number(s.pass) || 1) + 1;
+  const nextBtn = document.getElementById('pc-next-round-btn');
+  nextBtn.textContent = '🔁 Preparar Rodada ' + nextPass;
+  nextBtn.style.display = '';
+  const nextHelp = document.getElementById('pc-next-round-help');
+  if (nextHelp) nextHelp.innerHTML = '';
   document.getElementById('pc-reload-btn').style.display =
     s.skipped_count > 0 ? '' : 'none';
   document.getElementById('pass-complete-modal').classList.remove('hidden');
@@ -1649,8 +1658,11 @@ async function finalize() {
   document.getElementById('final-modal').classList.remove('hidden');
 }
 
-async function startNextRound() {
-  const btn = document.getElementById('next-round-btn');
+async function startNextRound(source) {
+  const fromPassComplete = source === 'pass-complete';
+  const btn = fromPassComplete
+    ? document.getElementById('pc-next-round-btn')
+    : document.getElementById('next-round-btn');
   const old = btn.textContent;
   btn.disabled = true;
   btn.textContent = 'Preparando...';
@@ -1660,16 +1672,21 @@ async function startNextRound() {
     const r = await resp.json();
     if (r.ok) {
       document.getElementById('final-modal').classList.add('hidden');
+      document.getElementById('pass-complete-modal').classList.add('hidden');
       await fetchSession();
       return;
     }
-    const previousHelp = document.getElementById('next-round-help');
+    const helpId = fromPassComplete ? 'pc-next-round-help-text' : 'next-round-help';
+    const previousHelp = document.getElementById(helpId);
     if (previousHelp) previousHelp.remove();
     const commandHtml = r.command
-      ? '<div id="next-round-help"><br><strong>Rodada ' + r.next_pass + ' ainda precisa ser gerada no Mac.</strong><br>' +
+      ? '<div id="' + helpId + '"><br><strong>Rodada ' + r.next_pass + ' ainda precisa ser gerada no Mac.</strong><br>' +
         '<code>' + r.command.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</code></div>'
-      : '<div id="next-round-help"><br>' + (r.message || 'Não foi possível iniciar a próxima rodada.') + '</div>';
-    document.getElementById('final-breakdown').insertAdjacentHTML('beforeend', commandHtml);
+      : '<div id="' + helpId + '"><br>' + (r.message || 'Não foi possível iniciar a próxima rodada.') + '</div>';
+    const target = fromPassComplete
+      ? document.getElementById('pc-next-round-help')
+      : document.getElementById('final-breakdown');
+    target.insertAdjacentHTML('beforeend', commandHtml);
   } finally {
     btn.disabled = false;
     btn.textContent = old;
