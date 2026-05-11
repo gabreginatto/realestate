@@ -446,8 +446,8 @@ async function saveSession() {
   }
 }
 
-function roundStatusPath(trialRunId, round) {
-  return `review-sessions/round-jobs/${trialRunId || 'no-session'}-round-${round}.json`;
+function roundStatusPath(_trialRunId, round) {
+  return `review-sessions/round-jobs/round-${round}.json`;
 }
 
 async function writeRoundStatus(statusPath, status) {
@@ -1124,6 +1124,22 @@ app.get('/api/round-status', async (req, res) => {
   const statusPath = roundStatusPath(trialRunId, round);
   const status = await readRoundStatus(statusPath);
   if (!status) {
+    if (Number(currentSession.pass || 0) >= round) {
+      return res.json({
+        ok: true,
+        ready: true,
+        already_loaded: true,
+        pass: currentSession.pass,
+        review_count: currentSession.pairs.length,
+        audit_count: currentSession.audit.length,
+        lanes: laneCounts(),
+        status: {
+          state: 'ready',
+          round,
+          message: `Round ${round} is already loaded`,
+        },
+      });
+    }
     return res.status(404).json({ ok: false, round, state: 'missing' });
   }
   if (status.state === 'ready') {
