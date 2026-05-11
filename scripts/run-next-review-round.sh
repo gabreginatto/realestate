@@ -128,6 +128,7 @@ tiered_args=(
   --output "$output"
   --exclusions "$exclusions"
   --round "$ROUND"
+  --data-root "$filtered_root"
   --high-score "$HIGH_SCORE"
   --high-inliers "$HIGH_INLIERS"
 )

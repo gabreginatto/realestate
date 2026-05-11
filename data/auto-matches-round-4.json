@@ -1,0 +1,3412 @@
+{
+  "session_started": "2026-05-11T14:25:34.974520+00:00",
+  "session_name": "tiered-matcher-pass-4",
+  "strategy": "tiered-megaloc-patch-geometry",
+  "source": "data/review-rounds/pass-4/auto-matches-geometric-rerank.json",
+  "round": 4,
+  "policy": {
+    "auto-review-high": "MegaLoc candidate with geometric_score >= 0.55 and best_inliers >= 8",
+    "review-normal": "MegaLoc candidate without strong geometry",
+    "review-recall": "patch-VLAD candidate without MegaLoc",
+    "reject-low": "weak geometry/model agreement or structurally incompatible; kept for audit but not review",
+    "structural_gates": {
+      "data_root": "data/review-rounds/pass-4/input",
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "policy": "Known price/area must be within the progressive round tolerance. Missing fields are neutral."
+    },
+    "excluded": [
+      [
+        "6930",
+        "395513"
+      ]
+    ],
+    "confirmed_viva_removed": 39,
+    "confirmed_coelho_removed": 39,
+    "reviewed_pairs_removed": 40
+  },
+  "matches": [
+    {
+      "viva_code": "2075",
+      "coelho_code": "502738",
+      "sources": [
+        "megaloc"
+      ],
+      "source_scores": {
+        "megaloc": 0.396726
+      },
+      "geometric_score": 0.689714,
+      "best_inliers": 21,
+      "best_inlier_ratio": 0.5385,
+      "support_pairs_8": 3,
+      "support_pairs_12": 1,
+      "top_image_pairs": [
+        {
+          "good_matches": 39,
+          "inliers": 21,
+          "inlier_ratio": 0.5385,
+          "score": 0.72,
+          "a_image": "03.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 27,
+          "inliers": 9,
+          "inlier_ratio": 0.3333,
+          "score": 0.465714,
+          "a_image": "03.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 20,
+          "inliers": 7,
+          "inlier_ratio": 0.35,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 30,
+          "inliers": 8,
+          "inlier_ratio": 0.2667,
+          "score": 0.388571,
+          "a_image": "03.jpg",
+          "b_image": "03.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.0175,
+        "area_diff": 0.0339,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.0175,
+      "area_diff": 0.0339,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "auto-review-high",
+      "legacy_tier": "high",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.689714,
+      "confidence_score": 0.689714,
+      "confidence": "high",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17670",
+      "coelho_code": "644559",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.292462
+      },
+      "geometric_score": 0.469333,
+      "best_inliers": 10,
+      "best_inlier_ratio": 0.5882,
+      "support_pairs_8": 1,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 17,
+          "inliers": 10,
+          "inlier_ratio": 0.5882,
+          "score": 0.5,
+          "a_image": "04.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 20,
+          "inliers": 7,
+          "inlier_ratio": 0.35,
+          "score": 0.44,
+          "a_image": "04.jpg",
+          "b_image": "06.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 7,
+          "inlier_ratio": 0.4375,
+          "score": 0.44,
+          "a_image": "04.jpg",
+          "b_image": "09.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "04.jpg",
+          "b_image": "07.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "06.jpg",
+          "b_image": "05.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.2293,
+        "area_diff": 0.0195,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.2293,
+      "area_diff": 0.0195,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.469333,
+      "confidence_score": 0.469333,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17465",
+      "coelho_code": "675453",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.273368
+      },
+      "geometric_score": 0.441333,
+      "best_inliers": 8,
+      "best_inlier_ratio": 0.4444,
+      "support_pairs_8": 1,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 18,
+          "inliers": 8,
+          "inlier_ratio": 0.4444,
+          "score": 0.46,
+          "a_image": "06.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "22.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "06.jpg",
+          "b_image": "35.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "36.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "03.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.392,
+        "area_diff": 0.2301,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.392,
+      "area_diff": 0.2301,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.441333,
+      "confidence_score": 0.441333,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "8748",
+      "coelho_code": "683046",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.278532
+      },
+      "geometric_score": 0.438333,
+      "best_inliers": 8,
+      "best_inlier_ratio": 0.5714,
+      "support_pairs_8": 1,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 14,
+          "inliers": 8,
+          "inlier_ratio": 0.5714,
+          "score": 0.46,
+          "a_image": "05.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "14.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 6,
+          "inlier_ratio": 0.6,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "14.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "05.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": null,
+        "area_diff": 0.4155,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": null,
+      "area_diff": 0.4155,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.438333,
+      "confidence_score": 0.438333,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "1148",
+      "coelho_code": "685118",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.290156
+      },
+      "geometric_score": 0.393,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.4118,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 17,
+          "inliers": 7,
+          "inlier_ratio": 0.4118,
+          "score": 0.44,
+          "a_image": "05.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "07.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "07.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "10.jpg",
+          "b_image": "09.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": null,
+        "area_diff": 0.1239,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": null,
+      "area_diff": 0.1239,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.393,
+      "confidence_score": 0.393,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17775",
+      "coelho_code": "670241",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.289702
+      },
+      "geometric_score": 0.391,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.4375,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 16,
+          "inliers": 7,
+          "inlier_ratio": 0.4375,
+          "score": 0.44,
+          "a_image": "03.jpg",
+          "b_image": "09.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "06.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "04.jpg",
+          "b_image": "10.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "10.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.5075,
+        "area_diff": 0.314,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.5075,
+      "area_diff": 0.314,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.391,
+      "confidence_score": 0.391,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "2075",
+      "coelho_code": "581091",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.388091
+      },
+      "geometric_score": 0.39,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.3684,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "03.jpg",
+          "b_image": "10489029.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "10489015.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "10489030.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "10489014.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "10489031.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.0089,
+        "area_diff": 0.5026,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.0089,
+      "area_diff": 0.5026,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.39,
+      "confidence_score": 0.39,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "4509",
+      "coelho_code": "686383",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.259941
+      },
+      "geometric_score": 0.378,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.3529,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "06.jpg",
+          "b_image": "14.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "15.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "34.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 6,
+          "inlier_ratio": 0.4286,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "34.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 6,
+          "inlier_ratio": 0.5,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "15.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.2293,
+        "area_diff": 0.5149,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.2293,
+      "area_diff": 0.5149,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.378,
+      "confidence_score": 0.378,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "9624",
+      "coelho_code": "661093",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.298591
+      },
+      "geometric_score": 0.376,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.375,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 6,
+          "inlier_ratio": 0.4286,
+          "score": 0.42,
+          "a_image": "06.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 6,
+          "inlier_ratio": 0.5,
+          "score": 0.42,
+          "a_image": "06.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "20.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "04.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": null,
+        "area_diff": 0.1177,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": null,
+      "area_diff": 0.1177,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.376,
+      "confidence_score": 0.376,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "12484",
+      "coelho_code": "656562",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.264976
+      },
+      "geometric_score": 0.374922,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.5,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 12,
+          "inliers": 6,
+          "inlier_ratio": 0.5,
+          "score": 0.42,
+          "a_image": "09.jpg",
+          "b_image": "22.jpg"
+        },
+        {
+          "good_matches": 22,
+          "inliers": 7,
+          "inlier_ratio": 0.3182,
+          "score": 0.412727,
+          "a_image": "01.jpg",
+          "b_image": "22.jpg"
+        },
+        {
+          "good_matches": 18,
+          "inliers": 6,
+          "inlier_ratio": 0.3333,
+          "score": 0.405714,
+          "a_image": "03.jpg",
+          "b_image": "22.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "10.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "11.jpg",
+          "b_image": "22.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.1053,
+        "area_diff": 0.0474,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.1053,
+      "area_diff": 0.0474,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.374922,
+      "confidence_score": 0.374922,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "16872",
+      "coelho_code": "642663",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.255391
+      },
+      "geometric_score": 0.374,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.5,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 12,
+          "inliers": 6,
+          "inlier_ratio": 0.5,
+          "score": 0.42,
+          "a_image": "18.jpg",
+          "b_image": "13.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "18.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "13.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "18.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "18.jpg",
+          "b_image": "18.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": null,
+        "area_diff": 0.0476,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": null,
+      "area_diff": 0.0476,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.374,
+      "confidence_score": 0.374,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "14184",
+      "coelho_code": "415340",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.264419
+      },
+      "geometric_score": 0.359,
+      "best_inliers": 5,
+      "best_inlier_ratio": 0.3571,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "10407358.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 5,
+          "inlier_ratio": 0.5,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "10407368.jpg"
+        },
+        {
+          "good_matches": 9,
+          "inliers": 5,
+          "inlier_ratio": 0.5556,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "10407359.jpg"
+        },
+        {
+          "good_matches": 7,
+          "inliers": 5,
+          "inlier_ratio": 0.7143,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "10407394.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 4,
+          "inlier_ratio": 0.3636,
+          "score": 0.38,
+          "a_image": "02.jpg",
+          "b_image": "10407385.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.125,
+        "area_diff": 0.2018,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.125,
+      "area_diff": 0.2018,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.359,
+      "confidence_score": 0.359,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "15776",
+      "coelho_code": "687641",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.281979
+      },
+      "geometric_score": 0.543,
+      "best_inliers": 10,
+      "best_inlier_ratio": 0.5,
+      "support_pairs_8": 4,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 20,
+          "inliers": 10,
+          "inlier_ratio": 0.5,
+          "score": 0.5,
+          "a_image": "03.jpg",
+          "b_image": "29.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 10,
+          "inlier_ratio": 0.5882,
+          "score": 0.5,
+          "a_image": "04.jpg",
+          "b_image": "25.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 8,
+          "inlier_ratio": 0.4706,
+          "score": 0.46,
+          "a_image": "03.jpg",
+          "b_image": "25.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 8,
+          "inlier_ratio": 0.5,
+          "score": 0.46,
+          "a_image": "02.jpg",
+          "b_image": "29.jpg"
+        },
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "26.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.5907,
+        "area_diff": 0.635,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "area"
+        ]
+      },
+      "price_diff": 0.5907,
+      "area_diff": 0.635,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "area"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.543,
+      "confidence_score": 0.543,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "15335",
+      "coelho_code": "649968",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.27879
+      },
+      "geometric_score": 0.541835,
+      "best_inliers": 10,
+      "best_inlier_ratio": 0.6667,
+      "support_pairs_8": 3,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 15,
+          "inliers": 10,
+          "inlier_ratio": 0.6667,
+          "score": 0.5,
+          "a_image": "47.jpg",
+          "b_image": "9915547.jpg"
+        },
+        {
+          "good_matches": 22,
+          "inliers": 9,
+          "inlier_ratio": 0.4091,
+          "score": 0.48,
+          "a_image": "05.jpg",
+          "b_image": "9915548.jpg"
+        },
+        {
+          "good_matches": 26,
+          "inliers": 9,
+          "inlier_ratio": 0.3462,
+          "score": 0.476703,
+          "a_image": "04.jpg",
+          "b_image": "9915524.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 7,
+          "inlier_ratio": 0.4375,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "9915548.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "34.jpg",
+          "b_image": "9915542.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 1.1728,
+        "area_diff": 0.4814,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price"
+        ]
+      },
+      "price_diff": 1.1728,
+      "area_diff": 0.4814,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.541835,
+      "confidence_score": 0.541835,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "16113",
+      "coelho_code": "408539",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.268308
+      },
+      "geometric_score": 0.393,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.4118,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 17,
+          "inliers": 7,
+          "inlier_ratio": 0.4118,
+          "score": 0.44,
+          "a_image": "08.jpg",
+          "b_image": "7152015.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "06.jpg",
+          "b_image": "7152028.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 7,
+          "inlier_ratio": 0.5,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "7152030.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "06.jpg",
+          "b_image": "7152030.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "7152015.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.8981,
+        "area_diff": 0.6298,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price",
+          "area"
+        ]
+      },
+      "price_diff": 0.8981,
+      "area_diff": 0.6298,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price",
+        "area"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.393,
+      "confidence_score": 0.393,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "1115",
+      "coelho_code": "665488",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.262674
+      },
+      "geometric_score": 0.391044,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.35,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 20,
+          "inliers": 7,
+          "inlier_ratio": 0.35,
+          "score": 0.44,
+          "a_image": "21.jpg",
+          "b_image": "19.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "19.jpg"
+        },
+        {
+          "good_matches": 23,
+          "inliers": 7,
+          "inlier_ratio": 0.3043,
+          "score": 0.40087,
+          "a_image": "22.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.9091,
+        "area_diff": 0.56,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price",
+          "area"
+        ]
+      },
+      "price_diff": 0.9091,
+      "area_diff": 0.56,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price",
+        "area"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.391044,
+      "confidence_score": 0.391044,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17596",
+      "coelho_code": "352803",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.292288
+      },
+      "geometric_score": 0.376,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.3529,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "14.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "10.jpg",
+          "b_image": "28.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "10.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "16.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.6596,
+        "area_diff": 0.2732,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price"
+        ]
+      },
+      "price_diff": 0.6596,
+      "area_diff": 0.2732,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.376,
+      "confidence_score": 0.376,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17279",
+      "coelho_code": "494094",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.270936
+      },
+      "geometric_score": 0.372286,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.4,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "24.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 5,
+          "inlier_ratio": 0.5,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 5,
+          "inlier_ratio": 0.3333,
+          "score": 0.385714,
+          "a_image": "01.jpg",
+          "b_image": "24.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 4,
+          "inlier_ratio": 0.4,
+          "score": 0.38,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.7826,
+        "area_diff": 1.1813,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price",
+          "area"
+        ]
+      },
+      "price_diff": 0.7826,
+      "area_diff": 1.1813,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price",
+        "area"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.372286,
+      "confidence_score": 0.372286,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17948",
+      "coelho_code": "497009",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.275268
+      },
+      "geometric_score": 0.36,
+      "best_inliers": 5,
+      "best_inlier_ratio": 0.3571,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "08.jpg",
+          "b_image": "16.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "08.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 5,
+          "inlier_ratio": 0.4545,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "31.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.7317,
+        "area_diff": 0.6415,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price",
+          "area"
+        ]
+      },
+      "price_diff": 0.7317,
+      "area_diff": 0.6415,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price",
+        "area"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.36,
+      "confidence_score": 0.36,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    }
+  ],
+  "review_matches": [
+    {
+      "viva_code": "2075",
+      "coelho_code": "502738",
+      "sources": [
+        "megaloc"
+      ],
+      "source_scores": {
+        "megaloc": 0.396726
+      },
+      "geometric_score": 0.689714,
+      "best_inliers": 21,
+      "best_inlier_ratio": 0.5385,
+      "support_pairs_8": 3,
+      "support_pairs_12": 1,
+      "top_image_pairs": [
+        {
+          "good_matches": 39,
+          "inliers": 21,
+          "inlier_ratio": 0.5385,
+          "score": 0.72,
+          "a_image": "03.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 27,
+          "inliers": 9,
+          "inlier_ratio": 0.3333,
+          "score": 0.465714,
+          "a_image": "03.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 20,
+          "inliers": 7,
+          "inlier_ratio": 0.35,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 30,
+          "inliers": 8,
+          "inlier_ratio": 0.2667,
+          "score": 0.388571,
+          "a_image": "03.jpg",
+          "b_image": "03.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.0175,
+        "area_diff": 0.0339,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.0175,
+      "area_diff": 0.0339,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "auto-review-high",
+      "legacy_tier": "high",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.689714,
+      "confidence_score": 0.689714,
+      "confidence": "high",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17670",
+      "coelho_code": "644559",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.292462
+      },
+      "geometric_score": 0.469333,
+      "best_inliers": 10,
+      "best_inlier_ratio": 0.5882,
+      "support_pairs_8": 1,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 17,
+          "inliers": 10,
+          "inlier_ratio": 0.5882,
+          "score": 0.5,
+          "a_image": "04.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 20,
+          "inliers": 7,
+          "inlier_ratio": 0.35,
+          "score": 0.44,
+          "a_image": "04.jpg",
+          "b_image": "06.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 7,
+          "inlier_ratio": 0.4375,
+          "score": 0.44,
+          "a_image": "04.jpg",
+          "b_image": "09.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "04.jpg",
+          "b_image": "07.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "06.jpg",
+          "b_image": "05.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.2293,
+        "area_diff": 0.0195,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.2293,
+      "area_diff": 0.0195,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.469333,
+      "confidence_score": 0.469333,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17465",
+      "coelho_code": "675453",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.273368
+      },
+      "geometric_score": 0.441333,
+      "best_inliers": 8,
+      "best_inlier_ratio": 0.4444,
+      "support_pairs_8": 1,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 18,
+          "inliers": 8,
+          "inlier_ratio": 0.4444,
+          "score": 0.46,
+          "a_image": "06.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "22.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "06.jpg",
+          "b_image": "35.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "36.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "03.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.392,
+        "area_diff": 0.2301,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.392,
+      "area_diff": 0.2301,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.441333,
+      "confidence_score": 0.441333,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "8748",
+      "coelho_code": "683046",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.278532
+      },
+      "geometric_score": 0.438333,
+      "best_inliers": 8,
+      "best_inlier_ratio": 0.5714,
+      "support_pairs_8": 1,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 14,
+          "inliers": 8,
+          "inlier_ratio": 0.5714,
+          "score": 0.46,
+          "a_image": "05.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "14.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 6,
+          "inlier_ratio": 0.6,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "14.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "05.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": null,
+        "area_diff": 0.4155,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": null,
+      "area_diff": 0.4155,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.438333,
+      "confidence_score": 0.438333,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "1148",
+      "coelho_code": "685118",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.290156
+      },
+      "geometric_score": 0.393,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.4118,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 17,
+          "inliers": 7,
+          "inlier_ratio": 0.4118,
+          "score": 0.44,
+          "a_image": "05.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "07.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "07.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "10.jpg",
+          "b_image": "09.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": null,
+        "area_diff": 0.1239,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": null,
+      "area_diff": 0.1239,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.393,
+      "confidence_score": 0.393,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17775",
+      "coelho_code": "670241",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.289702
+      },
+      "geometric_score": 0.391,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.4375,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 16,
+          "inliers": 7,
+          "inlier_ratio": 0.4375,
+          "score": 0.44,
+          "a_image": "03.jpg",
+          "b_image": "09.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "06.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "04.jpg",
+          "b_image": "10.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "10.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.5075,
+        "area_diff": 0.314,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.5075,
+      "area_diff": 0.314,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.391,
+      "confidence_score": 0.391,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "2075",
+      "coelho_code": "581091",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.388091
+      },
+      "geometric_score": 0.39,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.3684,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "03.jpg",
+          "b_image": "10489029.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "10489015.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "10489030.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "10489014.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "10489031.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.0089,
+        "area_diff": 0.5026,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.0089,
+      "area_diff": 0.5026,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.39,
+      "confidence_score": 0.39,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "4509",
+      "coelho_code": "686383",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.259941
+      },
+      "geometric_score": 0.378,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.3529,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "06.jpg",
+          "b_image": "14.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "15.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "34.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 6,
+          "inlier_ratio": 0.4286,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "34.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 6,
+          "inlier_ratio": 0.5,
+          "score": 0.42,
+          "a_image": "05.jpg",
+          "b_image": "15.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.2293,
+        "area_diff": 0.5149,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.2293,
+      "area_diff": 0.5149,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.378,
+      "confidence_score": 0.378,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "9624",
+      "coelho_code": "661093",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.298591
+      },
+      "geometric_score": 0.376,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.375,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "01.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 6,
+          "inlier_ratio": 0.4286,
+          "score": 0.42,
+          "a_image": "06.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 6,
+          "inlier_ratio": 0.5,
+          "score": 0.42,
+          "a_image": "06.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "20.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "04.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": null,
+        "area_diff": 0.1177,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": null,
+      "area_diff": 0.1177,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.376,
+      "confidence_score": 0.376,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "12484",
+      "coelho_code": "656562",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.264976
+      },
+      "geometric_score": 0.374922,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.5,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 12,
+          "inliers": 6,
+          "inlier_ratio": 0.5,
+          "score": 0.42,
+          "a_image": "09.jpg",
+          "b_image": "22.jpg"
+        },
+        {
+          "good_matches": 22,
+          "inliers": 7,
+          "inlier_ratio": 0.3182,
+          "score": 0.412727,
+          "a_image": "01.jpg",
+          "b_image": "22.jpg"
+        },
+        {
+          "good_matches": 18,
+          "inliers": 6,
+          "inlier_ratio": 0.3333,
+          "score": 0.405714,
+          "a_image": "03.jpg",
+          "b_image": "22.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "10.jpg",
+          "b_image": "03.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "11.jpg",
+          "b_image": "22.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.1053,
+        "area_diff": 0.0474,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.1053,
+      "area_diff": 0.0474,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.374922,
+      "confidence_score": 0.374922,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "16872",
+      "coelho_code": "642663",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.255391
+      },
+      "geometric_score": 0.374,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.5,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 12,
+          "inliers": 6,
+          "inlier_ratio": 0.5,
+          "score": 0.42,
+          "a_image": "18.jpg",
+          "b_image": "13.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "18.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "13.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "18.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "18.jpg",
+          "b_image": "18.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": null,
+        "area_diff": 0.0476,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": null,
+      "area_diff": 0.0476,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.374,
+      "confidence_score": 0.374,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "14184",
+      "coelho_code": "415340",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.264419
+      },
+      "geometric_score": 0.359,
+      "best_inliers": 5,
+      "best_inlier_ratio": 0.3571,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "10407358.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 5,
+          "inlier_ratio": 0.5,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "10407368.jpg"
+        },
+        {
+          "good_matches": 9,
+          "inliers": 5,
+          "inlier_ratio": 0.5556,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "10407359.jpg"
+        },
+        {
+          "good_matches": 7,
+          "inliers": 5,
+          "inlier_ratio": 0.7143,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "10407394.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 4,
+          "inlier_ratio": 0.3636,
+          "score": 0.38,
+          "a_image": "02.jpg",
+          "b_image": "10407385.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.125,
+        "area_diff": 0.2018,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": true,
+        "structural_failures": []
+      },
+      "price_diff": 0.125,
+      "area_diff": 0.2018,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": true,
+      "structural_failures": [],
+      "tier": "review-recall",
+      "legacy_tier": "recall",
+      "include_in_review": true,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.359,
+      "confidence_score": 0.359,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    }
+  ],
+  "low_rejected": [
+    {
+      "viva_code": "15776",
+      "coelho_code": "687641",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.281979
+      },
+      "geometric_score": 0.543,
+      "best_inliers": 10,
+      "best_inlier_ratio": 0.5,
+      "support_pairs_8": 4,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 20,
+          "inliers": 10,
+          "inlier_ratio": 0.5,
+          "score": 0.5,
+          "a_image": "03.jpg",
+          "b_image": "29.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 10,
+          "inlier_ratio": 0.5882,
+          "score": 0.5,
+          "a_image": "04.jpg",
+          "b_image": "25.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 8,
+          "inlier_ratio": 0.4706,
+          "score": 0.46,
+          "a_image": "03.jpg",
+          "b_image": "25.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 8,
+          "inlier_ratio": 0.5,
+          "score": 0.46,
+          "a_image": "02.jpg",
+          "b_image": "29.jpg"
+        },
+        {
+          "good_matches": 19,
+          "inliers": 7,
+          "inlier_ratio": 0.3684,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "26.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.5907,
+        "area_diff": 0.635,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "area"
+        ]
+      },
+      "price_diff": 0.5907,
+      "area_diff": 0.635,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "area"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.543,
+      "confidence_score": 0.543,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "15335",
+      "coelho_code": "649968",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.27879
+      },
+      "geometric_score": 0.541835,
+      "best_inliers": 10,
+      "best_inlier_ratio": 0.6667,
+      "support_pairs_8": 3,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 15,
+          "inliers": 10,
+          "inlier_ratio": 0.6667,
+          "score": 0.5,
+          "a_image": "47.jpg",
+          "b_image": "9915547.jpg"
+        },
+        {
+          "good_matches": 22,
+          "inliers": 9,
+          "inlier_ratio": 0.4091,
+          "score": 0.48,
+          "a_image": "05.jpg",
+          "b_image": "9915548.jpg"
+        },
+        {
+          "good_matches": 26,
+          "inliers": 9,
+          "inlier_ratio": 0.3462,
+          "score": 0.476703,
+          "a_image": "04.jpg",
+          "b_image": "9915524.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 7,
+          "inlier_ratio": 0.4375,
+          "score": 0.44,
+          "a_image": "02.jpg",
+          "b_image": "9915548.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "34.jpg",
+          "b_image": "9915542.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 1.1728,
+        "area_diff": 0.4814,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price"
+        ]
+      },
+      "price_diff": 1.1728,
+      "area_diff": 0.4814,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.541835,
+      "confidence_score": 0.541835,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "16113",
+      "coelho_code": "408539",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.268308
+      },
+      "geometric_score": 0.393,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.4118,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 17,
+          "inliers": 7,
+          "inlier_ratio": 0.4118,
+          "score": 0.44,
+          "a_image": "08.jpg",
+          "b_image": "7152015.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 7,
+          "inlier_ratio": 0.4667,
+          "score": 0.44,
+          "a_image": "06.jpg",
+          "b_image": "7152028.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 7,
+          "inlier_ratio": 0.5,
+          "score": 0.44,
+          "a_image": "01.jpg",
+          "b_image": "7152030.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "06.jpg",
+          "b_image": "7152030.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "7152015.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.8981,
+        "area_diff": 0.6298,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price",
+          "area"
+        ]
+      },
+      "price_diff": 0.8981,
+      "area_diff": 0.6298,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price",
+        "area"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.393,
+      "confidence_score": 0.393,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "1115",
+      "coelho_code": "665488",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.262674
+      },
+      "geometric_score": 0.391044,
+      "best_inliers": 7,
+      "best_inlier_ratio": 0.35,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 20,
+          "inliers": 7,
+          "inlier_ratio": 0.35,
+          "score": 0.44,
+          "a_image": "21.jpg",
+          "b_image": "19.jpg"
+        },
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 6,
+          "inlier_ratio": 0.4615,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 6,
+          "inlier_ratio": 0.5455,
+          "score": 0.42,
+          "a_image": "02.jpg",
+          "b_image": "19.jpg"
+        },
+        {
+          "good_matches": 23,
+          "inliers": 7,
+          "inlier_ratio": 0.3043,
+          "score": 0.40087,
+          "a_image": "22.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.9091,
+        "area_diff": 0.56,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price",
+          "area"
+        ]
+      },
+      "price_diff": 0.9091,
+      "area_diff": 0.56,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price",
+        "area"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.391044,
+      "confidence_score": 0.391044,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17596",
+      "coelho_code": "352803",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.292288
+      },
+      "geometric_score": 0.376,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.3529,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 17,
+          "inliers": 6,
+          "inlier_ratio": 0.3529,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "14.jpg"
+        },
+        {
+          "good_matches": 16,
+          "inliers": 6,
+          "inlier_ratio": 0.375,
+          "score": 0.42,
+          "a_image": "10.jpg",
+          "b_image": "28.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "10.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "16.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.6596,
+        "area_diff": 0.2732,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price"
+        ]
+      },
+      "price_diff": 0.6596,
+      "area_diff": 0.2732,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.376,
+      "confidence_score": 0.376,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17279",
+      "coelho_code": "494094",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.270936
+      },
+      "geometric_score": 0.372286,
+      "best_inliers": 6,
+      "best_inlier_ratio": 0.4,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 15,
+          "inliers": 6,
+          "inlier_ratio": 0.4,
+          "score": 0.42,
+          "a_image": "03.jpg",
+          "b_image": "24.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 5,
+          "inlier_ratio": 0.5,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "04.jpg"
+        },
+        {
+          "good_matches": 15,
+          "inliers": 5,
+          "inlier_ratio": 0.3333,
+          "score": 0.385714,
+          "a_image": "01.jpg",
+          "b_image": "24.jpg"
+        },
+        {
+          "good_matches": 10,
+          "inliers": 4,
+          "inlier_ratio": 0.4,
+          "score": 0.38,
+          "a_image": "01.jpg",
+          "b_image": "02.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.7826,
+        "area_diff": 1.1813,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price",
+          "area"
+        ]
+      },
+      "price_diff": 0.7826,
+      "area_diff": 1.1813,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price",
+        "area"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.372286,
+      "confidence_score": 0.372286,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    },
+    {
+      "viva_code": "17948",
+      "coelho_code": "497009",
+      "sources": [
+        "patch-vlad"
+      ],
+      "source_scores": {
+        "patch-vlad": 0.275268
+      },
+      "geometric_score": 0.36,
+      "best_inliers": 5,
+      "best_inlier_ratio": 0.3571,
+      "support_pairs_8": 0,
+      "support_pairs_12": 0,
+      "top_image_pairs": [
+        {
+          "good_matches": 14,
+          "inliers": 5,
+          "inlier_ratio": 0.3571,
+          "score": 0.4,
+          "a_image": "08.jpg",
+          "b_image": "16.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "02.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 13,
+          "inliers": 5,
+          "inlier_ratio": 0.3846,
+          "score": 0.4,
+          "a_image": "08.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 12,
+          "inliers": 5,
+          "inlier_ratio": 0.4167,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "01.jpg"
+        },
+        {
+          "good_matches": 11,
+          "inliers": 5,
+          "inlier_ratio": 0.4545,
+          "score": 0.4,
+          "a_image": "03.jpg",
+          "b_image": "31.jpg"
+        }
+      ],
+      "structural": {
+        "price_diff": 0.7317,
+        "area_diff": 0.6415,
+        "price_tol": 0.65,
+        "area_tol": 0.55,
+        "structural_pass": false,
+        "structural_failures": [
+          "price",
+          "area"
+        ]
+      },
+      "price_diff": 0.7317,
+      "area_diff": 0.6415,
+      "price_tol": 0.65,
+      "area_tol": 0.55,
+      "structural_pass": false,
+      "structural_failures": [
+        "price",
+        "area"
+      ],
+      "tier": "reject-low",
+      "legacy_tier": "low",
+      "include_in_review": false,
+      "round": 4,
+      "matched_at": "2026-05-11T14:25:34.974520+00:00",
+      "reviewer": "tiered-megaloc-patch-geometry",
+      "similarity_score": 0.36,
+      "confidence_score": 0.36,
+      "confidence": "low",
+      "strategy": "tiered-megaloc-patch-geometry"
+    }
+  ],
+  "stats": {
+    "ground_truth_confirmed": 21,
+    "entity_count": 20,
+    "matched": 12,
+    "pair": {
+      "tp": 1,
+      "fp": 11,
+      "fn": 20,
+      "precision": 0.08333333333333333,
+      "recall": 0.047619047619047616,
+      "f1": 0.060606060606060615
+    },
+    "entity_edge": {
+      "tp": 1,
+      "fp": 11,
+      "fn": 20,
+      "precision": 0.08333333333333333,
+      "recall": 0.047619047619047616,
+      "f1": 0.060606060606060615
+    },
+    "entity": {
+      "found": 1,
+      "total": 20,
+      "recall": 0.05
+    },
+    "tiers": {
+      "auto-review-high": {
+        "count": 1,
+        "matched": 1,
+        "pair": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 20,
+          "precision": 1.0,
+          "recall": 0.047619047619047616,
+          "f1": 0.0909090909090909
+        },
+        "entity_edge": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 20,
+          "precision": 1.0,
+          "recall": 0.047619047619047616,
+          "f1": 0.0909090909090909
+        },
+        "entity": {
+          "found": 1,
+          "total": 20,
+          "recall": 0.05
+        }
+      },
+      "through_auto-review-high": {
+        "count": 1,
+        "matched": 1,
+        "pair": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 20,
+          "precision": 1.0,
+          "recall": 0.047619047619047616,
+          "f1": 0.0909090909090909
+        },
+        "entity_edge": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 20,
+          "precision": 1.0,
+          "recall": 0.047619047619047616,
+          "f1": 0.0909090909090909
+        },
+        "entity": {
+          "found": 1,
+          "total": 20,
+          "recall": 0.05
+        }
+      },
+      "review-normal": {
+        "count": 0,
+        "matched": 0,
+        "pair": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity_edge": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity": {
+          "found": 0,
+          "total": 20,
+          "recall": 0.0
+        }
+      },
+      "through_review-normal": {
+        "count": 1,
+        "matched": 1,
+        "pair": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 20,
+          "precision": 1.0,
+          "recall": 0.047619047619047616,
+          "f1": 0.0909090909090909
+        },
+        "entity_edge": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 20,
+          "precision": 1.0,
+          "recall": 0.047619047619047616,
+          "f1": 0.0909090909090909
+        },
+        "entity": {
+          "found": 1,
+          "total": 20,
+          "recall": 0.05
+        }
+      },
+      "review-recall": {
+        "count": 11,
+        "matched": 11,
+        "pair": {
+          "tp": 0,
+          "fp": 11,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity_edge": {
+          "tp": 0,
+          "fp": 11,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity": {
+          "found": 0,
+          "total": 20,
+          "recall": 0.0
+        }
+      },
+      "through_review-recall": {
+        "count": 12,
+        "matched": 12,
+        "pair": {
+          "tp": 1,
+          "fp": 11,
+          "fn": 20,
+          "precision": 0.08333333333333333,
+          "recall": 0.047619047619047616,
+          "f1": 0.060606060606060615
+        },
+        "entity_edge": {
+          "tp": 1,
+          "fp": 11,
+          "fn": 20,
+          "precision": 0.08333333333333333,
+          "recall": 0.047619047619047616,
+          "f1": 0.060606060606060615
+        },
+        "entity": {
+          "found": 1,
+          "total": 20,
+          "recall": 0.05
+        }
+      },
+      "reject-low": {
+        "count": 7,
+        "matched": 7,
+        "pair": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity_edge": {
+          "tp": 0,
+          "fp": 7,
+          "fn": 21,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "entity": {
+          "found": 0,
+          "total": 20,
+          "recall": 0.0
+        }
+      },
+      "review-output": {
+        "count": 12,
+        "matched": 12,
+        "pair": {
+          "tp": 1,
+          "fp": 11,
+          "fn": 20,
+          "precision": 0.08333333333333333,
+          "recall": 0.047619047619047616,
+          "f1": 0.060606060606060615
+        },
+        "entity_edge": {
+          "tp": 1,
+          "fp": 11,
+          "fn": 20,
+          "precision": 0.08333333333333333,
+          "recall": 0.047619047619047616,
+          "f1": 0.060606060606060615
+        },
+        "entity": {
+          "found": 1,
+          "total": 20,
+          "recall": 0.05
+        }
+      }
+    }
+  }
+}

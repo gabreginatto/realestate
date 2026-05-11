@@ -178,6 +178,10 @@ const EVIDENCE_FIELDS = [
   'best_inlier_ratio',
   'support_pairs_8',
   'support_pairs_12',
+  'structural',
+  'price_diff',
+  'area_diff',
+  'structural_failures',
   'top_image_pairs',
   'legacy_tier',
 ];

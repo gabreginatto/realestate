@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -69,7 +70,108 @@ def parse_args():
     p.add_argument("--round", type=int, default=1)
     p.add_argument("--high-score", type=float, default=0.76)
     p.add_argument("--high-inliers", type=int, default=20)
+    p.add_argument("--data-root", default=None,
+                   help="Filtered listing root used to apply structural gates.")
     return p.parse_args()
+
+
+def parse_price(value):
+    if not value:
+        return None
+    match = re.search(r"[\d.]+(?:,\d+)?", str(value))
+    if not match:
+        return None
+    return float(match.group(0).replace(".", "").replace(",", "."))
+
+
+def parse_area(value):
+    if not value:
+        return None
+    match = re.search(r"(\d+(?:[.,]\d+)?)", str(value))
+    if not match:
+        return None
+    return float(match.group(1).replace(",", "."))
+
+
+def relative_diff(a, b):
+    if not a or not b or a <= 0 or b <= 0:
+        return None
+    return abs(a - b) / ((a + b) / 2.0)
+
+
+def load_listing_payload(path: Path):
+    if not path.exists():
+        return []
+    payload = json.loads(path.read_text())
+    return payload.get("listings", []) if isinstance(payload, dict) else payload
+
+
+def listing_code(listing):
+    return str(listing.get("propertyCode") or listing.get("code") or "")
+
+
+def load_structural_maps(data_root: str | None, geometric_path: str):
+    root = Path(data_root) if data_root else Path(geometric_path).parent / "input"
+    viva_rows = load_listing_payload(
+        root / "vivaprimeimoveis" / "listings" / "all-listings.json"
+    )
+    coelho_rows = load_listing_payload(
+        root / "coelhodafonseca" / "listings" / "all-listings.json"
+    )
+
+    viva = {}
+    for row in viva_rows:
+        specs = row.get("detailedData", {}).get("specs", {}) or row.get("specs", {})
+        viva[listing_code(row)] = {
+            "price": parse_price(row.get("price")),
+            "area": parse_area(specs.get("area_construida") or row.get("area")),
+        }
+
+    coelho = {}
+    for row in coelho_rows:
+        features = row.get("features") or row.get("area") or ""
+        area_match = re.search(r"(\d+(?:[.,]\d+)?)\s*m²\s*construída", str(features), re.I)
+        coelho[listing_code(row)] = {
+            "price": parse_price(row.get("price")),
+            "area": parse_area(area_match.group(1) if area_match else features),
+        }
+
+    return viva, coelho, str(root)
+
+
+def structural_tolerances(round_number: int):
+    """Progressive gates: later passes relax, but never accept absurd mismatches."""
+    if round_number <= 1:
+        return {"price_tol": 0.35, "area_tol": 0.30}
+    if round_number == 2:
+        return {"price_tol": 0.45, "area_tol": 0.40}
+    if round_number == 3:
+        return {"price_tol": 0.55, "area_tol": 0.50}
+    if round_number == 4:
+        return {"price_tol": 0.65, "area_tol": 0.55}
+    return {"price_tol": 0.75, "area_tol": 0.60}
+
+
+def structural_check(candidate, viva_map, coelho_map, tolerances):
+    viva = viva_map.get(str(candidate["viva_code"]), {})
+    coelho = coelho_map.get(str(candidate["coelho_code"]), {})
+    price_diff = relative_diff(viva.get("price"), coelho.get("price"))
+    area_diff = relative_diff(viva.get("area"), coelho.get("area"))
+    failed = []
+
+    if price_diff is not None and price_diff > tolerances["price_tol"]:
+        failed.append("price")
+    if area_diff is not None and area_diff > tolerances["area_tol"]:
+        failed.append("area")
+
+    return {
+        "price_diff": round(price_diff, 4) if price_diff is not None else None,
+        "area_diff": round(area_diff, 4) if area_diff is not None else None,
+        "price_tol": tolerances["price_tol"],
+        "area_tol": tolerances["area_tol"],
+        "structural_pass": not failed,
+        "structural_failures": failed,
+    }
 
 
 def build_components():
@@ -140,6 +242,9 @@ def evaluate(matches):
 
 
 def tier_for(candidate, high_score: float, high_inliers: int):
+    if not candidate.get("structural_pass", True):
+        return "reject-low"
+
     sources = set(candidate.get("sources", []))
     strong_geometry = (
         candidate.get("geometric_score", 0.0) >= high_score
@@ -231,6 +336,8 @@ def main():
     payload = json.loads(Path(args.geometric).read_text())
     now = datetime.now(timezone.utc).isoformat()
     confirmed_viva, confirmed_coelho, reviewed_pairs = load_exclusions(args)
+    viva_struct, coelho_struct, structural_root = load_structural_maps(args.data_root, args.geometric)
+    structural_tols = structural_tolerances(args.round)
 
     matches = []
     for candidate in payload.get("all_candidates", []):
@@ -244,6 +351,8 @@ def main():
             continue
         if key in reviewed_pairs:
             continue
+        structural = structural_check(candidate, viva_struct, coelho_struct, structural_tols)
+        candidate = {**candidate, "structural": structural, **structural}
         tier = tier_for(candidate, args.high_score, args.high_inliers)
         include_in_review = is_review_tier(tier)
         matches.append({
@@ -307,7 +416,15 @@ def main():
             ),
             "review-normal": "MegaLoc candidate without strong geometry",
             "review-recall": "patch-VLAD candidate without MegaLoc",
-            "reject-low": "weak geometry + weak model agreement; kept for audit but not review",
+            "reject-low": "weak geometry/model agreement or structurally incompatible; kept for audit but not review",
+            "structural_gates": {
+                "data_root": structural_root,
+                **structural_tols,
+                "policy": (
+                    "Known price/area must be within the progressive round "
+                    "tolerance. Missing fields are neutral."
+                ),
+            },
             "excluded": sorted([list(p) for p in REJECTED_PAIRS]),
             "confirmed_viva_removed": len(confirmed_viva),
             "confirmed_coelho_removed": len(confirmed_coelho),
