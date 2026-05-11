@@ -124,6 +124,17 @@ for site in "${SITES[@]}"; do
   fi
 done
 
+# ── 3b. Compound-scoped full images override stale global cache entries ───────
+log "Syncing compound-scoped image folders ..."
+compound_root="$DATA_ROOT/alphaville-1"
+for site in "${SITES[@]}"; do
+  image_dir="$compound_root/$site/images"
+  if [[ -d "$image_dir" ]]; then
+    gcs_rsync "$image_dir" "$BUCKET/images/$site"
+    log "  alphaville-1/$site images → $BUCKET/images/$site"
+  fi
+done
+
 # ── 4. CLIP-selected images (selected_for_matching/) ─────────────────────────
 log "Syncing selected_for_matching/ ..."
 sfm_dir="$REPO_ROOT/selected_for_matching"

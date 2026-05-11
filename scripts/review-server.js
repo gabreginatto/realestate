@@ -566,7 +566,19 @@ app.get('/api/images/:site/:code', async (req, res) => {
   }
 
   if (mode === 'all') {
-    // Intentionally include interiors — caller asked for everything
+    // Use the CLIP manifest as the source of truth. Some GCS cache prefixes
+    // contain stale images from older scrapes with the same listing code.
+    try {
+      const manifest = await gcsRead(`selected/${fsName}/${code}/_manifest.json`);
+      const entries = manifest.all_categories || manifest.selected || [];
+      const urls = entries
+        .map(e => e && e.filename)
+        .filter(Boolean)
+        .map(file => imageUrl(site, code, file));
+      if (urls.length) return res.json(urls);
+    } catch (_) { /* fall through to legacy cache prefix */ }
+
+    // Legacy fallback: caller asked for everything and no manifest exists.
     try {
       const [files] = await bucket.getFiles({ prefix: `images/${fsName}/${code}/` });
       const urls = files
