@@ -137,10 +137,14 @@ if [[ -n "$SUMMARY_FILE" ]]; then
 fi
 python3 "${tiered_args[@]}"
 
-sync_args=(./scripts/sync-to-gcs.sh --matches "$output" --skip-assets)
-if [[ "$RESET_SESSION" == true ]]; then
-  sync_args+=(--reset-session)
+if [[ "${SYNC_TO_GCS_NODE:-false}" == "true" ]]; then
+  node scripts/sync-round-to-gcs.js --matches "$output"
+  echo "Round $ROUND uploaded and ready for the review app to load automatically."
+else
+  sync_args=(./scripts/sync-to-gcs.sh --matches "$output" --skip-assets)
+  if [[ "$RESET_SESSION" == true ]]; then
+    sync_args+=(--reset-session)
+  fi
+  "${sync_args[@]}"
+  echo "Round $ROUND uploaded. Return to the review app and click Preparar Rodada $ROUND."
 fi
-"${sync_args[@]}"
-
-echo "Round $ROUND uploaded. Return to the review app and click Preparar Rodada $ROUND."

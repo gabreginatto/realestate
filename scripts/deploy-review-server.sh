@@ -15,6 +15,7 @@ REGION="us-east1"
 SERVICE="match-review"
 IMAGE="gcr.io/${PROJECT}/${SERVICE}"
 GCS_BUCKET="realestate-475615-data"
+ROUND_GENERATOR_JOB="${ROUND_GENERATOR_JOB:-match-round-generator}"
 
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
 
@@ -38,7 +39,7 @@ gcloud run deploy "$SERVICE" \
   --project="$PROJECT" \
   --platform=managed \
   --allow-unauthenticated \
-  --set-env-vars="GCS_BUCKET=${GCS_BUCKET}" \
+  --set-env-vars="GCS_BUCKET=${GCS_BUCKET},GCP_PROJECT=${PROJECT},GCP_REGION=${REGION},ROUND_GENERATOR_JOB=${ROUND_GENERATOR_JOB}" \
   --memory=512Mi \
   --cpu=1 \
   --min-instances=0 \

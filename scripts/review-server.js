@@ -4,11 +4,12 @@
  *
  * Reads data from GCS, serves a review UI, writes confirmed sessions back to GCS.
  * Images are served directly from GCS public URLs (no proxy).
- * Re-matching runs on the user's Mac — Cloud Run just handles review.
+ * Re-matching runs in a Cloud Run Job when configured.
  *
  * Env vars:
  *   GCS_BUCKET   GCS bucket name  (default: realestate-475615-data)
  *   PORT         Server port      (default: 3001)
+ *   ROUND_GENERATOR_JOB Cloud Run Job name for next-round generation
  *
  * Local usage:   node scripts/review-server.js
  * Cloud Run:     Deployed via scripts/deploy-review-server.sh
@@ -30,6 +31,9 @@ const PORT       = process.env.PORT || 3001;
 const GCS_BUCKET = process.env.GCS_BUCKET || 'realestate-475615-data';
 const GCS_BASE   = `https://storage.googleapis.com/${GCS_BUCKET}`;
 const MOSAIC_VERSION = process.env.K_REVISION || String(Date.now());
+const GCP_PROJECT = process.env.GCP_PROJECT || process.env.GOOGLE_CLOUD_PROJECT || 'realestate-475615';
+const GCP_REGION  = process.env.GCP_REGION || process.env.CLOUD_RUN_REGION || 'us-east1';
+const ROUND_GENERATOR_JOB = process.env.ROUND_GENERATOR_JOB || '';
 
 const storage = new Storage();
 const bucket  = storage.bucket(GCS_BUCKET);
@@ -45,11 +49,65 @@ function fetchJson(url) {
       let body = '';
       res.on('data', chunk => body += chunk);
       res.on('end', () => {
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          reject(new Error(`HTTP ${res.statusCode} from ${url}`));
+          return;
+        }
         try { resolve(JSON.parse(body)); }
         catch (e) { reject(new Error(`JSON parse error from ${url}: ${e.message}`)); }
       });
     }).on('error', reject);
   });
+}
+
+function postJson(url, data, headers = {}) {
+  return new Promise((resolve, reject) => {
+    const body = JSON.stringify(data || {});
+    const req = https.request(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(body),
+        ...headers,
+      },
+    }, res => {
+      let response = '';
+      res.on('data', chunk => response += chunk);
+      res.on('end', () => {
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          reject(new Error(`HTTP ${res.statusCode} from ${url}: ${response.slice(0, 500)}`));
+          return;
+        }
+        try { resolve(response ? JSON.parse(response) : {}); }
+        catch (e) { reject(new Error(`JSON parse error from ${url}: ${e.message}`)); }
+      });
+    });
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
+
+async function metadataAccessToken() {
+  const data = await new Promise((resolve, reject) => {
+    const req = http.request('http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token', {
+      headers: { 'Metadata-Flavor': 'Google' },
+    }, res => {
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          reject(new Error(`Metadata token HTTP ${res.statusCode}: ${body.slice(0, 200)}`));
+          return;
+        }
+        try { resolve(JSON.parse(body)); }
+        catch (e) { reject(e); }
+      });
+    });
+    req.on('error', reject);
+    req.end();
+  });
+  return data.access_token;
 }
 
 // ---------------------------------------------------------------------------
@@ -386,6 +444,71 @@ async function saveSession() {
   } catch (e) {
     console.warn('Could not save session to GCS:', e.message);
   }
+}
+
+function roundStatusPath(trialRunId, round) {
+  return `review-sessions/round-jobs/${trialRunId || 'no-session'}-round-${round}.json`;
+}
+
+async function writeRoundStatus(statusPath, status) {
+  await gcsWrite(statusPath, {
+    ...status,
+    updated_at: new Date().toISOString(),
+  });
+}
+
+async function readRoundStatus(statusPath) {
+  try { return await gcsRead(statusPath); }
+  catch (_) { return null; }
+}
+
+async function loadRoundFromGcs(nextPass) {
+  const raw = await fetchJson(`${GCS_BASE}/matches/auto-matches-round-${nextPass}.json?v=${Date.now()}`);
+  const { review, audit } = splitMatches(raw);
+  const carryConfirmed = Array.isArray(currentSession.confirmed) ? currentSession.confirmed : [];
+  currentSession = buildNewSession(review, audit, nextPass, carryConfirmed);
+  await saveSession();
+  return { review, audit };
+}
+
+async function startRoundGeneratorJob({ nextPass, trialRunId, summaryUrl, statusPath }) {
+  if (!ROUND_GENERATOR_JOB) {
+    throw new Error('ROUND_GENERATOR_JOB is not configured on the review server.');
+  }
+
+  await writeRoundStatus(statusPath, {
+    state: 'queued',
+    round: nextPass,
+    trial_run_id: trialRunId,
+    message: `Queued round ${nextPass} generation`,
+  });
+
+  const token = await metadataAccessToken();
+  const url = `https://run.googleapis.com/v2/projects/${GCP_PROJECT}/locations/${GCP_REGION}/jobs/${ROUND_GENERATOR_JOB}:run`;
+  const run = await postJson(url, {
+    overrides: {
+      containerOverrides: [{
+        env: [
+          { name: 'ROUND', value: String(nextPass) },
+          { name: 'SUMMARY_URL', value: summaryUrl },
+          { name: 'TRIAL_RUN_ID', value: trialRunId || '' },
+          { name: 'ROUND_STATUS_PATH', value: statusPath },
+          { name: 'GCS_BUCKET', value: GCS_BUCKET },
+        ],
+      }],
+    },
+  }, {
+    Authorization: `Bearer ${token}`,
+  });
+
+  await writeRoundStatus(statusPath, {
+    state: 'running',
+    round: nextPass,
+    trial_run_id: trialRunId,
+    operation: run.name || null,
+    message: `Started round ${nextPass} generation`,
+  });
+  return run;
 }
 
 function lanePool(lane) {
@@ -912,8 +1035,10 @@ app.post('/api/start-next-round', async (req, res) => {
   const nextPass = currentPass + 1;
   const trialRunId = currentSession.trial_run_id || null;
   const summary = buildTrialSummary();
-  const command = `./scripts/run-next-review-round.sh --summary-url ${GCS_BASE}/review-sessions/trial-summaries/${trialRunId || 'no-session'}.json --round ${nextPass}`;
-  await gcsWrite(`review-sessions/trial-summaries/${trialRunId || 'no-session'}.json`, summary);
+  const summaryPath = `review-sessions/trial-summaries/${trialRunId || 'no-session'}.json`;
+  const summaryUrl = `${GCS_BASE}/${summaryPath}`;
+  const statusPath = roundStatusPath(trialRunId, nextPass);
+  await gcsWrite(summaryPath, summary);
 
   if (!summary.pending_viva_count) {
     return res.json({
@@ -925,11 +1050,7 @@ app.post('/api/start-next-round', async (req, res) => {
   }
 
   try {
-    const raw = await fetchJson(`${GCS_BASE}/matches/auto-matches-round-${nextPass}.json?v=${Date.now()}`);
-    const { review, audit } = splitMatches(raw);
-    const carryConfirmed = Array.isArray(currentSession.confirmed) ? currentSession.confirmed : [];
-    currentSession = buildNewSession(review, audit, nextPass, carryConfirmed);
-    await saveSession();
+    const { review, audit } = await loadRoundFromGcs(nextPass);
     await logEvent(req, 'round_started', {
       from_pass: currentPass,
       next_pass: nextPass,
@@ -946,20 +1067,87 @@ app.post('/api/start-next-round', async (req, res) => {
       summary,
     });
   } catch (e) {
-    await logEvent(req, 'next_round_not_ready', {
-      next_pass: nextPass,
-      pending_viva_count: summary.pending_viva_count,
-      error: e.message,
-    });
-    return res.status(404).json({
-      ok: false,
-      needs_local_matching: true,
-      next_pass: nextPass,
-      pending_viva_count: summary.pending_viva_count,
-      command,
-      message: `Rodada ${nextPass} ainda não foi preparada. Rode o comando no Mac e tente de novo.`,
-    });
+    const existing = await readRoundStatus(statusPath);
+    if (existing && ['queued', 'running'].includes(existing.state)) {
+      return res.status(202).json({
+        ok: false,
+        generating: true,
+        next_pass: nextPass,
+        pending_viva_count: summary.pending_viva_count,
+        status: existing,
+      });
+    }
+
+    try {
+      const run = await startRoundGeneratorJob({ nextPass, trialRunId, summaryUrl, statusPath });
+      await logEvent(req, 'next_round_generation_started', {
+        next_pass: nextPass,
+        pending_viva_count: summary.pending_viva_count,
+        operation: run.name || null,
+      });
+      return res.status(202).json({
+        ok: false,
+        generating: true,
+        next_pass: nextPass,
+        pending_viva_count: summary.pending_viva_count,
+        status_path: statusPath,
+        status: await readRoundStatus(statusPath),
+      });
+    } catch (jobErr) {
+      await writeRoundStatus(statusPath, {
+        state: 'failed',
+        round: nextPass,
+        trial_run_id: trialRunId,
+        message: jobErr.message,
+      }).catch(() => {});
+      await logEvent(req, 'next_round_generation_failed_to_start', {
+        next_pass: nextPass,
+        pending_viva_count: summary.pending_viva_count,
+        error: jobErr.message,
+      });
+      return res.status(500).json({
+        ok: false,
+        generation_failed_to_start: true,
+        next_pass: nextPass,
+        pending_viva_count: summary.pending_viva_count,
+        message: jobErr.message,
+      });
+    }
   }
+});
+
+app.get('/api/round-status', async (req, res) => {
+  if (!currentSession) return res.status(503).json({ error: 'no session' });
+  const requestedRound = Number(req.query.round || 0);
+  const round = requestedRound || Number(currentSession.pass || 1) + 1;
+  const trialRunId = currentSession.trial_run_id || null;
+  const statusPath = roundStatusPath(trialRunId, round);
+  const status = await readRoundStatus(statusPath);
+  if (!status) {
+    return res.status(404).json({ ok: false, round, state: 'missing' });
+  }
+  if (status.state === 'ready') {
+    try {
+      const { review, audit } = await loadRoundFromGcs(round);
+      await logEvent(req, 'round_loaded_after_generation', {
+        next_pass: round,
+        session_review_count: currentSession.pairs.length,
+        session_audit_count: currentSession.audit.length,
+      });
+      return res.json({
+        ok: true,
+        ready: true,
+        pass: round,
+        review_count: review.length,
+        audit_count: audit.length,
+        lanes: laneCounts(),
+        status,
+      });
+    } catch (e) {
+      return res.status(500).json({ ok: false, round, state: 'load_failed', message: e.message, status });
+    }
+  }
+  res.json({ ok: false, generating: ['queued', 'running'].includes(status.state), round, status });
 });
 
 app.get('/api/trial-summary', async (req, res) => {
@@ -1697,6 +1885,11 @@ async function startNextRound(source) {
       await fetchSession();
       return;
     }
+    if (r.generating) {
+      showRoundGenerationStatus(fromPassComplete, r.next_pass, r.status && r.status.message);
+      await pollRoundStatus(r.next_pass, fromPassComplete);
+      return;
+    }
     const helpId = fromPassComplete ? 'pc-next-round-help-text' : 'next-round-help';
     const previousHelp = document.getElementById(helpId);
     if (previousHelp) previousHelp.remove();
@@ -1714,6 +1907,49 @@ async function startNextRound(source) {
   } finally {
     btn.disabled = false;
     btn.textContent = old;
+  }
+}
+
+function generationTarget(fromPassComplete) {
+  return fromPassComplete
+    ? document.getElementById('pc-next-round-help')
+    : document.getElementById('final-breakdown');
+}
+
+function showRoundGenerationStatus(fromPassComplete, nextPass, message) {
+  const helpId = fromPassComplete ? 'pc-next-round-help-text' : 'next-round-help';
+  const previousHelp = document.getElementById(helpId);
+  if (previousHelp) previousHelp.remove();
+  generationTarget(fromPassComplete).insertAdjacentHTML('beforeend',
+    '<div id="' + helpId + '" class="notice" style="margin-top:12px">' +
+    '<strong>Gerando Rodada ' + nextPass + '...</strong><br>' +
+    (message || 'O matcher está rodando em background. Esta tela avançará automaticamente quando terminar.') +
+    '</div>'
+  );
+}
+
+async function pollRoundStatus(nextPass, fromPassComplete) {
+  const helpId = fromPassComplete ? 'pc-next-round-help-text' : 'next-round-help';
+  for (let attempt = 0; attempt < 240; attempt++) {
+    await new Promise(resolve => setTimeout(resolve, attempt < 6 ? 3000 : 10000));
+    const resp = await fetch('/api/round-status?round=' + encodeURIComponent(nextPass));
+    const r = await resp.json();
+    const el = document.getElementById(helpId);
+    if (r.ok && r.ready) {
+      document.getElementById('final-modal').classList.add('hidden');
+      document.getElementById('pass-complete-modal').classList.add('hidden');
+      await fetchSession();
+      return;
+    }
+    if (el && r.status) {
+      el.innerHTML = '<strong>Gerando Rodada ' + nextPass + '...</strong><br>' +
+        (r.status.message || r.status.state || 'Aguardando matcher.');
+    }
+    if (r.status && r.status.state === 'failed') {
+      if (el) el.innerHTML = '<strong>Falha ao gerar Rodada ' + nextPass + '.</strong><br>' +
+        (r.status.message || 'Erro desconhecido.');
+      return;
+    }
   }
 }
 

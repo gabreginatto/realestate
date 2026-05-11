@@ -48,12 +48,15 @@ for (const field of ['sources', 'source_scores', 'geometric_score', 'best_inlier
 
 console.log('\nAPI surface');
 assert(SOURCE.includes("app.get('/api/audit'"),       '/api/audit route exists');
+assert(SOURCE.includes("app.get('/api/round-status'"), '/api/round-status route exists');
 assert(SOURCE.includes("app.post('/api/unsure'"),     '/api/unsure route exists');
 assert(SOURCE.includes('req.query.lane'),             '/api/session reads ?lane');
 assert(SOURCE.includes('include_in_review === false'), 'loadMatches honors include_in_review');
 assert(SOURCE.includes('function retirePendingAlternates'), 'confirmed matches retire pending alternates');
 assert(SOURCE.includes('retired_alternates'), 'confirm event logs retired alternates');
 assert(SOURCE.includes("REVIEW_LANES.find(l => lanePool(l).some(p => p.status === 'pending'))"), 'auto lane fallback skips audit');
+assert(SOURCE.includes('startRoundGeneratorJob'), 'next round can start generator job');
+assert(SOURCE.includes('pollRoundStatus'), 'UI polls generated round status');
 
 console.log('\nMosaic surface');
 assert(SOURCE.includes('function mosaicUrl('), 'mosaicUrl helper exists');

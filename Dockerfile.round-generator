@@ -1,0 +1,31 @@
+FROM python:3.11-slim
+WORKDIR /app
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends curl ca-certificates nodejs npm libgl1 libglib2.0-0 \
+  && rm -rf /var/lib/apt/lists/*
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+RUN pip install --no-cache-dir \
+  numpy scipy pillow opencv-python-headless requests
+
+RUN pip install --no-cache-dir \
+  --index-url https://download.pytorch.org/whl/cpu \
+  torch==2.3.1 torchvision==0.18.1
+
+COPY scripts/ scripts/
+COPY data/vivaprimeimoveis/listings/all-listings.json data/vivaprimeimoveis/listings/all-listings.json
+COPY data/coelhodafonseca/listings/all-listings.json data/coelhodafonseca/listings/all-listings.json
+COPY data/alphaville-1/vivaprimeimoveis/listings/all-listings.json data/alphaville-1/vivaprimeimoveis/listings/all-listings.json
+COPY data/alphaville-1/coelhodafonseca/listings/all-listings.json data/alphaville-1/coelhodafonseca/listings/all-listings.json
+COPY data/embedding-cache-megaloc.pkl data/embedding-cache-megaloc.pkl
+COPY data/embedding-cache-patch-vlad.pkl data/embedding-cache-patch-vlad.pkl
+COPY selected_for_matching/ selected_for_matching/
+COPY dino-server/ dino-server/
+
+ENV GCS_BUCKET=realestate-475615-data
+ENV MEGALOC_DEVICE=cpu
+
+CMD ["node", "scripts/round-generator-worker.js"]
