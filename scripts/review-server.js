@@ -1680,9 +1680,12 @@ async function startNextRound(source) {
     const previousHelp = document.getElementById(helpId);
     if (previousHelp) previousHelp.remove();
     const commandHtml = r.command
-      ? '<div id="' + helpId + '"><br><strong>Rodada ' + r.next_pass + ' ainda precisa ser gerada no Mac.</strong><br>' +
+      ? '<div id="' + helpId + '" class="notice" style="margin-top:12px">' +
+        '<strong>Rodada ' + r.next_pass + ' ainda não está gerada.</strong><br>' +
+        'Rode no Mac e depois clique novamente em <strong>Preparar Rodada ' + r.next_pass + '</strong>:<br>' +
         '<code>' + r.command.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</code></div>'
-      : '<div id="' + helpId + '"><br>' + (r.message || 'Não foi possível iniciar a próxima rodada.') + '</div>';
+      : '<div id="' + helpId + '" class="notice" style="margin-top:12px">' +
+        (r.message || 'Não foi possível iniciar a próxima rodada.') + '</div>';
     const target = fromPassComplete
       ? document.getElementById('pc-next-round-help')
       : document.getElementById('final-breakdown');
