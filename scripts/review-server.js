@@ -403,6 +403,21 @@ function findPair(viva_code, coelho_code) {
   return all.find(p => p.viva_code === viva_code && p.coelho_code === coelho_code) || null;
 }
 
+function retirePendingAlternates(confirmedPair) {
+  const retired = [];
+  const keep = (p) => {
+    if (p === confirmedPair || p.status !== 'pending') return true;
+    if (p.viva_code === confirmedPair.viva_code || p.coelho_code === confirmedPair.coelho_code) {
+      retired.push({ viva_code: p.viva_code, coelho_code: p.coelho_code, lane: p.lane });
+      return false;
+    }
+    return true;
+  };
+  currentSession.pairs = (currentSession.pairs || []).filter(keep);
+  currentSession.audit = (currentSession.audit || []).filter(keep);
+  return retired;
+}
+
 function laneCounts() {
   const counts = {};
   for (const lane of REVIEW_LANES) {
@@ -772,12 +787,14 @@ app.post('/api/confirm', async (req, res) => {
   pair.status = 'confirmed';
   pair.reviewed_at = new Date().toISOString();
   currentSession.confirmed.push({ ...pair, confirmed_at: pair.reviewed_at });
+  const retired = retirePendingAlternates(pair);
   console.log(`✓ confirmed  Viva ${viva_code} ↔ Coelho ${coelho_code} (lane=${pair.lane || 'unknown'})`);
   await saveSession();
   await logEvent(req, 'decision_confirmed', {
     viva_code,
     coelho_code,
     lane: pair.lane || normalizeTier(pair).lane,
+    retired_alternates: retired,
     elapsed_ms: req.body.elapsed_ms,
     pair: pairSnapshot(pair),
   });

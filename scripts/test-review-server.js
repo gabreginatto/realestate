@@ -51,6 +51,8 @@ assert(SOURCE.includes("app.get('/api/audit'"),       '/api/audit route exists')
 assert(SOURCE.includes("app.post('/api/unsure'"),     '/api/unsure route exists');
 assert(SOURCE.includes('req.query.lane'),             '/api/session reads ?lane');
 assert(SOURCE.includes('include_in_review === false'), 'loadMatches honors include_in_review');
+assert(SOURCE.includes('function retirePendingAlternates'), 'confirmed matches retire pending alternates');
+assert(SOURCE.includes('retired_alternates'), 'confirm event logs retired alternates');
 
 console.log('\nMosaic surface');
 assert(SOURCE.includes('function mosaicUrl('), 'mosaicUrl helper exists');
