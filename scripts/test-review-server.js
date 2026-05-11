@@ -53,6 +53,7 @@ assert(SOURCE.includes('req.query.lane'),             '/api/session reads ?lane'
 assert(SOURCE.includes('include_in_review === false'), 'loadMatches honors include_in_review');
 assert(SOURCE.includes('function retirePendingAlternates'), 'confirmed matches retire pending alternates');
 assert(SOURCE.includes('retired_alternates'), 'confirm event logs retired alternates');
+assert(SOURCE.includes("REVIEW_LANES.find(l => lanePool(l).some(p => p.status === 'pending'))"), 'auto lane fallback skips audit');
 
 console.log('\nMosaic surface');
 assert(SOURCE.includes('function mosaicUrl('), 'mosaicUrl helper exists');
@@ -80,6 +81,7 @@ for (const lane of ['high', 'normal', 'recall', 'audit']) {
 }
 assert(SOURCE.includes('hdr-global'),           'global confirmed chip present');
 assert(SOURCE.includes('laneSummaryHTML'),      'lane summary helper present');
+assert(!SOURCE.includes("for (const l of ['high', 'normal', 'recall', 'audit'])"), 'auto advance does not enter audit lane');
 assert(SOURCE.includes("e.key === 'u'") && SOURCE.includes('doUnsure'), 'Unsure action wired');
 
 console.log('\nEvidence panel');

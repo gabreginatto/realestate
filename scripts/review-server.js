@@ -687,8 +687,8 @@ app.get('/api/session', (req, res) => {
   let lane = ALL_LANES.includes(requested) ? requested : 'high';
   const preferredPool = lanePool(lane);
   if (!ALL_LANES.includes(requested) || preferredPool.length === 0) {
-    lane = ALL_LANES.find(l => lanePool(l).some(p => p.status === 'pending'))
-        || ALL_LANES.find(l => lanePool(l).length > 0)
+    lane = REVIEW_LANES.find(l => lanePool(l).some(p => p.status === 'pending'))
+        || REVIEW_LANES.find(l => lanePool(l).length > 0)
         || lane;
   }
 
@@ -1024,7 +1024,7 @@ const HTML = /* html */`<!DOCTYPE html>
   .lane-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
   .lane-tab .lane-count { font-size: 0.75rem; opacity: 0.85; }
   .lane-tab.is-empty { opacity: 0.55; }
-  .lane-tab.is-audit { margin-left: auto; border-style: dashed; }
+  .lane-tab.is-audit { margin-left: auto; border-style: dashed; display: none; }
   .lane-tab.is-audit.active { border-style: solid; }
   @media (max-width: 700px) { .lane-tab.is-audit { margin-left: 0; } }
   .badge { background: var(--card); border: 1px solid var(--border);
@@ -1590,7 +1590,7 @@ const LANE_LABELS = { high: 'Alta confiança', normal: 'Normal', recall: 'Recall
 function laneSummaryHTML(lanes) {
   if (!lanes) return '';
   return '<div class="lane-summary">' +
-    ['high', 'normal', 'recall', 'audit'].map(l => {
+    ['high', 'normal', 'recall'].map(l => {
       const c = lanes[l] || {};
       return '<div class="lane-cell"><strong>' + LANE_LABELS[l] + '</strong>' +
         '✅ ' + (c.confirmed || 0) +
@@ -1601,7 +1601,7 @@ function laneSummaryHTML(lanes) {
 }
 
 function nextLaneWithPending(lanes, exclude) {
-  for (const l of ['high', 'normal', 'recall', 'audit']) {
+  for (const l of ['high', 'normal', 'recall']) {
     if (l === exclude) continue;
     if ((lanes && lanes[l] && lanes[l].pending) || 0) return l;
   }
