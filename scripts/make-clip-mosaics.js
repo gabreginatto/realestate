@@ -195,7 +195,7 @@ async function buildMosaic(imagePaths, outputPath, rows = STANDARD_ROWS, options
   const maxSlots = COLS * rows;
   const present = imagePaths.slice(0, maxSlots).filter((p) => p && fs.existsSync(p));
   const slotCount = options.compact ? Math.max(1, present.length) : maxSlots;
-  const cols = options.compact ? Math.min(COLS, slotCount) : COLS;
+  const cols = options.compact ? compactColumnCount(slotCount) : COLS;
   const actualRows = options.compact ? Math.ceil(slotCount / cols) : rows;
   const totalW = cols * CW;
   const totalH = actualRows * CH;
@@ -245,6 +245,23 @@ async function buildMosaic(imagePaths, outputPath, rows = STANDARD_ROWS, options
     .composite(composites)
     .png()
     .toFile(outputPath);
+}
+
+function compactColumnCount(slotCount) {
+  const maxCols = Math.min(COLS, slotCount);
+  const minCols = slotCount > 2 ? 2 : 1;
+  let best = minCols;
+  let bestScore = Infinity;
+  for (let cols = minCols; cols <= maxCols; cols++) {
+    const rows = Math.ceil(slotCount / cols);
+    const blanks = cols * rows - slotCount;
+    const score = blanks * 10 + Math.abs(cols - rows);
+    if (score < bestScore || (score === bestScore && cols > best)) {
+      best = cols;
+      bestScore = score;
+    }
+  }
+  return best;
 }
 
 // ── Per-listing processor ──────────────────────────────────────────────────────
