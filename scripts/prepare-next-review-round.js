@@ -64,11 +64,35 @@ function listingCode(listing) {
 function loadListings(site) {
   const file = path.join(DATA_ROOT, site, 'listings', 'all-listings.json');
   const raw = readJson(file);
+  const listings = raw.listings || [];
+  enrichFromCompoundListings(site, listings);
   return {
     file,
     payload: raw,
-    listings: raw.listings || [],
+    listings,
   };
+}
+
+function enrichFromCompoundListings(site, listings) {
+  const fallbackFile = path.join(DATA_ROOT, 'alphaville-1', site, 'listings', 'all-listings.json');
+  if (!fs.existsSync(fallbackFile)) return;
+
+  const fallback = readJson(fallbackFile).listings || [];
+  const byCode = new Map(fallback.map((listing) => [listingCode(listing), listing]));
+
+  for (const listing of listings) {
+    const richer = byCode.get(listingCode(listing));
+    if (!richer) continue;
+    for (const field of ['price']) {
+      if (isMissing(listing[field]) && !isMissing(richer[field])) {
+        listing[field] = richer[field];
+      }
+    }
+  }
+}
+
+function isMissing(value) {
+  return value == null || value === '' || (Array.isArray(value) && value.length === 0);
 }
 
 function pairKey(vivaCode, coelhoCode) {
