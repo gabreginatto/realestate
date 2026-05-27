@@ -24,6 +24,7 @@ MOSAIC_SITES=("viva" "coelho")
 RESET_SESSION=false
 SKIP_ASSETS=false
 MATCHES_FILE=""
+MATCHES_ARCHIVE_FILE=""
 
 while [[ $# -gt 0 ]]; do
   arg="$1"
@@ -97,6 +98,7 @@ if [[ -n "$MATCHES_FILE" ]]; then
   match_name="$(basename "$MATCHES_FILE")"
   gcs_cp "$MATCHES_FILE" "$BUCKET/matches/auto-matches.json"
   gcs_cp "$MATCHES_FILE" "$BUCKET/matches/$match_name"
+  MATCHES_ARCHIVE_FILE="$MATCHES_FILE"
   log "  $match_name → $BUCKET/matches/auto-matches.json and $BUCKET/matches/$match_name"
 else
   default_matches="$(pick_default_matches_file || true)"
@@ -104,10 +106,17 @@ else
     match_name="$(basename "$default_matches")"
     gcs_cp "$default_matches" "$BUCKET/matches/auto-matches.json"
     gcs_cp "$default_matches" "$BUCKET/matches/$match_name"
+    MATCHES_ARCHIVE_FILE="$default_matches"
     log "  $match_name → $BUCKET/matches/auto-matches.json and $BUCKET/matches/$match_name"
   else
     log "  No match file found — skipping."
   fi
+fi
+
+if [[ -n "$MATCHES_ARCHIVE_FILE" && "$(basename "$MATCHES_ARCHIVE_FILE")" == auto-matches-round-*.json ]]; then
+  log "Archiving round artifacts in GCS ..."
+  node scripts/sync-round-to-gcs.js --matches "$MATCHES_ARCHIVE_FILE" --bucket "${BUCKET#gs://}" || \
+    log "  Could not archive round artifacts with sync-round-to-gcs.js"
 fi
 
 if [[ "$SKIP_ASSETS" == true ]]; then

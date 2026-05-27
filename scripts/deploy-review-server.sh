@@ -15,7 +15,6 @@ REGION="us-east1"
 SERVICE="match-review"
 IMAGE="gcr.io/${PROJECT}/${SERVICE}"
 GCS_BUCKET="realestate-475615-data"
-ROUND_GENERATOR_JOB="${ROUND_GENERATOR_JOB:-match-round-generator}"
 
 log() { echo "[$(date '+%H:%M:%S')] $*"; }
 
@@ -39,7 +38,7 @@ gcloud run deploy "$SERVICE" \
   --project="$PROJECT" \
   --platform=managed \
   --allow-unauthenticated \
-  --set-env-vars="GCS_BUCKET=${GCS_BUCKET},GCP_PROJECT=${PROJECT},GCP_REGION=${REGION},ROUND_GENERATOR_JOB=${ROUND_GENERATOR_JOB}" \
+  --set-env-vars="GCS_BUCKET=${GCS_BUCKET}" \
   --memory=512Mi \
   --cpu=1 \
   --min-instances=0 \
@@ -57,6 +56,6 @@ echo ""
 echo "  Review UI → ${URL}"
 echo ""
 echo "  Mac workflow:"
-echo "    1. python scripts/recursive-matcher-v2.py ..."
-echo "    2. ./scripts/sync-to-gcs.sh"
-echo "    3. Open ${URL} — click 'Recarregar matches' if session was in progress"
+echo "    1. Keep the review UI on Cloud Run."
+echo "    2. Run node scripts/mac-round-worker.js on your Mac for heavy matching."
+echo "    3. The worker uploads each round to GCS for the review UI to load."

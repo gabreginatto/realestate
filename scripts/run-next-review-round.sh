@@ -138,7 +138,20 @@ fi
 python3 "${tiered_args[@]}"
 
 if [[ "${SYNC_TO_GCS_NODE:-false}" == "true" ]]; then
-  node scripts/sync-round-to-gcs.js --matches "$output"
+  sync_node_args=(scripts/sync-round-to-gcs.js --matches "$output" --round "$ROUND")
+  if [[ -n "${TRIAL_RUN_ID:-}" ]]; then
+    sync_node_args+=(--trial-run-id "$TRIAL_RUN_ID")
+  fi
+  if [[ -n "${ROUND_STATUS_PATH:-}" ]]; then
+    sync_node_args+=(--status-path "$ROUND_STATUS_PATH")
+  fi
+  if [[ -n "${ROUND_ARTIFACT_PREFIX:-}" ]]; then
+    sync_node_args+=(--artifact-prefix "$ROUND_ARTIFACT_PREFIX")
+  fi
+  if [[ -n "${SUMMARY_URL:-}" ]]; then
+    sync_node_args+=(--summary-url "$SUMMARY_URL")
+  fi
+  node "${sync_node_args[@]}"
   echo "Round $ROUND uploaded and ready for the review app to load automatically."
 else
   sync_args=(./scripts/sync-to-gcs.sh --matches "$output" --skip-assets)

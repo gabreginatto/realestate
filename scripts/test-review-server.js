@@ -55,7 +55,9 @@ assert(SOURCE.includes('include_in_review === false'), 'loadMatches honors inclu
 assert(SOURCE.includes('function retirePendingAlternates'), 'confirmed matches retire pending alternates');
 assert(SOURCE.includes('retired_alternates'), 'confirm event logs retired alternates');
 assert(SOURCE.includes("REVIEW_LANES.find(l => lanePool(l).some(p => p.status === 'pending'))"), 'auto lane fallback skips audit');
-assert(SOURCE.includes('startRoundGeneratorJob'), 'next round can start generator job');
+assert(SOURCE.includes('queueRoundForMacWorker'), 'next round queues Mac worker instead of Cloud Run compute');
+assert(SOURCE.includes('worker_required'), 'queued round response flags Mac worker requirement');
+assert(SOURCE.includes('review-rounds/'), 'round outputs are trial-scoped in GCS');
 assert(SOURCE.includes('pollRoundStatus'), 'UI polls generated round status');
 
 console.log('\nMosaic surface');
