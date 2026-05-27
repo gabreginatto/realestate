@@ -169,6 +169,14 @@ function parseMetaDescription(html) {
   ]));
 }
 
+function sectionSlice(html, startPattern, endPattern) {
+  const start = html.search(startPattern);
+  if (start < 0) return html;
+  const rest = html.slice(start);
+  const end = rest.search(endPattern);
+  return end > 0 ? rest.slice(0, end) : rest;
+}
+
 function vivaCodeFromUrl(url) {
   const match = String(url).match(/(?:^|\/)imovel\/[^?#"']+\/(\d+)(?:[?#"']|$)/);
   return match ? match[1] : null;
@@ -189,7 +197,8 @@ function parseVivaDetail(inventoryItem, html) {
     ...[...decodeHtml(html).matchAll(relativePattern)].map((m) => absoluteUrl(SITES.viva.host, m[0])),
   ]);
 
-  const body = stripTags(html);
+  const detailsHtml = sectionSlice(html, /<section[^>]+id=["']detalhes["']/i, /<section[^>]+id=["']semelhantes["']/i);
+  const body = stripTags(detailsHtml);
   const title = parseTitle(html);
   const description = parseMetaDescription(html);
 
@@ -207,8 +216,14 @@ function parseVivaDetail(inventoryItem, html) {
         suites: parseNumberNear(body, /(\d+)\s*su[ií]te/i),
         banheiros: parseNumberNear(body, /(\d+)\s*banheiro/i),
         vagas: parseNumberNear(body, /(\d+)\s*vaga/i),
-        area_construida: firstMatch(body, [/(\d+(?:[.,]\d+)?\s*m²)[^.!?]{0,30}(?:constru[ií]da|área constru[ií]da)/i]),
-        area_total: firstMatch(body, [/(\d+(?:[.,]\d+)?\s*m²)[^.!?]{0,30}(?:terreno|área total)/i]),
+        area_construida: firstMatch(body, [
+          /(\d+(?:[.,]\d+)?\s*m²)\s*Constru[ií]d[ao]/i,
+          /(\d+(?:[.,]\d+)?\s*m²)[^.!?]{0,30}(?:constru[ií]da|área constru[ií]da)/i,
+        ]),
+        area_total: firstMatch(body, [
+          /(\d+(?:[.,]\d+)?\s*m²)\s*Total/i,
+          /(\d+(?:[.,]\d+)?\s*m²)[^.!?]{0,30}(?:terreno|área total)/i,
+        ]),
       },
     },
   };

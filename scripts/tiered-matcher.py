@@ -130,7 +130,7 @@ def load_structural_maps(data_root: str | None, geometric_path: str):
     coelho = {}
     for row in coelho_rows:
         features = row.get("features") or row.get("area") or ""
-        area_match = re.search(r"(\d+(?:[.,]\d+)?)\s*m²\s*construída", str(features), re.I)
+        area_match = re.search(r"(\d+(?:[.,]\d+)?)\s*m²(?:\s*construída)?", str(features), re.I)
         coelho[listing_code(row)] = {
             "price": parse_price(row.get("price")),
             "area": parse_area(area_match.group(1) if area_match else features),
