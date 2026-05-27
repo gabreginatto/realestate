@@ -1044,7 +1044,7 @@ app.post('/api/start-next-round', async (req, res) => {
     return res.json({
       ok: false,
       done: true,
-      message: 'Todas as propriedades Viva desta sessão já têm match confirmado.',
+      message: 'All Viva listings in this session already have confirmed matches.',
       summary,
     });
   }
@@ -1209,230 +1209,712 @@ const HTML = /* html */`<!DOCTYPE html>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #0f1117; --surface: #1a1d27; --card: #21253a; --border: #2d3250;
-    --accent: #6366f1; --green: #22c55e; --red: #ef4444; --yellow: #eab308;
-    --text: #e2e8f0; --muted: #94a3b8; --radius: 12px;
+    color-scheme: light;
+    --bg: #eef2f6;
+    --surface: #ffffff;
+    --surface-soft: #f7f9fc;
+    --surface-strong: #182230;
+    --border: #d8e0ea;
+    --border-strong: #b6c3d1;
+    --text: #17202e;
+    --muted: #687586;
+    --muted-strong: #455468;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --green: #15803d;
+    --green-soft: #dcfce7;
+    --red: #c2410c;
+    --red-soft: #ffedd5;
+    --yellow: #a16207;
+    --yellow-soft: #fef3c7;
+    --cyan: #0f766e;
+    --cyan-soft: #ccfbf1;
+    --shadow: 0 18px 46px rgba(15, 23, 42, 0.12);
+    --radius: 8px;
   }
-  body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif;
-         min-height: 100vh; display: flex; flex-direction: column; }
-  header { background: var(--surface); border-bottom: 1px solid var(--border);
-           padding: 12px 24px; display: flex; flex-direction: column; gap: 10px; }
-  .header-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-  header h1 { font-size: 1.1rem; font-weight: 700; white-space: nowrap; }
-  .lane-tabs { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .lane-tab { background: var(--card); border: 1px solid var(--border); color: var(--muted);
-              border-radius: 6px; padding: 6px 12px; font-size: 0.85rem; font-weight: 600;
-              cursor: pointer; display: inline-flex; gap: 6px; align-items: center;
-              transition: all 0.15s; }
-  .lane-tab:hover:not(.active) { border-color: var(--accent); color: var(--text); }
-  .lane-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .lane-tab .lane-count { font-size: 0.75rem; opacity: 0.85; }
-  .lane-tab.is-empty { opacity: 0.55; }
-  .lane-tab.is-audit { margin-left: auto; border-style: dashed; display: none; }
-  .lane-tab.is-audit.active { border-style: solid; }
-  @media (max-width: 700px) { .lane-tab.is-audit { margin-left: 0; } }
-  .badge { background: var(--card); border: 1px solid var(--border);
-           border-radius: 6px; padding: 4px 10px; font-size: 0.85rem; color: var(--muted); }
-  .badge span { color: var(--text); font-weight: 600; }
-  .progress-bar { flex: 1; min-width: 120px; height: 8px; background: var(--card);
-                  border-radius: 4px; overflow: hidden; }
-  .progress-fill { height: 100%; background: var(--accent); transition: width 0.3s; }
-  main { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-         padding: 16px; max-width: 1400px; margin: 0 auto; width: 100%; }
-  @media (max-width: 700px) { main { grid-template-columns: 1fr; } }
-  .prop-card { background: var(--card); border: 1px solid var(--border);
-               border-radius: var(--radius); padding: 16px; display: flex;
-               flex-direction: column; gap: 12px; }
-  .prop-header { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-  .prop-source { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
-                 text-transform: uppercase; padding: 2px 8px; border-radius: 4px; color: #fff; }
-  .prop-code { font-size: 0.9rem; font-weight: 600; color: var(--muted); }
-  .prop-meta { font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
-  .prop-meta strong { color: var(--text); }
-  .prop-img { position: relative; cursor: pointer; border-radius: 8px; overflow: hidden;
-              background: var(--surface); aspect-ratio: 2 / 1; min-height: 200px;
-              display: flex; align-items: center; justify-content: center; }
-  .prop-img .mosaic-img { width: 100%; height: 100%; object-fit: contain; display: block; }
-  .prop-img.is-fallback { aspect-ratio: auto; min-height: 260px; }
-  .prop-img .img-grid { display: flex; flex-wrap: wrap; gap: 2px; width: 100%; }
-  .prop-img .img-grid img { width: calc(33.33% - 2px); height: 130px; object-fit: cover; }
-  .prop-img .zoom-hint { position: absolute; bottom: 8px; right: 8px;
-                         background: rgba(0,0,0,0.65); color: #fff; font-size: 0.75rem;
-                         padding: 3px 8px; border-radius: 4px; pointer-events: none; }
-  .prop-img .no-img { color: var(--muted); font-size: 0.85rem; padding: 40px; }
-  .prop-link { font-size: 0.82rem; color: var(--accent); text-decoration: none; }
-  .prop-link:hover { text-decoration: underline; }
-  footer { background: var(--surface); border-top: 1px solid var(--border);
-           padding: 16px 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-  .evidence-panel { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
-                    justify-content: center; max-width: 1100px; width: 100%;
-                    background: var(--card); border: 1px solid var(--border);
-                    border-radius: 8px; padding: 8px 14px; font-size: 0.8rem;
-                    color: var(--muted); }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.4;
+  }
+  a { color: inherit; }
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: 0;
+    border-radius: var(--radius);
+    transition: background-color 0.15s, border-color 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s;
+  }
+  button:hover { transform: translateY(-1px); }
+  button:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
+  button:focus-visible, a:focus-visible { outline: 3px solid rgba(37, 99, 235, 0.35); outline-offset: 2px; }
+  .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    pointer-events: none;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    width: min(1680px, 100%);
+    margin: 0 auto;
+    padding: 16px 24px 14px;
+    display: grid;
+    gap: 14px;
+  }
+  .topline {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    gap: 18px;
+    align-items: start;
+  }
+  .eyebrow {
+    color: var(--cyan);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin-top: 2px;
+    font-size: clamp(1.25rem, 2vw, 1.85rem);
+    line-height: 1.08;
+    letter-spacing: 0;
+  }
+  .subhead {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-top: 4px;
+  }
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(92px, 1fr));
+    gap: 8px;
+  }
+  .status-item {
+    min-height: 58px;
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface-soft);
+  }
+  .status-label {
+    display: block;
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .status-value {
+    display: block;
+    margin-top: 3px;
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .progress-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .progress-bar {
+    width: 100%;
+    height: 10px;
+    overflow: hidden;
+    background: #e2e8f0;
+    border-radius: 999px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--accent));
+    border-radius: inherit;
+    transition: width 0.3s;
+  }
+  .progress-copy {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .lane-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    pointer-events: auto;
+  }
+  .lane-tab {
+    display: flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted-strong);
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+  .lane-tab:hover:not(.active) { border-color: var(--border-strong); background: var(--surface-soft); }
+  .lane-tab.active {
+    color: var(--text);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.16);
+  }
+  .lane-tab .lane-count {
+    display: inline-flex;
+    min-width: 50px;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--muted-strong);
+    font-size: 0.76rem;
+  }
+  .lane-tab.is-empty { opacity: 0.58; }
+  .lane-tab.is-audit { display: none; border-style: dashed; }
+  .workspace {
+    width: min(1680px, 100%);
+    margin: 0 auto;
+    padding: 20px 24px 124px;
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+  .prop-card {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: auto minmax(280px, 1fr) auto auto;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .prop-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: start;
+  }
+  .prop-identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .prop-source {
+    display: inline-flex;
+    align-items: center;
+    min-height: 26px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 0.74rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .source-viva { background: #7c3aed; }
+  .source-coelho { background: #0f766e; }
+  .prop-code {
+    color: var(--muted-strong);
+    font-size: 0.93rem;
+    font-weight: 800;
+  }
+  .prop-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface-soft);
+    color: var(--muted-strong);
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .prop-link:hover { border-color: var(--accent); color: var(--accent); }
+  .prop-img {
+    position: relative;
+    width: 100%;
+    min-height: 280px;
+    aspect-ratio: 2 / 1;
+    scroll-margin: 180px 0 190px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: #0f172a;
+    color: #fff;
+  }
+  .prop-img:hover { transform: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16); }
+  .prop-img .mosaic-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .prop-img.is-fallback { aspect-ratio: auto; min-height: 330px; background: #101827; }
+  .prop-img .img-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 3px;
+    width: 100%;
+    height: 100%;
+    padding: 3px;
+  }
+  .prop-img .img-grid img { width: 100%; height: 130px; object-fit: cover; border-radius: 4px; }
+  .prop-img .zoom-hint {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.76);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    pointer-events: none;
+  }
+  .prop-img .no-img { color: #cbd5e1; font-size: 0.9rem; padding: 40px; }
+  .prop-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-height: 34px;
+  }
+  .fact {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    color: var(--muted-strong);
+    font-size: 0.84rem;
+    font-weight: 750;
+  }
+  .fact strong { color: var(--text); font-weight: 850; }
+  .fact-price { color: var(--green); background: var(--green-soft); border-color: #bbf7d0; }
+  .muted-empty { color: var(--muted); font-size: 0.86rem; align-self: center; }
+  .decision-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    z-index: 35;
+    pointer-events: none;
+    width: min(1380px, calc(100% - 32px));
+    display: grid;
+    grid-template-columns: minmax(210px, 0.78fr) minmax(280px, 1.2fr) auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 22px 70px rgba(15, 23, 42, 0.22);
+    backdrop-filter: blur(18px);
+  }
+  .decision-summary {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    min-width: 0;
+  }
+  .score-card {
+    min-width: 122px;
+    padding: 9px 10px;
+    border-radius: var(--radius);
+    background: var(--surface-strong);
+    color: #fff;
+  }
+  .score-label {
+    display: block;
+    color: #cbd5e1;
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .sim-val {
+    display: block;
+    margin-top: 2px;
+    color: #fff;
+    font-size: 1.26rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .sim-val.high { color: #86efac; }
+  .sim-val.medium { color: #fde68a; }
+  .sim-val.low { color: #fdba74; }
+  .pair-status {
+    min-width: 0;
+    display: grid;
+    gap: 5px;
+  }
+  .tier-label {
+    display: inline-flex;
+    width: fit-content;
+    max-width: 100%;
+    align-items: center;
+    min-height: 25px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.73rem;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .tier-high { background: var(--green-soft); color: var(--green); border: 1px solid #86efac; }
+  .tier-medium { background: var(--yellow-soft); color: var(--yellow); border: 1px solid #fde68a; }
+  .tier-low { background: var(--red-soft); color: var(--red); border: 1px solid #fed7aa; }
+  .pair-counter {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 750;
+  }
+  .pair-counter strong { color: var(--text); }
+  .evidence-panel {
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px 10px;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  .evidence-panel[hidden] { display: none; }
   .evidence-panel .ev-group { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .evidence-panel .ev-label { font-size: 0.7rem; text-transform: uppercase;
-                              letter-spacing: 0.05em; color: var(--muted); }
-  .evidence-panel .ev-val   { color: var(--text); font-weight: 600; }
-  .ev-chip { display: inline-flex; align-items: center; gap: 4px;
-             background: var(--surface); border: 1px solid var(--border);
-             border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; color: var(--text); }
-  .ev-chip.is-active { border-color: var(--accent); color: var(--accent); }
-  .ev-chip .ev-score { color: var(--muted); font-weight: 400; font-size: 0.7rem; }
-  .ev-pairs { width: 100%; display: flex; flex-wrap: wrap; gap: 4px 10px; justify-content: center;
-              border-top: 1px dashed var(--border); padding-top: 6px; margin-top: 2px; }
-  .ev-pairs .ev-pair { font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.72rem; color: var(--muted); }
-  .ev-pairs .ev-pair strong { color: var(--text); font-weight: 600; }
-  .sim-badge { font-size: 0.9rem; color: var(--muted); }
-  .sim-val { font-weight: 700; font-size: 1rem; }
-  .sim-val.high { color: var(--green); } .sim-val.medium { color: var(--yellow); } .sim-val.low { color: var(--red); }
-  .tier-label { display: inline-block; margin-left: 8px; padding: 2px 8px;
-                border-radius: 4px; font-size: 0.75rem; font-weight: 700; }
-  .tier-high   { background: #22c55e22; color: var(--green); border: 1px solid var(--green); }
-  .tier-medium { background: #eab30822; color: var(--yellow); border: 1px solid var(--yellow); }
-  .tier-low    { background: #ef444422; color: var(--red); border: 1px solid var(--red); }
-  .actions { display: flex; gap: 12px; }
-  button { cursor: pointer; border: none; border-radius: 8px;
-           padding: 10px 28px; font-size: 0.95rem; font-weight: 600; transition: opacity 0.15s; }
-  button:hover { opacity: 0.85; }
-  #btn-skip   { background: var(--red); color: #fff; }
-  #btn-unsure { background: var(--yellow); color: #1a1d27; }
-  #btn-match  { background: var(--green); color: #fff; }
-  #btn-done   { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
-  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  .lane-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-  .lane-summary .lane-cell { background: var(--surface); border: 1px solid var(--border);
-                             border-radius: 6px; padding: 8px; text-align: left; font-size: 0.8rem; }
-  .lane-summary .lane-cell strong { display: block; font-size: 0.7rem; color: var(--muted);
-                                    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
-  @media (max-width: 700px) { .lane-summary { grid-template-columns: repeat(2, 1fr); } }
-  .kbd { display: inline-block; background: var(--card); border: 1px solid var(--border);
-         border-radius: 4px; padding: 1px 6px; font-size: 0.75rem; color: var(--muted); }
-  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.75);
-              display: flex; align-items: center; justify-content: center; z-index: 100; }
+  .evidence-panel .ev-label {
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .evidence-panel .ev-val { color: var(--text); font-weight: 850; }
+  .ev-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 25px;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface-soft);
+    color: var(--muted-strong);
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+  .ev-chip.is-active { border-color: #93c5fd; background: var(--accent-soft); color: var(--accent); }
+  .ev-chip .ev-score { color: var(--muted-strong); font-weight: 750; font-size: 0.72rem; }
+  .ev-pairs {
+    flex-basis: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: 2px;
+  }
+  .ev-pairs .ev-pair {
+    display: inline-flex;
+    min-height: 24px;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--surface-soft);
+    color: var(--muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.7rem;
+  }
+  .ev-pairs .ev-pair strong { color: var(--text); font-weight: 850; }
+  .actions {
+    display: grid;
+    grid-template-columns: repeat(4, max-content);
+    gap: 8px;
+    justify-content: end;
+    pointer-events: auto;
+  }
+  .actions button, .modal-row button {
+    min-height: 42px;
+    padding: 9px 14px;
+    font-size: 0.9rem;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  #btn-skip { background: var(--red-soft); color: var(--red); border: 1px solid #fed7aa; }
+  #btn-unsure { background: var(--yellow-soft); color: var(--yellow); border: 1px solid #fde68a; }
+  #btn-match { background: var(--green); color: #fff; }
+  #btn-done { background: var(--surface-soft); color: var(--muted-strong); border: 1px solid var(--border); }
+  .lane-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+  .lane-summary .lane-cell {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px;
+    background: var(--surface-soft);
+    color: var(--muted-strong);
+    font-size: 0.82rem;
+  }
+  .lane-summary .lane-cell strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--text);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .modal-bg { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.58);
+              display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
   .modal-bg.hidden { display: none; }
-  .modal { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
-           padding: 32px; max-width: 480px; width: 90%; display: flex; flex-direction: column; gap: 20px; }
-  .modal h2 { font-size: 1.2rem; } .modal p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
-  .modal-row { display: flex; gap: 10px; justify-content: flex-end; }
-  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .modal {
+    width: min(560px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .modal h2 { font-size: 1.18rem; letter-spacing: 0; }
+  .modal p { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+  .modal-row { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+  .btn-outline { background: var(--surface-soft); border: 1px solid var(--border); color: var(--muted-strong); }
   .btn-green { background: var(--green); color: #fff; }
   .btn-accent { background: var(--accent); color: #fff; }
-  .stat-row { display: flex; gap: 24px; }
+  .stat-row { display: flex; gap: 12px; flex-wrap: wrap; }
   .stat { display: flex; flex-direction: column; }
-  .stat-val { font-size: 1.8rem; font-weight: 700; }
+  .stat-val { font-size: 1.8rem; font-weight: 900; }
   .stat-lbl { font-size: 0.8rem; color: var(--muted); }
   .green { color: var(--green); } .red { color: var(--red); }
-  .compare-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-                overflow-y: auto; z-index: 200; padding: 20px; }
+  .compare-bg { position: fixed; inset: 0; background: #0b1018;
+                overflow-y: auto; z-index: 200; padding: 18px; }
   .compare-bg.hidden { display: none; }
-  .compare-header { position: sticky; top: -20px; background: rgba(15,17,23,0.95);
-                    padding: 12px 0; margin: -20px -20px 16px -20px; padding: 16px 20px;
-                    z-index: 1; display: flex; flex-direction: column; gap: 12px;
-                    border-bottom: 1px solid var(--border); }
+  .compare-header { position: sticky; top: -18px; background: rgba(11, 16, 24, 0.94);
+                    margin: -18px -18px 16px; padding: 16px 18px;
+                    z-index: 1; display: grid; grid-template-columns: 1fr auto; gap: 12px;
+                    align-items: center; border-bottom: 1px solid rgba(255,255,255,0.12);
+                    backdrop-filter: blur(14px); }
   .compare-titlebar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .compare-titlebar h3 { font-size: 1rem; }
-  .compare-close { background: var(--card); border: 1px solid var(--border); color: var(--text);
-                   border-radius: 6px; padding: 6px 14px; cursor: pointer; font-size: 0.9rem; }
-  .compare-modes { display: inline-flex; background: var(--card); border: 1px solid var(--border);
-                   border-radius: 8px; padding: 2px; }
-  .compare-modes button { background: transparent; border: none; color: var(--muted);
-                          padding: 6px 14px; font-size: 0.85rem; font-weight: 600;
-                          border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+  .compare-titlebar h3 { color: #fff; font-size: 1rem; }
+  .compare-close { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.14);
+                   color: #fff; padding: 8px 14px; font-size: 0.9rem; font-weight: 850; }
+  .compare-modes { display: inline-flex; justify-self: end; background: rgba(255,255,255,0.08);
+                   border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius); padding: 3px; }
+  .compare-modes button { background: transparent; color: #cbd5e1;
+                          padding: 7px 13px; font-size: 0.84rem; font-weight: 850; }
   .compare-modes button.active { background: var(--accent); color: #fff; }
   .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .compare-col { background: var(--card); border: 1px solid var(--border);
+  .compare-col { background: #101827; border: 1px solid rgba(255,255,255,0.12);
                  border-radius: var(--radius); padding: 12px; }
-  .compare-col h4 { font-size: 0.9rem; margin-bottom: 8px; color: var(--muted); }
-  .compare-col h4 strong { color: var(--text); }
+  .compare-col h4 { font-size: 0.9rem; margin-bottom: 10px; color: #94a3b8; }
+  .compare-col h4 strong { color: #fff; }
   .compare-mosaic { width: 100%; border-radius: 8px; display: block; }
-  .compare-images { display: flex; flex-wrap: wrap; gap: 6px; }
-  .compare-images img { max-width: calc(50% - 6px); height: 160px; object-fit: cover;
+  .compare-images { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .compare-images img { width: 100%; height: 180px; object-fit: cover;
                         border-radius: 6px; cursor: zoom-in; }
-  .compare-empty { color: var(--muted); font-size: 0.85rem; padding: 16px; text-align: center; }
-  @media (max-width: 700px) {
-    .compare-grid { grid-template-columns: 1fr; }
-    .compare-images img { max-width: calc(50% - 6px); height: 130px; }
+  .compare-empty { color: #94a3b8; font-size: 0.9rem; padding: 28px; text-align: center; }
+  .notice { background: var(--accent-soft); border: 1px solid #93c5fd; border-radius: var(--radius);
+            padding: 12px 14px; font-size: 0.88rem; color: var(--text); line-height: 1.5; }
+  .notice code { color: var(--accent); font-size: 0.82rem; }
+  @media (max-width: 1100px) {
+    .topline { grid-template-columns: 1fr; }
+    .status-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .decision-bar {
+      grid-template-columns: 1fr;
+      align-items: stretch;
+    }
+    .actions { grid-template-columns: repeat(4, 1fr); }
+    .actions button { width: 100%; }
   }
-  .notice { background: #6366f122; border: 1px solid var(--accent); border-radius: 8px;
-            padding: 12px 16px; font-size: 0.85rem; color: var(--text); line-height: 1.5; }
-  .notice code { color: var(--accent); font-size: 0.8rem; }
+  @media (max-width: 820px) {
+    .app-header { position: static; }
+    .header-inner { padding: 14px 14px 12px; }
+    .status-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+    .status-item { min-height: 50px; padding: 8px 7px; }
+    .status-label { font-size: 0.58rem; }
+    .status-value { font-size: 0.94rem; }
+    .lane-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .workspace {
+      grid-template-columns: 1fr;
+      padding: 14px 14px 264px;
+    }
+    .prop-card {
+      grid-template-rows: auto auto auto auto;
+      padding: 12px;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+    }
+    .prop-header { grid-template-columns: 1fr; }
+    .prop-link { width: 100%; }
+    .prop-img { min-height: 220px; scroll-margin: 230px 0 270px; }
+    .prop-img.is-fallback { min-height: 300px; }
+    .decision-bar {
+      bottom: 0;
+      width: 100%;
+      border-right: 0;
+      border-bottom: 0;
+      border-left: 0;
+      border-radius: 8px 8px 0 0;
+    }
+    .decision-summary { grid-template-columns: 96px minmax(0, 1fr); }
+    .score-card { min-width: 0; }
+    .sim-val { font-size: 1.08rem; }
+    .evidence-panel {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+    }
+    .evidence-panel .ev-group { flex: 0 0 auto; }
+    .ev-pairs { display: none; }
+    .actions { grid-template-columns: repeat(2, 1fr); }
+    .actions button { min-height: 46px; white-space: normal; }
+    .compare-header { grid-template-columns: 1fr; }
+    .compare-modes { justify-self: stretch; display: grid; grid-template-columns: repeat(3, 1fr); }
+    .compare-grid { grid-template-columns: 1fr; }
+    .compare-images img { height: 138px; }
+    .lane-summary { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 460px) {
+    .progress-row { grid-template-columns: 1fr; }
+    .progress-copy { white-space: normal; }
+    .lane-tab { font-size: 0.82rem; padding: 8px; }
+    .lane-tab .lane-count { min-width: 44px; padding: 2px 5px; }
+    .prop-img .img-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .prop-img .img-grid img { height: 112px; }
+    .compare-modes button { padding: 7px 6px; font-size: 0.78rem; }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-row">
-    <h1>🏠 Match Review</h1>
-    <div class="badge">Pass <span id="hdr-pass">1</span></div>
-    <div class="badge"><span id="hdr-current">1</span> / <span id="hdr-total">?</span></div>
-    <div class="badge">✅ <span id="hdr-confirmed">0</span>  ❌ <span id="hdr-skipped">0</span></div>
-    <div class="badge" title="Confirmados em todas as raias">Total ✅ <span id="hdr-global">0</span></div>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-  </div>
-  <div class="lane-tabs" role="tablist" aria-label="Raias de revisão">
-    <button class="lane-tab" id="lane-high"   role="tab" onclick="switchLane('high')"  >Alta <span class="lane-count" id="lane-count-high">0/0</span></button>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="topline">
+      <div>
+        <p class="eyebrow">AI property matching</p>
+        <h1>Alphaville review desk</h1>
+        <p class="subhead">Alphaville 1 / active queue</p>
+      </div>
+      <div class="status-grid" aria-label="Review status">
+        <div class="status-item">
+          <span class="status-label">Pass</span>
+          <span class="status-value" id="hdr-pass">1</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Current</span>
+          <span class="status-value"><span id="hdr-current">1</span> / <span id="hdr-total">?</span></span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Reviewed</span>
+          <span class="status-value"><span id="hdr-confirmed">0</span> / <span id="hdr-skipped">0</span></span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Confirmed</span>
+          <span class="status-value" id="hdr-global">0</span>
+        </div>
+      </div>
+    </div>
+    <div class="progress-row">
+      <div class="progress-bar" aria-hidden="true"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-copy"><span id="hdr-percent">0%</span> complete</div>
+    </div>
+  <div class="lane-tabs" role="tablist" aria-label="Review lanes">
+    <button class="lane-tab" id="lane-high"   role="tab" onclick="switchLane('high')"  >High <span class="lane-count" id="lane-count-high">0/0</span></button>
     <button class="lane-tab" id="lane-normal" role="tab" onclick="switchLane('normal')">Normal <span class="lane-count" id="lane-count-normal">0/0</span></button>
     <button class="lane-tab" id="lane-recall" role="tab" onclick="switchLane('recall')">Recall <span class="lane-count" id="lane-count-recall">0/0</span></button>
-    <button class="lane-tab is-audit" id="lane-audit" role="tab" onclick="switchLane('audit')">Auditoria <span class="lane-count" id="lane-count-audit">0/0</span></button>
+    <button class="lane-tab is-audit" id="lane-audit" role="tab" onclick="switchLane('audit')">Audit <span class="lane-count" id="lane-count-audit">0/0</span></button>
+  </div>
   </div>
 </header>
 
-<main id="review-panel">
+<main class="workspace" id="review-panel">
   <div class="prop-card">
     <div class="prop-header">
-      <span class="prop-source" style="background:#7c3aed">VIVA</span>
-      <span class="prop-code" id="viva-code"></span>
+      <div class="prop-identity">
+        <span class="prop-source source-viva">Viva</span>
+        <span class="prop-code" id="viva-code"></span>
+      </div>
+      <a class="prop-link" id="viva-link" href="#" target="_blank" rel="noopener">Open Viva</a>
     </div>
-    <div class="prop-meta" id="viva-meta"></div>
-    <div class="prop-img" id="viva-img" onclick="openComparison()">
-      <span class="zoom-hint">🔍 clique para ampliar</span>
-    </div>
-    <a class="prop-link" id="viva-link" href="#" target="_blank" rel="noopener">🔗 Abrir no Viva Prime Imóveis</a>
+    <button class="prop-img" id="viva-img" onclick="openComparison()" aria-label="Open Viva image comparison">
+      <span class="zoom-hint">Compare</span>
+    </button>
+    <div class="prop-meta" id="viva-meta" aria-label="Viva listing facts"></div>
   </div>
 
   <div class="prop-card">
     <div class="prop-header">
-      <span class="prop-source" style="background:#0ea5e9">COELHO</span>
-      <span class="prop-code" id="coelho-code"></span>
+      <div class="prop-identity">
+        <span class="prop-source source-coelho">Coelho</span>
+        <span class="prop-code" id="coelho-code"></span>
+      </div>
+      <a class="prop-link" id="coelho-link" href="#" target="_blank" rel="noopener">Open Coelho</a>
     </div>
-    <div class="prop-meta" id="coelho-meta"></div>
-    <div class="prop-img" id="coelho-img" onclick="openComparison()">
-      <span class="zoom-hint">🔍 clique para ampliar</span>
-    </div>
-    <a class="prop-link" id="coelho-link" href="#" target="_blank" rel="noopener">🔗 Abrir no Coelho da Fonseca</a>
+    <button class="prop-img" id="coelho-img" onclick="openComparison()" aria-label="Open Coelho image comparison">
+      <span class="zoom-hint">Compare</span>
+    </button>
+    <div class="prop-meta" id="coelho-meta" aria-label="Coelho listing facts"></div>
   </div>
 </main>
 
-<footer>
-  <div class="sim-badge">
-    Confiança: <span class="sim-val" id="sim-val">—</span>
-    <span id="sim-extra" class="tier-label"></span>
-    &nbsp;|&nbsp; par <span id="footer-current">1</span> de <span id="footer-total">?</span>,
-    pass <span id="footer-pass">1</span>
+<footer class="decision-bar">
+  <div class="decision-summary">
+    <div class="score-card">
+      <span class="score-label">Confidence</span>
+      <span class="sim-val" id="sim-val">—</span>
+    </div>
+    <div class="pair-status">
+      <span id="sim-extra" class="tier-label"></span>
+      <span class="pair-counter">Pair <strong id="footer-current">1</strong> of <strong id="footer-total">?</strong> · Pass <strong id="footer-pass">1</strong></span>
+    </div>
   </div>
   <div class="evidence-panel" id="evidence-panel" hidden></div>
   <div class="actions">
-    <button id="btn-skip"   onclick="doSkip()"   aria-label="Não é o mesmo imóvel">❌ Não match <span class="kbd">← s</span></button>
-    <button id="btn-unsure" onclick="doUnsure()" aria-label="Marcar como incerto">❓ Incerto <span class="kbd">u</span></button>
-    <button id="btn-match"  onclick="doMatch()"  aria-label="Confirmar match">✅ Match <span class="kbd">→ m</span></button>
-    <button id="btn-done"   onclick="askDone()"  aria-label="Finalizar revisão">🏁 Finalizar <span class="kbd">d</span></button>
+    <button id="btn-skip"   onclick="doSkip()"   aria-label="Not a match">Not match</button>
+    <button id="btn-unsure" onclick="doUnsure()" aria-label="Mark as unsure">Unsure</button>
+    <button id="btn-match"  onclick="doMatch()"  aria-label="Confirm match">Match</button>
+    <button id="btn-done"   onclick="askDone()"  aria-label="Finish review">Finish</button>
   </div>
 </footer>
 
 <!-- Pass complete modal -->
 <div class="modal-bg hidden" id="pass-complete-modal" role="dialog" aria-modal="true" aria-labelledby="pc-heading">
   <div class="modal">
-    <h2 id="pc-heading">Pass <span id="pc-pass">1</span> completo ✅</h2>
+    <h2 id="pc-heading">Pass <span id="pc-pass">1</span> complete</h2>
     <div class="stat-row">
-      <div class="stat"><span class="stat-val green" id="pc-confirmed">0</span><span class="stat-lbl">Confirmados</span></div>
-      <div class="stat"><span class="stat-val red"   id="pc-skipped">0</span><span class="stat-lbl">Skipped</span></div>
+      <div class="stat"><span class="stat-val green" id="pc-confirmed">0</span><span class="stat-lbl">Matched</span></div>
+      <div class="stat"><span class="stat-val red"   id="pc-skipped">0</span><span class="stat-lbl">Rejected</span></div>
     </div>
     <div class="notice" id="pc-notice"></div>
     <div id="pc-next-round-help"></div>
     <div class="modal-row">
-      <button class="btn-outline" onclick="finalize()">🏁 Finalizar</button>
-      <button class="btn-accent" id="pc-next-round-btn" onclick="startNextRound('pass-complete')">🔁 Preparar próxima rodada</button>
-      <button class="btn-accent"  id="pc-reload-btn" onclick="reloadAndContinue()">🔄 Recarregar matches</button>
+      <button class="btn-outline" onclick="finalize()">Finalize</button>
+      <button class="btn-accent" id="pc-next-round-btn" onclick="startNextRound('pass-complete')">Prepare next round</button>
+      <button class="btn-accent"  id="pc-reload-btn" onclick="reloadAndContinue()">Reload matches</button>
     </div>
   </div>
 </div>
@@ -1440,11 +1922,11 @@ const HTML = /* html */`<!DOCTYPE html>
 <!-- Done confirm modal -->
 <div class="modal-bg hidden" id="done-confirm-modal" role="dialog" aria-modal="true" aria-labelledby="dc-heading">
   <div class="modal">
-    <h2 id="dc-heading">⚠️ Tem certeza?</h2>
+    <h2 id="dc-heading">Confirm finish</h2>
     <p id="done-confirm-text"></p>
     <div class="modal-row">
-      <button class="btn-outline" onclick="closeDoneModal()">Não, voltar</button>
-      <button class="btn-green"   onclick="finalize()">Sim, finalizar</button>
+      <button class="btn-outline" onclick="closeDoneModal()">Go back</button>
+      <button class="btn-green"   onclick="finalize()">Finish</button>
     </div>
   </div>
 </div>
@@ -1452,14 +1934,14 @@ const HTML = /* html */`<!DOCTYPE html>
 <!-- Final modal -->
 <div class="modal-bg hidden" id="final-modal" role="dialog" aria-modal="true" aria-labelledby="final-heading">
   <div class="modal">
-    <h2 id="final-heading">🎉 Revisão concluída!</h2>
+    <h2 id="final-heading">Review complete</h2>
     <div class="stat-row">
-      <div class="stat"><span class="stat-val green" id="final-count">0</span><span class="stat-lbl">Pares confirmados</span></div>
+      <div class="stat"><span class="stat-val green" id="final-count">0</span><span class="stat-lbl">Matched pairs</span></div>
     </div>
     <p id="final-breakdown"></p>
     <div class="modal-row">
-      <button class="btn-accent" id="next-round-btn" onclick="startNextRound('final')">🔁 Preparar Rodada 2</button>
-      <button class="btn-green" onclick="downloadFinal()">⬇ Baixar JSON</button>
+      <button class="btn-accent" id="next-round-btn" onclick="startNextRound('final')">Prepare round 2</button>
+      <button class="btn-green" onclick="downloadFinal()">Download JSON</button>
     </div>
   </div>
 </div>
@@ -1468,13 +1950,13 @@ const HTML = /* html */`<!DOCTYPE html>
 <div class="compare-bg hidden" id="compare" role="dialog" aria-modal="true" aria-labelledby="compare-title">
   <div class="compare-header">
     <div class="compare-titlebar">
-      <h3 id="compare-title">Comparar mosaicos expandidos</h3>
-      <button class="compare-close" onclick="closeComparison()" aria-label="Fechar comparação">✕ Fechar</button>
+      <h3 id="compare-title">Expanded mosaic comparison</h3>
+      <button class="compare-close" onclick="closeComparison()" aria-label="Close comparison">Close</button>
     </div>
-    <div class="compare-modes" role="tablist" aria-label="Modo de comparação">
-      <button id="cmp-mode-standard" role="tab" onclick="setComparisonMode('standard')">Padrão</button>
-      <button id="cmp-mode-expanded" role="tab" onclick="setComparisonMode('expanded')" class="active">Outdoor expandido</button>
-      <button id="cmp-mode-all"      role="tab" onclick="setComparisonMode('all')">Todas as fotos</button>
+    <div class="compare-modes" role="tablist" aria-label="Comparison mode">
+      <button id="cmp-mode-standard" role="tab" onclick="setComparisonMode('standard')">Standard</button>
+      <button id="cmp-mode-expanded" role="tab" onclick="setComparisonMode('expanded')" class="active">Expanded outdoor</button>
+      <button id="cmp-mode-all"      role="tab" onclick="setComparisonMode('all')">All photos</button>
     </div>
   </div>
   <div class="compare-grid">
@@ -1587,6 +2069,7 @@ function render(s) {
   const completed = (s.confirmed_count || 0) + (s.skipped_count || 0) + (s.unsure_count || 0);
   const pct = s.total > 0 ? (completed / s.total * 100).toFixed(1) : 0;
   document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('hdr-percent').textContent = pct + '%';
   document.getElementById('footer-current').textContent = s.current_index;
   document.getElementById('footer-total').textContent   = s.total;
   document.getElementById('footer-pass').textContent    = s.pass;
@@ -1634,7 +2117,7 @@ function renderEvidence(pair) {
       const score = (typeof s === 'number') ? '<span class="ev-score">' + s.toFixed(3) + '</span>' : '';
       return '<span class="ev-chip is-active">' + label + ' ' + score + '</span>';
     }).join('');
-    groups.push('<div class="ev-group"><span class="ev-label">Modelos</span>' + chips + '</div>');
+    groups.push('<div class="ev-group"><span class="ev-label">Models</span>' + chips + '</div>');
   }
 
   // Geometry block
@@ -1648,7 +2131,25 @@ function renderEvidence(pair) {
     geomBits.push('support <span class="ev-val">' + sp8 + '/' + sp12 + '</span>');
   }
   if (geomBits.length) {
-    groups.push('<div class="ev-group"><span class="ev-label">Geometria</span>' + geomBits.join(' &middot; ') + '</div>');
+    groups.push('<div class="ev-group"><span class="ev-label">Geometry</span>' + geomBits.join(' &middot; ') + '</div>');
+  }
+
+  // Structural deltas
+  const structuralBits = [];
+  if (typeof ev.price_diff === 'number') structuralBits.push('price <span class="ev-val">' + Math.round(ev.price_diff * 100) + '%</span>');
+  if (typeof ev.area_diff === 'number') structuralBits.push('area <span class="ev-val">' + Math.round(ev.area_diff * 100) + '%</span>');
+  if (ev.structural && typeof ev.structural === 'object') {
+    for (const key of ['price', 'area', 'beds']) {
+      if (ev.structural[key] !== undefined && ev.structural[key] !== null) {
+        structuralBits.push(key + ' <span class="ev-val">' + String(ev.structural[key]) + '</span>');
+      }
+    }
+  }
+  if (Array.isArray(ev.structural_failures) && ev.structural_failures.length) {
+    structuralBits.push('flags <span class="ev-val">' + ev.structural_failures.slice(0, 2).join(', ') + '</span>');
+  }
+  if (structuralBits.length) {
+    groups.push('<div class="ev-group"><span class="ev-label">Data</span>' + structuralBits.join(' &middot; ') + '</div>');
   }
 
   // Top image pairs
@@ -1674,15 +2175,15 @@ function renderEvidence(pair) {
 
 function metaHTML(info) {
   const parts = [];
-  if (info.price) parts.push('<strong>' + info.price + '</strong>');
-  if (info.area)  parts.push(info.area + ' m²');
-  if (info.beds)  parts.push(info.beds + ' dorms');
-  return parts.join(' &middot; ') || '<span style="color:var(--muted)">sem dados</span>';
+  if (info.price) parts.push('<span class="fact fact-price"><strong>' + info.price + '</strong></span>');
+  if (info.area)  parts.push('<span class="fact">' + info.area + ' m²</span>');
+  if (info.beds)  parts.push('<span class="fact">' + info.beds + ' dorms</span>');
+  return parts.join('') || '<span class="muted-empty">No structured data</span>';
 }
 
 async function renderImage(site, code) {
   const container = document.getElementById(site + '-img');
-  const hint = '<span class="zoom-hint">🔍 clique para ampliar</span>';
+  const hint = '<span class="zoom-hint">Compare</span>';
 
   // Try the generated standard mosaic first
   try {
@@ -1690,7 +2191,7 @@ async function renderImage(site, code) {
     if (probe && probe.available && probe.url) {
       container.classList.remove('is-fallback');
       container.innerHTML =
-        '<img class="mosaic-img" src="' + probe.url + '" alt="Mosaico padrão ' + site + ' ' + code + '" loading="lazy">' + hint;
+        '<img class="mosaic-img" src="' + probe.url + '" alt="Standard mosaic ' + site + ' ' + code + '" loading="lazy">' + hint;
       return;
     }
   } catch (_) { /* fall through to image grid */ }
@@ -1699,11 +2200,11 @@ async function renderImage(site, code) {
   const urls = await fetch('/api/images/' + site + '/' + code + '?mode=standard').then(r => r.json());
   container.classList.add('is-fallback');
   if (!urls.length) {
-    container.innerHTML = '<div class="no-img">Sem imagens disponíveis</div>';
+    container.innerHTML = '<div class="no-img">No images available</div>';
     return;
   }
   const six  = urls.slice(0, 6);
-  const imgs = six.map(u => '<img src="' + u + '" loading="lazy">').join('');
+  const imgs = six.map(u => '<img src="' + u + '" alt="' + site + ' photo" loading="lazy">').join('');
   container.innerHTML = '<div class="img-grid">' + imgs + '</div>' + hint;
 }
 
@@ -1737,7 +2238,7 @@ function setComparisonMode(mode) {
 
 async function renderComparisonSide(site, code, mode) {
   const body = document.getElementById('cmp-' + site + '-body');
-  body.innerHTML = '<p class="compare-empty">Carregando…</p>';
+  body.innerHTML = '<p class="compare-empty">Loading...</p>';
 
   // Standard / Expanded prefer the generated mosaic
   if (mode === 'standard' || mode === 'expanded') {
@@ -1746,7 +2247,7 @@ async function renderComparisonSide(site, code, mode) {
       if (probe && probe.available && probe.url) {
         body.innerHTML =
           '<img class="compare-mosaic" src="' + probe.url +
-          '" alt="Mosaico ' + mode + ' ' + site + ' ' + code +
+          '" alt="Mosaic ' + mode + ' ' + site + ' ' + code +
           '" loading="lazy" onclick="window.open(this.src)">';
         return;
       }
@@ -1757,7 +2258,7 @@ async function renderComparisonSide(site, code, mode) {
   const apiMode = mode === 'all' ? 'all' : (mode === 'standard' ? 'standard' : 'expanded');
   const urls = await fetch('/api/images/' + site + '/' + code + '?mode=' + apiMode).then(r => r.json());
   if (!Array.isArray(urls) || !urls.length) {
-    body.innerHTML = '<p class="compare-empty">Sem imagens.</p>';
+    body.innerHTML = '<p class="compare-empty">No images.</p>';
     return;
   }
   body.innerHTML = '<div class="compare-images">' +
@@ -1789,7 +2290,7 @@ async function doUnsure() {
   fetchSession();
 }
 
-const LANE_LABELS = { high: 'Alta confiança', normal: 'Normal', recall: 'Recall', audit: 'Auditoria' };
+const LANE_LABELS = { high: 'High confidence', normal: 'Normal', recall: 'Recall', audit: 'Audit' };
 
 function laneSummaryHTML(lanes) {
   if (!lanes) return '';
@@ -1797,10 +2298,10 @@ function laneSummaryHTML(lanes) {
     ['high', 'normal', 'recall'].map(l => {
       const c = lanes[l] || {};
       return '<div class="lane-cell"><strong>' + LANE_LABELS[l] + '</strong>' +
-        '✅ ' + (c.confirmed || 0) +
-        ' &middot; ❌ ' + (c.skipped || 0) +
-        ' &middot; ❓ ' + (c.unsure || 0) +
-        ' &middot; ⏳ ' + (c.pending || 0) + '</div>';
+        'Matched ' + (c.confirmed || 0) +
+        ' &middot; Rejected ' + (c.skipped || 0) +
+        ' &middot; Unsure ' + (c.unsure || 0) +
+        ' &middot; Pending ' + (c.pending || 0) + '</div>';
     }).join('') + '</div>';
 }
 
@@ -1826,17 +2327,17 @@ function showPassComplete(s) {
   document.getElementById('pc-confirmed').textContent = s.confirmed_count;
   document.getElementById('pc-skipped').textContent   = s.skipped_count;
   const notice = document.getElementById('pc-notice');
-  let html = 'Raia <strong>' + (LANE_LABELS[s.lane] || s.lane) + '</strong> concluída.';
+  let html = '<strong>' + (LANE_LABELS[s.lane] || s.lane) + '</strong> lane complete.';
   html += laneSummaryHTML(s.lanes);
   if (s.skipped_count > 0) {
-    html += '<p style="margin-top:10px">Para re-matcher pares skipped: rode <code>recursive-matcher-v2.py</code>, depois <code>./scripts/sync-to-gcs.sh</code>, depois "Recarregar matches".</p>';
+    html += '<p style="margin-top:10px">To re-match rejected pairs, run <code>recursive-matcher-v2.py</code>, then <code>./scripts/sync-to-gcs.sh</code>, then reload matches.</p>';
   } else {
-    html += '<p style="margin-top:10px">Todas as raias de revisão concluídas!</p>';
+    html += '<p style="margin-top:10px">All review lanes are complete.</p>';
   }
   notice.innerHTML = html;
   const nextPass = (Number(s.pass) || 1) + 1;
   const nextBtn = document.getElementById('pc-next-round-btn');
-  nextBtn.textContent = '🔁 Preparar Rodada ' + nextPass;
+  nextBtn.textContent = 'Prepare round ' + nextPass;
   nextBtn.style.display = '';
   const nextHelp = document.getElementById('pc-next-round-help');
   if (nextHelp) nextHelp.innerHTML = '';
@@ -1856,8 +2357,8 @@ function askDone() {
   const s = _state;
   if (!s) return;
   document.getElementById('done-confirm-text').innerHTML =
-    'Você confirmou <strong>' + s.confirmed_count + '</strong> pares.' +
-    (s.skipped_count > 0 ? ' Os <strong>' + s.skipped_count + '</strong> skipped serão ignorados.' : '');
+    'You matched <strong>' + s.confirmed_count + '</strong> pairs.' +
+    (s.skipped_count > 0 ? ' The <strong>' + s.skipped_count + '</strong> rejected pairs will be ignored.' : '');
   document.getElementById('done-confirm-modal').classList.remove('hidden');
 }
 function closeDoneModal() { document.getElementById('done-confirm-modal').classList.add('hidden'); }
@@ -1871,14 +2372,14 @@ async function finalize() {
   document.getElementById('final-count').textContent = r.total_confirmed;
   const lanes = (_state && _state.lanes) || null;
   const vivaLine = r.total_viva_listings != null
-    ? '<br><strong>' + r.total_confirmed + '</strong> de <strong>' + r.total_viva_listings + '</strong> Viva confirmadas. ' +
-      '<strong>' + (r.pending_viva_count || 0) + '</strong> seguem para a próxima rodada.'
+    ? '<br><strong>' + r.total_confirmed + '</strong> of <strong>' + r.total_viva_listings + '</strong> Viva listings matched. ' +
+      '<strong>' + (r.pending_viva_count || 0) + '</strong> continue to the next round.'
     : '';
   document.getElementById('final-breakdown').innerHTML =
-    r.total_confirmed + ' pares confirmados salvos no GCS.' + vivaLine + laneSummaryHTML(lanes);
+    r.total_confirmed + ' matched pairs saved to GCS.' + vivaLine + laneSummaryHTML(lanes);
   const nextRoundBtn = document.getElementById('next-round-btn');
   const nextPass = ((_state && Number(_state.pass)) || 1) + 1;
-  nextRoundBtn.textContent = '🔁 Preparar Rodada ' + nextPass;
+  nextRoundBtn.textContent = 'Prepare round ' + nextPass;
   nextRoundBtn.style.display = (r.pending_viva_count || 0) > 0 ? '' : 'none';
   document.getElementById('final-modal').classList.remove('hidden');
 }
@@ -1890,7 +2391,7 @@ async function startNextRound(source) {
     : document.getElementById('next-round-btn');
   const old = btn.textContent;
   btn.disabled = true;
-  btn.textContent = 'Preparando...';
+  btn.textContent = 'Preparing...';
   try {
     const resp = await fetch('/api/start-next-round', { method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ lane: _lane, page_elapsed_ms: Date.now() - _pageStartedAt }) });
@@ -1911,11 +2412,11 @@ async function startNextRound(source) {
     if (previousHelp) previousHelp.remove();
     const commandHtml = r.command
       ? '<div id="' + helpId + '" class="notice" style="margin-top:12px">' +
-        '<strong>Rodada ' + r.next_pass + ' ainda não está gerada.</strong><br>' +
-        'Rode no Mac e depois clique novamente em <strong>Preparar Rodada ' + r.next_pass + '</strong>:<br>' +
+        '<strong>Round ' + r.next_pass + ' is not generated yet.</strong><br>' +
+        'Run this on the Mac, then click <strong>Prepare round ' + r.next_pass + '</strong> again:<br>' +
         '<code>' + r.command.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</code></div>'
       : '<div id="' + helpId + '" class="notice" style="margin-top:12px">' +
-        (r.message || 'Não foi possível iniciar a próxima rodada.') + '</div>';
+        (r.message || 'Could not start the next round.') + '</div>';
     const target = fromPassComplete
       ? document.getElementById('pc-next-round-help')
       : document.getElementById('final-breakdown');
@@ -1938,8 +2439,8 @@ function showRoundGenerationStatus(fromPassComplete, nextPass, message) {
   if (previousHelp) previousHelp.remove();
   generationTarget(fromPassComplete).insertAdjacentHTML('beforeend',
     '<div id="' + helpId + '" class="notice" style="margin-top:12px">' +
-    '<strong>Gerando Rodada ' + nextPass + '...</strong><br>' +
-    (message || 'O matcher está rodando em background. Esta tela avançará automaticamente quando terminar.') +
+    '<strong>Generating round ' + nextPass + '...</strong><br>' +
+    (message || 'The matcher is running in the background. This screen will advance automatically when it finishes.') +
     '</div>'
   );
 }
@@ -1958,12 +2459,12 @@ async function pollRoundStatus(nextPass, fromPassComplete) {
       return;
     }
     if (el && r.status) {
-      el.innerHTML = '<strong>Gerando Rodada ' + nextPass + '...</strong><br>' +
-        (r.status.message || r.status.state || 'Aguardando matcher.');
+      el.innerHTML = '<strong>Generating round ' + nextPass + '...</strong><br>' +
+        (r.status.message || r.status.state || 'Waiting for matcher.');
     }
     if (r.status && r.status.state === 'failed') {
-      if (el) el.innerHTML = '<strong>Falha ao gerar Rodada ' + nextPass + '.</strong><br>' +
-        (r.status.message || 'Erro desconhecido.');
+      if (el) el.innerHTML = '<strong>Failed to generate round ' + nextPass + '.</strong><br>' +
+        (r.status.message || 'Unknown error.');
       return;
     }
   }
