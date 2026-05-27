@@ -67,7 +67,7 @@ async function mapLimit(items, limit, worker) {
   return results;
 }
 
-function collectUploadPlan(compound, prefix) {
+function collectUploadPlan(compound, prefix, groups) {
   const compoundDir = path.join(DATA_ROOT, compound);
   const scopedPrefix = `${prefix}/${safeSegment(compound)}`;
   const dirs = [
@@ -77,8 +77,10 @@ function collectUploadPlan(compound, prefix) {
     ['selected-for-matching-fresh', path.join(compoundDir, 'selected-for-matching-fresh')],
     ['fresh-mosaics', path.join(compoundDir, 'fresh-mosaics')],
   ];
+  const allowed = groups ? new Set(groups) : null;
   const files = [];
   for (const [name, root] of dirs) {
+    if (allowed && !allowed.has(name)) continue;
     for (const file of walkFiles(root)) {
       const rel = path.relative(root, file).split(path.sep).join('/');
       files.push({
@@ -112,6 +114,10 @@ async function main() {
   const bucketName = normalizeBucket(argValue(args, '--bucket', process.env.GCS_BUCKET || 'realestate-475615-data'));
   const prefix = argValue(args, '--prefix', 'compounds').replace(/^\/+|\/+$/g, '');
   const concurrency = Number(argValue(args, '--concurrency', '16'));
+  const groupsArg = argValue(args, '--groups', '');
+  const groups = groupsArg
+    ? groupsArg.split(',').map((value) => value.trim()).filter(Boolean)
+    : null;
   const deleteExtraFiles = hasFlag(args, '--delete-extra');
   const dryRun = hasFlag(args, '--dry-run');
   const compounds = listCompounds(compoundArg);
@@ -125,13 +131,14 @@ async function main() {
     generated_at: new Date().toISOString(),
     bucket: bucketName,
     prefix,
+    groups: groups || 'all',
     dry_run: dryRun,
     delete_extra: deleteExtraFiles,
     compounds: {},
   };
 
   for (const compound of compounds) {
-    const plan = collectUploadPlan(compound, prefix);
+    const plan = collectUploadPlan(compound, prefix, groups);
     const keepSet = new Set(plan.files.map((file) => file.destination));
     console.log(`\n${compound}: ${plan.files.length} file(s) -> gs://${bucketName}/${plan.scopedPrefix}/`);
 
@@ -141,9 +148,15 @@ async function main() {
       });
     }
 
-    const deleted = deleteExtraFiles
-      ? await deleteExtra(bucket, plan.scopedPrefix, keepSet, dryRun)
-      : [];
+    let deleted = [];
+    if (deleteExtraFiles) {
+      const deletePrefixes = groups
+        ? groups.map((group) => `${plan.scopedPrefix}/${group}`)
+        : [plan.scopedPrefix];
+      for (const deletePrefix of deletePrefixes) {
+        deleted = deleted.concat(await deleteExtra(bucket, deletePrefix, keepSet, dryRun));
+      }
+    }
 
     const manifest = {
       generated_at: new Date().toISOString(),

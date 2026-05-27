@@ -50,8 +50,8 @@ def load_recursive_matcher(repo_root: Path):
     return module
 
 
-def selected_images(repo_root: Path, site: str, code: str) -> list[Path]:
-    base = repo_root / "selected_for_matching" / site / code
+def selected_images(selected_root: Path, site: str, code: str) -> list[Path]:
+    base = selected_root / site / code
     if not base.is_dir():
         return []
     return [
@@ -114,7 +114,8 @@ def embed_paths(model, paths: list[Path], device: str,
     return vectors
 
 
-def compute_cache(viva, coelho, repo_root: Path, cache_path: Path,
+def compute_cache(viva, coelho, repo_root: Path, selected_root: Path,
+                  cache_path: Path,
                   image_size: int, batch_size: int, refresh: bool):
     if cache_path.exists() and not refresh:
         log.info(f"Loading MegaLoc cache from {cache_path}")
@@ -130,7 +131,7 @@ def compute_cache(viva, coelho, repo_root: Path, cache_path: Path,
         ("coelhodafonseca", x["code"]) for x in coelho
     ]
     for idx, (site, code) in enumerate(all_items, start=1):
-        paths = selected_images(repo_root, site, code)
+        paths = selected_images(selected_root, site, code)
         vectors = embed_paths(model, paths, device, image_size, batch_size)
         cache[f"{site}/{code}"] = {
             "files": [p.name for p in paths],
@@ -224,6 +225,7 @@ def threshold_sweep(sim_matrix: np.ndarray, viva, coelho, matcher):
 def parse_args():
     p = argparse.ArgumentParser(description="MegaLoc property matcher")
     p.add_argument("--data-root", default="data")
+    p.add_argument("--selected-root", default="selected_for_matching")
     p.add_argument("--cache", default="data/embedding-cache-megaloc.pkl")
     p.add_argument("--output", default="data/auto-matches-megaloc.json")
     p.add_argument("--threshold", type=float, default=None,
@@ -238,11 +240,12 @@ def main():
     args = parse_args()
     repo_root = Path.cwd()
     data_root = Path(args.data_root).resolve()
+    selected_root = Path(args.selected_root).resolve()
     matcher = load_recursive_matcher(repo_root)
 
     viva, coelho = matcher.load_listings(data_root)
     cache = compute_cache(
-        viva, coelho, repo_root, Path(args.cache), args.image_size,
+        viva, coelho, repo_root, selected_root, Path(args.cache), args.image_size,
         args.batch_size, args.refresh_cache,
     )
 

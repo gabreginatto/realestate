@@ -56,8 +56,8 @@ def load_recursive_matcher(repo_root: Path):
     return module
 
 
-def selected_images(repo_root: Path, site: str, code: str) -> list[Path]:
-    base = repo_root / "selected_for_matching" / site / code
+def selected_images(selected_root: Path, site: str, code: str) -> list[Path]:
+    base = selected_root / site / code
     if not base.is_dir():
         return []
     return [
@@ -151,7 +151,8 @@ def sample_training_tokens(image_tokens: list[np.ndarray], max_tokens: int,
     return l2_normalize_rows(train)
 
 
-def compute_cache(viva, coelho, repo_root: Path, cache_path: Path,
+def compute_cache(viva, coelho, repo_root: Path, selected_root: Path,
+                  cache_path: Path,
                   clusters: int, max_train_tokens: int, seed: int,
                   device: str, refresh: bool):
     if cache_path.exists() and not refresh:
@@ -168,7 +169,7 @@ def compute_cache(viva, coelho, repo_root: Path, cache_path: Path,
     raw_tokens = {}
     train_tokens = []
     for idx, (site, code) in enumerate(all_items, start=1):
-        paths = selected_images(repo_root, site, code)
+        paths = selected_images(selected_root, site, code)
         listing_tokens = []
         for path in paths:
             tokens = extract_patch_tokens(model, path, device, transform)
@@ -286,6 +287,7 @@ def threshold_sweep(sim_matrix: np.ndarray, viva, coelho, matcher):
 def parse_args():
     p = argparse.ArgumentParser(description="DINOv3 patch-token VLAD matcher")
     p.add_argument("--data-root", default="data")
+    p.add_argument("--selected-root", default="selected_for_matching")
     p.add_argument("--cache", default="data/embedding-cache-patch-vlad.pkl")
     p.add_argument("--output", default="data/auto-matches-patch-vlad.json")
     p.add_argument("--threshold", type=float, default=None,
@@ -303,13 +305,14 @@ def main():
     args = parse_args()
     repo_root = Path.cwd()
     data_root = Path(args.data_root).resolve()
+    selected_root = Path(args.selected_root).resolve()
     matcher = load_recursive_matcher(repo_root)
     device = select_device(args.device)
     log.info(f"Device: {device}")
 
     viva, coelho = matcher.load_listings(data_root)
     cache = compute_cache(
-        viva, coelho, repo_root, Path(args.cache), args.clusters,
+        viva, coelho, repo_root, selected_root, Path(args.cache), args.clusters,
         args.max_train_tokens, args.seed, device, args.refresh_cache,
     )
 

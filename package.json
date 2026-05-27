@@ -8,6 +8,7 @@
     "test": "tests"
   },
   "scripts": {
+    "ops": "node scripts/local-ops-server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

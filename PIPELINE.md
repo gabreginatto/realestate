@@ -32,6 +32,30 @@ sync-to-gcs.sh             →     listings/{site}.json            (always on,
 **Key rule:** Mac does all AI compute. GCS stores everything. Cloud Run only serves the review UI.
 You do NOT need a GPU VM. You do NOT need the Mac on during review.
 
+## Local Mac operations console
+
+Run the local control panel on the Mac that performs the heavy work:
+
+```bash
+npm run ops
+```
+
+Default URL:
+
+```text
+http://127.0.0.1:3030
+```
+
+For access from another device on the same home network, bind it to the LAN:
+
+```bash
+OPS_HOST=0.0.0.0 npm run ops
+```
+
+The console can start/stop the DINO/CLIP server, run the fresh compound scrape
+and GCS sync, verify GCS assets, and run the Mac review-round worker. Keep it on
+your trusted home network only because it launches local Mac commands.
+
 ---
 
 ## GCP Resources
