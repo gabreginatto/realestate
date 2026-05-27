@@ -13,7 +13,7 @@ const fs = require('fs');
 const http = require('http');
 const os = require('os');
 const path = require('path');
-const { execFile, spawn } = require('child_process');
+const { execFile, execFileSync, spawn } = require('child_process');
 const { Storage } = require('@google-cloud/storage');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
@@ -24,6 +24,7 @@ const GCS_BUCKET = normalizeBucket(process.env.GCS_BUCKET || 'realestate-475615-
 const CLOUD_REVIEW_URL = process.env.REVIEW_UI_URL || 'https://match-review-n3z7pwcwsa-ue.a.run.app';
 const DINO_URL = process.env.DINO_URL || 'http://127.0.0.1:8000/health';
 const MAX_LOG_LINES = 900;
+const MATCHING_LOCK_PATH = path.join(DATA_ROOT, '.local-matching-run.json');
 
 const app = express();
 const storage = new Storage();
@@ -32,6 +33,7 @@ const jobs = new Map();
 const longJobs = new Map();
 let nextJobId = 1;
 let trialSummaryCache = { loadedAt: 0, summaries: [] };
+let reviewSessionCache = { loadedAt: 0, summary: null };
 
 const COMMUNITY_NAMES = {
   'alphaville-1': 'Alphaville 1',
@@ -61,6 +63,11 @@ function readJson(file, fallback = null) {
   }
 }
 
+function writeJson(file, data) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`);
+}
+
 function fileStamp(file) {
   try {
     const stat = fs.statSync(file);
@@ -68,6 +75,72 @@ function fileStamp(file) {
   } catch (_) {
     return null;
   }
+}
+
+function processLooksLikeMatcher(pid) {
+  if (!pid) return false;
+  try {
+    process.kill(Number(pid), 0);
+  } catch (_) {
+    return false;
+  }
+  try {
+    const command = execFileSync('ps', ['-p', String(pid), '-o', 'command='], {
+      encoding: 'utf8',
+      timeout: 1000,
+    });
+    return /run-community-matching\.js|megaloc-matcher\.py|patch-vlad-matcher\.py|geometric-reranker\.py|tiered-matcher\.py/.test(command);
+  } catch (_) {
+    return true;
+  }
+}
+
+function currentMatchingLock() {
+  const lock = readJson(MATCHING_LOCK_PATH, null);
+  if (!lock) return null;
+  if (processLooksLikeMatcher(lock.pid)) return lock;
+  try { fs.unlinkSync(MATCHING_LOCK_PATH); } catch (_) {}
+  return null;
+}
+
+function compoundFromArgs(args = []) {
+  const index = args.indexOf('--compound');
+  return index >= 0 ? args[index + 1] || null : null;
+}
+
+function setMatchingLock(job) {
+  if (!job || job.kind !== 'matching') return;
+  writeJson(MATCHING_LOCK_PATH, {
+    state: 'running',
+    source: 'local-ops-server',
+    compound: compoundFromArgs(job.args),
+    job_id: job.id,
+    pid: job.child?.pid || null,
+    label: job.label,
+    started_at: job.started_at,
+  });
+}
+
+function clearMatchingLock(job) {
+  const lock = readJson(MATCHING_LOCK_PATH, null);
+  if (!lock || job?.kind !== 'matching') return;
+  if (lock.job_id === job.id || lock.pid === job.child?.pid) {
+    try { fs.unlinkSync(MATCHING_LOCK_PATH); } catch (_) {}
+  }
+}
+
+function publicMatchingLock(lock) {
+  return {
+    id: lock.job_id || `pid-${lock.pid}`,
+    kind: 'matching',
+    label: lock.label || `Run matching (${communityName(lock.compound)})`,
+    status: 'running',
+    started_at: lock.started_at || null,
+    ended_at: null,
+    exit_code: null,
+    signal: null,
+    log: [],
+  };
 }
 
 function listCompounds() {
@@ -171,6 +244,28 @@ async function dinoStatus() {
   };
 }
 
+async function currentReviewSession() {
+  const now = Date.now();
+  if (now - reviewSessionCache.loadedAt < 5000) return reviewSessionCache.summary;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3500);
+  try {
+    const response = await fetch(`${CLOUD_REVIEW_URL.replace(/\/+$/, '')}/api/trial-summary`, {
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const summary = await response.json();
+    reviewSessionCache = { loadedAt: now, summary };
+    return summary;
+  } catch (err) {
+    const summary = { error: err.message || 'Could not read review session' };
+    reviewSessionCache = { loadedAt: now, summary };
+    return summary;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function externalProcesses() {
   const result = await execFileText('pgrep', ['-af', 'scripts/mac-round-worker.js|uvicorn main:app|local-ops-server.js'], { timeout: 2000 });
   const lines = result.stdout.trim().split('\n').filter(Boolean);
@@ -193,6 +288,10 @@ async function queuedRoundJobs() {
             path: file.name,
             state: status.state,
             round: status.round || null,
+            trial_run_id: status.trial_run_id || null,
+            summary_path: status.summary_path || null,
+            summary_url: status.summary_url || null,
+            artifact_prefix: status.artifact_prefix || null,
             updated_at: status.updated_at || status.requested_at || null,
             message: status.message || '',
           });
@@ -293,6 +392,7 @@ async function trialSummaries() {
           path: file.name,
           updated_at: metadata.updated || json.generated_at || null,
           trial_run_id: json.trial_run_id || null,
+          compound: json.compound || null,
           pass: json.pass || null,
           total_viva_listings: Number(json.total_viva_listings) || 0,
           total_coelho_listings: Number(json.total_coelho_listings) || 0,
@@ -318,11 +418,42 @@ async function matchingStatus() {
   const compounds = listCompounds();
   const summaries = await trialSummaries();
   const queue = await queuedRoundJobs();
+  const reviewSession = await currentReviewSession();
+  const matchingLock = currentMatchingLock();
+  const runningCommunityJobs = Array.from(jobs.values()).filter(job =>
+    job.kind === 'matching' && ['running', 'stopping'].includes(job.status)
+  );
+  const matchingRunning = runningCommunityJobs.length > 0 || Boolean(matchingLock);
   const communities = compounds.map((compound) => {
     const total = siteListingCount(compound, 'fresh-listings', 'vivaprimeimoveis')
       || siteListingCount(compound, 'live-listing-inventory', 'vivaprimeimoveis')
       || 0;
-    const summary = summaries.find(item => item.total_viva_listings === total);
+    const coelhoTotal = siteListingCount(compound, 'fresh-listings', 'coelhodafonseca')
+      || siteListingCount(compound, 'live-listing-inventory', 'coelhodafonseca')
+      || 0;
+    const summary = summaries.find(item => item.compound === compound) || summaries.find(item =>
+      item.total_viva_listings === total && item.total_coelho_listings === coelhoTotal
+    ) || summaries.find(item => item.total_viva_listings === total);
+    const queuedRound = (queue.jobs || []).find(job =>
+      job.state === 'queued' && summary?.trial_run_id && job.trial_run_id === summary.trial_run_id
+    ) || null;
+    const activeJob = runningCommunityJobs.find(job => {
+      const compoundIndex = job.args.indexOf('--compound');
+      return compoundIndex >= 0 && job.args[compoundIndex + 1] === compound;
+    }) || null;
+    const activeLock = matchingLock?.compound === compound ? matchingLock : null;
+    const reviewReady = reviewSession?.compound
+      ? reviewSession.compound === compound
+      : (
+        reviewSession?.total_viva_listings === total
+        && reviewSession?.total_coelho_listings === coelhoTotal
+      );
+    const reviewPending = reviewReady
+      ? Number(reviewSession?.total_pending ?? 0) || 0
+      : 0;
+    const reviewCandidates = reviewReady
+      ? Number(reviewSession?.total_candidates ?? 0) || 0
+      : 0;
     const matched = Math.min(total, summary ? summary.confirmed_viva_count : countManualMatches(compound));
     const remaining = Math.max(0, total - matched);
     const verification = latestVerificationByCompound(compound);
@@ -335,7 +466,14 @@ async function matchingStatus() {
       candidate_groups: countCandidatePairs(compound),
       latest_round: summary?.pass || null,
       latest_trial_run_id: summary?.trial_run_id || null,
+      latest_summary_path: summary?.path || null,
       latest_updated_at: summary?.updated_at || null,
+      queued_round: queuedRound,
+      active_job: activeJob ? publicJob(activeJob) : (activeLock ? publicMatchingLock(activeLock) : null),
+      review_ready: Boolean(reviewReady),
+      review_pending: reviewPending,
+      review_candidates: reviewCandidates,
+      review_pass: reviewReady ? reviewSession?.pass || null : null,
       storage_ready: verification.ready,
       storage_missing: verification.missing,
       storage_issues: verification.issues,
@@ -346,8 +484,11 @@ async function matchingStatus() {
     generated_at: new Date().toISOString(),
     bucket: GCS_BUCKET,
     review_url: CLOUD_REVIEW_URL,
+    matching_running: matchingRunning,
+    matching_lock: matchingLock ? publicMatchingLock(matchingLock) : null,
     communities,
     queue,
+    review_session: reviewSession,
     worker_running: longJobs.has('worker'),
     jobs: Array.from(jobs.values()).slice(-8).reverse().map(publicJob),
   };
@@ -414,6 +555,7 @@ function spawnJob({ kind, label, command, args, cwd = REPO_ROOT, env = {}, singl
   job.child = child;
   jobs.set(job.id, job);
   if (singleton) longJobs.set(singleton, job);
+  setMatchingLock(job);
 
   child.stdout.on('data', data => appendLog(job, data));
   child.stderr.on('data', data => appendLog(job, data));
@@ -422,6 +564,7 @@ function spawnJob({ kind, label, command, args, cwd = REPO_ROOT, env = {}, singl
     job.status = 'failed';
     job.ended_at = new Date().toISOString();
     if (singleton && longJobs.get(singleton)?.id === job.id) longJobs.delete(singleton);
+    clearMatchingLock(job);
   });
   child.on('exit', (code, signal) => {
     job.exit_code = code;
@@ -431,6 +574,7 @@ function spawnJob({ kind, label, command, args, cwd = REPO_ROOT, env = {}, singl
     else job.status = code === 0 ? 'succeeded' : 'failed';
     appendLog(job, `Process exited with ${signal || code}`);
     if (singleton && longJobs.get(singleton)?.id === job.id) longJobs.delete(singleton);
+    clearMatchingLock(job);
   });
 
   return job;
@@ -504,6 +648,28 @@ function actionCommand(action, body = {}) {
       label: 'Process next review round',
       command: 'node',
       args: ['scripts/mac-round-worker.js', '--bucket', GCS_BUCKET, '--once'],
+    };
+  }
+  if (action === 'community-match') {
+    const args = [
+      'scripts/run-community-matching.js',
+      '--compound', compound,
+      '--bucket', GCS_BUCKET,
+      '--reload-url', CLOUD_REVIEW_URL,
+    ];
+    if (body.round) args.push('--round', String(body.round));
+    if (body.statusPath) args.push('--status-path', String(body.statusPath));
+    if (body.summaryPath) args.push('--summary-gcs-path', String(body.summaryPath));
+    if (body.summaryUrl) args.push('--summary-url', String(body.summaryUrl));
+    if (body.trialRunId) args.push('--trial-run-id', String(body.trialRunId));
+    if (body.artifactPrefix) args.push('--artifact-prefix', String(body.artifactPrefix));
+    if (body.resetReviewSession) args.push('--reset-review-session');
+    if (body.skipAssets) args.push('--skip-assets');
+    return {
+      kind: 'matching',
+      label: `Run matching (${communityName(compound)})`,
+      command: 'node',
+      args,
     };
   }
   if (action === 'worker-watch') {
@@ -604,17 +770,45 @@ app.post('/api/actions/:action', async (req, res) => {
   }
 });
 
-app.post('/api/matching/run', async (_req, res) => {
+app.post('/api/matching/run', async (req, res) => {
   try {
     const status = await matchingStatus();
-    const waiting = (status.queue.jobs || []).filter(job => job.state === 'queued').length;
-    const job = spawnJob(actionCommand('worker-once', {}));
+    const compound = String(req.body?.compound || status.communities[0]?.slug || '');
+    const community = status.communities.find(item => item.slug === compound);
+    if (!community) {
+      res.status(400).json({ error: `Unknown community: ${compound || '(none)'}` });
+      return;
+    }
+    if (status.matching_running) {
+      res.status(409).json({ error: 'Matching is already running on this Mac. Wait for it to finish before starting another run.' });
+      return;
+    }
+    if (community.review_ready && Number(community.review_pending || 0) > 0) {
+      res.status(409).json({ error: 'There are matches ready to review. Finish the review queue before running the matching algorithm again.' });
+      return;
+    }
+    const queued = community.queued_round;
+    const nextRound = queued?.round || (community.latest_round ? Number(community.latest_round) + 1 : 1);
+    const body = {
+      compound,
+      round: nextRound,
+      statusPath: queued?.path || '',
+      summaryPath: queued?.summary_path || community.latest_summary_path || '',
+      summaryUrl: queued?.summary_url || '',
+      trialRunId: queued?.trial_run_id || community.latest_trial_run_id || '',
+      artifactPrefix: queued?.artifact_prefix || '',
+      resetReviewSession: !community.latest_trial_run_id,
+      skipAssets: Boolean(queued),
+    };
+    const job = spawnJob(actionCommand('community-match', body));
     res.json({
       job: publicJob(job),
-      queued_rounds: waiting,
-      message: waiting
-        ? 'This Mac is processing the next matching round.'
-        : 'No waiting round was found. The run will finish quickly unless a new round appears.',
+      queued_rounds: queued ? 1 : 0,
+      community: community.name,
+      round: nextRound,
+      message: queued
+        ? `This Mac is processing ${community.name} round ${nextRound}.`
+        : `This Mac is preparing ${community.name} matching suggestions.`,
     });
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -683,13 +877,6 @@ function renderMatchHtml() {
     .sub {
       margin-top: 6px;
       color: var(--muted);
-      font-size: 14px;
-    }
-    .admin-link {
-      color: var(--blue);
-      text-decoration: none;
-      font-weight: 700;
-      white-space: nowrap;
       font-size: 14px;
     }
     .panel {
@@ -794,6 +981,36 @@ function renderMatchHtml() {
       padding: 14px;
       background: #fff;
     }
+    .next-step {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-bottom: 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 8px;
+      background: var(--soft);
+      color: var(--muted-strong);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .status-box.review .next-step {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: var(--green);
+    }
+    .status-box.run .next-step {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: var(--blue);
+    }
+    .status-box.wait .next-step {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: #9a3412;
+    }
     .status-box strong {
       display: block;
       font-size: 15px;
@@ -831,52 +1048,13 @@ function renderMatchHtml() {
       border-color: var(--blue);
       color: #fff;
     }
-    .btn:disabled {
+    .btn:disabled,
+    .link-btn.disabled {
       opacity: 0.55;
       cursor: not-allowed;
     }
-    .steps {
-      display: grid;
-      gap: 10px;
-    }
-    .step {
-      display: grid;
-      grid-template-columns: 32px minmax(0, 1fr);
-      gap: 10px;
-      align-items: start;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 12px;
-      background: #fbfcfe;
-    }
-    .num {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: #dbeafe;
-      color: #1d4ed8;
-      font-weight: 800;
-      font-size: 13px;
-    }
-    .step strong { display: block; margin-bottom: 4px; }
-    .step span { color: var(--muted); font-size: 13px; line-height: 1.4; }
-    .runs {
-      display: grid;
-      gap: 8px;
-    }
-    .run {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fbfcfe;
-      padding: 10px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 13px;
+    .link-btn.disabled {
+      pointer-events: none;
     }
     .tag {
       border: 1px solid var(--line);
@@ -909,7 +1087,6 @@ function renderMatchHtml() {
     @media (max-width: 760px) {
       .app { padding: 12px; }
       .top { display: block; }
-      .admin-link { display: inline-block; margin-top: 10px; }
       .hero { grid-template-columns: 1fr; }
       .stats { grid-template-columns: 1fr; }
       .actions { grid-template-columns: 1fr; }
@@ -921,9 +1098,8 @@ function renderMatchHtml() {
     <header class="top">
       <div>
         <h1>Property Matching</h1>
-        <div class="sub">Choose a community, review what is already matched, then run the next matching round when needed.</div>
+        <div class="sub">Choose a community and continue matching until every property is resolved.</div>
       </div>
-      <a class="admin-link" href="/">Admin console</a>
     </header>
 
     <section class="panel">
@@ -948,33 +1124,16 @@ function renderMatchHtml() {
               <div class="stat"><span>Total</span><strong id="totalCount">0</strong></div>
             </div>
           </div>
-          <div class="status-box">
+          <div class="status-box" id="statusBox">
+            <span class="next-step" id="nextStepLabel">Next step</span>
             <strong id="statusTitle">Loading</strong>
             <p id="statusText">Reading matching status from this Mac and cloud storage.</p>
           </div>
         </div>
         <div class="actions">
-          <button class="btn primary" id="runButton">Run next matching round</button>
-          <a class="link-btn" id="reviewButton" href="${CLOUD_REVIEW_URL}" target="_blank" rel="noreferrer">Review matches</a>
+          <button class="btn primary" id="runButton">Run matching on this Mac</button>
+          <a class="link-btn disabled" id="reviewButton" aria-disabled="true">Review matches</a>
         </div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="panel-head"><h2>How It Works</h2></div>
-      <div class="body">
-        <div class="steps">
-          <div class="step"><span class="num">1</span><div><strong>Review current matches</strong><span>Open the review screen and confirm the suggested pairs.</span></div></div>
-          <div class="step"><span class="num">2</span><div><strong>Run the next round</strong><span>When the current round is done, this Mac searches again using the remaining properties.</span></div></div>
-          <div class="step"><span class="num">3</span><div><strong>Repeat until complete</strong><span>The remaining count goes down as properties are confirmed.</span></div></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="panel-head"><h2>Recent Runs</h2><span class="tag" id="queueTag">No queue</span></div>
-      <div class="body">
-        <div class="runs" id="runs"></div>
       </div>
     </section>
   </div>
@@ -1009,6 +1168,38 @@ function renderMatchHtml() {
     function currentCommunity() {
       return (state.data?.communities || []).find(c => c.slug === state.selected) || (state.data?.communities || [])[0] || null;
     }
+    function reviewUrlFor(url, compound) {
+      if (!compound) return url;
+      try {
+        const target = new URL(url, window.location.href);
+        target.searchParams.set('compound', compound);
+        return target.toString();
+      } catch (_) {
+        return url;
+      }
+    }
+    function setReviewEnabled(enabled, url, compound) {
+      const button = $('reviewButton');
+      const href = reviewUrlFor(url, compound);
+      if (enabled) {
+        button.href = href;
+        button.classList.remove('disabled');
+        button.removeAttribute('aria-disabled');
+        return;
+      }
+      button.removeAttribute('href');
+      button.classList.add('disabled');
+      button.setAttribute('aria-disabled', 'true');
+    }
+    function setPrimaryAction(action) {
+      $('runButton').classList.toggle('primary', action === 'run');
+      $('reviewButton').classList.toggle('primary', action === 'review');
+    }
+    function setStatusTone(tone, label) {
+      const box = $('statusBox');
+      box.className = 'status-box' + (tone ? ' ' + tone : '');
+      $('nextStepLabel').textContent = label || 'Next step';
+    }
     function render() {
       const data = state.data;
       if (!data) return;
@@ -1016,15 +1207,20 @@ function renderMatchHtml() {
       const current = currentCommunity();
       select.innerHTML = data.communities.map(c => '<option value="' + c.slug + '">' + c.name + '</option>').join('');
       if (current) select.value = current.slug;
-      $('reviewButton').href = data.review_url;
-      const queued = (data.queue.jobs || []).filter(job => job.state === 'queued').length;
-      $('queueTag').textContent = queued ? queued + ' waiting' : 'No waiting round';
+      const queued = Boolean(current?.queued_round);
 
       if (!current) {
         $('statusTitle').textContent = 'No communities found';
         $('statusText').textContent = 'Ask the admin to configure communities first.';
+        setStatusTone('wait', 'Admin setup');
+        setPrimaryAction(null);
+        setReviewEnabled(false, data.review_url, null);
         return;
       }
+      const matchingRunning = Boolean(current.active_job || data.matching_running);
+      const reviewReady = Boolean(current.review_ready);
+      const reviewPending = Number(current.review_pending || 0);
+      const hasReviewWork = reviewReady && reviewPending > 0;
       const percent = pct(current.matched_properties, current.total_properties);
       $('matchedCount').textContent = fmt(current.matched_properties);
       $('remainingCount').textContent = fmt(current.remaining_properties);
@@ -1032,29 +1228,54 @@ function renderMatchHtml() {
       $('progressPct').textContent = percent + '%';
       $('progressBar').style.width = percent + '%';
       $('progressLabel').textContent = current.name + ' matching progress';
-      $('roundTag').textContent = current.latest_round ? 'Round ' + current.latest_round : 'Not started';
+      $('roundTag').textContent = matchingRunning
+        ? 'Running'
+        : (hasReviewWork ? reviewPending + ' to review' : (current.latest_round ? 'Round ' + current.latest_round : 'Not started'));
+      setReviewEnabled(!matchingRunning && hasReviewWork, data.review_url, current.slug);
+      setPrimaryAction(hasReviewWork && !matchingRunning ? 'review' : 'run');
 
-      if (current.remaining_properties === 0 && current.total_properties > 0) {
+      if (matchingRunning) {
+        setStatusTone('wait', 'Wait');
+        $('statusTitle').textContent = 'Matching is running';
+        $('statusText').textContent = 'This Mac is preparing the new review set. Review matches unlocks when the run is finished.';
+        $('runButton').disabled = true;
+      } else if (current.remaining_properties === 0 && current.total_properties > 0) {
+        setStatusTone('review', 'Complete');
         $('statusTitle').textContent = 'This community is complete';
         $('statusText').textContent = 'All properties have confirmed matches.';
         $('runButton').disabled = true;
+      } else if (hasReviewWork) {
+        setStatusTone('review', 'Next: Review');
+        $('statusTitle').textContent = reviewPending + ' suggested matches are ready';
+        $('statusText').textContent = 'Open Review matches now. Do not run the algorithm again until this review queue is finished.';
+        $('runButton').disabled = true;
       } else if (!current.storage_ready) {
+        setStatusTone('wait', 'Admin refresh');
         $('statusTitle').textContent = 'Admin refresh needed';
         $('statusText').textContent = 'Some cloud assets need to be refreshed before matching is fully reliable.';
         $('runButton').disabled = false;
-      } else if (queued > 0) {
-        $('statusTitle').textContent = 'Next round is ready to run';
-        $('statusText').textContent = 'Use this Mac to process the queued matching round, then continue reviewing.';
+      } else if (queued) {
+        setStatusTone('run', 'Next: Run matching');
+        $('statusTitle').textContent = 'Next round needs the Mac';
+        $('statusText').textContent = 'Press Run matching on this Mac to create the next review set.';
+        $('runButton').disabled = false;
+      } else if (!reviewReady) {
+        setStatusTone('run', 'Next: Run matching');
+        $('statusTitle').textContent = 'No review set is ready';
+        $('statusText').textContent = 'Press Run matching on this Mac to prepare suggestions for this community.';
+        $('runButton').disabled = false;
+      } else if (reviewReady && reviewPending === 0) {
+        setStatusTone('run', 'Next: Run matching');
+        $('statusTitle').textContent = 'Review queue is empty';
+        $('statusText').textContent = 'You finished the current suggestions. Press Run matching to prepare the next round.';
         $('runButton').disabled = false;
       } else {
-        $('statusTitle').textContent = current.matched_properties ? 'Continue reviewing' : 'Ready to start matching';
-        $('statusText').textContent = 'Open the review screen to confirm suggested matches. Run the next round after the current review is finished.';
+        setStatusTone('run', 'Next: Run matching');
+        $('statusTitle').textContent = 'Ready to create suggestions';
+        $('statusText').textContent = 'Press Run matching on this Mac, then review the suggestions when they are ready.';
         $('runButton').disabled = false;
       }
 
-      $('runs').innerHTML = (data.jobs || []).map(job => {
-        return '<div class="run"><span><strong>' + job.label + '</strong><br>' + new Date(job.started_at).toLocaleString() + '</span><span class="tag ' + job.status + '">' + job.status + '</span></div>';
-      }).join('') || '<div class="run"><span>No local matching runs started from this page.</span><span class="tag">Idle</span></div>';
     }
     $('communitySelect').addEventListener('change', () => {
       state.selected = $('communitySelect').value;
@@ -1062,14 +1283,31 @@ function renderMatchHtml() {
     });
     $('runButton').addEventListener('click', async () => {
       $('runButton').disabled = true;
+      setReviewEnabled(false, state.data?.review_url);
+      $('statusTitle').textContent = 'Starting matching';
+      $('statusText').textContent = 'This Mac is starting the algorithm run. Review matches unlocks when the run is finished.';
       try {
-        const result = await api('/api/matching/run', { method: 'POST' });
+        const result = await api('/api/matching/run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ compound: state.selected }),
+        });
         toast(result.message || 'Matching round started.');
         await refresh();
       } catch (err) {
         toast(err.message);
-      } finally {
-        $('runButton').disabled = false;
+        await refresh().catch(() => render());
+      }
+    });
+    $('reviewButton').addEventListener('click', (event) => {
+      const current = currentCommunity();
+      const matchingRunning = Boolean(current?.active_job || state.data?.matching_running);
+      const reviewReady = Boolean(current?.review_ready);
+      if (matchingRunning || !reviewReady || $('reviewButton').getAttribute('aria-disabled') === 'true') {
+        event.preventDefault();
+        toast(matchingRunning
+          ? 'Matching is still running. Review matches unlocks when it finishes.'
+          : 'Run matching for this community before opening review.');
       }
     });
     refresh();
@@ -1711,9 +1949,6 @@ function renderHtml() {
       $('subtitle').textContent = s.host + ' | ' + s.git.branch;
       $('bucketLabel').textContent = 'gs://' + s.bucket;
       $('hostLabel').textContent = s.host;
-      $('reviewLink').href = s.review_url;
-      $('reviewTaskLink').href = s.review_url;
-
       pill('repoPill', 'ok', 'Mac ready');
       pill('dinoPill', s.dino.running ? 'ok' : 'bad', s.dino.running ? 'AI engine ready' : 'AI engine off');
       pill('workerPill', s.worker.running ? 'ok' : 'warn', s.worker.running ? 'Auto-processing' : 'Manual mode');
@@ -1728,6 +1963,7 @@ function renderHtml() {
 
       renderRecommendation(s, totals);
       renderCompoundSelect(s.compounds);
+      updateReviewLinks(s);
       renderCompounds(s.compounds);
       renderJobs(s.jobs);
       renderSelectedJob(s.jobs);
@@ -1771,6 +2007,22 @@ function renderHtml() {
       const current = select.value || 'all';
       select.innerHTML = '<option value="all">All communities</option>' + compounds.map(c => '<option value="' + c.slug + '">' + communityName(c.slug) + '</option>').join('');
       select.value = compounds.some(c => c.slug === current) ? current : 'all';
+    }
+    function reviewUrlFor(url, compound) {
+      if (!compound || compound === 'all') return url;
+      try {
+        const target = new URL(url, window.location.href);
+        target.searchParams.set('compound', compound);
+        return target.toString();
+      } catch (_) {
+        return url;
+      }
+    }
+    function updateReviewLinks(status) {
+      const compound = $('compoundSelect').value;
+      const href = reviewUrlFor((status && status.review_url) || '${CLOUD_REVIEW_URL}', compound);
+      $('reviewLink').href = href;
+      $('reviewTaskLink').href = href;
     }
     function renderCompounds(compounds) {
       $('compoundRows').innerHTML = compounds.map(c => {
@@ -1883,6 +2135,9 @@ function renderHtml() {
       } catch (err) {
         toast(err.message);
       }
+    });
+    $('compoundSelect').addEventListener('change', () => {
+      updateReviewLinks(state.status);
     });
     refresh();
     setInterval(refresh, 3000);

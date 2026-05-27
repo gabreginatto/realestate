@@ -33,6 +33,20 @@ const MOSAIC_VERSION = process.env.K_REVISION || String(Date.now());
 const storage = new Storage();
 const bucket  = storage.bucket(GCS_BUCKET);
 
+const COMMUNITY_NAMES = {
+  'alphaville-1': 'Alphaville 1',
+  'tambore-xi': 'Tamboré XI',
+};
+
+function communityName(slug) {
+  return COMMUNITY_NAMES[slug] || slug || 'Community';
+}
+
+function normalizeCompound(value) {
+  const compound = String(value || '').trim();
+  return compound && compound !== 'all' ? compound : null;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers — GCS reads (public URLs, no auth needed for reads)
 // ---------------------------------------------------------------------------
@@ -208,6 +222,7 @@ let coelhoListings = [];
 let autoMatches = [];    // review queue (lanes high/normal/recall), non-reject pairs
 let auditMatches = [];   // reject-low pairs, accessible via audit lane
 let currentSession = null;  // { pass, pairs, audit, confirmed }
+let loadedMatchesMeta = {};
 let eventCounter = 0;
 
 // ---------------------------------------------------------------------------
@@ -222,6 +237,11 @@ function readLocalJson(envVar) {
 }
 
 async function loadListingMaps() {
+  vivaMap = {};
+  coelhoMap = {};
+  vivaListings = [];
+  coelhoListings = [];
+
   const localViva = readLocalJson('LOCAL_FIXTURES_VIVA');
   const localCoe  = readLocalJson('LOCAL_FIXTURES_COELHO');
   try {
@@ -307,6 +327,13 @@ async function loadMatches() {
     const { review, audit } = splitMatches(raw);
     autoMatches  = review;
     auditMatches = audit;
+    loadedMatchesMeta = {
+      compound: normalizeCompound(raw.compound)
+        || normalizeCompound(review.find(m => m.compound)?.compound)
+        || normalizeCompound(audit.find(m => m.compound)?.compound)
+        || null,
+      community_name: raw.community_name || null,
+    };
 
     const byLane = REVIEW_LANES.reduce((acc, l) => (acc[l] = review.filter(m => m.lane === l).length, acc), {});
     console.log(
@@ -317,6 +344,7 @@ async function loadMatches() {
     console.warn('Could not load auto-matches from GCS:', e.message);
     autoMatches = [];
     auditMatches = [];
+    loadedMatchesMeta = {};
   }
 }
 
@@ -328,6 +356,7 @@ async function ensureSession() {
   // When running on local fixtures, always rebuild — never resume a stale GCS session
   if (process.env.LOCAL_FIXTURES_MATCHES) {
     currentSession = buildNewSession(autoMatches, auditMatches, 1, []);
+    ensureSessionCompound();
     console.log(`✓ Created local-fixture session: ${currentSession.pairs.length} review pairs, ${currentSession.audit.length} audit`);
     return;
   }
@@ -339,6 +368,13 @@ async function ensureSession() {
     if (!currentSession.trial_run_id) {
       currentSession.trial_run_id = crypto.randomUUID();
       changed = true;
+    }
+    if (!currentSession.compound) {
+      const compound = sessionCompound();
+      if (compound) {
+        currentSession.compound = compound;
+        changed = true;
+      }
     }
     // Backfill lane / tier_label / evidence on legacy persisted pairs
     for (const p of currentSession.pairs || []) {
@@ -361,6 +397,7 @@ async function ensureSession() {
   }
 
   currentSession = buildNewSession(autoMatches, auditMatches, 1, []);
+  ensureSessionCompound();
   await saveSession();
   console.log(`✓ Created pass-1 session: ${currentSession.pairs.length} review pairs, ${currentSession.audit.length} audit`);
 }
@@ -373,14 +410,55 @@ function buildNewSession(reviewMatches, auditMatches_, passN, carryConfirmed, tr
   const audit = (auditMatches_ || [])
     .filter(m => !confirmedSet.has(m.viva_code))
     .map(m => ({ ...m, status: 'pending' }));
+  const compound = inferCompoundFromPairs([...pairs, ...audit, ...carryConfirmed]) || loadedMatchesMeta.compound || null;
   return {
     pass:      passN,
+    compound,
     pairs,
     audit,
     confirmed: [...carryConfirmed],
     trial_run_id: trialRunId || crypto.randomUUID(),
     created_at: new Date().toISOString(),
   };
+}
+
+function inferCompoundFromPairs(pairs = []) {
+  const compounds = new Set(
+    pairs
+      .map(p => normalizeCompound(p && p.compound))
+      .filter(Boolean)
+  );
+  return compounds.size === 1 ? [...compounds][0] : null;
+}
+
+function sessionCompound() {
+  return normalizeCompound(currentSession?.compound)
+    || inferCompoundFromPairs([...(currentSession?.pairs || []), ...(currentSession?.audit || []), ...(currentSession?.confirmed || [])])
+    || loadedMatchesMeta.compound
+    || null;
+}
+
+function ensureSessionCompound() {
+  const compound = sessionCompound();
+  if (currentSession && compound && !currentSession.compound) {
+    currentSession.compound = compound;
+  }
+  return compound;
+}
+
+function enforceRequestedCompound(req, res) {
+  const requested = normalizeCompound(req.query.compound);
+  const active = ensureSessionCompound();
+  if (!requested || !active || requested === active) return true;
+  res.status(409).json({
+    error: 'wrong_compound',
+    requested_compound: requested,
+    requested_community_name: communityName(requested),
+    active_compound: active,
+    active_community_name: communityName(active),
+    message: `This link asked for ${communityName(requested)}, but the active review queue is ${communityName(active)}.`,
+  });
+  return false;
 }
 
 async function saveSession() {
@@ -592,6 +670,7 @@ function allSessionPairs() {
 }
 
 function buildTrialSummary() {
+  const compound = ensureSessionCompound();
   const pairs = allSessionPairs();
   const confirmed = currentSession?.confirmed || [];
   const confirmedViva = new Set(confirmed.map(p => p.viva_code));
@@ -620,6 +699,8 @@ function buildTrialSummary() {
   return {
     generated_at: new Date().toISOString(),
     trial_run_id: currentSession?.trial_run_id || null,
+    compound,
+    community_name: communityName(compound),
     pass: currentSession?.pass || null,
     total_viva_listings: vivaListings.length,
     total_coelho_listings: coelhoListings.length,
@@ -756,19 +837,27 @@ app.get('/api/mosaic/:site/:code', async (req, res) => {
 // ---------------------------------------------------------------------------
 
 app.post('/api/reload', async (req, res) => {
+  await loadListingMaps();
   await loadMatches();
-  const trialRunId = currentSession?.trial_run_id;
-  const carryConfirmed = Array.isArray(currentSession && currentSession.confirmed)
+  const resetSession = Boolean(req.body && req.body.reset);
+  const trialRunId = resetSession ? null : currentSession?.trial_run_id;
+  const carryConfirmed = !resetSession && Array.isArray(currentSession && currentSession.confirmed)
     ? currentSession.confirmed
     : [];
-  currentSession = buildNewSession(autoMatches, auditMatches, currentSession?.pass || 1, carryConfirmed, trialRunId);
+  currentSession = buildNewSession(autoMatches, auditMatches, resetSession ? 1 : (currentSession?.pass || 1), carryConfirmed, trialRunId);
+  currentSession.compound = normalizeCompound(req.body?.compound)
+    || currentSession.compound
+    || loadedMatchesMeta.compound
+    || null;
   await saveSession();
   _mosaicAvail.clear();
   await logEvent(req, 'session_reloaded', {
     client: req.body || {},
+    reset: resetSession,
   });
   res.json({
     ok: true,
+    reset: resetSession,
     match_count: autoMatches.length,
     audit_count: auditMatches.length,
     session_review_count: currentSession.pairs.length,
@@ -782,6 +871,8 @@ app.post('/api/reload', async (req, res) => {
 
 app.get('/api/session', (req, res) => {
   if (!currentSession) return res.status(503).json({ error: 'no session' });
+  if (!enforceRequestedCompound(req, res)) return;
+  const compound = ensureSessionCompound();
 
   const requested = String(req.query.lane || '').toLowerCase();
   let lane = ALL_LANES.includes(requested) ? requested : 'high';
@@ -831,6 +922,8 @@ app.get('/api/session', (req, res) => {
 
   res.json({
     trial_run_id:      currentSession.trial_run_id,
+    compound,
+    community_name:    communityName(compound),
     pass:             currentSession.pass,
     lane,
     current_index:    allDone ? total : currentIndex,
@@ -1196,7 +1289,7 @@ const HTML = /* html */`<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Match Review — Alphaville 1</title>
+<title>Match Review</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -1210,8 +1303,8 @@ const HTML = /* html */`<!DOCTYPE html>
     --text: #17202e;
     --muted: #687586;
     --muted-strong: #455468;
-    --accent: #2563eb;
-    --accent-soft: #dbeafe;
+    --accent: #007aff;
+    --accent-soft: #eaf3ff;
     --green: #15803d;
     --green-soft: #dcfce7;
     --red: #c2410c;
@@ -1220,13 +1313,15 @@ const HTML = /* html */`<!DOCTYPE html>
     --yellow-soft: #fef3c7;
     --cyan: #0f766e;
     --cyan-soft: #ccfbf1;
+    --control-fill: rgba(255, 255, 255, 0.82);
+    --control-stroke: rgba(15, 23, 42, 0.12);
     --shadow: 0 18px 46px rgba(15, 23, 42, 0.12);
     --radius: 8px;
   }
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, Inter, ui-sans-serif, system-ui, "Segoe UI", sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -1383,6 +1478,25 @@ const HTML = /* html */`<!DOCTYPE html>
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 16px;
     align-items: start;
+  }
+  .hidden { display: none !important; }
+  .session-error {
+    width: min(920px, calc(100% - 48px));
+    margin: 20px auto 124px;
+    padding: 18px;
+    border: 1px solid #fbbf24;
+    border-radius: var(--radius);
+    background: #fffbeb;
+    box-shadow: var(--shadow);
+  }
+  .session-error h2 {
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+    letter-spacing: 0;
+  }
+  .session-error p {
+    color: var(--muted-strong);
+    line-height: 1.5;
   }
   .prop-card {
     min-width: 0;
@@ -1643,22 +1757,72 @@ const HTML = /* html */`<!DOCTYPE html>
   .ev-pairs .ev-pair strong { color: var(--text); font-weight: 850; }
   .actions {
     display: grid;
-    grid-template-columns: repeat(4, max-content);
-    gap: 8px;
+    grid-template-columns: repeat(4, minmax(92px, max-content));
+    gap: 7px;
     justify-content: end;
     pointer-events: auto;
+    padding: 5px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 16px;
+    background: rgba(248, 250, 252, 0.78);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.84);
   }
-  .actions button, .modal-row button {
+  .modal-row button {
     min-height: 42px;
     padding: 9px 14px;
     font-size: 0.9rem;
     font-weight: 900;
     white-space: nowrap;
   }
-  #btn-skip { background: var(--red-soft); color: var(--red); border: 1px solid #fed7aa; }
-  #btn-unsure { background: var(--yellow-soft); color: var(--yellow); border: 1px solid #fde68a; }
-  #btn-match { background: var(--green); color: #fff; }
-  #btn-done { background: var(--surface-soft); color: var(--muted-strong); border: 1px solid var(--border); }
+  .actions button {
+    min-height: 44px;
+    padding: 9px 16px;
+    border: 1px solid var(--control-stroke);
+    border-radius: 12px;
+    background: var(--control-fill);
+    color: var(--muted-strong);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+    font-size: 0.9rem;
+    font-weight: 750;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+  .actions button:hover {
+    background: #fff;
+    border-color: rgba(15, 23, 42, 0.18);
+    box-shadow: 0 5px 16px rgba(15, 23, 42, 0.09), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  }
+  .actions button:active {
+    transform: translateY(0) scale(0.985);
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.12);
+  }
+  #btn-skip {
+    background: rgba(255, 245, 245, 0.88);
+    color: #b42318;
+    border-color: rgba(244, 63, 94, 0.18);
+  }
+  #btn-unsure {
+    background: rgba(255, 248, 230, 0.9);
+    color: #936000;
+    border-color: rgba(245, 158, 11, 0.2);
+  }
+  #btn-match {
+    background: linear-gradient(180deg, #1c8cff 0%, var(--accent) 100%);
+    border-color: rgba(0, 122, 255, 0.72);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(0, 122, 255, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.34);
+    font-weight: 800;
+  }
+  #btn-match:hover {
+    background: linear-gradient(180deg, #2f98ff 0%, #087cff 100%);
+    border-color: rgba(0, 122, 255, 0.84);
+    box-shadow: 0 10px 22px rgba(0, 122, 255, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.38);
+  }
+  #btn-done {
+    background: rgba(241, 245, 249, 0.86);
+    color: var(--muted-strong);
+    border-color: rgba(100, 116, 139, 0.16);
+  }
   .lane-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
   .lane-summary .lane-cell {
     border: 1px solid var(--border);
@@ -1738,7 +1902,7 @@ const HTML = /* html */`<!DOCTYPE html>
       grid-template-columns: 1fr;
       align-items: stretch;
     }
-    .actions { grid-template-columns: repeat(4, 1fr); }
+    .actions { grid-template-columns: repeat(4, minmax(0, 1fr)); justify-content: stretch; }
     .actions button { width: 100%; }
   }
   @media (max-width: 820px) {
@@ -1781,8 +1945,13 @@ const HTML = /* html */`<!DOCTYPE html>
     }
     .evidence-panel .ev-group { flex: 0 0 auto; }
     .ev-pairs { display: none; }
-    .actions { grid-template-columns: repeat(2, 1fr); }
-    .actions button { min-height: 46px; white-space: normal; }
+    .actions {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      padding: 6px;
+      border-radius: 14px;
+    }
+    .actions button { min-height: 44px; padding: 8px 7px; white-space: normal; font-size: 0.82rem; }
     .compare-header { grid-template-columns: 1fr; }
     .compare-modes { justify-self: stretch; display: grid; grid-template-columns: repeat(3, 1fr); }
     .compare-grid { grid-template-columns: 1fr; }
@@ -1807,8 +1976,8 @@ const HTML = /* html */`<!DOCTYPE html>
     <div class="topline">
       <div>
         <p class="eyebrow">AI property matching</p>
-        <h1>Alphaville review desk</h1>
-        <p class="subhead">Alphaville 1 / active queue</p>
+        <h1 id="community-title">Review desk</h1>
+        <p class="subhead" id="community-subhead">Loading active queue</p>
       </div>
       <div class="status-grid" aria-label="Review status">
         <div class="status-item">
@@ -1841,6 +2010,11 @@ const HTML = /* html */`<!DOCTYPE html>
   </div>
   </div>
 </header>
+
+<section class="session-error hidden" id="session-error" role="alert">
+  <h2 id="session-error-title">Review queue mismatch</h2>
+  <p id="session-error-text">This review link does not match the active queue.</p>
+</section>
 
 <main class="workspace" id="review-panel">
   <div class="prop-card">
@@ -1885,7 +2059,7 @@ const HTML = /* html */`<!DOCTYPE html>
   </div>
   <div class="evidence-panel" id="evidence-panel" hidden></div>
   <div class="actions">
-    <button id="btn-skip"   onclick="doSkip()"   aria-label="Not a match">Not match</button>
+    <button id="btn-skip"   onclick="doSkip()"   aria-label="Not a match">No match</button>
     <button id="btn-unsure" onclick="doUnsure()" aria-label="Mark as unsure">Unsure</button>
     <button id="btn-match"  onclick="doMatch()"  aria-label="Confirm match">Match</button>
     <button id="btn-done"   onclick="askDone()"  aria-label="Finish review">Finish</button>
@@ -1969,6 +2143,7 @@ let _lane = 'high';
 let _pageStartedAt = Date.now();
 let _pairStartedAt = Date.now();
 let _lastPairKey = null;
+const _requestedCompound = new URLSearchParams(window.location.search).get('compound') || '';
 
 function currentPairKey() {
   return _state && _state.pair ? _state.pair.viva_code + ':' + _state.pair.coelho_code : null;
@@ -2022,7 +2197,15 @@ function switchLane(lane) {
 }
 
 async function fetchSession() {
-  const s = await fetch('/api/session?lane=' + encodeURIComponent(_lane)).then(r => r.json());
+  const params = new URLSearchParams({ lane: _lane });
+  if (_requestedCompound) params.set('compound', _requestedCompound);
+  const response = await fetch('/api/session?' + params.toString());
+  const s = await response.json();
+  if (!response.ok) {
+    showSessionError(s);
+    return;
+  }
+  hideSessionError();
   _state = s;
   render(s);
   const key = currentPairKey();
@@ -2031,6 +2214,34 @@ async function fetchSession() {
     _pairStartedAt = Date.now();
     logClientEvent('pair_viewed', { elapsed_ms: 0 });
   }
+}
+
+function showSessionError(error) {
+  const requested = error.requested_community_name || error.requested_compound || _requestedCompound || 'Selected community';
+  const active = error.active_community_name || error.active_compound || 'another community';
+  document.title = 'Match Review - ' + requested;
+  document.getElementById('community-title').textContent = requested + ' review desk';
+  document.getElementById('community-subhead').textContent = 'Wrong active queue';
+  document.getElementById('hdr-pass').textContent = '-';
+  document.getElementById('hdr-current').textContent = '-';
+  document.getElementById('hdr-total').textContent = '-';
+  document.getElementById('hdr-confirmed').textContent = '0';
+  document.getElementById('hdr-skipped').textContent = '0';
+  document.getElementById('hdr-global').textContent = '0';
+  document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('hdr-percent').textContent = '0%';
+  document.getElementById('session-error-title').textContent = 'Wrong review queue';
+  document.getElementById('session-error-text').textContent =
+    error.message || ('This link asked for ' + requested + ', but the active review queue is ' + active + '.');
+  document.getElementById('session-error').classList.remove('hidden');
+  document.getElementById('review-panel').classList.add('hidden');
+  document.querySelector('.decision-bar').classList.add('hidden');
+}
+
+function hideSessionError() {
+  document.getElementById('session-error').classList.add('hidden');
+  document.getElementById('review-panel').classList.remove('hidden');
+  document.querySelector('.decision-bar').classList.remove('hidden');
 }
 
 function renderLaneTabs(s) {
@@ -2048,8 +2259,16 @@ function renderLaneTabs(s) {
   }
 }
 
+function renderCommunityHeader(s) {
+  const label = s.community_name || s.compound || 'Community';
+  document.title = 'Match Review - ' + label;
+  document.getElementById('community-title').textContent = label + ' review desk';
+  document.getElementById('community-subhead').textContent = label + ' / active queue';
+}
+
 function render(s) {
   if (s.lane) _lane = s.lane;
+  renderCommunityHeader(s);
   renderLaneTabs(s);
   document.getElementById('hdr-pass').textContent      = s.pass;
   document.getElementById('hdr-current').textContent   = s.current_index;
