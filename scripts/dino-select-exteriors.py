@@ -226,7 +226,8 @@ def process_site(site: str, source_type: str, source_root: Path,
                  dry_run: bool, verbose: bool,
                  official_counts: dict | None = None,
                  only_listed: bool = False,
-                 clean_extra_output: bool = False) -> dict:
+                 clean_extra_output: bool = False,
+                 skip_existing: bool = False) -> dict:
     listing_dirs = find_listing_dirs(source_type, source_root, site)
     if not listing_dirs:
         print(f"[{site}] No listing directories found in source")
@@ -261,6 +262,18 @@ def process_site(site: str, source_type: str, source_root: Path,
 
     for listing_dir in listing_dirs:
         code = listing_dir.name
+        out_dir = output_root / site / code
+        manifest_path = out_dir / "_manifest.json"
+        if skip_existing and not dry_run and manifest_path.exists():
+            try:
+                manifest = json.loads(manifest_path.read_text())
+                selected_count = int(manifest.get("selected_count") or len(manifest.get("selected") or []))
+            except Exception:
+                selected_count = 0
+            print(f"  [{code}] existing selection found — skipping")
+            stats["total_selected"] += selected_count
+            continue
+
         img_paths = sorted(
             p for p in listing_dir.iterdir()
             if p.suffix.lower() in IMG_EXTS and not p.name.startswith("_")
@@ -310,7 +323,6 @@ def process_site(site: str, source_type: str, source_root: Path,
             continue
 
         # Write output
-        out_dir = output_root / site / code
         out_dir.mkdir(parents=True, exist_ok=True)
 
         # Clear previous selection
@@ -387,6 +399,8 @@ def main():
                    help="Process only codes present in --official-listings")
     p.add_argument("--clean-extra-output", action="store_true",
                    help="Remove output dirs for codes not present in --official-listings")
+    p.add_argument("--skip-existing", action="store_true",
+                   help="Do not reclassify listings that already have _manifest.json in the output directory.")
     args = p.parse_args()
 
     source_root = Path(args.source_root).resolve()
@@ -445,6 +459,7 @@ def main():
             official_counts=official_counts,
             only_listed=args.only_listed,
             clean_extra_output=args.clean_extra_output,
+            skip_existing=args.skip_existing,
         )
         all_stats[site] = stats
 

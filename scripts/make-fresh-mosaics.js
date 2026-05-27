@@ -6,7 +6,6 @@ const sharp = require('sharp');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const DATA_ROOT = path.join(REPO_ROOT, 'data');
-const SELECTED_ROOT = path.join(REPO_ROOT, 'selected_for_matching_fresh');
 const SITES = {
   viva: 'vivaprimeimoveis',
   coelho: 'coelhodafonseca',
@@ -25,12 +24,14 @@ function parseArgs(argv) {
     site: 'both',
     force: false,
     cleanExtra: false,
+    selectedRoot: path.join(REPO_ROOT, 'selected_for_matching_fresh'),
   };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '--compound') args.compound = argv[++i];
     else if (arg === '--force') args.force = true;
     else if (arg === '--clean-extra') args.cleanExtra = true;
+    else if (arg === '--selected-root') args.selectedRoot = path.resolve(argv[++i]);
     else if (!arg.startsWith('--')) args.site = arg;
   }
   if (!['viva', 'coelho', 'both'].includes(args.site)) {
@@ -62,8 +63,8 @@ function selectedRecords(manifest, key) {
   return (outdoor.length ? outdoor : records).sort(byOutdoorPriority);
 }
 
-function resolveImage(compound, siteFull, code, filename) {
-  const selected = path.join(SELECTED_ROOT, siteFull, code, filename);
+function resolveImage(compound, selectedRoot, siteFull, code, filename) {
+  const selected = path.join(selectedRoot, siteFull, code, filename);
   if (fs.existsSync(selected)) return selected;
   return path.join(DATA_ROOT, compound, 'fresh-images', siteFull, code, filename);
 }
@@ -147,9 +148,9 @@ function cleanExtraMosaics(compound, shortSite, codes) {
   return removed;
 }
 
-async function processSite(compound, shortSite, force, cleanExtra) {
+async function processSite(compound, shortSite, force, cleanExtra, selectedRoot) {
   const siteFull = SITES[shortSite];
-  const selectedDir = path.join(SELECTED_ROOT, siteFull);
+  const selectedDir = path.join(selectedRoot, siteFull);
   const codes = listingCodes(compound, siteFull);
   if (!fs.existsSync(selectedDir)) {
     console.log(`[${compound}/${shortSite}] no selected dir: ${path.relative(REPO_ROOT, selectedDir)}`);
@@ -182,9 +183,9 @@ async function processSite(compound, shortSite, force, cleanExtra) {
     try {
       const manifest = readJson(path.join(selectedDir, code, '_manifest.json'));
       const standard = selectedRecords(manifest, 'selected')
-        .map((entry) => resolveImage(compound, siteFull, code, entry.filename));
+        .map((entry) => resolveImage(compound, selectedRoot, siteFull, code, entry.filename));
       const expanded = selectedRecords(manifest, 'all_categories')
-        .map((entry) => resolveImage(compound, siteFull, code, entry.filename));
+        .map((entry) => resolveImage(compound, selectedRoot, siteFull, code, entry.filename));
       await buildMosaic(standard, outputFile, STANDARD_ROWS, { compact: true });
       await buildMosaic(expanded, fullOutputFile, EXPANDED_ROWS, { compact: true });
       generated++;
@@ -201,10 +202,10 @@ async function processSite(compound, shortSite, force, cleanExtra) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.site === 'both' || args.site === 'viva') {
-    await processSite(args.compound, 'viva', args.force, args.cleanExtra);
+    await processSite(args.compound, 'viva', args.force, args.cleanExtra, args.selectedRoot);
   }
   if (args.site === 'both' || args.site === 'coelho') {
-    await processSite(args.compound, 'coelho', args.force, args.cleanExtra);
+    await processSite(args.compound, 'coelho', args.force, args.cleanExtra, args.selectedRoot);
   }
 }
 

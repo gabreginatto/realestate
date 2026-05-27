@@ -19,6 +19,30 @@ const SITE_CONFIGS = {
     host: 'https://www.coelhodafonseca.com.br',
   },
 };
+const COMPOUND_SEARCH_FALLBACKS = {
+  'alphaville-1': {
+    viva: {
+      search_url: 'https://www.vivaprimeimoveis.com.br/imoveis?busca=venda&finalidade=venda&tipo=casa&cidade=&empreendimento=alphaville-01',
+    },
+    coelho: {
+      search_criteria: {
+        enterprises: 'Alphaville 1',
+        kind_of: 'Casa em Condomínio',
+      },
+    },
+  },
+  'tambore-xi': {
+    viva: {
+      search_url: 'https://www.vivaprimeimoveis.com.br/imoveis?busca=venda&finalidade=venda&tipo=casa&cidade=&empreendimento=tambore-11',
+    },
+    coelho: {
+      search_criteria: {
+        enterprises: 'Tamboré XI',
+        kind_of: 'Casa em Condomínio',
+      },
+    },
+  },
+};
 
 async function fetchText(url) {
   const response = await fetch(url, {
@@ -135,9 +159,16 @@ function buildCoelhoUrl(criteria) {
   return `https://www.coelhodafonseca.com.br/search?${params.toString()}`;
 }
 
-function searchUrlFor(envelope, site) {
-  if (site.key === 'viva') return envelope.data.search_url || null;
-  if (site.key === 'coelho') return buildCoelhoUrl(envelope.data.search_criteria) || envelope.data.search_url || null;
+function searchUrlFor(compound, envelope, site) {
+  const fallback = COMPOUND_SEARCH_FALLBACKS[compound]?.[site.key] || {};
+  if (site.key === 'viva') return envelope.data.search_url || fallback.search_url || null;
+  if (site.key === 'coelho') {
+    return buildCoelhoUrl(envelope.data.search_criteria)
+      || buildCoelhoUrl(fallback.search_criteria)
+      || envelope.data.search_url
+      || fallback.search_url
+      || null;
+  }
   return null;
 }
 
@@ -280,7 +311,7 @@ async function auditSite(compound, site, maxPages) {
     return { error: 'No local listing file found' };
   }
 
-  const searchUrl = searchUrlFor(envelope, site);
+  const searchUrl = searchUrlFor(compound, envelope, site);
   if (!searchUrl) {
     return {
       listing_file: path.relative(REPO_ROOT, envelope.file),

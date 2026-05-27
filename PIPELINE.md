@@ -150,6 +150,45 @@ Outputs:
 `selected_for_matching`, so this audit path can be compared before promoting any
 fresh scrape into the active review pipeline.
 
+## Step 0.6 — All-compound fresh scrape and GCS sync
+
+For the current Mac-heavy / GCS-storage workflow, use the orchestrator instead
+of running each fresh audit command manually:
+
+```bash
+./scripts/scrape-all-compounds-to-gcs.sh
+```
+
+It discovers the active compounds, audits both listing sites, scrapes current
+detail pages, downloads fresh galleries, runs the local DINO/CLIP selection,
+builds fresh mosaics, uploads compound-scoped assets to GCS, and verifies the
+result. The assets are stored under:
+
+```text
+gs://realestate-475615-data/compounds/<compound>/
+```
+
+Important subfolders:
+- `live-listing-inventory/`
+- `fresh-listings/`
+- `fresh-images/`
+- `selected-for-matching-fresh/`
+- `fresh-mosaics/`
+
+To verify the stored assets after any run:
+
+```bash
+node scripts/verify-compound-fresh-assets.js \
+  --compound all \
+  --bucket realestate-475615-data \
+  --require-gcs \
+  --require-selected \
+  --require-mosaics
+```
+
+This verifier checks every live fresh listing, every downloaded gallery image,
+the selected matching assets, and both standard and expanded mosaics in GCS.
+
 ---
 
 ## Step 1 — Scrape all images (skip if cache already exists)
