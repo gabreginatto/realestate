@@ -91,6 +91,25 @@ def load_listings(data_root=None):
     }
 
 
+def load_fresh_listings(compound=CONDO_ALPHAVILLE_1, data_root=None, fresh_dir=None):
+    """Load fresh scrapes (scrape-live-listing-details.js output) in the same normalized shape.
+
+    Reads data/<compound>/fresh-listings/{vivaprimeimoveis,coelhodafonseca}.json, or the same
+    file names from fresh_dir. Missing files give empty lists.
+    """
+    root = Path(data_root or DEFAULT_ROOT)
+    base = Path(fresh_dir) if fresh_dir else root / compound / "fresh-listings"
+    out = {"viva": [], "coelho": []}
+    for key, name, norm in (("viva", "vivaprimeimoveis", _normalize_viva), ("coelho", "coelhodafonseca", _normalize_coelho)):
+        f = base / f"{name}.json"
+        if f.exists():
+            out[key] = [norm(i) for i in json.loads(f.read_text())["listings"]]
+    for items in out.values():
+        for x in items:
+            x["condo"] = x["condo"] or compound
+    return out
+
+
 if __name__ == "__main__":
     assert parse_br_number("1.276,23m²") == 1276.23
     assert parse_br_number("R$ 2.900.000,00") == 2900000.0
