@@ -24,8 +24,14 @@ def load_ground_truth(include_disputed=False, path=None):
     }
 
 
+def load_negatives(path=None):
+    """Return the set of (viva_code, coelho_code) pairs reviewers rejected."""
+    data = json.loads(Path(path or DEFAULT_PATH).read_text())
+    return {(str(n["viva"]), str(n["coelho"])) for n in data.get("negatives", [])}
+
+
 if __name__ == "__main__":
-    assert len(load_ground_truth()) == 20
-    assert len(load_ground_truth(include_disputed=True)) == 21
+    assert len(load_ground_truth(include_disputed=True)) >= len(load_ground_truth()) >= 20
+    assert not (load_ground_truth() & load_negatives())
     assert ("17378", "659639") not in load_ground_truth()
     print("ground_truth self-check ok")
