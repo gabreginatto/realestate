@@ -58,6 +58,7 @@ main{display:flex;flex-direction:column;gap:16px;padding-top:14px}
 .chip.same{background:var(--ok-soft);color:var(--ok)}
 .chip.same small{color:inherit}
 a.lnk{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.ph{position:relative}.ph .ty{position:absolute;left:6px;top:6px;background:var(--scrim);color:#fff;font-size:11px;padding:1px 7px;border-radius:9px}
 .ctx{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .ctx img,.pair img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;background:var(--unsure-soft);display:block;cursor:zoom-in}
 .cand{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
@@ -155,6 +156,9 @@ function img(src) {
   const i = el("img"); i.src = src; i.loading = "lazy"; i.decoding = "async"; i.alt = "Foto do imóvel"; i.dataset.zoom = src; return i;
 }
 
+const TAGS = { pool: "piscina", outdoor: "área externa" };
+function tagged(src, t) { const w = el("div", "ph"); w.append(img(src)); if (t && TAGS[t]) w.append(el("span", "ty", TAGS[t])); return w; }
+
 function buildCard(it) {
   const card = el("article", "card"); card.dataset.viva = it.viva;
   const vh = el("div", "vh");
@@ -166,7 +170,7 @@ function buildCard(it) {
   const saved = el("div", "saved"); card.append(saved);
   if (it.context.length) {
     const ctx = el("div", "ctx");
-    it.context.forEach(s => ctx.append(img(s)));
+    it.context.forEach((s, k) => ctx.append(tagged(s, (it.context_t || [])[k])));
     card.append(ctx);
   }
   const candBtns = [];
@@ -179,7 +183,7 @@ function buildCard(it) {
     if (c.pairs.length) {
       const cols = el("div", "cols"); cols.append(el("span", null, "Viva"), el("span", null, "Coelho"));
       const ps = el("div", "pairs");
-      c.pairs.forEach(p => { const d = el("div", "pair"); d.append(img(p.viva), img(p.coelho), el("span", "sc", p.sscd.toFixed(2))); ps.append(d); });
+      c.pairs.forEach(p => { const d = el("div", "pair"); d.append(tagged(p.viva, p.vt), tagged(p.coelho, p.ct), el("span", "sc", p.sscd.toFixed(2))); ps.append(d); });
       b.append(cols, ps);
     } else b.append(el("div", "nophoto", "Sem fotos para comparar."));
     const btn = el("button", "primary", "É esta"); btn.type = "button"; btn.setAttribute("aria-pressed", "false");

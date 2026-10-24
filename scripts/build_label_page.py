@@ -16,6 +16,7 @@ from PIL import Image, ImageOps
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib.listings import load_pool  # noqa: E402
 from lib.photo_fingerprints import fingerprint_files  # noqa: E402
+from lib.photo_types import photo_types  # noqa: E402
 from photo_dups import COELHO, VIVA, list_listings  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -43,13 +44,23 @@ class ImageStore:
         return self.by_src[src]
 
 
-def best_pairs(vfiles, cfiles, fps, n):
+PRIO = {"pool": 0, "outdoor": 1}  # lower = shown first; anything else is 2
+
+
+def best_pairs(vfiles, cfiles, fps, n, types):
+    """Greedy one-to-one pairs; pairs touching a pool/outdoor photo come first (pool > outdoor, then SSCD),
+    remaining slots filled with the best SSCD pairs of any type."""
     ve = np.stack([fps[p].emb for p in vfiles])
     ce = np.stack([fps[p].emb for p in cfiles])
     sim = np.maximum(ve[:, 0] @ ce[:, 0].T, ve[:, 0] @ ce[:, 1].T)
+
+    def prio(i, j):
+        return min(PRIO.get(types[vfiles[i]], 2), PRIO.get(types[cfiles[j]], 2))
+
+    cells = [(i, j) for i in range(sim.shape[0]) for j in range(sim.shape[1])]
+    cells.sort(key=lambda ij: (prio(*ij), -sim[ij]))
     picked, used_v, used_c = [], set(), set()
-    for flat in np.argsort(-sim, axis=None):
-        i, j = divmod(int(flat), sim.shape[1])
+    for i, j in cells:
         if i in used_v or j in used_c:
             continue
         picked.append((vfiles[i], cfiles[j], float(sim[i, j])))
@@ -83,6 +94,9 @@ def main():
     need = [p for v in vivas for p in vl.get(v, [])]
     need += [p for v in vivas for c in cands[v][: a.cands] for p in cl.get(c["coelho"], [])]
     fps = fingerprint_files(need, PHOTOS / "_cache")
+    types = photo_types(sorted({p for p in need if p.parent.parent.name == VIVA}), VIVA)
+    types.update(photo_types(sorted({p for p in need if p.parent.parent.name == COELHO}), COELHO))
+    tag = lambda p: types[p] if types[p] in PRIO else None  # noqa: E731
     store = ImageStore(a.outdir)
 
     def m(x):
@@ -93,21 +107,28 @@ def main():
     items = []
     for v in vivas:
         vf = [p for p in vl.get(v, []) if p in fps]
-        ctx = [store.add(p) for p in vf[: a.context]]
+        vf_ctx = sorted(vf, key=lambda p: PRIO.get(types[p], 2))[: a.context]  # stable: keeps file order in a tier
+        ctx = [store.add(p) for p in vf_ctx]
+        ctx_t = [tag(p) for p in vf_ctx]
         cs = []
         for rk, c in enumerate(cands[v][: a.cands]):
             cf = [p for p in cl.get(c["coelho"], []) if p in fps]
             pairs = []
             if vf and cf:
-                for pv, pc, s in best_pairs(vf, cf, fps, npairs[min(rk, len(npairs) - 1)]):
-                    pairs.append({"viva": store.add(pv), "coelho": store.add(pc), "sscd": round(s, 3)})
+                for pv, pc, s in best_pairs(vf, cf, fps, npairs[min(rk, len(npairs) - 1)], types):
+                    pairs.append({"viva": store.add(pv), "coelho": store.add(pc), "sscd": round(s, 3),
+                                  "vt": tag(pv), "ct": tag(pc)})
             cs.append({"code": c["coelho"], "meta": m(meta["coelho"].get(c["coelho"])), "pairs": pairs,
                        "score": c.get("score")})
-        items.append({"viva": v, "meta": m(meta["viva"].get(v)), "context": ctx, "candidates": cs})
+        items.append({"viva": v, "meta": m(meta["viva"].get(v)), "context": ctx, "context_t": ctx_t, "candidates": cs})
 
     (a.outdir / "data.json").write_text(json.dumps(items, ensure_ascii=False, indent=1))
     html = a.html.read_text().replace("__ITEMS__", json.dumps(items, ensure_ascii=False).replace("</", "<\\/"))
     (a.outdir / "index.html").write_text(html)
+    used = {x for it in items for x in it["context"]} | {q for it in items for c in it["candidates"] for p in c["pairs"] for q in (p["viva"], p["coelho"])}
+    for f in (a.outdir / "img").glob("*.jpg"):
+        if "img/" + f.name not in used:
+            f.unlink()
     files = list((a.outdir / "img").glob("*.jpg"))
     mb = sum(f.stat().st_size for f in files) / 1e6
     print(f"{len(items)} items, {len(files)} images, {mb:.1f} MB")

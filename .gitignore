@@ -117,3 +117,4 @@ data/photos/
 data/*/fresh-images/
 data/archive-images/
 data/photo_dups/*-all-*.json
+data/photo_types/
