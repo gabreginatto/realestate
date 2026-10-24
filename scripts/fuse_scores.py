@@ -34,7 +34,7 @@ def sscd(pairs, v, c):
 def compute_t0(pool, pairs, gt):
     gt_vivas = {v for v, _ in gt}
     vals = [d["best_sscd"] for v, cs in pairs.items() if v not in gt_vivas
-            for c, d in cs.items() if (v, c) not in gt]
+            for c, d in cs.items()]
     return float(np.percentile(vals, 99)), len(vals)
 
 
@@ -102,7 +102,7 @@ def load_r3():
             for v, cs in rank_all(data, DEFAULT_WEIGHTS, top_n=10**6).items()}
     allp = json.loads((ROOT / "data/photo_dups/pairs-all-v1.json").read_text())["pairs"]
     live = {c["code"] for c in data["coelho"] if c.get("in_fresh")}
-    return {v: cs for v, cs in allp.items() if v in meta}, meta, live
+    return {v: {c: d for c, d in cs.items() if c in meta[v]} for v, cs in allp.items() if v in meta}, meta, live
 
 
 def rank_sscd_first(allp, meta, f, coelho_ok=None):
@@ -168,7 +168,7 @@ def agg(st, vivas):
 
 def run_r3(out_dir):
     allp, meta, live = load_r3()
-    gt = {p for p in load_ground_truth() if p[0] in allp}
+    gt = set(load_ground_truth())  # GT vivas without photos stay in n and count as misses
     anygt = {v for v, _ in load_ground_truth(include_disputed=True)}
     vivas = sorted({v for v, _ in gt})
     print(f"r3: {len(allp)} vivas, GT vivas {len(vivas)}, live coelho {len(live)}")
@@ -201,9 +201,10 @@ def run_r3(out_dir):
     for var, name in (("a", "r3a-sscd-allpairs"), ("b", "r3b-hungarian")):
         f, t = final[var]
         for tag, ok in (("", None), ("-live", live)):
-            g = gt if ok is None else {p for p in gt if p[0] in allp and p[1] in ok}
+            g = gt if ok is None else {p for p in gt if p[1] in ok}
             cands, st = stats_for(var, allp, meta, g, f, t, ok)
             m = agg(st, sorted(st))
+            full = evaluate(cands, g)[0]
             m["unlabeled_firing"] = sum(1 for v, rows in cands.items() if v not in anygt and rows and rows[0]["score"] >= t
                                         and (var == "a" or rows[0]["score"] > 0))
             print(f"{name}{tag} in-sample f={f} t={t} n={len(st)} R@1={m['R@1']:.3f} MRR={m['MRR']:.3f} "
@@ -212,7 +213,8 @@ def run_r3(out_dir):
                 fn = "sscd-first-v1.json" if var == "a" else "sscd-hungarian-v1.json"
                 (out_dir / fn).write_text(json.dumps({"method": name, "f": f, "t": t, "candidates": cands}))
             rec = {"timestamp": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat(timespec="seconds"),
-                   "method": name, "label": name + tag, "metrics": {k: round(float(x), 4) for k, x in m.items()} | {"n": len(st)},
+                   "method": name, "label": name + tag,
+                   "metrics": {k: round(float(x), 4) for k, x in m.items()} | {k: round(float(x), 4) for k, x in full.items() if k != "MRR"},
                    "f": f, "t": t, "cv_heldout": meta_h["cv"][var] if not tag else None,
                    "include_disputed": False, "git_sha": git_short_sha()}
             with HISTORY.open("a") as fh:

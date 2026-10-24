@@ -155,23 +155,6 @@
    "viva": "12229",
    "top3": [
     {
-     "coelho": "688142",
-     "best_sscd": 0.3272,
-     "meta": -99.0,
-     "photo_pairs": [
-      {
-       "viva": "data/photos/vivaprimeimoveis/12229/20.jpg",
-       "coelho": "data/photos/coelhodafonseca/688142/23.jpg",
-       "sscd": 0.3272
-      },
-      {
-       "viva": "data/photos/vivaprimeimoveis/12229/22.jpg",
-       "coelho": "data/photos/coelhodafonseca/688142/23.jpg",
-       "sscd": 0.2801
-      }
-     ]
-    },
-    {
      "coelho": "688696",
      "best_sscd": 0.3257,
      "meta": -7.2192,
@@ -202,6 +185,23 @@
        "viva": "data/photos/vivaprimeimoveis/12229/09.jpg",
        "coelho": "data/photos/coelhodafonseca/302330/05.jpg",
        "sscd": 0.3018
+      }
+     ]
+    },
+    {
+     "coelho": "642743",
+     "best_sscd": 0.3142,
+     "meta": -8.5761,
+     "photo_pairs": [
+      {
+       "viva": "data/photos/vivaprimeimoveis/12229/31.jpg",
+       "coelho": "data/photos/coelhodafonseca/642743/02.jpg",
+       "sscd": 0.3142
+      },
+      {
+       "viva": "data/photos/vivaprimeimoveis/12229/31.jpg",
+       "coelho": "data/photos/coelhodafonseca/642743/09.jpg",
+       "sscd": 0.2963
       }
      ]
     }
@@ -435,23 +435,6 @@
    "viva": "14844",
    "top3": [
     {
-     "coelho": "669495",
-     "best_sscd": 0.3802,
-     "meta": -99.0,
-     "photo_pairs": [
-      {
-       "viva": "data/photos/vivaprimeimoveis/14844/18.jpg",
-       "coelho": "data/photos/coelhodafonseca/669495/16.jpg",
-       "sscd": 0.3802
-      },
-      {
-       "viva": "data/photos/vivaprimeimoveis/14844/18.jpg",
-       "coelho": "data/photos/coelhodafonseca/669495/09.jpg",
-       "sscd": 0.377
-      }
-     ]
-    },
-    {
      "coelho": "616435",
      "best_sscd": 0.332,
      "meta": -13.0232,
@@ -484,6 +467,23 @@
        "sscd": 0.3041
       }
      ]
+    },
+    {
+     "coelho": "433739",
+     "best_sscd": 0.3155,
+     "meta": -5.869,
+     "photo_pairs": [
+      {
+       "viva": "data/photos/vivaprimeimoveis/14844/21.jpg",
+       "coelho": "data/photos/coelhodafonseca/433739/22.jpg",
+       "sscd": 0.3155
+      },
+      {
+       "viva": "data/photos/vivaprimeimoveis/14844/18.jpg",
+       "coelho": "data/photos/coelhodafonseca/433739/16.jpg",
+       "sscd": 0.3118
+      }
+     ]
     }
    ]
   },
@@ -508,23 +508,6 @@
      ]
     },
     {
-     "coelho": "669495",
-     "best_sscd": 0.3621,
-     "meta": -99.0,
-     "photo_pairs": [
-      {
-       "viva": "data/photos/vivaprimeimoveis/15008/09.jpg",
-       "coelho": "data/photos/coelhodafonseca/669495/29.jpg",
-       "sscd": 0.3621
-      },
-      {
-       "viva": "data/photos/vivaprimeimoveis/15008/09.jpg",
-       "coelho": "data/photos/coelhodafonseca/669495/27.jpg",
-       "sscd": 0.3206
-      }
-     ]
-    },
-    {
      "coelho": "433739",
      "best_sscd": 0.3389,
      "meta": -4.465,
@@ -538,6 +521,23 @@
        "viva": "data/photos/vivaprimeimoveis/15008/21.jpg",
        "coelho": "data/photos/coelhodafonseca/433739/19.jpg",
        "sscd": 0.2706
+      }
+     ]
+    },
+    {
+     "coelho": "616435",
+     "best_sscd": 0.335,
+     "meta": -11.4242,
+     "photo_pairs": [
+      {
+       "viva": "data/photos/vivaprimeimoveis/15008/21.jpg",
+       "coelho": "data/photos/coelhodafonseca/616435/08.jpg",
+       "sscd": 0.335
+      },
+      {
+       "viva": "data/photos/vivaprimeimoveis/15008/21.jpg",
+       "coelho": "data/photos/coelhodafonseca/616435/09.jpg",
+       "sscd": 0.2932
       }
      ]
     }
@@ -900,23 +900,6 @@
      ]
     },
     {
-     "coelho": "665289",
-     "best_sscd": 0.336,
-     "meta": -99.0,
-     "photo_pairs": [
-      {
-       "viva": "data/photos/vivaprimeimoveis/17266/ik13EB97p4_1726667b61b788f425.jpg",
-       "coelho": "data/photos/coelhodafonseca/665289/10.jpg",
-       "sscd": 0.336
-      },
-      {
-       "viva": "data/photos/vivaprimeimoveis/17266/09.jpg",
-       "coelho": "data/photos/coelhodafonseca/665289/10.jpg",
-       "sscd": 0.336
-      }
-     ]
-    },
-    {
      "coelho": "354149",
      "best_sscd": 0.3268,
      "meta": -5.3422,
@@ -930,6 +913,23 @@
        "viva": "data/photos/vivaprimeimoveis/17266/61.jpg",
        "coelho": "data/photos/coelhodafonseca/354149/27.jpg",
        "sscd": 0.2498
+      }
+     ]
+    },
+    {
+     "coelho": "392768",
+     "best_sscd": 0.3157,
+     "meta": -2.2767,
+     "photo_pairs": [
+      {
+       "viva": "data/photos/vivaprimeimoveis/17266/56.jpg",
+       "coelho": "data/photos/coelhodafonseca/392768/02.jpg",
+       "sscd": 0.3157
+      },
+      {
+       "viva": "data/photos/vivaprimeimoveis/17266/47.jpg",
+       "coelho": "data/photos/coelhodafonseca/392768/22.jpg",
+       "sscd": 0.2696
       }
      ]
     }
@@ -995,23 +995,6 @@
    "viva": "17596",
    "top3": [
     {
-     "coelho": "664659",
-     "best_sscd": 0.3387,
-     "meta": -99.0,
-     "photo_pairs": [
-      {
-       "viva": "data/photos/vivaprimeimoveis/17596/23.jpg",
-       "coelho": "data/photos/coelhodafonseca/664659/07.jpg",
-       "sscd": 0.3387
-      },
-      {
-       "viva": "data/photos/vivaprimeimoveis/17596/23.jpg",
-       "coelho": "data/photos/coelhodafonseca/664659/13.jpg",
-       "sscd": 0.3051
-      }
-     ]
-    },
-    {
      "coelho": "392768",
      "best_sscd": 0.3159,
      "meta": -4.2406,
@@ -1029,19 +1012,36 @@
      ]
     },
     {
-     "coelho": "654261",
-     "best_sscd": 0.3015,
-     "meta": -99.0,
+     "coelho": "649968",
+     "best_sscd": 0.2582,
+     "meta": -1.9562,
      "photo_pairs": [
       {
-       "viva": "data/photos/vivaprimeimoveis/17596/16.jpg",
-       "coelho": "data/photos/coelhodafonseca/654261/02.jpg",
-       "sscd": 0.3015
+       "viva": "data/photos/vivaprimeimoveis/17596/27.jpg",
+       "coelho": "data/photos/coelhodafonseca/649968/9915554.jpg",
+       "sscd": 0.2582
       },
       {
-       "viva": "data/photos/vivaprimeimoveis/17596/06.jpg",
-       "coelho": "data/photos/coelhodafonseca/654261/02.jpg",
-       "sscd": 0.2885
+       "viva": "data/photos/vivaprimeimoveis/17596/12.jpg",
+       "coelho": "data/photos/coelhodafonseca/649968/9915542.jpg",
+       "sscd": 0.2248
+      }
+     ]
+    },
+    {
+     "coelho": "665561",
+     "best_sscd": 0.2227,
+     "meta": -1.9765,
+     "photo_pairs": [
+      {
+       "viva": "data/photos/vivaprimeimoveis/17596/25.jpg",
+       "coelho": "data/photos/coelhodafonseca/665561/9313352.jpg",
+       "sscd": 0.2227
+      },
+      {
+       "viva": "data/photos/vivaprimeimoveis/17596/15.jpg",
+       "coelho": "data/photos/coelhodafonseca/665561/9313339.jpg",
+       "sscd": 0.2108
       }
      ]
     }
@@ -1365,19 +1365,19 @@
      ]
     },
     {
-     "coelho": "664659",
-     "best_sscd": 0.3353,
-     "meta": -99.0,
+     "coelho": "392768",
+     "best_sscd": 0.3255,
+     "meta": -2.0799,
      "photo_pairs": [
       {
-       "viva": "data/photos/vivaprimeimoveis/4509/18.jpg",
-       "coelho": "data/photos/coelhodafonseca/664659/07.jpg",
-       "sscd": 0.3353
+       "viva": "data/photos/vivaprimeimoveis/4509/01.jpg",
+       "coelho": "data/photos/coelhodafonseca/392768/02.jpg",
+       "sscd": 0.3255
       },
       {
-       "viva": "data/photos/vivaprimeimoveis/4509/18.jpg",
-       "coelho": "data/photos/coelhodafonseca/664659/13.jpg",
-       "sscd": 0.2874
+       "viva": "data/photos/vivaprimeimoveis/4509/01.jpg",
+       "coelho": "data/photos/coelhodafonseca/392768/22.jpg",
+       "sscd": 0.2967
       }
      ]
     }
@@ -1533,19 +1533,19 @@
      ]
     },
     {
-     "coelho": "636606",
-     "best_sscd": 0.306,
-     "meta": -99.0,
+     "coelho": "643279",
+     "best_sscd": 0.3058,
+     "meta": -11.6711,
      "photo_pairs": [
       {
-       "viva": "data/photos/vivaprimeimoveis/9281/11.jpg",
-       "coelho": "data/photos/coelhodafonseca/636606/05.jpg",
-       "sscd": 0.306
+       "viva": "data/photos/vivaprimeimoveis/9281/08.jpg",
+       "coelho": "data/photos/coelhodafonseca/643279/09.jpg",
+       "sscd": 0.3058
       },
       {
-       "viva": "data/photos/vivaprimeimoveis/9281/11.jpg",
-       "coelho": "data/photos/coelhodafonseca/636606/33.jpg",
-       "sscd": 0.246
+       "viva": "data/photos/vivaprimeimoveis/9281/08.jpg",
+       "coelho": "data/photos/coelhodafonseca/643279/12.jpg",
+       "sscd": 0.2889
       }
      ]
     }

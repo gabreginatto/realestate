@@ -38,7 +38,7 @@
   {"viva": "16528", "coelho": "448313", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:58:01.745Z", "condo": "alphaville-1"},
   {"viva": "8177", "coelho": "650074", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:58:19.923Z", "condo": "alphaville-1"},
   {"viva": "12441", "coelho": "403934", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:58:27.266Z", "condo": "alphaville-1"},
-  {"viva": "12252", "coelho": "681867", "source": "review-ui:728cf93f/r2", "status": "disputed", "confirmed_at": "2026-05-12T00:58:34.953Z", "condo": "alphaville-1", "note": "shares exact photos with 674139 (GT partner of viva 17116); possible duplicate coelho listings"},
+  {"viva": "12252", "coelho": "681867", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:58:34.953Z", "condo": "alphaville-1", "note": "restored after audit; viva gallery contains 2 photos of another house (674139)"},
   {"viva": "8682", "coelho": "381684", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:59:21.846Z", "condo": "alphaville-1"},
   {"viva": "16448", "coelho": "569097", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:59:34.097Z", "condo": "alphaville-1"},
   {"viva": "16356", "coelho": "671661", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:59:41.238Z", "condo": "alphaville-1"},
