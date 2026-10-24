@@ -33,12 +33,13 @@ Este arquivo é a memória do ciclo. Qualquer sessão nova (no Mac ou na nuvem) 
 | 1 ✅ | `r1-dups` (+ fotos reaproveitadas SSCD ≥0,75 / PDQ ≤31) | 0,638 | 0,723 | 0,894 | 0,712 | 47 |
 | 2 ✅ | `r2a-sscd-lexi` (SSCD contínuo ≥0,42 primeiro) | 0,851 | 0,915 | 0,957 | 0,887 | 47 |
 | 2 ❌ | `r2b-sscd-blend` (soma ponderada, CV) | 0,710 CV | — | — | 0,784 CV | 47 |
-| 3 ✅ | `r3a-sscd-allpairs` (SSCD em todos os pares, piso f e corte t por CV) | **0,935 CV** | — | — | 0,954 CV | 46 |
-| 3 ❌ | `r3b-hungarian` (1:1 por condomínio) — +1 casa, falso alarme igual | 0,957 CV | — | — | 0,965 CV | 46 |
+| 3 ✅ | `r3a-sscd-allpairs` (ordena todas as Coelho pelo máximo de SSCD entre todos os pares de fotos; o piso f não muda nada) | 0,936 (LOO 0,915) | — | — | 0,963 | 47 |
+| 3 ❌ | `r3b-hungarian` (1:1 por condomínio) — +1 casa, falso alarme igual | 0,957 | — | — | 0,973 | 47 |
+| 4 ✅ | `r4-topk-agg` (contagem de fotos da Viva com máx. SSCD ≥ 0,356 [p99 dos pares sem gabarito]; desempate por metadados) | **0,979 (LOO 0,979)** | — | — | 0,989 | 47 |
 
-Decisão "está na Coelho?" (r3a, fora da amostra): detecta 77% dos pares, **falso alarme 19%** — instável com 46 pares.
-Precisa de rótulos negativos: lista para revisão em `data/review/to-label-r3.json`. Par 12252↔681867 marcado como duvidoso.
-Rodadas usadas: 3 de 8.
+Decisão "está na Coelho?" ainda não validada — não há rótulos negativos (o número anterior media outra coisa).
+Lista para revisão em `data/review/to-label-r3.json`. Par 12252↔681867 restaurado como confirmado (a galeria da Viva tem 2 fotos de outra casa, 674139).
+Rodadas usadas: 4 de 8.
 
 Erros da rodada 0: 13572 (certo em 14º), 14127 (3º), 14138 (2º), 17378 (2º; o 1º é o par de 17388 → provável anúncio duplicado na Viva).
 
