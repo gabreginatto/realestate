@@ -66,6 +66,33 @@ def evaluate(candidates, pairs):
     return metrics, per_viva
 
 
+NOMATCH_TS = (0.35, 0.40, 0.45, 0.50, 0.55)
+
+
+def nomatch(candidates, pairs, t, field="score", all_gt_vivas=None):
+    """No-match decision metrics at threshold t on candidate[field] (top-1 fires if value >= t).
+
+    TPR: GT vivas whose top-1 is a true coelho and fires. FPR (leave-true-out): remove the viva's
+    true coelho from its list; the new top-1 firing is a false match. unlabeled_firing: vivas with no
+    GT positive (all_gt_vivas = vivas with any GT, incl. disputed) whose top-1 fires.
+    """
+    truth = {}
+    for viva, coelho in pairs:
+        truth.setdefault(viva, set()).add(coelho)
+    val = lambda c: c.get(field, 0.0)
+    tp, fp = {}, {}
+    for v, true_set in truth.items():
+        lst = candidates.get(v, [])
+        tp[v] = bool(lst) and str(lst[0]["coelho"]) in true_set and val(lst[0]) >= t
+        rest = [c for c in lst if str(c["coelho"]) not in true_set]
+        fp[v] = bool(rest) and val(rest[0]) >= t
+    excl = set(truth) | set(all_gt_vivas or ())
+    unl = [v for v, lst in candidates.items() if v not in excl and lst and val(lst[0]) >= t]
+    n = len(truth)
+    return {"t": t, "TPR": sum(tp.values()) / n, "FPR": sum(fp.values()) / n, "unlabeled_firing": len(unl),
+            "n_unlabeled": sum(1 for v in candidates if v not in excl), "tp": tp, "fp": fp}
+
+
 def format_line(method, m):
     med = "NA" if m["med"] is None else f"{m['med']:g}"
     recalls = " ".join(f"R@{k}={m[f'R@{k}']:.3f}" for k in KS)
@@ -78,6 +105,8 @@ def main():
     ap.add_argument("--label", default="", help="free-text label stored in history")
     ap.add_argument("--include-disputed", action="store_true")
     ap.add_argument("--show-misses", action="store_true", help="one line per GT viva not at rank 1")
+    ap.add_argument("--nomatch", action="store_true", help="no-match evaluation (TPR / leave-true-out FPR) per threshold")
+    ap.add_argument("--score-field", default="score", help="candidate field thresholded by --nomatch")
     ap.add_argument("--no-history", action="store_true", help="do not append to history.jsonl")
     args = ap.parse_args()
 
@@ -95,6 +124,15 @@ def main():
                     f"rank={rank if rank else 'absent'} top1={top1}"
                 )
 
+    nm = []
+    if args.nomatch:
+        anygt = {v for v, _ in load_ground_truth(include_disputed=True)}
+        for t in NOMATCH_TS:
+            r = nomatch(data["candidates"], pairs, t, args.score_field, anygt)
+            print(f"nomatch method={method} t={t:.2f} TPR={r['TPR']:.3f} FPR={r['FPR']:.3f} "
+                  f"unlabeled_firing={r['unlabeled_firing']}/{r['n_unlabeled']}")
+            nm.append({k: (round(x, 4) if isinstance(x, float) else x) for k, x in r.items() if k not in ("tp", "fp")})
+
     if not args.no_history:
         HISTORY.parent.mkdir(parents=True, exist_ok=True)
         record = {
@@ -103,6 +141,7 @@ def main():
             "label": args.label,
             "metrics": metrics,
             "include_disputed": args.include_disputed,
+            **({"nomatch": nm, "score_field": args.score_field} if nm else {}),
             "git_sha": git_short_sha(),
         }
         with HISTORY.open("a") as f:

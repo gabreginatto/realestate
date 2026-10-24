@@ -55,9 +55,14 @@ def compare_listings(
     dup = (sim >= sscd_t) | (dist <= pdq_t)
     idx = np.argwhere(dup)
     idx = sorted(idx.tolist(), key=lambda ij: -sim[ij[0], ij[1]])
-    # n_dup_photos: viva photos that have at least one duplicate counterpart
+    # n_dup_photos: viva photos with >=1 duplicate counterpart; also distinct coelho photos / matched pairs
+    flat = np.argsort(-sim, axis=None)[:3]
+    top = [[va[i].name, ca[j].name, round(float(sim[i, j]), 4)] for i, j in (np.unravel_index(f, sim.shape) for f in flat)]
     return {
         "n_dup_photos": int(dup.any(axis=1).sum()),
+        "n_dup_coelho_photos": int(dup.any(axis=0).sum()),
+        "n_dup_pairs": int(dup.sum()),
+        "top_pairs": top,
         "best_sscd": round(float(sim.max()), 4),
         "best_pdq_dist": int(dist.min()),
         "pairs": [
@@ -100,10 +105,10 @@ def main() -> None:
     needed_c = {c for _, c in pairs}
     files = [p for v in needed_v for p in viva[v]] + [p for c in needed_c for p in coelho[c]]
     fps = fingerprint_files(files, args.root / "_cache", batch_size=args.batch_size)
-    for code in list(needed_v):
-        if not all(p in fps for p in viva[code]):
-            needed_v.discard(code)
-    pairs = [(v, c) for v, c in pairs if all(p in fps for p in viva[v] + coelho[c])]
+    # drop unreadable photos, not whole listings
+    viva = {k: [p for p in ps if p in fps] for k, ps in viva.items()}
+    coelho = {k: [p for p in ps if p in fps] for k, ps in coelho.items()}
+    pairs = [(v, c) for v, c in pairs if viva.get(v) and coelho.get(c)]
 
     results: dict[str, dict[str, dict]] = {}
     for v, c in pairs:
