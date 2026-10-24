@@ -118,3 +118,7 @@ data/*/fresh-images/
 data/archive-images/
 data/photo_dups/*-all-*.json
 data/photo_types/
+firebase/public/
+firebase-debug.log
+data/photos-clean/
+firebase/.firebase/

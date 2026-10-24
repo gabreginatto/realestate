@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Open link, no login: anyone may read and write labels, but only well-formed ones.
+    match /labels/{viva} {
+      allow read: if true;
+      allow create, update: if request.resource.data.keys().hasOnly(['viva', 'decision', 'coelho', 'note', 'by', 'at'])
+        && request.resource.data.keys().hasAll(['viva', 'decision', 'coelho', 'note', 'by', 'at'])
+        && viva.matches('^[0-9]{1,8}$')
+        && request.resource.data.viva == viva
+        && request.resource.data.decision in ['match', 'no_match', 'unsure']
+        && (request.resource.data.coelho == null
+            || (request.resource.data.coelho is string && request.resource.data.coelho.matches('^[0-9]{4,8}$')))
+        && request.resource.data.note is string && request.resource.data.note.size() <= 500
+        && request.resource.data.by is string && request.resource.data.by.size() <= 64
+        && request.resource.data.at is string && request.resource.data.at.size() <= 40;
+      allow delete: if false;
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

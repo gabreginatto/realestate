@@ -1,4 +1,5 @@
 <title>Casas Viva na Coelho</title>
+<link rel="icon" href="data:,">
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: sticky progress bar over a single column of cards; each card = viva header, candidate blocks with side-by-side photo pairs, decision bar. */
@@ -90,6 +91,7 @@ textarea{min-height:56px;resize:vertical}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--no);color:#fff;
   padding:10px 14px;border-radius:8px;max-width:90vw;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.3)}
 .toast.good{background:var(--ok);color:var(--surface)}
+[hidden]{display:none!important}
 #lb{position:fixed;inset:0;z-index:40;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);cursor:zoom-out}
 #lb img{max-width:100%;max-height:100%;object-fit:contain}
 @media (prefers-reduced-motion:reduce){.track i{transition:none}}
@@ -284,13 +286,36 @@ ITEMS.forEach(it => list.append(buildCard(it)));
 refresh();
 ITEMS.forEach(it => paintCard(it.viva));
 
+const FIREBASE_VERSION = "10.14.1";
+async function firestoreBackend() {
+  const base = "https://www.gstatic.com/firebasejs/" + FIREBASE_VERSION + "/";
+  const [{ initializeApp }, fs] = await Promise.all([import(base + "firebase-app.js"), import(base + "firebase-firestore.js")]);
+  const fdb = fs.getFirestore(initializeApp(window.FIREBASE_CONFIG));
+  let id = null;
+  try { id = localStorage.getItem("labeler_id"); } catch (e) {}
+  if (!id) {
+    id = "b_" + Array.from(crypto.getRandomValues(new Uint8Array(12)), x => x.toString(16).padStart(2, "0")).join("");
+    try { localStorage.setItem("labeler_id", id); } catch (e) {}
+  }
+  // Same minimal surface as the claude.use("db") collection API used below.
+  const adapter = { collection: () => ({
+    doc: d => ({ set: data => fs.setDoc(fs.doc(fdb, "labels", d), data) }),
+    onSnapshot: (ok, err) => fs.onSnapshot(fs.collection(fdb, "labels"), ok, err),
+  }) };
+  return { db: adapter, uid: id };
+}
+
 (async () => {
   try {
-    db = window.claude && window.claude.use ? await window.claude.use("db") : null;
-    const user = window.claude && window.claude.use ? await window.claude.use("user") : null;
-    uid = user ? await user.id() : null;
-  } catch (e) { db = null; }
-  if (!db) { $("#banner").hidden = false; ITEMS.forEach(it => paintCard(it.viva)); return; }
+    if (window.LABEL_BACKEND === "firestore") {
+      ({ db, uid } = await firestoreBackend());
+    } else {
+      db = window.claude && window.claude.use ? await window.claude.use("db") : null;
+      const user = window.claude && window.claude.use ? await window.claude.use("user") : null;
+      uid = user ? await user.id() : null;
+    }
+  } catch (e) { db = null; console.error(e); toast("Não foi possível conectar ao salvamento."); }
+  if (!db) { $("#banner").hidden = window.LABEL_BACKEND === "firestore"; ITEMS.forEach(it => paintCard(it.viva)); return; }
   ITEMS.forEach(it => paintCard(it.viva));
   db.collection("labels").onSnapshot(snap => {
     const next = new Map();
