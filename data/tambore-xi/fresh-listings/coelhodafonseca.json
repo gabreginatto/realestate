@@ -1,23 +1,37 @@
 {
-  "scraped_at": "2026-05-10T20:50:58.482Z",
+  "scraped_at": "2026-10-24T03:39:04.885Z",
   "compound": "tambore-xi",
   "site": "coelhodafonseca",
   "source_inventory": "data/tambore-xi/live-listing-inventory/coelhodafonseca.json",
   "source_url": "https://www.coelhodafonseca.com.br/search?category=Alphaville&transaction=Comprar&purpose=Residencial&location=enterprise_name%3ATambor%C3%A9+XI&propertyType=Casa+em+Condom%C3%ADnio",
   "declared_count": 28,
   "total_inventory_listings": 28,
-  "total_listings": 28,
+  "total_listings": 26,
   "total_pages": 1,
-  "errors": [],
+  "errors": [
+    {
+      "code": "686078",
+      "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-2-vagas-360-metros-cf686078",
+      "error": "HTTP 404 for https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-2-vagas-360-metros-cf686078"
+    },
+    {
+      "code": "670231",
+      "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-485-metros-cf670231",
+      "error": "HTTP 404 for https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-485-metros-cf670231"
+    }
+  ],
   "listings": [
     {
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-6-vagas-720-metros-cf688142",
       "propertyCode": "688142",
       "price": "R$ 12.900.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 6 vagas / 720 m²",
-      "description": "Veja os detalhes do imóvel 688142 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 6 vagas / 720 m² construída / 620 m² do terreno",
+      "description": "Residência sofisticada com localização privilegiada, em esquina cercada pela natureza. Possui ambientes luminosos e bem distribuídos, quatro belas suítes espaçosas, corredor amplo, sendo a suite master com hidromassagem. Destaque para o espaço gourmet integrado à cozinha, equipado com churrasqueira e esquadrias em PVC. Os armários planejados de alta qualidade da renomada marca Ornare, juntamente com sistema de energia solar e aspiração central Hayden, garantem um estilo de vida exclusivo e sustentável. Conta também com escritório, home theater, e todos os ambientes foram cuidadosamente projetados para oferecer conforto, sofisticação e praticidade no dia a dia. !",
+      "area_terreno": 620,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10804227.jpg",
@@ -52,9 +66,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10804274.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10804281.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 688142 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Residência sofisticada com localização privilegiada, em esquina cercada pela natureza. Possui ambientes luminosos e bem distribuídos, quatro belas suítes espaçosas, corredor amplo, sendo a suite master com hidromassagem. Destaque para o espaço gourmet integrado à cozinha, equipado com churrasqueira e esquadrias em PVC. Os armários planejados de alta qualidade da renomada marca Ornare, juntamente com sistema de energia solar e aspiração central Hayden, garantem um estilo de vida exclusivo e sustentável. Conta também com escritório, home theater, e todos os ambientes foram cuidadosamente projetados para oferecer conforto, sofisticação e praticidade no dia a dia. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 6,
+          "area_construida": 720,
+          "area_total": 620
+        },
         "amenities": []
       }
     },
@@ -62,10 +85,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-400-metros-cf654085",
       "propertyCode": "654085",
       "price": "R$ 6.800.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 4 vagas / 400 m²",
-      "description": "Veja os detalhes do imóvel 654085 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 4 vagas / 400 m² construída / 420 m² do terreno",
+      "description": "Residência contemporânea em localização privilegiada, vista espetacular em exclusivo condomínio residencial. Completamente automatizada, esta propriedade oferece um design sofisticado, repleto de armários planejados e ar-condicionado em todos os cômodos. A decoração, assinada por profissionais renomados, é um verdadeiro exemplo de bom gosto. Os ambientes integrados, luminosos e espaçosos proporcionam um estilo de vida luxuoso e confortável. Esta residência exclusiva é oferecida totalmente mobiliada, pronta para receber seus moradores com elegância e requinte. Agende sua visita e prepare-se para viver neste espaço charmoso e exclusivo. !",
+      "area_terreno": 420,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9962604.jpg",
@@ -87,9 +113,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9962622.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9962625.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 654085 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Residência contemporânea em localização privilegiada, vista espetacular em exclusivo condomínio residencial. Completamente automatizada, esta propriedade oferece um design sofisticado, repleto de armários planejados e ar-condicionado em todos os cômodos. A decoração, assinada por profissionais renomados, é um verdadeiro exemplo de bom gosto. Os ambientes integrados, luminosos e espaçosos proporcionam um estilo de vida luxuoso e confortável. Esta residência exclusiva é oferecida totalmente mobiliada, pronta para receber seus moradores com elegância e requinte. Agende sua visita e prepare-se para viver neste espaço charmoso e exclusivo. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 4,
+          "area_construida": 400,
+          "area_total": 420
+        },
         "amenities": []
       }
     },
@@ -97,21 +132,23 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-430-metros-cf617568",
       "propertyCode": "617568",
       "price": "R$ 6.500.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 4 vagas / 430 m²",
-      "description": "Veja os detalhes do imóvel 617568 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 4 vagas / 430 m² construída / 467 m² do terreno",
+      "description": "Belíssima residência projetada pela arquiteta Renata Bertoni, com acabamentos nobres e iluminação natural excepcional. Ambientes amplos e integrados, paisagismo com jardim vertical e ótima ventilação criam um clima harmonioso e sofisticado. Possui sala para 3 ambientes, cozinha integrada com eletrodomésticos Elettromec, automação total (iluminação, som, câmeras, ar-condicionado, TV e internet), além de ar-condicionado em todos os ambientes. A casa possui ainda brinquedoteca, Home-Theater, 2 escritórios e 6 vagas de garagem, além de uma excelente área gourmet completa, com hidromassagem conectada à piscina (aquecimento a gás e solar). Agende a sua visita agora mesmo! !",
+      "area_terreno": 467,
       "page": 1,
       "images": [
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10170506.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10170510.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10170490.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10170497.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170473.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10170506.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170476.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170478.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170479.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10170483.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170487.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10170490.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170494.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170495.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170499.jpg",
@@ -129,6 +166,7 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170522.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170525.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170532.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10170510.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170530.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170470.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170472.jpg",
@@ -140,13 +178,21 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170480.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170492.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170488.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10170497.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170515.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10170519.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 617568 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Belíssima residência projetada pela arquiteta Renata Bertoni, com acabamentos nobres e iluminação natural excepcional. Ambientes amplos e integrados, paisagismo com jardim vertical e ótima ventilação criam um clima harmonioso e sofisticado. Possui sala para 3 ambientes, cozinha integrada com eletrodomésticos Elettromec, automação total (iluminação, som, câmeras, ar-condicionado, TV e internet), além de ar-condicionado em todos os ambientes. A casa possui ainda brinquedoteca, Home-Theater, 2 escritórios e 6 vagas de garagem, além de uma excelente área gourmet completa, com hidromassagem conectada à piscina (aquecimento a gás e solar). Agende a sua visita agora mesmo! !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 4,
+          "area_construida": 430,
+          "area_total": 467
+        },
         "amenities": []
       }
     },
@@ -154,10 +200,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-3-dormitorios-3-suites-3-vagas-389-metros-cf654261",
       "propertyCode": "654261",
       "price": "R$ 6.000.000",
-      "location": "",
-      "propertyType": "",
-      "features": "3 dorms / 3 suítes / 3 vagas / 389 m²",
-      "description": "Veja os detalhes do imóvel 654261 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "3 dorms / 3 suítes / 3 vagas / 389 m² construída / 520 m² do terreno",
+      "description": "Residência moderna, de um só piso, com design funcional e equipada com armários e eletrodomésticos, incluindo projeto de iluminação. Espaço gourmet integrado ao jardim, localizado na área inferior da casa, com uma suíte de empregada bastante ampla, podendo ser adaptada para uma suíte de hóspedes, por exemplo. Situada em uma alameda tranquila, ideal para famílias com crianças pequenas, no Tamboré XI, o condomínio mais valorizado do último ano. Com área de lazer completa, no estilo clube, incluindo piscinas internas e externas, quadras de tênis, poliesportiva e beach tennis. Rodeada pela mata atlântica e próxima das melhores escolas de Alphaville. Uma oportunidade que merece ser explorada! !",
+      "area_terreno": 520,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10485807.jpg",
@@ -173,9 +222,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10485819.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10485822.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 654261 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Residência moderna, de um só piso, com design funcional e equipada com armários e eletrodomésticos, incluindo projeto de iluminação. Espaço gourmet integrado ao jardim, localizado na área inferior da casa, com uma suíte de empregada bastante ampla, podendo ser adaptada para uma suíte de hóspedes, por exemplo. Situada em uma alameda tranquila, ideal para famílias com crianças pequenas, no Tamboré XI, o condomínio mais valorizado do último ano. Com área de lazer completa, no estilo clube, incluindo piscinas internas e externas, quadras de tênis, poliesportiva e beach tennis. Rodeada pela mata atlântica e próxima das melhores escolas de Alphaville. Uma oportunidade que merece ser explorada! !",
+        "specs": {
+          "dormitorios": 3,
+          "suites": 3,
+          "banheiros": null,
+          "vagas": 3,
+          "area_construida": 389,
+          "area_total": 520
+        },
         "amenities": []
       }
     },
@@ -183,19 +241,21 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-5-vagas-416-metros-cf504962",
       "propertyCode": "504962",
       "price": "R$ 5.500.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 5 vagas / 416 m²",
-      "description": "Veja os detalhes do imóvel 504962 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 5 vagas / 416 m² construída / 420 m² do terreno",
+      "description": "Excelente casa em estilo provençal, com energia solar fotovoltáica, aquecimento solar e sistema de água de reuso. A casa possui excelentes acabamentos, contendo mármore Travertino Romano e Anticato, piso em assoalho de demolição e Tecnocimento, armários planejados Criare e persianas automatizadas, conferindo sofisticação a cada ambiente. Conta ainda com ar condicionado em todos os dormitórios e também na sala de estar. A infraestrutura é completa: sala de ginástica no subsolo, sistema de irrigação para o jardim, sistema elétrico independente por andar com previsão para gerador (pontos principais), e 5 vagas de garagem cobertas. Agende uma visita agora mesmo! !",
+      "area_terreno": 420,
       "page": 1,
       "images": [
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10651949.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10651931.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651984.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651924.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651926.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651928.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651929.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10651931.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651932.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651933.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651934.jpg",
@@ -221,13 +281,23 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651973.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651943.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651958.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10651949.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651961.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651966.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10651977.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 504962 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Excelente casa em estilo provençal, com energia solar fotovoltáica, aquecimento solar e sistema de água de reuso. A casa possui excelentes acabamentos, contendo mármore Travertino Romano e Anticato, piso em assoalho de demolição e Tecnocimento, armários planejados Criare e persianas automatizadas, conferindo sofisticação a cada ambiente. Conta ainda com ar condicionado em todos os dormitórios e também na sala de estar. A infraestrutura é completa: sala de ginástica no subsolo, sistema de irrigação para o jardim, sistema elétrico independente por andar com previsão para gerador (pontos principais), e 5 vagas de garagem cobertas. Agende uma visita agora mesmo! !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 5,
+          "area_construida": 416,
+          "area_total": 420
+        },
         "amenities": []
       }
     },
@@ -235,24 +305,63 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-8-vagas-900-metros-cf680804",
       "propertyCode": "680804",
       "price": "R$ 25.000.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 8 vagas / 900 m²",
-      "description": "Veja os detalhes do imóvel 680804 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 10 vagas / 900 m² construída / 708 m² do terreno",
+      "description": "Residência contemporânea de tirar o fôlego, localizada em um dos condomínios mais exclusivos da região. Esta casa espetacular combina design moderno com elegância, oferecendo um ambiente luxuoso e confortável para desfrutar de momentos únicos. Área gourmet , com total privacidade, integrada a piscina, home theater, uma man cave, salão de festas, espaçl para academia, planejados ID em toda a casa e mobiia com Desing da Vila, 04 suítes com walking closet, suíte master com espaço generoso, Escritório, garagem para 10 veículos, Venha viver a experiência de morar em um ambiente sofisticado e exclusivo, onde cada detalhe foi pensado para proporcionar o máximo em qualidade de vida. Agende uma visita e encante-se com essa oportunidade única de fazer parte desse seleto grupo de moradores. !",
+      "area_terreno": 708,
       "page": 1,
       "images": [
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10209534.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10209538.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10209539.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10209540.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10209542.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10209537.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10209535.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10209536.jpg"
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912638.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912621.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912579.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912620.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912634.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912637.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912598.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912626.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912576.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912599.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912622.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912646.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912573.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912585.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912594.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912605.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912610.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912613.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912624.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912580.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912603.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912627.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912564.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912570.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912583.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912587.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912590.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912606.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912608.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912649.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912592.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912633.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912602.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912625.jpg",
+        "https://static.coelhodafonseca.com.br/images/imoveis/original/10912635.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 680804 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Residência contemporânea de tirar o fôlego, localizada em um dos condomínios mais exclusivos da região. Esta casa espetacular combina design moderno com elegância, oferecendo um ambiente luxuoso e confortável para desfrutar de momentos únicos. Área gourmet , com total privacidade, integrada a piscina, home theater, uma man cave, salão de festas, espaçl para academia, planejados ID em toda a casa e mobiia com Desing da Vila, 04 suítes com walking closet, suíte master com espaço generoso, Escritório, garagem para 10 veículos, Venha viver a experiência de morar em um ambiente sofisticado e exclusivo, onde cada detalhe foi pensado para proporcionar o máximo em qualidade de vida. Agende uma visita e encante-se com essa oportunidade única de fazer parte desse seleto grupo de moradores. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 10,
+          "area_construida": 900,
+          "area_total": 708
+        },
         "amenities": []
       }
     },
@@ -260,10 +369,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-13-vagas-627-metros-cf636606",
       "propertyCode": "636606",
       "price": "R$ 16.000.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 13 vagas / 627 m²",
-      "description": "Veja os detalhes do imóvel 636606 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 13 vagas / 627 m² construída / 840 m² do terreno",
+      "description": "Essa casa garante uma experiência única para quem busca sofisticação e conforto em Alphaville. Com uma localização estratégica e exclusiva, esta residência oferece vistas incríveis da deslumbrante mata, proporcionando privacidade e tranquilidade sem igual. Com uma área social ampla e perfeita para receber, este imóvel é ideal para quem gosta de entreter. O home theater é perfeito para momentos de lazer, a cozinha completamente equipada é ideal para preparar deliciosas refeições, e a piscina aquecida com sauna integrada proporciona momentos de relaxamento inigualáveis. Além disso, a suíte no térreo oferece conveniência e privacidade para os moradores ou convidados que preferem evitar escadas. E para os apaixonados por carros, a garagem subterrânea comporta até 10 veículos, garantindo segurança e conforto sem igual. Não perca a oportunidade de viver um estilo de vida exclusivo. Entre em contato com nosso corretor ainda hoje e descubra pessoalmente este refúgio de luxo e harmonia. !",
+      "area_terreno": 840,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9726647.jpg",
@@ -303,20 +415,32 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9775000.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9775004.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 636606 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Essa casa garante uma experiência única para quem busca sofisticação e conforto em Alphaville. Com uma localização estratégica e exclusiva, esta residência oferece vistas incríveis da deslumbrante mata, proporcionando privacidade e tranquilidade sem igual. Com uma área social ampla e perfeita para receber, este imóvel é ideal para quem gosta de entreter. O home theater é perfeito para momentos de lazer, a cozinha completamente equipada é ideal para preparar deliciosas refeições, e a piscina aquecida com sauna integrada proporciona momentos de relaxamento inigualáveis. Além disso, a suíte no térreo oferece conveniência e privacidade para os moradores ou convidados que preferem evitar escadas. E para os apaixonados por carros, a garagem subterrânea comporta até 10 veículos, garantindo segurança e conforto sem igual. Não perca a oportunidade de viver um estilo de vida exclusivo. Entre em contato com nosso corretor ainda hoje e descubra pessoalmente este refúgio de luxo e harmonia. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 13,
+          "area_construida": 627,
+          "area_total": 840
+        },
         "amenities": []
       }
     },
     {
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-6-vagas-1100-metros-cf679087",
       "propertyCode": "679087",
-      "price": "R$ 15.000.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 6 vagas / 1.100 m²",
-      "description": "Veja os detalhes do imóvel 679087 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "price": "R$ 16.900.000",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 6 vagas / 1100 m² construída / 835 m² do terreno",
+      "description": "Localizada num dos melhores residenciais de Alphaville e Tamboré, esta casa se destaca por sua moderna arquitetura e pelo padrão construtivo empregado. Ponto alto do Residencial, próximo à entrada principal, em Alameda sem saída, com baixo fluxo de veículos (trazendo comodidade, paz e segurança para sua família). Com projeto arquitônico inteligente, a casa possui agradáavel integração entre os ambientes sociais, com espaço gourmet, piscina, fire pit, sauna, salão de festas, salão de jogos. Na área íntima, 4 suítes espaçosas, sala de TV, copa de apoio e roupeiro. O imóvel oferece garagem coberta para 6 a 8 carros. O Tamboré XI está próximo do Colégio Saint Nicholas, da Escola Morumbi e do Colégio e Universidade Presbiteriana Mackenzie. !",
+      "area_terreno": 835,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10344102.jpg",
@@ -354,9 +478,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10344122.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10344131.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 679087 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Localizada num dos melhores residenciais de Alphaville e Tamboré, esta casa se destaca por sua moderna arquitetura e pelo padrão construtivo empregado. Ponto alto do Residencial, próximo à entrada principal, em Alameda sem saída, com baixo fluxo de veículos (trazendo comodidade, paz e segurança para sua família). Com projeto arquitônico inteligente, a casa possui agradáavel integração entre os ambientes sociais, com espaço gourmet, piscina, fire pit, sauna, salão de festas, salão de jogos. Na área íntima, 4 suítes espaçosas, sala de TV, copa de apoio e roupeiro. O imóvel oferece garagem coberta para 6 a 8 carros. O Tamboré XI está próximo do Colégio Saint Nicholas, da Escola Morumbi e do Colégio e Universidade Presbiteriana Mackenzie. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 6,
+          "area_construida": 1100,
+          "area_total": 835
+        },
         "amenities": []
       }
     },
@@ -364,10 +497,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-8-vagas-563-metros-cf660463",
       "propertyCode": "660463",
       "price": "R$ 13.900.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 8 vagas / 563 m²",
-      "description": "Veja os detalhes do imóvel 660463 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 8 vagas / 563 m² construída / 616 m² do terreno",
+      "description": "Casa nova, projeto contemporaneo Arq Rodrigo Latorre, ambientes integrados, acabamentos de alto padrão. São 4 suites com banheira de imersão, bancadas em nanoglass, persianas eletrica e ar condicionado. Area de lazer completa, com vista panoramica, piscina com prainha e spa, academia e sauna úmida. a casa será entregue com armario em alguns ambientes e paisagismo. Garagem para 8 carros e elevador, construção sustetável com energia fotovoltaica e captação de agua fluvial. Condominio com area de lazer completa, quadras tenis, beach tennis, poliesportiva, piscina interna e externa, estrutura de clube, ideal para crianças, alamedas tranquilas. Condominio proximo as melhores escolas de Alphavile. Vale a pena conhecer !! !",
+      "area_terreno": 616,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10195266.jpg",
@@ -392,9 +528,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10195296.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10195301.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 660463 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Casa nova, projeto contemporaneo Arq Rodrigo Latorre, ambientes integrados, acabamentos de alto padrão. São 4 suites com banheira de imersão, bancadas em nanoglass, persianas eletrica e ar condicionado. Area de lazer completa, com vista panoramica, piscina com prainha e spa, academia e sauna úmida. a casa será entregue com armario em alguns ambientes e paisagismo. Garagem para 8 carros e elevador, construção sustetável com energia fotovoltaica e captação de agua fluvial. Condominio com area de lazer completa, quadras tenis, beach tennis, poliesportiva, piscina interna e externa, estrutura de clube, ideal para crianças, alamedas tranquilas. Condominio proximo as melhores escolas de Alphavile. Vale a pena conhecer !! !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 8,
+          "area_construida": 563,
+          "area_total": 616
+        },
         "amenities": []
       }
     },
@@ -402,10 +547,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-6-dormitorios-5-suites-5-vagas-606-metros-cf676692",
       "propertyCode": "676692",
       "price": "R$ 12.500.000",
-      "location": "",
-      "propertyType": "",
-      "features": "6 dorms / 5 suítes / 5 vagas / 606 m²",
-      "description": "Veja os detalhes do imóvel 676692 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "6 dorms / 5 suítes / 5 vagas / 606 m² construída / 593 m² do terreno",
+      "description": "Magnífica propriedade localizada em um ponto privilegiado, no final de uma rua tranquila, este imóvel conta com aquecimento solar e está preparado para receber energia fotovoltaica. Possui 5 suítes, sendo uma no térreo, além de uma deslumbrante piscina com prainha e com belíssimo paisagismo. Todos os revestimentos são da renomada marca Portobello, com peças de 1,20 x 1,20 metros no padrão Barcelona Cristal. As esquadrias são em PVC, equipadas com persianas automáticas nas suítes. A elegante lareira da marca Fire Design e a sofisticada churrasqueira a gás Texas Concept Grill, com exaustor, são características que garantem conforto e requinte aos ambientes. Além disso, a marcenaria presente em todos os revestimentos é feita em lâmina de freijó natural, agregando um toque de sofisticação único à residência. !",
+      "area_terreno": 593,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10396062.jpg",
@@ -432,20 +580,32 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10396077.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10396041.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 676692 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Magnífica propriedade localizada em um ponto privilegiado, no final de uma rua tranquila, este imóvel conta com aquecimento solar e está preparado para receber energia fotovoltaica. Possui 5 suítes, sendo uma no térreo, além de uma deslumbrante piscina com prainha e com belíssimo paisagismo. Todos os revestimentos são da renomada marca Portobello, com peças de 1,20 x 1,20 metros no padrão Barcelona Cristal. As esquadrias são em PVC, equipadas com persianas automáticas nas suítes. A elegante lareira da marca Fire Design e a sofisticada churrasqueira a gás Texas Concept Grill, com exaustor, são características que garantem conforto e requinte aos ambientes. Além disso, a marcenaria presente em todos os revestimentos é feita em lâmina de freijó natural, agregando um toque de sofisticação único à residência. !",
+        "specs": {
+          "dormitorios": 6,
+          "suites": 5,
+          "banheiros": null,
+          "vagas": 5,
+          "area_construida": 606,
+          "area_total": 593
+        },
         "amenities": []
       }
     },
     {
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-2-vagas-639-metros-cf688583",
       "propertyCode": "688583",
-      "price": "R$ 12.200.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 2 vagas / 639 m²",
-      "description": "Veja os detalhes do imóvel 688583 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "price": "R$ 13.000.000",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 2 vagas / 639 m² construída / 520 m² do terreno",
+      "description": "Residência sofisticada e elegante, toda reformada para venda completamente mobiliada. Destaque para as persianas e luzes automatizas, possui elevador para os 3 andares, uma sala ampla com home theater e uma cozinha gourmet integrada com automação e móveis de alto padrão. Garagem com ar condicionado e portas de vidro, além de um amplo espaço com bar, sala de jogos, bem como banheiros e cozinha que complementam o andar. Belíssima combinação de luxo funcional e conforto. !",
+      "area_terreno": 520,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10842346.jpg",
@@ -479,9 +639,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10842365.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10842381.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 688583 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Residência sofisticada e elegante, toda reformada para venda completamente mobiliada. Destaque para as persianas e luzes automatizas, possui elevador para os 3 andares, uma sala ampla com home theater e uma cozinha gourmet integrada com automação e móveis de alto padrão. Garagem com ar condicionado e portas de vidro, além de um amplo espaço com bar, sala de jogos, bem como banheiros e cozinha que complementam o andar. Belíssima combinação de luxo funcional e conforto. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 2,
+          "area_construida": 639,
+          "area_total": 520
+        },
         "amenities": []
       }
     },
@@ -489,10 +658,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-5-dormitorios-4-suites-3-vagas-792-metros-cf682681",
       "propertyCode": "682681",
       "price": "R$ 12.000.000",
-      "location": "",
-      "propertyType": "",
-      "features": "5 dorms / 4 suítes / 3 vagas / 792 m²",
-      "description": "Veja os detalhes do imóvel 682681 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "5 dorms / 4 suítes / 3 vagas / 792 m² construída / 600 m² do terreno",
+      "description": "Casa contemporânea com vista privilegiada para a mata, composta por 4 suítes, com possibilidade de transformar uma delas em 5ª suíte. O amplo e luminoso living proporciona vista para o exuberante jardim e para a mata, integrando perfeitamente os ambientes. Localizado em um dos condomínios mais exclusivos da região de Alphaville, este imóvel apresenta um design arrojado e uma localização acolhedora. A área de lazer completa, aliada à proximidade das melhores escolas de Alphaville, proporciona conforto e comodidade aos moradores. Descubra o que esta propriedade única tem a oferecer. Agende uma visita e encante-se! !",
+      "area_terreno": 600,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10321830.jpg",
@@ -526,9 +698,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10321833.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10321749.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 682681 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Casa contemporânea com vista privilegiada para a mata, composta por 4 suítes, com possibilidade de transformar uma delas em 5ª suíte. O amplo e luminoso living proporciona vista para o exuberante jardim e para a mata, integrando perfeitamente os ambientes. Localizado em um dos condomínios mais exclusivos da região de Alphaville, este imóvel apresenta um design arrojado e uma localização acolhedora. A área de lazer completa, aliada à proximidade das melhores escolas de Alphaville, proporciona conforto e comodidade aos moradores. Descubra o que esta propriedade única tem a oferecer. Agende uma visita e encante-se! !",
+        "specs": {
+          "dormitorios": 5,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 3,
+          "area_construida": 792,
+          "area_total": 600
+        },
         "amenities": []
       }
     },
@@ -536,10 +717,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-5-dormitorios-5-suites-6-vagas-524-metros-cf669495",
       "propertyCode": "669495",
       "price": "R$ 10.800.000",
-      "location": "",
-      "propertyType": "",
-      "features": "5 dorms / 5 suítes / 6 vagas / 524 m²",
-      "description": "Veja os detalhes do imóvel 669495 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "5 dorms / 5 suítes / 6 vagas / 524 m² construída / 618 m² do terreno",
+      "description": "Casa recém-construída, arquitetura moderna e pronta para morar, localizada em lote com frente para duas ruas, garantindo ótima iluminação e privacidade. O living social oferece ambientes amplos e integrados, enquanto o espaço gourmet com churrasqueira e forno de pizza é perfeito para momentos de convivência. A área íntima inclui quatro suítes e um escritório, sendo uma suíte no térreo com acessibilidade para cadeirantes. Com projeto luminotécnico e piscina com borda infinita, esta propriedade está estrategicamente localizada em uma rua plana dentro do condomínio, próximo à área de lazer. O condomínio conta com diversas opções de lazer, como piscina coberta e descoberta, academia, quadras esportivas e fácil acesso às rodovias Castelo Branco e Anhanguera, além de estar próximo às melhores escolas de Alphaville. Este imóvel exclusivo reúne conforto, sofisticação e conveniência em um único lugar. !",
+      "area_terreno": 618,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10372990.jpg",
@@ -571,13 +755,20 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9683474.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9683477.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9683478.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/9683464.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/9683466.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9683497.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 669495 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Casa recém-construída, arquitetura moderna e pronta para morar, localizada em lote com frente para duas ruas, garantindo ótima iluminação e privacidade. O living social oferece ambientes amplos e integrados, enquanto o espaço gourmet com churrasqueira e forno de pizza é perfeito para momentos de convivência. A área íntima inclui quatro suítes e um escritório, sendo uma suíte no térreo com acessibilidade para cadeirantes. Com projeto luminotécnico e piscina com borda infinita, esta propriedade está estrategicamente localizada em uma rua plana dentro do condomínio, próximo à área de lazer. O condomínio conta com diversas opções de lazer, como piscina coberta e descoberta, academia, quadras esportivas e fácil acesso às rodovias Castelo Branco e Anhanguera, além de estar próximo às melhores escolas de Alphaville. Este imóvel exclusivo reúne conforto, sofisticação e conveniência em um único lugar. !",
+        "specs": {
+          "dormitorios": 5,
+          "suites": 5,
+          "banheiros": null,
+          "vagas": 6,
+          "area_construida": 524,
+          "area_total": 618
+        },
         "amenities": []
       }
     },
@@ -585,10 +776,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-478-metros-cf675706",
       "propertyCode": "675706",
       "price": "R$ 9.800.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 4 vagas / 478 m²",
-      "description": "Veja os detalhes do imóvel 675706 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 4 vagas / 478 m² construída / 388 m² do terreno",
+      "description": "Casa com projeto de Rodrigo Latorre, no terreno mais exclusivo do condomínio. Sem vizinhos nos fundos e de um dos lados, a casa se abre inteira para uma vista espetacular. Com portas de vidro que correm, transforma-se em uma grande varanda em meio ao verde. Com energia fotovoltaica, piscina aquecida por sistema solar, 4 suítes, escritório. Esta casa é um convite à contemplação da natureza em todos os ambientes. Com projeto totalmente integrado, área gourmet completa e cozinha americana, esse imóvel surpreende logo na entrada. Agende uma visita. !",
+      "area_terreno": 388,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9891647.jpg",
@@ -612,9 +806,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9891630.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9891658.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 675706 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Casa com projeto de Rodrigo Latorre, no terreno mais exclusivo do condomínio. Sem vizinhos nos fundos e de um dos lados, a casa se abre inteira para uma vista espetacular. Com portas de vidro que correm, transforma-se em uma grande varanda em meio ao verde. Com energia fotovoltaica, piscina aquecida por sistema solar, 4 suítes, escritório. Esta casa é um convite à contemplação da natureza em todos os ambientes. Com projeto totalmente integrado, área gourmet completa e cozinha americana, esse imóvel surpreende logo na entrada. Agende uma visita. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 4,
+          "area_construida": 478,
+          "area_total": 388
+        },
         "amenities": []
       }
     },
@@ -622,10 +825,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-5-vagas-514-metros-cf659869",
       "propertyCode": "659869",
       "price": "R$ 9.500.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 5 vagas / 514 m²",
-      "description": "Veja os detalhes do imóvel 659869 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 5 vagas / 514 m² construída / 705 m² do terreno",
+      "description": "Maravilhosa, Residencial Tamboré 11, Projeto Ramiro Fernandes, acabamento de primeira, esquina, estilo toscana, decoração e acabamento de muito bom gosto, madeira de demolição Peroba Rosa e granito Polido São Gabriel, mármore quartzo branco, louças Deca, armários planejados, ar cond, quatro ótimas suítes, hidromassagem, máster com closet espaçoso e com clarabóia, vista para a reserva, cozinha equipada, living com lareira, adega, piscina,área gourmet completa,forno a lenha ,jardim e deck. !",
+      "area_terreno": 705,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10475527.jpg",
@@ -658,20 +864,32 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10475505.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10475506.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 659869 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Maravilhosa, Residencial Tamboré 11, Projeto Ramiro Fernandes, acabamento de primeira, esquina, estilo toscana, decoração e acabamento de muito bom gosto, madeira de demolição Peroba Rosa e granito Polido São Gabriel, mármore quartzo branco, louças Deca, armários planejados, ar cond, quatro ótimas suítes, hidromassagem, máster com closet espaçoso e com clarabóia, vista para a reserva, cozinha equipada, living com lareira, adega, piscina,área gourmet completa,forno a lenha ,jardim e deck. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 5,
+          "area_construida": 514,
+          "area_total": 705
+        },
         "amenities": []
       }
     },
     {
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-5-dormitorios-4-suites-6-vagas-535-metros-cf681848",
       "propertyCode": "681848",
-      "price": "R$ 9.100.000",
-      "location": "",
-      "propertyType": "",
-      "features": "5 dorms / 4 suítes / 6 vagas / 535 m²",
-      "description": "Veja os detalhes do imóvel 681848 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "price": "R$ 10.220.000",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "5 dorms / 4 suítes / 6 vagas / 535 m² construída / 520 m² do terreno",
+      "description": "Apresentamos este magnífico imóvel de alto padrão, situado em uma rua sem saída tranquila, que proporciona segurança e privacidade incomparáveis. Com um projeto arquitetônico único, espaços amplos e acabamentos de altíssima qualidade, esta é a oportunidade perfeita para quem busca conforto e requinte. Casa sustentável e preparada para o futuro. Descubra o equilíbrio perfeito entre conforto e sustentabilidade. Este imóvel conta com sistema de captação de água pluvial, ideal para economizar recursos, e um gerador à diesel para garantir energia em qualquer situação. Tudo isso em uma casa projetada para sua tranquilidade e segurança. Agende uma visita e conheça pessoalmente este refúgio exclusivo! !",
+      "area_terreno": 520,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10267332.jpg",
@@ -706,9 +924,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10267345.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10267383.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 681848 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Apresentamos este magnífico imóvel de alto padrão, situado em uma rua sem saída tranquila, que proporciona segurança e privacidade incomparáveis. Com um projeto arquitetônico único, espaços amplos e acabamentos de altíssima qualidade, esta é a oportunidade perfeita para quem busca conforto e requinte. Casa sustentável e preparada para o futuro. Descubra o equilíbrio perfeito entre conforto e sustentabilidade. Este imóvel conta com sistema de captação de água pluvial, ideal para economizar recursos, e um gerador à diesel para garantir energia em qualquer situação. Tudo isso em uma casa projetada para sua tranquilidade e segurança. Agende uma visita e conheça pessoalmente este refúgio exclusivo! !",
+        "specs": {
+          "dormitorios": 5,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 6,
+          "area_construida": 535,
+          "area_total": 520
+        },
         "amenities": []
       }
     },
@@ -716,10 +943,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-5-dormitorios-5-suites-8-vagas-698-metros-cf676321",
       "propertyCode": "676321",
       "price": "R$ 8.800.000",
-      "location": "",
-      "propertyType": "",
-      "features": "5 dorms / 5 suítes / 8 vagas / 698 m²",
-      "description": "Veja os detalhes do imóvel 676321 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "5 dorms / 5 suítes / 8 vagas / 698 m² construída / 750 m² do terreno",
+      "description": "Lindo projeto, com localização privilegiada, proxima a portaria e em frente a uma praça. A casa possui 5 suites, amplas salas, alem de 8 vagas de garagem cobertas, proporcionando espaço e conforto. Área de lazer com piscina e área gourmet. !",
+      "area_terreno": 750,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9921258.jpg",
@@ -755,71 +985,32 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10046203.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/9921254.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 676321 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
-        "amenities": []
-      }
-    },
-    {
-      "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-2-vagas-360-metros-cf686078",
-      "propertyCode": "686078",
-      "price": "R$ 8.000.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 2 vagas / 360 m²",
-      "description": "Veja os detalhes do imóvel 686078 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
-      "page": 1,
-      "images": [
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617180.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617194.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617175.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617186.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617198.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617206.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617215.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617183.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617204.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617205.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617213.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617179.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617190.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617191.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617202.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617208.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617216.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617181.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617192.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617221.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617176.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617197.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617200.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617210.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617211.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617218.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617225.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617184.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617195.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617185.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617189.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617201.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617178.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10617203.jpg"
-      ],
-      "detailedData": {
-        "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 686078 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Lindo projeto, com localização privilegiada, proxima a portaria e em frente a uma praça. A casa possui 5 suites, amplas salas, alem de 8 vagas de garagem cobertas, proporcionando espaço e conforto. Área de lazer com piscina e área gourmet. !",
+        "specs": {
+          "dormitorios": 5,
+          "suites": 5,
+          "banheiros": null,
+          "vagas": 8,
+          "area_construida": 698,
+          "area_total": 750
+        },
         "amenities": []
       }
     },
     {
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-3-dormitorios-3-suites-3-vagas-645-metros-cf663432",
       "propertyCode": "663432",
-      "price": "R$ 8.000.000",
-      "location": "",
-      "propertyType": "",
-      "features": "3 dorms / 3 suítes / 3 vagas / 645 m²",
-      "description": "Veja os detalhes do imóvel 663432 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "price": "R$ 7.000.000",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "3 dorms / 3 suítes / 3 vagas / 645 m² construída / 560 m² do terreno",
+      "description": "Maravilhosa casa em um dos condominio mais modernos de Alphaville com excelente infra estrutura de lazer e segurança. Localizada em rua plana no início do condomínio, esse imóvel possui acabamento refinado e de muito bom gosto. Cômodos amplos e arejados, área gourmet completa com churrasqueira e piscina com hidromassagem. São 3 suítes com possibilidade simples de reversão para a quarta suíte. Agende sua visita e venha se surpreender e encantar com este imóvel. !",
+      "area_terreno": 560,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10478544.jpg",
@@ -854,20 +1045,32 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10478580.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10478582.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 663432 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Maravilhosa casa em um dos condominio mais modernos de Alphaville com excelente infra estrutura de lazer e segurança. Localizada em rua plana no início do condomínio, esse imóvel possui acabamento refinado e de muito bom gosto. Cômodos amplos e arejados, área gourmet completa com churrasqueira e piscina com hidromassagem. São 3 suítes com possibilidade simples de reversão para a quarta suíte. Agende sua visita e venha se surpreender e encantar com este imóvel. !",
+        "specs": {
+          "dormitorios": 3,
+          "suites": 3,
+          "banheiros": null,
+          "vagas": 3,
+          "area_construida": 645,
+          "area_total": 560
+        },
         "amenities": []
       }
     },
     {
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-6-vagas-577-metros-cf684965",
       "propertyCode": "684965",
-      "price": "R$ 7.500.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 6 vagas / 577 m²",
-      "description": "Veja os detalhes do imóvel 684965 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "price": "R$ 8.000.000",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 6 vagas / 577 m² construída / 560 m² do terreno",
+      "description": "Conheça essa linda residência situada na parte alta do residencial. Sua vista panorâmica é contornada por árvores e sua localização é próxima ao clube. Com arquitetura moderna, essa casa oferece uma planta integrada com bastante iluminação natural e bastante privacidade. Seus acabamentos são nobres e as ambientes amplos e bem aproveitados. Além das 4 suítes amplas, essa casa conta com home theater, escritório, living com 3 ambientes, cozinha completa, depedência de empregados com banheiro de serviço e ampla área de serviço. Todos os ambientes tem planejados de alto padrão. A casa conta também com uma área gourmet completa com churrasqueira, forno de pizza, fogão e geladeira. Destaque para a piscina aquecida. Além disso, a casa tem um espaço multiuso que pode ser aproveitado como academia, estúdio, ateliê ou o que o comprador preferir. !",
+      "area_terreno": 560,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10579837.jpg",
@@ -892,50 +1095,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10579810.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10579824.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 684965 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
-        "amenities": []
-      }
-    },
-    {
-      "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-485-metros-cf670231",
-      "propertyCode": "670231",
-      "price": "R$ 7.000.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 4 vagas / 485 m²",
-      "description": "Veja os detalhes do imóvel 670231 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
-      "page": 1,
-      "images": [
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481387.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481381.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481379.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481385.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481386.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481388.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481390.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481392.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481380.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481382.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481383.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481398.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481402.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481403.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481407.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481408.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481410.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481412.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481417.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481400.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481394.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481396.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481397.jpg",
-        "https://static.coelhodafonseca.com.br/images/imoveis/original/10481377.jpg"
-      ],
-      "detailedData": {
-        "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 670231 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Conheça essa linda residência situada na parte alta do residencial. Sua vista panorâmica é contornada por árvores e sua localização é próxima ao clube. Com arquitetura moderna, essa casa oferece uma planta integrada com bastante iluminação natural e bastante privacidade. Seus acabamentos são nobres e as ambientes amplos e bem aproveitados. Além das 4 suítes amplas, essa casa conta com home theater, escritório, living com 3 ambientes, cozinha completa, depedência de empregados com banheiro de serviço e ampla área de serviço. Todos os ambientes tem planejados de alto padrão. A casa conta também com uma área gourmet completa com churrasqueira, forno de pizza, fogão e geladeira. Destaque para a piscina aquecida. Além disso, a casa tem um espaço multiuso que pode ser aproveitado como academia, estúdio, ateliê ou o que o comprador preferir. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 6,
+          "area_construida": 577,
+          "area_total": 560
+        },
         "amenities": []
       }
     },
@@ -943,10 +1114,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-424-metros-cf682207",
       "propertyCode": "682207",
       "price": "R$ 6.990.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 4 vagas / 424 m²",
-      "description": "Veja os detalhes do imóvel 682207 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 4 vagas / 424 m² construída / 420 m² do terreno",
+      "description": "Casa maravilhosa para venda, com opção porteira fechada, numa rua tranquila e com uma localização no condominio excelente. Com 424 m² de área construida e 420 m² de área terreno. Construção recente, com o projeto de arquitetura e decoração de Luita Trench. Tem instalaçáo fotovoltaica, 4 suítes sendo 1 suíte master com closet e hidromassagem, sala íntima e copa no piso superior. Amplo living para vários ambientes como sala de estar, sala de jantar e sala de TV, lavabo, escritório e uma cozinha muito charmosa repleta de armários planejados. Área de serviço com lavanderia, varanda gourmet, churrasqueira, piscina e 4 vagas de garagem. O Condomínio é ótimo com portaria 24h, tem clube com piscinas externas, piscina aquecida, sauna, academia, salão de festas, quadra de tênis e poliesportiva, trilhas, parquinhos, etc. Próximo às melhores escolas e hospitais (Albert Einstein, são luiz e 9 de Julho) !",
+      "area_terreno": 420,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10293040.jpg",
@@ -981,9 +1155,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10293033.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10293044.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 682207 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Casa maravilhosa para venda, com opção porteira fechada, numa rua tranquila e com uma localização no condominio excelente. Com 424 m² de área construida e 420 m² de área terreno. Construção recente, com o projeto de arquitetura e decoração de Luita Trench. Tem instalaçáo fotovoltaica, 4 suítes sendo 1 suíte master com closet e hidromassagem, sala íntima e copa no piso superior. Amplo living para vários ambientes como sala de estar, sala de jantar e sala de TV, lavabo, escritório e uma cozinha muito charmosa repleta de armários planejados. Área de serviço com lavanderia, varanda gourmet, churrasqueira, piscina e 4 vagas de garagem. O Condomínio é ótimo com portaria 24h, tem clube com piscinas externas, piscina aquecida, sauna, academia, salão de festas, quadra de tênis e poliesportiva, trilhas, parquinhos, etc. Próximo às melhores escolas e hospitais (Albert Einstein, são luiz e 9 de Julho) !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 4,
+          "area_construida": 424,
+          "area_total": 420
+        },
         "amenities": []
       }
     },
@@ -991,10 +1174,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-390-metros-cf664659",
       "propertyCode": "664659",
       "price": "R$ 6.900.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 4 vagas / 390 m²",
-      "description": "Veja os detalhes do imóvel 664659 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 4 vagas / 390 m² construída / 420 m² do terreno",
+      "description": "Esta casa foi totalmente retrofitada para oferecer o máximo em conforto e modernidade. Com um imponente pé-direito duplo, o living espaçoso acomoda três ambientes integrados, proporcionando amplitude e sofisticação. A cozinha e a área gourmet se conectam harmoniosamente à piscina, criando um ambiente perfeito para momentos inesquecíveis. São quatro amplas suítes, todas com armários planejados, garantindo praticidade e elegância. Localizada em um dos condomínios mais desejados da região, com fiação subterrânea, belíssimas praças e uma natureza exuberante ao redor. Agende sua visita e descubra seu próximo endereço dos sonhos! !",
+      "area_terreno": 420,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10304831.jpg",
@@ -1017,9 +1203,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10304849.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10304858.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 664659 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Esta casa foi totalmente retrofitada para oferecer o máximo em conforto e modernidade. Com um imponente pé-direito duplo, o living espaçoso acomoda três ambientes integrados, proporcionando amplitude e sofisticação. A cozinha e a área gourmet se conectam harmoniosamente à piscina, criando um ambiente perfeito para momentos inesquecíveis. São quatro amplas suítes, todas com armários planejados, garantindo praticidade e elegância. Localizada em um dos condomínios mais desejados da região, com fiação subterrânea, belíssimas praças e uma natureza exuberante ao redor. Agende sua visita e descubra seu próximo endereço dos sonhos! !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 4,
+          "area_construida": 390,
+          "area_total": 420
+        },
         "amenities": []
       }
     },
@@ -1027,10 +1222,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-12-vagas-555-metros-cf680126",
       "propertyCode": "680126",
       "price": "R$ 6.500.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 12 vagas / 555 m²",
-      "description": "Veja os detalhes do imóvel 680126 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 12 vagas / 555 m² construída / 480 m² do terreno",
+      "description": "Imóvel moderno, nunca habitado, com ótima planta e localização no Tamboré XI. Ambientes integrados, 4 ótimas suítes e uma área gourmet completa com uma piscina ensolarada que incentiva o convívio familiar. Venha conhecer esta oportunidade que está com um dos melhores valores do residencial. !",
+      "area_terreno": 480,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10154511.jpg",
@@ -1062,9 +1260,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10154532.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10154529.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 680126 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Imóvel moderno, nunca habitado, com ótima planta e localização no Tamboré XI. Ambientes integrados, 4 ótimas suítes e uma área gourmet completa com uma piscina ensolarada que incentiva o convívio familiar. Venha conhecer esta oportunidade que está com um dos melhores valores do residencial. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 12,
+          "area_construida": 555,
+          "area_total": 480
+        },
         "amenities": []
       }
     },
@@ -1072,10 +1279,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-6-vagas-342-metros-cf685893",
       "propertyCode": "685893",
       "price": "R$ 6.500.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 6 vagas / 342 m²",
-      "description": "Veja os detalhes do imóvel 685893 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 6 vagas / 342 m² construída / 420 m² do terreno",
+      "description": "Moderna residência, recém construída em 2022, com ambientes integrados e 4 suítes - três delas com closet. Destacam-se os porcelanatos 120x120 Roca, esquadrias premium da linha Maranata, sistema de aquecimento solar com prumada, e uma piscina aquecida com spa, revestida de porcelanato. O imóvel conta ainda com sistema fotovoltaico, ar condicionado em todos os ambientes e iluminação interlight. Projetada para minimizar a necessidade de manutenção, as suítes possuem piso de madeira, além de lareira e churrasqueira a gás com pedra vulcânica. O tocheiro a gás na área externa, garagem para 3 carros cobertos, marcenaria Mobello by Cecilia Priore, e persianas automatizadas na área gourmet complementam o conforto e sofisticação desta propriedade. O projeto arquitetônico é assinado por WSavioli, enquanto o projeto de interiores leva a assinatura de Karoline Martins. Destaque também para o jardim vertical, que completa o charme deste imóvel. Agende uma visita e encante-se com cada detalhe! !",
+      "area_terreno": 420,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10604965.jpg",
@@ -1113,9 +1323,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10604952.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10604980.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 685893 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Moderna residência, recém construída em 2022, com ambientes integrados e 4 suítes - três delas com closet. Destacam-se os porcelanatos 120x120 Roca, esquadrias premium da linha Maranata, sistema de aquecimento solar com prumada, e uma piscina aquecida com spa, revestida de porcelanato. O imóvel conta ainda com sistema fotovoltaico, ar condicionado em todos os ambientes e iluminação interlight. Projetada para minimizar a necessidade de manutenção, as suítes possuem piso de madeira, além de lareira e churrasqueira a gás com pedra vulcânica. O tocheiro a gás na área externa, garagem para 3 carros cobertos, marcenaria Mobello by Cecilia Priore, e persianas automatizadas na área gourmet complementam o conforto e sofisticação desta propriedade. O projeto arquitetônico é assinado por WSavioli, enquanto o projeto de interiores leva a assinatura de Karoline Martins. Destaque também para o jardim vertical, que completa o charme deste imóvel. Agende uma visita e encante-se com cada detalhe! !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 6,
+          "area_construida": 342,
+          "area_total": 420
+        },
         "amenities": []
       }
     },
@@ -1123,10 +1342,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-3-dormitorios-3-suites-4-vagas-304-metros-cf644999",
       "propertyCode": "644999",
       "price": "R$ 5.600.000",
-      "location": "",
-      "propertyType": "",
-      "features": "3 dorms / 3 suítes / 4 vagas / 304 m²",
-      "description": "Veja os detalhes do imóvel 644999 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "3 dorms / 3 suítes / 4 vagas / 304 m² construída / 455 m² do terreno",
+      "description": "Casa estilo contemporâneo, pronta para morar! Divisão muito funcional, com 3 suítes e escritório no térreo, voltados para a mata. Área social ampla e bem decorada, brinquedoteca/ateliê, home theater com banheiro (podendo ser transformado em quarta suíte), adega e espaço gourmet completo, com cervejeira e forno a lenha. Piscina com borda infinita, voltada para um pomar com gramado. Condomínio bem localizado, próximo às melhores escolas da região e área de lazer completa. Vale a pena conhecer! !",
+      "area_terreno": 455,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10773858.jpg",
@@ -1156,9 +1378,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10773901.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10773902.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 644999 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Casa estilo contemporâneo, pronta para morar! Divisão muito funcional, com 3 suítes e escritório no térreo, voltados para a mata. Área social ampla e bem decorada, brinquedoteca/ateliê, home theater com banheiro (podendo ser transformado em quarta suíte), adega e espaço gourmet completo, com cervejeira e forno a lenha. Piscina com borda infinita, voltada para um pomar com gramado. Condomínio bem localizado, próximo às melhores escolas da região e área de lazer completa. Vale a pena conhecer! !",
+        "specs": {
+          "dormitorios": 3,
+          "suites": 3,
+          "banheiros": null,
+          "vagas": 4,
+          "area_construida": 304,
+          "area_total": 455
+        },
         "amenities": []
       }
     },
@@ -1166,10 +1397,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-347-metros-cf665289",
       "propertyCode": "665289",
       "price": "R$ 4.800.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 4 vagas / 347 m²",
-      "description": "Veja os detalhes do imóvel 665289 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 4 vagas / 347 m² construída / 420 m² do terreno",
+      "description": "Casa nova no Tamboré XI, um dos melhores e mais modernos residenciais de Alphaville/Tamboré. Espaços voltados para a vista permanente. 4 suítes, living em 3 ambientes, escritório, cozinha integrada com a área gourmet e piscina. Aquecimento solar. !",
+      "area_terreno": 420,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10497477.jpg",
@@ -1190,9 +1424,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10497494.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10497497.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 665289 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Casa nova no Tamboré XI, um dos melhores e mais modernos residenciais de Alphaville/Tamboré. Espaços voltados para a vista permanente. 4 suítes, living em 3 ambientes, escritório, cozinha integrada com a área gourmet e piscina. Aquecimento solar. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 4,
+          "area_construida": 347,
+          "area_total": 420
+        },
         "amenities": []
       }
     },
@@ -1200,10 +1443,13 @@
       "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-5-vagas-372-metros-cf592004",
       "propertyCode": "592004",
       "price": "R$ 3.800.000",
-      "location": "",
-      "propertyType": "",
-      "features": "4 dorms / 4 suítes / 5 vagas / 372 m²",
-      "description": "Veja os detalhes do imóvel 592004 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+      "transaction": "venda",
+      "location": "Tamboré XI",
+      "condo": "Tamboré XI",
+      "propertyType": "Casa em Condomínio",
+      "features": "4 dorms / 4 suítes / 5 vagas / 372 m² construída / 486 m² do terreno",
+      "description": "Oportunidade Imperdível no Tamboré 11! Casa de luxo em fase de acabamento, com projeto assinado pelo renomado Arquiteto Rafael Fernandes. Design moderno,4 suites, living para 3 ambientes, cozinha e espaço gourmet, piscina, 4 vagas. Os espaços amplos e materiais utilizado de altíssima qualidade. Personalize os detalhes finais e realize o sonho de viver em um dos bairros mais exclusivos. No formato atual R$ 3.800.000,00 ou entregue pronto por R$ 5.700.000,00 Agende sua visita com o especialista e venha conhecer! O valor poderá sofrer alterações sem aviso prévio. !",
+      "area_terreno": 486,
       "page": 1,
       "images": [
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10129775.jpg",
@@ -1225,9 +1471,18 @@
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10129767.jpg",
         "https://static.coelhodafonseca.com.br/images/imoveis/original/10129773.jpg"
       ],
+      "warnings": [],
       "detailedData": {
         "title": "Tamboré XI | Coelho da Fonseca",
-        "fullDescription": "Veja os detalhes do imóvel 592004 em Tamboré XI, Santana de Parnaíba, com curadoria da Coelho da Fonseca.",
+        "fullDescription": "Oportunidade Imperdível no Tamboré 11! Casa de luxo em fase de acabamento, com projeto assinado pelo renomado Arquiteto Rafael Fernandes. Design moderno,4 suites, living para 3 ambientes, cozinha e espaço gourmet, piscina, 4 vagas. Os espaços amplos e materiais utilizado de altíssima qualidade. Personalize os detalhes finais e realize o sonho de viver em um dos bairros mais exclusivos. No formato atual R$ 3.800.000,00 ou entregue pronto por R$ 5.700.000,00 Agende sua visita com o especialista e venha conhecer! O valor poderá sofrer alterações sem aviso prévio. !",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": null,
+          "vagas": 5,
+          "area_construida": 372,
+          "area_total": 486
+        },
         "amenities": []
       }
     }

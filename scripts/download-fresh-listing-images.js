@@ -90,6 +90,8 @@ async function download(url, outputFile, force) {
   if (!force && fs.existsSync(outputFile) && fs.statSync(outputFile).size > 0) {
     return 'cached';
   }
+  // www.vivaprimeimoveis.com.br serves an incomplete cert chain; the apex host redirects target is fine.
+  url = url.replace('://www.vivaprimeimoveis.com.br/', '://vivaprimeimoveis.com.br/');
   const response = await fetch(url, {
     headers: {
       'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/124 Safari/537.36',

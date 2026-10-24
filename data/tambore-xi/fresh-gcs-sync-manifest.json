@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-10-24T04:09:57.343Z",
+  "compound": "tambore-xi",
+  "bucket": "realestate-475615-data",
+  "prefix": "compounds/tambore-xi",
+  "files": 1698,
+  "counts": {
+    "live-listing-inventory": 2,
+    "fresh-listings": 2,
+    "fresh-images": 1694
+  },
+  "deleted_extra_files": 917
+}

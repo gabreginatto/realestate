@@ -1,0 +1,13 @@
+{
+  "generated_at": "2026-10-24T04:07:44.760Z",
+  "compound": "alphaville-1",
+  "bucket": "realestate-475615-data",
+  "prefix": "compounds/alphaville-1",
+  "files": 4587,
+  "counts": {
+    "live-listing-inventory": 2,
+    "fresh-listings": 2,
+    "fresh-images": 4583
+  },
+  "deleted_extra_files": 2614
+}

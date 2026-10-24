@@ -113,3 +113,5 @@ tmp/
 # Large model checkpoints — download via huggingface_hub
 dino-server/*.pth
 data/embedding-cache*.pkl
+data/photos/
+data/*/fresh-images/
