@@ -18,8 +18,10 @@ Este arquivo é a memória do ciclo. Qualquer sessão nova (no Mac ou na nuvem) 
    e grava em `data/eval/history.jsonl`).
 3. Melhorou → commit + push e mantém. Não melhorou → descobrir o porquê, consertar uma vez ou descartar.
 4. Parar uma linha de trabalho depois de 2 rodadas sem melhora; parar o ciclo depois de 3 técnicas seguidas sem melhora.
-5. Avisar o dono antes de qualquer etapa paga (GPU, Gemini).
-6. **Não ajustar pesos/limiares em cima do próprio gabarito.** Ajustar em Alphaville 1 e testar em Tamboré XI, ou usar leave-one-out.
+5. **No máximo 8 rodadas** no total (decisão do dono). Vale o que vier primeiro: o teto ou a regra do item 4.
+6. **Só GPU do Mac** (PyTorch `device="mps"`), nunca GPU na nuvem. Modelos que exigem CUDA (ex.: kernel fundido do
+   RoMa v2) ficam de fora ou rodam sem a parte CUDA. Avisar o dono antes de qualquer etapa paga (ex.: Gemini).
+7. **Não ajustar pesos/limiares em cima do próprio gabarito.** Ajustar em Alphaville 1 e testar em Tamboré XI, ou usar leave-one-out.
    Com ~20 pares, cada par vale 5 pontos percentuais: diferença de 1 par não é melhora.
 
 ## Estado atual
