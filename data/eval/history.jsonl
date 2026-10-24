@@ -1,0 +1,1 @@
+{"timestamp": "2026-10-24T02:59:27+00:00", "method": "metadata-v1", "label": "baseline-metadata-v1", "metrics": {"R@1": 0.8, "R@3": 0.95, "R@5": 0.95, "R@10": 0.95, "MRR": 0.8702380952380953, "med": 1.0, "n": 20, "miss": 0}, "include_disputed": false, "git_sha": "9e0ccaa"}

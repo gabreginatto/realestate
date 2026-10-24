@@ -1,0 +1,27 @@
+{
+ "version": 1,
+ "positives": [
+  {"viva": "17388", "coelho": "354149", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "16886", "coelho": "617978", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "16626", "coelho": "597308", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "13254", "coelho": "356006", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "17116", "coelho": "674139", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "5380", "coelho": "467562", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "16026", "coelho": "674557", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "12854", "coelho": "616435", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "13572", "coelho": "653980", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "16385", "coelho": "663777", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "16892", "coelho": "663984", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "14127", "coelho": "663462", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "2075", "coelho": "502738", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "17722", "coelho": "677257", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "17378", "coelho": "659639", "source": "pass1-review", "status": "disputed"},
+  {"viva": "7597", "coelho": "358601", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "18035", "coelho": "661014", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "14138", "coelho": "660058", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "16117", "coelho": "628299", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "17378", "coelho": "425516", "source": "pass1-review", "status": "confirmed"},
+  {"viva": "12814", "coelho": "682781", "source": "pass1-review", "status": "confirmed"}
+ ],
+ "negatives": []
+}
