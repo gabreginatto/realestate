@@ -29,6 +29,16 @@ Este arquivo é a memória do ciclo. Qualquer sessão nova (no Mac ou na nuvem) 
 | Rodada | Método | R@1 | R@3 | R@10 | MRR | n |
 |---|---|---|---|---|---|---|
 | 0 | `metadata-v1` (só metadados, pesos não ajustados) | 0,80 | 0,95 | 0,95 | 0,87 | 20 |
+| 0b | `r0-metadata-pool` (anúncios novos + antigos; gabarito com pares da tela de revisão) | 0,596 | 0,702 | 0,894 | 0,682 | 47 |
+| 1 ✅ | `r1-dups` (+ fotos reaproveitadas SSCD ≥0,75 / PDQ ≤31) | 0,638 | 0,723 | 0,894 | 0,712 | 47 |
+| 2 ✅ | `r2a-sscd-lexi` (SSCD contínuo ≥0,42 primeiro) | 0,851 | 0,915 | 0,957 | 0,887 | 47 |
+| 2 ❌ | `r2b-sscd-blend` (soma ponderada, CV) | 0,710 CV | — | — | 0,784 CV | 47 |
+| 3 ✅ | `r3a-sscd-allpairs` (SSCD em todos os pares, piso f e corte t por CV) | **0,935 CV** | — | — | 0,954 CV | 46 |
+| 3 ❌ | `r3b-hungarian` (1:1 por condomínio) — +1 casa, falso alarme igual | 0,957 CV | — | — | 0,965 CV | 46 |
+
+Decisão "está na Coelho?" (r3a, fora da amostra): detecta 77% dos pares, **falso alarme 19%** — instável com 46 pares.
+Precisa de rótulos negativos: lista para revisão em `data/review/to-label-r3.json`. Par 12252↔681867 marcado como duvidoso.
+Rodadas usadas: 3 de 8.
 
 Erros da rodada 0: 13572 (certo em 14º), 14127 (3º), 14138 (2º), 17378 (2º; o 1º é o par de 17388 → provável anúncio duplicado na Viva).
 
