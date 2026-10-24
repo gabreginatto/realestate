@@ -57,3 +57,9 @@ imagehash>=4.3.0        # Image comparison
 
 # Rate Limiting
 ratelimit>=2.2.0
+
+# Photo reuse detection
+pdqhash>=0.2.5
+torch>=2.2
+torchvision>=0.17
+Pillow>=10.0
