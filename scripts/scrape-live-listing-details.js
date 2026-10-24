@@ -272,7 +272,10 @@ function parseVivaDetail(inventoryItem, html) {
 
   // Gallery: every <a class="foto" href=...> inside the details section (the swiper repeats slides).
   const images = unique([...detailsHtml.matchAll(/<a[^>]+href=["']([^"']*\/vista\.imobi\/fotos\/[^"']+\.(?:jpe?g|png|webp))["'][^>]*class=["']foto["']|<a[^>]+class=["']foto["'][^>]+href=["']([^"']*\/vista\.imobi\/fotos\/[^"']+\.(?:jpe?g|png|webp))["']/gi)]
-    .map((m) => absoluteUrl(SITES.viva.host, m[1] || m[2])));
+    .map((m) => absoluteUrl(SITES.viva.host, m[1] || m[2])))
+    // Strict: the details section also holds condo / "similar listing" carousels whose photos live under
+    // /fotos/<other code>/. The listing's own gallery is exactly /vista.imobi/fotos/<code>/*.
+    .filter((url) => code && url.includes(`/vista.imobi/fotos/${code}/`));
   if (images.length === 0) warnings.push('no gallery images found');
 
   const slug = String(inventoryItem.url).match(/\/imovel\/([^/]+)\//);

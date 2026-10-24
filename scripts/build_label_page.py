@@ -1,7 +1,8 @@
 """Build the broker labeling page bundle (index.html + img/*.jpg + data.json).
 
 Usage: python scripts/build_label_page.py OUTDIR [--pairs 3] [--cands 3] [--context 4]
-Items: vivas in data/review/to-label-r3.json; candidates from data/candidates/topk-agg-v1.json.
+Items: vivas in data/review/to-label-r3.json; candidates from --candidates (default: the clean-photo r4 count run).
+Photos come from data/photos-clean (foreign-listing photos removed).
 """
 import argparse
 import hashlib
@@ -20,7 +21,8 @@ from lib.photo_types import photo_types  # noqa: E402
 from photo_dups import COELHO, VIVA, list_listings  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-PHOTOS = ROOT / "data/photos"
+PHOTOS = ROOT / "data/photos-clean"  # symlinks to kept originals only (scripts/clean_photos.py)
+CACHE = ROOT / "data/photos/_cache"  # fingerprint cache is sha1-keyed, shared by both trees
 
 
 class ImageStore:
@@ -77,6 +79,7 @@ def main():
     ap.add_argument("--pairs", default="3,3,3", help="pairs per candidate rank, comma list")
     ap.add_argument("--cands", type=int, default=3)
     ap.add_argument("--context", type=int, default=4)
+    ap.add_argument("--candidates", type=Path, default=ROOT / "data/candidates/topk-agg-clean-count-v1.json")
     ap.add_argument("--html", type=Path, default=ROOT / "scripts/label_page_template.html")
     a = ap.parse_args()
     npairs = [int(x) for x in a.pairs.split(",")]
@@ -87,13 +90,13 @@ def main():
     for extra in ("18093", "17948"):
         if extra not in vivas:
             vivas.append(extra)
-    cands = json.loads((ROOT / "data/candidates/topk-agg-v1.json").read_text())["candidates"]
+    cands = json.loads(a.candidates.read_text())["candidates"]
     pool = load_pool()
     meta = {s: {x["code"]: x for x in pool[s]} for s in ("viva", "coelho")}
     vl, cl = list_listings(PHOTOS, VIVA), list_listings(PHOTOS, COELHO)
     need = [p for v in vivas for p in vl.get(v, [])]
     need += [p for v in vivas for c in cands[v][: a.cands] for p in cl.get(c["coelho"], [])]
-    fps = fingerprint_files(need, PHOTOS / "_cache")
+    fps = fingerprint_files(need, CACHE)
     types = photo_types(sorted({p for p in need if p.parent.parent.name == VIVA}), VIVA)
     types.update(photo_types(sorted({p for p in need if p.parent.parent.name == COELHO}), COELHO))
     tag = lambda p: types[p] if types[p] in PRIO else None  # noqa: E731

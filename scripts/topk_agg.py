@@ -5,6 +5,7 @@ mean of the top-k per-photo maxima (k in K_GRID; k=1 == r3a) or the count of viv
 tau = p99 of best_sscd over non-GT pairs (compute_t0, no GT tuning). Tie-break: metadata score.
 Config (aggregator, k) is chosen by leave-one-out over GT vivas.
 """
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -22,13 +23,17 @@ K_GRID = (1, 2, 3, 5)
 CONFIGS = [("topk", k) for k in K_GRID] + [("count", 0)]
 
 
-def photo_maxima(allp):
-    """{viva: {coelho: per-viva-photo max SSCD array}} from the cached embeddings."""
-    root = ROOT / "data/photos"
+def photo_maxima(allp, root=None):
+    """{viva: {coelho: per-viva-photo max SSCD array}} from the cached embeddings.
+
+    root: photo tree (<root>/<site>/<code>/*); fingerprints are cached under data/photos/_cache (sha1-keyed).
+    """
+    cache = ROOT / "data/photos/_cache"
+    root = root or ROOT / "data/photos"
     viva, coelho = list_listings(root, VIVA), list_listings(root, COELHO)
     need = {v for v in allp}
     files = [p for v in need for p in viva.get(v, [])] + [p for c in {c for v in allp for c in allp[v]} for p in coelho.get(c, [])]
-    fps = fingerprint_files(files, root / "_cache")
+    fps = fingerprint_files(files, cache)
     emb = lambda ps: np.stack([fps[p].emb for p in ps if p in fps])
     out = {}
     for v in allp:
@@ -64,11 +69,19 @@ def mrr_r1(cands, gt):
 
 
 def main():
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--photos-root", type=Path, default=ROOT / "data/photos", help="e.g. data/photos-clean")
+    ap.add_argument("--out", type=Path, default=ROOT / "data/candidates/topk-agg-v1.json")
+    ap.add_argument("--config", help="force aggregator instead of the LOO pick: count | topk1 | topk2 | topk3 | topk5")
+    args = ap.parse_args()
     allp, meta, _ = load_r3()
     gt = set(load_ground_truth())
     gv = sorted({v for v, _ in gt})
-    _, tau = None, compute_t0(None, allp, gt)[0]
-    pm = photo_maxima(allp)
+    pm = photo_maxima(allp, args.photos_root)
+    if args.photos_root.resolve() != (ROOT / "data/photos").resolve():
+        # pairs-all-v1 was computed on the original photo folders: recompute best_sscd on this tree for tau
+        allp = {v: {c: {"best_sscd": float(m.max())} for c, m in cs.items()} for v, cs in pm.items()}
+    tau = compute_t0(None, allp, gt)[0]
     cands = {cfg: rank(pm, meta, cfg, tau) for cfg in CONFIGS}
     print(f"tau (non-GT p99) = {tau:.4f}; GT vivas {len(gv)}, with photos {sum(v in pm for v in gv)}")
     for cfg in CONFIGS:
@@ -89,8 +102,10 @@ def main():
     cnt = {c: picks.count(c) for c in CONFIGS}
     print("LOO picks:", cnt)
     final = max(CONFIGS, key=lambda c: (cnt[c], c == CONFIGS[0]))
+    if args.config:
+        final = next(c for c in CONFIGS if (c[0] + (str(c[1]) if c[0] == "topk" else "")) == args.config)
     print("final config:", final)
-    out = ROOT / "data/candidates/topk-agg-v1.json"
+    out = args.out
     out.write_text(json.dumps({"method": f"r4-topk-agg-{final[0]}{final[1]}", "tau": tau, "candidates": cands[final]}))
     base = json.loads((ROOT / "data/candidates/sscd-first-v1.json").read_text())["candidates"]
     pb = evaluate(base, gt)[1]
