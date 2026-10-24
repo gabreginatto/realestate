@@ -115,3 +115,4 @@ dino-server/*.pth
 data/embedding-cache*.pkl
 data/photos/
 data/*/fresh-images/
+data/archive-images/

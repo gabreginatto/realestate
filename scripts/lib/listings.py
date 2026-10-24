@@ -110,6 +110,57 @@ def load_fresh_listings(compound=CONDO_ALPHAVILLE_1, data_root=None, fresh_dir=N
     return out
 
 
+def load_pool(compound=CONDO_ALPHAVILLE_1, data_root=None):
+    """Evaluation universe: fresh + old production listings per site, deduped by code.
+
+    Fresh fields win; a null fresh field falls back to the production value. Production
+    listings are kept only for this compound. Each item gets "in_fresh" / "in_prod" flags.
+    """
+    prod = load_listings(data_root)
+    fresh = load_fresh_listings(compound, data_root)
+    out = {}
+    for site in ("viva", "coelho"):
+        merged = {}
+        for x in prod[site]:
+            if x["condo"] == compound:
+                merged[x["code"]] = {**x, "in_fresh": False, "in_prod": True}
+        for x in fresh[site]:
+            old = merged.get(x["code"])
+            row = dict(x)
+            if old:
+                row = {k: (v if v is not None else old.get(k)) for k, v in row.items()}
+            row["in_fresh"], row["in_prod"] = True, old is not None
+            merged[x["code"]] = row
+        out[site] = sorted(merged.values(), key=lambda r: r["code"])
+    _add_inventory_only(out, compound, data_root)
+    return out
+
+
+def _add_inventory_only(pool, compound, data_root=None):
+    """Add Coelho codes seen only in the live inventory (no detail page) with slug-derived counts.
+
+    The slug 'casa-em-condominio-4-dormitorios-4-suites-8-vagas-500-metros-cfNNN' gives
+    beds/suites/vagas; other fields stay None. Flagged "slug_only".
+    """
+    f = Path(data_root or DEFAULT_ROOT) / compound / "live-listing-inventory/coelhodafonseca.json"
+    if not f.exists():
+        return
+    have = {x["code"] for x in pool["coelho"]}
+    for it in json.loads(f.read_text())["listings"]:
+        code = str(it["code"])
+        if code in have:
+            continue
+        url = it.get("url") or ""
+        g = lambda pat: (lambda m: int(m.group(1)) if m else None)(re.search(r"-(\d+)-" + pat, url))
+        pool["coelho"].append({
+            "code": code, "site": "coelho", "condo": compound, "price": None, "built_m2": None, "lot_m2": None,
+            "beds": g("dormitorios?"), "suites": g("suites?"), "vagas": g("vagas?"), "url": url,
+            "in_fresh": False, "in_prod": False, "slug_only": True,
+        })
+        have.add(code)
+    pool["coelho"].sort(key=lambda r: r["code"])
+
+
 if __name__ == "__main__":
     assert parse_br_number("1.276,23m²") == 1276.23
     assert parse_br_number("R$ 2.900.000,00") == 2900000.0

@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib.listings import load_listings  # noqa: E402
+from lib.listings import load_listings, load_pool  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -68,13 +68,14 @@ def main():
     ap.add_argument("--data-root", default=None)
     ap.add_argument("--output", default=str(ROOT / "data/candidates/metadata-v1.json"))
     ap.add_argument("--method", default="metadata-v1")
+    ap.add_argument("--pool", action="store_true", help="rank over fresh+production pool (alphaville-1)")
     ap.add_argument("--top", type=int, default=TOP_N)
     for field, w in DEFAULT_WEIGHTS.items():
         ap.add_argument("--w-" + field.replace("_m2", ""), type=float, default=w)
     args = ap.parse_args()
 
     weights = {f: getattr(args, "w_" + f.replace("_m2", "")) for f in DEFAULT_WEIGHTS}
-    candidates = rank_all(load_listings(args.data_root), weights, args.top)
+    candidates = rank_all(load_pool(data_root=args.data_root) if args.pool else load_listings(args.data_root), weights, args.top)
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"method": args.method, "weights": weights, "candidates": candidates}))
