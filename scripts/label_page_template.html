@@ -1,0 +1,302 @@
+<title>Casas Viva na Coelho</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: sticky progress bar over a single column of cards; each card = viva header, candidate blocks with side-by-side photo pairs, decision bar. */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --fg:#14202b; --muted:#5b6b7a; --line:#d9e0e6;
+  --accent:#0b5f73; --accent-fg:#ffffff; --accent-soft:#dcedf1;
+  --ok:#17683a; --ok-soft:#dcf1e3; --no:#a3321f; --no-soft:#f8e0db; --unsure:#5b6b7a; --unsure-soft:#e8ecef;
+  --diff:#8a4b00; --diff-soft:#fde9c8; --scrim:rgba(8,14,20,.92);
+  --font-ui:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-num:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e151b; --surface:#16202a; --fg:#e6edf2; --muted:#93a4b3; --line:#2a3946;
+  --accent:#58b6cb; --accent-fg:#06232b; --accent-soft:#17323a;
+  --ok:#6fd195; --ok-soft:#173826; --no:#ff9a86; --no-soft:#412019; --unsure:#93a4b3; --unsure-soft:#223039;
+  --diff:#ffc46b; --diff-soft:#47330f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e151b; --surface:#16202a; --fg:#e6edf2; --muted:#93a4b3; --line:#2a3946;
+  --accent:#58b6cb; --accent-fg:#06232b; --accent-soft:#17323a;
+  --ok:#6fd195; --ok-soft:#173826; --no:#ff9a86; --no-soft:#412019; --unsure:#93a4b3; --unsure-soft:#223039;
+  --diff:#ffc46b; --diff-soft:#47330f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font-ui);padding-block:0 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:720px;margin:0 auto}
+header.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);
+  margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px))) calc(-1 * max(16px,env(safe-area-inset-right,0px)));
+  padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line)}
+.bar-in{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.bar-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+h1{font-size:16px;margin:0;font-weight:700}
+.prog{font-family:var(--font-num);font-size:14px;font-variant-numeric:tabular-nums}
+.track{height:6px;border-radius:3px;background:var(--unsure-soft);overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+.seg{display:flex;gap:6px}
+.seg button{flex:1}
+button,input,textarea{font:inherit;color:inherit}
+button{min-height:44px;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-weight:600}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.seg button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.banner{margin:12px 0 0;padding:10px 12px;border-radius:8px;background:var(--diff-soft);color:var(--diff);font-weight:600}
+main{display:flex;flex-direction:column;gap:16px;padding-top:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card[data-state="match"]{border-color:var(--ok)}
+.card[data-state="no_match"]{border-color:var(--no)}
+.vh{display:flex;flex-direction:column;gap:8px}
+.vh-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.code{font-size:19px;font-weight:700;font-family:var(--font-num)}
+.lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.meta{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:3px 8px;border-radius:6px;background:var(--unsure-soft);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chip small{color:var(--muted);margin-right:4px;font-size:11px}
+.chip.diff{background:var(--diff-soft);color:var(--diff);font-weight:700}
+.chip.diff small{color:inherit}
+.chip.same{background:var(--ok-soft);color:var(--ok)}
+.chip.same small{color:inherit}
+a.lnk{color:var(--accent);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.ctx{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.ctx img,.pair img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;background:var(--unsure-soft);display:block;cursor:zoom-in}
+.cand{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.cand-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.cand .code{font-size:16px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:6px;position:relative}
+.pair .sc{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);background:var(--scrim);color:#fff;font:11px var(--font-num);padding:1px 6px;border-radius:9px}
+.pairs{display:flex;flex-direction:column;gap:6px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.nophoto{color:var(--muted);font-size:13px}
+.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.primary[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.dec{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
+.dec-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dec-row button[aria-pressed="true"]{border-width:2px}
+.btn-no[aria-pressed="true"]{background:var(--no-soft);border-color:var(--no);color:var(--no)}
+.btn-un[aria-pressed="true"]{background:var(--unsure-soft);border-color:var(--unsure)}
+.other{display:flex;gap:8px}
+.other input{flex:1;min-width:0}
+input[type=text],textarea{width:100%;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--bg)}
+textarea{min-height:56px;resize:vertical}
+.saved{display:none;padding:8px 10px;border-radius:8px;font-weight:600}
+.card[data-state] .saved{display:block}
+.card[data-state="match"] .saved{background:var(--ok-soft);color:var(--ok)}
+.card[data-state="no_match"] .saved{background:var(--no-soft);color:var(--no)}
+.card[data-state="unsure"] .saved{background:var(--unsure-soft);color:var(--unsure)}
+.saved span{font-weight:400;color:var(--fg)}
+.empty{text-align:center;color:var(--muted);padding:32px 0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--no);color:#fff;
+  padding:10px 14px;border-radius:8px;max-width:90vw;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.3)}
+.toast.good{background:var(--ok);color:var(--surface)}
+#lb{position:fixed;inset:0;z-index:40;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);cursor:zoom-out}
+#lb img{max-width:100%;max-height:100%;object-fit:contain}
+@media (prefers-reduced-motion:reduce){.track i{transition:none}}
+</style>
+
+<header class="bar"><div class="bar-in">
+  <div class="bar-top"><h1>Casas Viva na Coelho</h1><div class="prog" id="prog">0/0 rotuladas</div></div>
+  <div class="track"><i id="fill"></i></div>
+  <div class="seg" role="group" aria-label="Filtro">
+    <button type="button" id="f-pend" aria-pressed="true">Pendentes</button>
+    <button type="button" id="f-all" aria-pressed="false">Todas</button>
+  </div>
+</div></header>
+<div class="wrap">
+  <div class="banner" id="banner" hidden>Salvamento indisponível. Abra pelo link do claude.ai, logada.</div>
+  <main id="list"></main>
+  <p class="empty" id="empty" hidden>Nenhuma casa pendente. Obrigado!</p>
+</div>
+<div id="lb" hidden role="dialog" aria-label="Foto ampliada"><img id="lb-img" alt=""></div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script type="application/json" id="items">__ITEMS__</script>
+<script>
+const ITEMS = JSON.parse(document.getElementById("items").textContent);
+const $ = (s, r = document) => r.querySelector(s);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const nf = new Intl.NumberFormat("pt-BR");
+const brl = v => "R$ " + nf.format(Math.round(v));
+
+let db = null, uid = null, labels = new Map(), filter = "pend";
+try { filter = localStorage.getItem("filtro") || "pend"; } catch (e) {}
+const touched = new Set(), cards = new Map();
+
+const FIELDS = [
+  ["lot_m2", "Terreno", v => nf.format(Math.round(v)) + " m²", 0.04],
+  ["built_m2", "Construída", v => nf.format(Math.round(v)) + " m²", 0.04],
+  ["beds", "Dorms", v => String(v), 0],
+  ["suites", "Suítes", v => String(v), 0],
+  ["vagas", "Vagas", v => String(v), 0],
+  ["price", "Preço", brl, 0.06],
+];
+function metaRow(m, ref) {
+  const row = el("div", "meta");
+  if (!m) { row.append(el("span", "chip", "sem dados do anúncio")); return row; }
+  for (const [k, name, fmt, tol] of FIELDS) {
+    const v = m[k], c = el("span", "chip");
+    c.append(el("small", null, name));
+    if (v == null) { c.append("—"); row.append(c); continue; }
+    c.append(fmt(v));
+    const r = ref && ref[k];
+    if (ref && r != null) {
+      const same = tol ? Math.abs(v - r) <= tol * Math.max(Math.abs(r), 1) : v === r;
+      c.classList.add(same ? "same" : "diff");
+    }
+    row.append(c);
+  }
+  return row;
+}
+function link(url, text) {
+  if (!url) return el("span", "nophoto", "sem link");
+  const a = el("a", "lnk", text); a.href = url; a.target = "_blank"; a.rel = "noopener"; return a;
+}
+function img(src) {
+  const i = el("img"); i.src = src; i.loading = "lazy"; i.decoding = "async"; i.alt = "Foto do imóvel"; i.dataset.zoom = src; return i;
+}
+
+function buildCard(it) {
+  const card = el("article", "card"); card.dataset.viva = it.viva;
+  const vh = el("div", "vh");
+  const top = el("div", "vh-top");
+  const t = el("div"); t.append(el("div", "lbl", "Viva Prime"), el("div", "code", it.viva));
+  top.append(t, link(it.meta && it.meta.url, "abrir anúncio"));
+  vh.append(top, metaRow(it.meta, null));
+  card.append(vh);
+  const saved = el("div", "saved"); card.append(saved);
+  if (it.context.length) {
+    const ctx = el("div", "ctx");
+    it.context.forEach(s => ctx.append(img(s)));
+    card.append(ctx);
+  }
+  const candBtns = [];
+  it.candidates.forEach((c, i) => {
+    const b = el("section", "cand");
+    const ct = el("div", "cand-top");
+    const h = el("div"); h.append(el("div", "lbl", "Candidata " + (i + 1) + " na Coelho"), el("div", "code", c.code));
+    ct.append(h, link(c.meta && c.meta.url, "abrir anúncio Coelho"));
+    b.append(ct, metaRow(c.meta, it.meta));
+    if (c.pairs.length) {
+      const cols = el("div", "cols"); cols.append(el("span", null, "Viva"), el("span", null, "Coelho"));
+      const ps = el("div", "pairs");
+      c.pairs.forEach(p => { const d = el("div", "pair"); d.append(img(p.viva), img(p.coelho), el("span", "sc", p.sscd.toFixed(2))); ps.append(d); });
+      b.append(cols, ps);
+    } else b.append(el("div", "nophoto", "Sem fotos para comparar."));
+    const btn = el("button", "primary", "É esta"); btn.type = "button"; btn.setAttribute("aria-pressed", "false");
+    btn.dataset.coelho = c.code; candBtns.push(btn);
+    b.append(btn); card.append(b);
+  });
+  const dec = el("div", "dec");
+  const row = el("div", "dec-row");
+  const no = el("button", "btn-no", "Não está na Coelho"); no.type = "button"; no.setAttribute("aria-pressed", "false");
+  const un = el("button", "btn-un", "Não sei"); un.type = "button"; un.setAttribute("aria-pressed", "false");
+  row.append(no, un);
+  const other = el("div", "other");
+  const oi = el("input"); oi.type = "text"; oi.id = "o-" + it.viva; oi.placeholder = "Outro código Coelho"; oi.inputMode = "numeric"; oi.autocomplete = "off";
+  const ob = el("button", null, "Salvar"); ob.type = "button";
+  other.append(oi, ob);
+  const note = el("textarea"); note.id = "n-" + it.viva; note.placeholder = "Observação (opcional)";
+  dec.append(row, other, note); card.append(dec);
+
+  const all = [...candBtns, no, un, ob];
+  const send = (decision, coelho) => save(it.viva, decision, coelho, note.value.trim());
+  candBtns.forEach(b => b.onclick = () => send("match", b.dataset.coelho));
+  no.onclick = () => send("no_match", null);
+  un.onclick = () => send("unsure", null);
+  ob.onclick = () => {
+    const v = oi.value.trim();
+    if (!/^\d{4,8}$/.test(v)) { toast("Digite só os números do código Coelho."); return; }
+    send("match", v);
+  };
+  cards.set(it.viva, { card, saved, candBtns, no, un, ob, oi, note, all });
+  return card;
+}
+
+function paintCard(code) {
+  const c = cards.get(code); if (!c) return;
+  const l = labels.get(code);
+  c.all.forEach(b => b.disabled = !db);
+  c.candBtns.forEach(b => {
+    const on = !!l && l.decision === "match" && l.coelho === b.dataset.coelho;
+    b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "✓ É esta" : "É esta";
+  });
+  c.no.setAttribute("aria-pressed", String(!!l && l.decision === "no_match"));
+  c.un.setAttribute("aria-pressed", String(!!l && l.decision === "unsure"));
+  if (!l) { delete c.card.dataset.state; c.saved.textContent = ""; return; }
+  c.card.dataset.state = l.decision;
+  const txt = { match: "Está na Coelho: " + l.coelho, no_match: "Não está na Coelho", unsure: "Não sei" }[l.decision] || l.decision;
+  c.saved.textContent = txt;
+  if (l.note) c.saved.append(" ", Object.assign(el("span"), { textContent: "— " + l.note }));
+  if (document.activeElement !== c.note && !c.note.value) c.note.value = l.note || "";
+  if (l.decision === "match" && !c.candBtns.some(b => b.dataset.coelho === l.coelho) && document.activeElement !== c.oi && !c.oi.value) c.oi.value = l.coelho;
+}
+
+function refresh() {
+  const done = ITEMS.filter(i => labels.has(i.viva)).length;
+  $("#prog").textContent = done + "/" + ITEMS.length + " rotuladas";
+  $("#fill").style.width = (100 * done / ITEMS.length) + "%";
+  $("#f-pend").setAttribute("aria-pressed", String(filter === "pend"));
+  $("#f-all").setAttribute("aria-pressed", String(filter === "all"));
+  let shown = 0;
+  for (const it of ITEMS) {
+    const c = cards.get(it.viva);
+    const show = filter === "all" || !labels.has(it.viva) || touched.has(it.viva);
+    c.card.hidden = !show; if (show) shown++;
+  }
+  $("#empty").hidden = shown > 0;
+}
+
+let toastT;
+function toast(msg, good) {
+  const t = $("#toast"); t.textContent = msg; t.className = "toast" + (good ? " good" : ""); t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 4000);
+}
+
+async function save(viva, decision, coelho, note) {
+  if (!db) return;
+  touched.add(viva);
+  const c = cards.get(viva); c.all.forEach(b => b.disabled = true);
+  try {
+    await db.collection("labels").doc(viva).set({ viva, decision, coelho: coelho || null, note: note || "", by: uid, at: new Date().toISOString() });
+    toast("Salvo: " + viva, true);
+  } catch (e) {
+    toast("Não foi possível salvar (" + ((e && e.code) || "erro") + "). Tente de novo.");
+  } finally { paintCard(viva); }
+}
+
+function setFilter(f) { filter = f; try { localStorage.setItem("filtro", f); } catch (e) {} refresh(); }
+$("#f-pend").onclick = () => setFilter("pend");
+$("#f-all").onclick = () => setFilter("all");
+
+document.addEventListener("click", e => {
+  const z = e.target.closest("[data-zoom]");
+  if (z) { $("#lb-img").src = z.dataset.zoom; $("#lb").hidden = false; }
+});
+$("#lb").onclick = () => { $("#lb").hidden = true; };
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("#lb").hidden = true; });
+
+const list = $("#list");
+ITEMS.forEach(it => list.append(buildCard(it)));
+refresh();
+ITEMS.forEach(it => paintCard(it.viva));
+
+(async () => {
+  try {
+    db = window.claude && window.claude.use ? await window.claude.use("db") : null;
+    const user = window.claude && window.claude.use ? await window.claude.use("user") : null;
+    uid = user ? await user.id() : null;
+  } catch (e) { db = null; }
+  if (!db) { $("#banner").hidden = false; ITEMS.forEach(it => paintCard(it.viva)); return; }
+  ITEMS.forEach(it => paintCard(it.viva));
+  db.collection("labels").onSnapshot(snap => {
+    const next = new Map();
+    snap.docs.forEach(d => { const v = d.data(); if (v) next.set(d.id, v); });
+    const changed = new Set([...labels.keys(), ...next.keys()]);
+    labels = next;
+    changed.forEach(paintCard);
+    refresh();
+  }, err => {
+    toast("Falha ao ler os rótulos (" + ((err && err.code) || "erro") + ").");
+  });
+})();
+</script>
