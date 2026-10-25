@@ -30,6 +30,12 @@ def load_negatives(path=None):
     return {(str(n["viva"]), str(n["coelho"])) for n in data.get("negatives", [])}
 
 
+def load_nomatch_live(path=None):
+    """Return {viva_code: entry} for vivas the broker found NOT among Coelho's live listings (as_of date)."""
+    data = json.loads(Path(path or DEFAULT_PATH).read_text())
+    return {str(n["viva"]): n for n in data.get("nomatch_live", [])}
+
+
 if __name__ == "__main__":
     assert len(load_ground_truth(include_disputed=True)) >= len(load_ground_truth()) >= 20
     assert not (load_ground_truth() & load_negatives())

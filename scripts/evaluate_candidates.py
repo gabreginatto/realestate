@@ -27,7 +27,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lib.ground_truth import load_ground_truth  # noqa: E402
+from lib.ground_truth import DEFAULT_PATH, load_ground_truth, load_nomatch_live  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 HISTORY = ROOT / "data" / "eval" / "history.jsonl"
@@ -93,6 +93,102 @@ def nomatch(candidates, pairs, t, field="score", all_gt_vivas=None):
             "n_unlabeled": sum(1 for v in candidates if v not in excl), "tp": tp, "fp": fp}
 
 
+def decision_universe(candidates, gt_path=None):
+    """Live labeled vivas: {viva: (true live coelhos, condo)}; empty set = labeled "not at Coelho"."""
+    data = json.loads(Path(gt_path or DEFAULT_PATH).read_text())
+    live = {v: {str(c["coelho"]) for c in cs} for v, cs in candidates.items()}
+    uni = {}
+    for p in data["positives"]:
+        v, c = str(p["viva"]), str(p["coelho"])
+        if p.get("status", "confirmed") == "confirmed" and c in live.get(v, ()):
+            uni.setdefault(v, (set(), p.get("condo", "?")))[0].add(c)
+    for v, n in load_nomatch_live(gt_path).items():
+        if v in live and v not in uni:
+            uni[v] = (set(), n.get("condo", "?"))
+    return uni
+
+
+def decide(candidates, uni, vivas, t):
+    """Confusion counts for "match to top-1 if top-1 score >= t, else no match"."""
+    r = dict(tp=0, fp_pos=0, fp_neg=0, miss=0, tn=0)
+    for v in vivas:
+        truth = uni[v][0]
+        lst = candidates.get(v, [])
+        fired = bool(lst) and lst[0]["score"] >= t
+        if truth:
+            if fired and str(lst[0]["coelho"]) in truth:
+                r["tp"] += 1
+            elif fired:
+                r["fp_pos"] += 1
+            else:
+                r["miss"] += 1
+        elif fired:
+            r["fp_neg"] += 1
+        else:
+            r["tn"] += 1
+    return r
+
+
+def dec_metrics(r):
+    fired, pos, neg = r["tp"] + r["fp_pos"] + r["fp_neg"], r["tp"] + r["fp_pos"] + r["miss"], r["fp_neg"] + r["tn"]
+    n = pos + neg
+    nan = float("nan")
+    return {"prec": r["tp"] / fired if fired else nan, "rec": r["tp"] / pos if pos else nan,
+            "spec": r["tn"] / neg if neg else nan, "acc": (r["tp"] + r["tn"]) / n if n else nan, "n": n, "pos": pos, "neg": neg}
+
+
+def decision_report(candidates, method, gt_path=None, seeds=5, out=print):
+    import random
+    uni = decision_universe(candidates, gt_path)
+    vivas = sorted(uni)
+    mx = max((c[0]["score"] for c in candidates.values() if c), default=1)
+    grid = sorted({0.0, *[float(x) for x in range(1, int(mx) + 2)]}) if float(mx).is_integer() else \
+        [round(mx * i / 20, 3) for i in range(21)]
+    fmt = lambda m: f"prec={m['prec']:.3f} rec={m['rec']:.3f} spec={m['spec']:.3f} acc={m['acc']:.3f}"
+    first = dec_metrics(decide(candidates, uni, vivas, grid[0]))
+    out(f"decision universe: {first['n']} live labeled vivas ({first['pos']} positives, {first['neg']} not-at-coelho); "
+        f"per condo: " + ", ".join(f"{c}={sum(uni[v][1] == c for v in vivas)}" for c in sorted({uni[v][1] for v in vivas})))
+    lm = evaluate(candidates, {(v, c) for v in vivas for c in uni[v][0]})
+    out("live-positives " + format_line(method, lm[0]))
+    for t in grid:
+        out(f"in-sample t={t:g} " + fmt(dec_metrics(decide(candidates, uni, vivas, t))))
+    pick = lambda vs: max(grid, key=lambda t: (dec_metrics(decide(candidates, uni, vs, t))["acc"], t))
+    held, chosen = [], []
+    for seed in range(seeds):
+        sh = vivas[:]
+        random.Random(seed).shuffle(sh)
+        folds = [sh[0::2], sh[1::2]]
+        for i in (0, 1):
+            t = pick(folds[1 - i])
+            chosen.append(t)
+            held.append((t, folds[i], decide(candidates, uni, folds[i], t)))
+    for key in ("acc", "prec", "rec", "spec"):
+        xs = [dec_metrics(r)[key] for _, _, r in held]
+        xs = [x for x in xs if x == x]
+        out(f"held-out {key}: {statistics.mean(xs):.3f} +- {statistics.pstdev(xs):.3f} (n_runs={len(xs)})")
+    out(f"held-out chosen t: {sorted(set(chosen))} mean={statistics.mean(chosen):.2f}")
+    tf = pick(vivas)
+    out(f"full-data best t={tf:g} " + fmt(dec_metrics(decide(candidates, uni, vivas, tf))))
+    for comp in sorted({uni[v][1] for v in vivas}):
+        vs = [v for v in vivas if uni[v][1] == comp]
+        out(f"condo {comp} (t={tf:g}) " + fmt(dec_metrics(decide(candidates, uni, vs, tf))) + f" n={len(vs)}")
+    # error cases at tf
+    fm, ms = [], []
+    for v in vivas:
+        truth, lst = uni[v][0], candidates.get(v, [])
+        top = lst[0] if lst else None
+        fired = top is not None and top["score"] >= tf
+        if fired and str(top["coelho"]) not in truth:
+            fm.append((v, top["coelho"], top["score"], "pos" if truth else "neg"))
+        if truth and not (fired and str(top["coelho"]) in truth):
+            ranks = [i + 1 for i, c in enumerate(lst) if str(c["coelho"]) in truth]
+            sc = next((c["score"] for c in lst if str(c["coelho"]) in truth), None)
+            ms.append((v, "|".join(sorted(truth)), min(ranks) if ranks else None, sc, top["score"] if top else None))
+    out(f"false matches @t={tf:g} (viva, predicted, score, truth-type): {fm[:8]}")
+    out(f"misses @t={tf:g} (viva, true, rank, true-score, top1-score): {ms[:8]}")
+    return {"universe": first["n"], "best_t": tf, "heldout_acc": statistics.mean(dec_metrics(r)["acc"] for _, _, r in held)}
+
+
 def format_line(method, m):
     med = "NA" if m["med"] is None else f"{m['med']:g}"
     recalls = " ".join(f"R@{k}={m[f'R@{k}']:.3f}" for k in KS)
@@ -106,6 +202,7 @@ def main():
     ap.add_argument("--include-disputed", action="store_true")
     ap.add_argument("--show-misses", action="store_true", help="one line per GT viva not at rank 1")
     ap.add_argument("--nomatch", action="store_true", help="no-match evaluation (TPR / leave-true-out FPR) per threshold")
+    ap.add_argument("--decision", action="store_true", help="live-only match/no-match decision evaluation (2-fold CV threshold)")
     ap.add_argument("--score-field", default="score", help="candidate field thresholded by --nomatch")
     ap.add_argument("--no-history", action="store_true", help="do not append to history.jsonl")
     args = ap.parse_args()
@@ -133,6 +230,10 @@ def main():
                   f"unlabeled_firing={r['unlabeled_firing']}/{r['n_unlabeled']}")
             nm.append({k: (round(x, 4) if isinstance(x, float) else x) for k, x in r.items() if k not in ("tp", "fp")})
 
+    dec = None
+    if args.decision:
+        dec = decision_report(data["candidates"], method)
+
     if not args.no_history:
         HISTORY.parent.mkdir(parents=True, exist_ok=True)
         record = {
@@ -141,6 +242,7 @@ def main():
             "label": args.label,
             "metrics": metrics,
             "include_disputed": args.include_disputed,
+            **({"decision": dec} if dec else {}),
             **({"nomatch": nm, "score_field": args.score_field} if nm else {}),
             "git_sha": git_short_sha(),
         }

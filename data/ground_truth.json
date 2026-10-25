@@ -1,54 +1,909 @@
 {
- "version": 1,
- "positives": [
-  {"viva": "17388", "coelho": "354149", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "16886", "coelho": "617978", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "16626", "coelho": "597308", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "13254", "coelho": "356006", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "17116", "coelho": "674139", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "5380", "coelho": "467562", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "16026", "coelho": "674557", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "12854", "coelho": "616435", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "13572", "coelho": "653980", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "16385", "coelho": "663777", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "16892", "coelho": "663984", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "14127", "coelho": "663462", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "2075", "coelho": "502738", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "17722", "coelho": "677257", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "17378", "coelho": "659639", "source": "pass1-review", "status": "disputed"},
-  {"viva": "7597", "coelho": "358601", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "18035", "coelho": "661014", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "14138", "coelho": "660058", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "16117", "coelho": "628299", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "17378", "coelho": "425516", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "12814", "coelho": "682781", "source": "pass1-review", "status": "confirmed", "condo": "alphaville-1"},
-  {"viva": "8188", "coelho": "433739", "source": "review-ui:fd8040fa/r1", "status": "confirmed", "confirmed_at": "2026-05-08T18:59:51.097Z", "condo": "alphaville-1"},
-  {"viva": "8989", "coelho": "642743", "source": "review-ui:fd8040fa/r1", "status": "confirmed", "confirmed_at": "2026-05-08T19:15:16.784Z", "condo": "alphaville-1"},
-  {"viva": "1034", "coelho": "379860", "source": "review-ui:3c83f9f4/r2", "status": "confirmed", "confirmed_at": "2026-05-10T12:46:47.208Z", "condo": "alphaville-1"},
-  {"viva": "12484", "coelho": "656562", "source": "review-ui:cb890ba5/r4", "status": "confirmed", "confirmed_at": "2026-05-11T17:53:31.389Z", "condo": "alphaville-1"},
-  {"viva": "12030", "coelho": "648903", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:54:13.154Z", "condo": "alphaville-1"},
-  {"viva": "16228", "coelho": "677791", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:54:33.852Z", "condo": "alphaville-1"},
-  {"viva": "18159", "coelho": "445169", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:55:33.219Z", "condo": "alphaville-1"},
-  {"viva": "17996", "coelho": "351722", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:56:07.480Z", "condo": "alphaville-1"},
-  {"viva": "17697", "coelho": "685663", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:56:38.571Z", "condo": "alphaville-1"},
-  {"viva": "18179", "coelho": "675453", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:56:46.918Z", "condo": "alphaville-1"},
-  {"viva": "1148", "coelho": "471646", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:56:57.663Z", "condo": "alphaville-1"},
-  {"viva": "16998", "coelho": "677355", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:57:18.340Z", "condo": "alphaville-1"},
-  {"viva": "17279", "coelho": "683046", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:57:42.023Z", "condo": "alphaville-1"},
-  {"viva": "16528", "coelho": "448313", "source": "review-ui:08bbf5b3/r1", "status": "confirmed", "confirmed_at": "2026-05-12T00:58:01.745Z", "condo": "alphaville-1"},
-  {"viva": "8177", "coelho": "650074", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:58:19.923Z", "condo": "alphaville-1"},
-  {"viva": "12441", "coelho": "403934", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:58:27.266Z", "condo": "alphaville-1"},
-  {"viva": "12252", "coelho": "681867", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:58:34.953Z", "condo": "alphaville-1", "note": "restored after audit; viva gallery contains 2 photos of another house (674139)"},
-  {"viva": "8682", "coelho": "381684", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:59:21.846Z", "condo": "alphaville-1"},
-  {"viva": "16448", "coelho": "569097", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:59:34.097Z", "condo": "alphaville-1"},
-  {"viva": "16356", "coelho": "671661", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:59:41.238Z", "condo": "alphaville-1"},
-  {"viva": "4657", "coelho": "429709", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:59:48.135Z", "condo": "alphaville-1"},
-  {"viva": "16615", "coelho": "663487", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T00:59:57.876Z", "condo": "alphaville-1"},
-  {"viva": "14502", "coelho": "663614", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T01:00:26.458Z", "condo": "alphaville-1"},
-  {"viva": "14533", "coelho": "425124", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T01:01:05.403Z", "condo": "alphaville-1"},
-  {"viva": "3460", "coelho": "353980", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T01:01:09.564Z", "condo": "alphaville-1"},
-  {"viva": "8527", "coelho": "429865", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T01:01:44.993Z", "condo": "alphaville-1"},
-  {"viva": "17316", "coelho": "432594", "source": "review-ui:728cf93f/r2", "status": "confirmed", "confirmed_at": "2026-05-12T01:02:00.187Z", "condo": "alphaville-1"}
- ],
- "negatives": []
+  "version": 1,
+  "positives": [
+    {
+      "viva": "17388",
+      "coelho": "354149",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16886",
+      "coelho": "617978",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16626",
+      "coelho": "597308",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "13254",
+      "coelho": "356006",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "17116",
+      "coelho": "674139",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "5380",
+      "coelho": "467562",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16026",
+      "coelho": "674557",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "12854",
+      "coelho": "616435",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "13572",
+      "coelho": "653980",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16385",
+      "coelho": "663777",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16892",
+      "coelho": "663984",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "14127",
+      "coelho": "663462",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "2075",
+      "coelho": "502738",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "17722",
+      "coelho": "677257",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "17378",
+      "coelho": "659639",
+      "source": "pass1-review",
+      "status": "disputed"
+    },
+    {
+      "viva": "7597",
+      "coelho": "358601",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "18035",
+      "coelho": "661014",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "14138",
+      "coelho": "660058",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16117",
+      "coelho": "628299",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "17378",
+      "coelho": "425516",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "12814",
+      "coelho": "682781",
+      "source": "pass1-review",
+      "status": "confirmed",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "8188",
+      "coelho": "433739",
+      "source": "review-ui:fd8040fa/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-08T18:59:51.097Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "8989",
+      "coelho": "642743",
+      "source": "review-ui:fd8040fa/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-08T19:15:16.784Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "1034",
+      "coelho": "379860",
+      "source": "review-ui:3c83f9f4/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-10T12:46:47.208Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "12484",
+      "coelho": "656562",
+      "source": "review-ui:cb890ba5/r4",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-11T17:53:31.389Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "12030",
+      "coelho": "648903",
+      "source": "review-ui:08bbf5b3/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:54:13.154Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16228",
+      "coelho": "677791",
+      "source": "review-ui:08bbf5b3/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:54:33.852Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "18159",
+      "coelho": "445169",
+      "source": "review-ui:08bbf5b3/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:55:33.219Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "17996",
+      "coelho": "351722",
+      "source": "review-ui:08bbf5b3/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:56:07.480Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "17697",
+      "coelho": "685663",
+      "source": "review-ui:08bbf5b3/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:56:38.571Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "18179",
+      "coelho": "675453",
+      "source": "review-ui:08bbf5b3/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:56:46.918Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "1148",
+      "coelho": "471646",
+      "source": "review-ui:08bbf5b3/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:56:57.663Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16998",
+      "coelho": "677355",
+      "source": "review-ui:08bbf5b3/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:57:18.340Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "17279",
+      "coelho": "683046",
+      "source": "review-ui:08bbf5b3/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:57:42.023Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16528",
+      "coelho": "448313",
+      "source": "review-ui:08bbf5b3/r1",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:58:01.745Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "8177",
+      "coelho": "650074",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:58:19.923Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "12441",
+      "coelho": "403934",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:58:27.266Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "12252",
+      "coelho": "681867",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:58:34.953Z",
+      "condo": "alphaville-1",
+      "note": "restored after audit; viva gallery contains 2 photos of another house (674139)"
+    },
+    {
+      "viva": "8682",
+      "coelho": "381684",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:59:21.846Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16448",
+      "coelho": "569097",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:59:34.097Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16356",
+      "coelho": "671661",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:59:41.238Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "4657",
+      "coelho": "429709",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:59:48.135Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "16615",
+      "coelho": "663487",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T00:59:57.876Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "14502",
+      "coelho": "663614",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T01:00:26.458Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "14533",
+      "coelho": "425124",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T01:01:05.403Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "3460",
+      "coelho": "353980",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T01:01:09.564Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "8527",
+      "coelho": "429865",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T01:01:44.993Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "17316",
+      "coelho": "432594",
+      "source": "review-ui:728cf93f/r2",
+      "status": "confirmed",
+      "confirmed_at": "2026-05-12T01:02:00.187Z",
+      "condo": "alphaville-1"
+    },
+    {
+      "viva": "15335",
+      "coelho": "673351",
+      "source": "label-site:u_x9B9",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-24T06:15:34.669Z"
+    },
+    {
+      "viva": "18093",
+      "coelho": "497009",
+      "source": "label-site:u_x9B9",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-24T18:30:57.709Z"
+    },
+    {
+      "viva": "14844",
+      "coelho": "606206",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-25T15:38:03.859Z"
+    },
+    {
+      "viva": "16341",
+      "coelho": "352803",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-25T15:43:15.076Z"
+    },
+    {
+      "viva": "16872",
+      "coelho": "680210",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-25T15:48:10.464Z"
+    },
+    {
+      "viva": "18500",
+      "coelho": "672254",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-25T15:57:39.303Z"
+    },
+    {
+      "viva": "18464",
+      "coelho": "688583",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:22:42.021Z"
+    },
+    {
+      "viva": "18440",
+      "coelho": "670241",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-25T18:23:07.594Z"
+    },
+    {
+      "viva": "18412",
+      "coelho": "686383",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-25T18:23:25.830Z"
+    },
+    {
+      "viva": "18329",
+      "coelho": "663432",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:26:12.735Z"
+    },
+    {
+      "viva": "18314",
+      "coelho": "643279",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-25T18:27:56.668Z"
+    },
+    {
+      "viva": "18309",
+      "coelho": "684485",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-25T18:28:08.393Z"
+    },
+    {
+      "viva": "18303",
+      "coelho": "689026",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:28:50.011Z"
+    },
+    {
+      "viva": "17787",
+      "coelho": "654085",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:30:12.983Z"
+    },
+    {
+      "viva": "17651",
+      "coelho": "665289",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:33:57.948Z"
+    },
+    {
+      "viva": "17121",
+      "coelho": "682681",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:36:19.163Z"
+    },
+    {
+      "viva": "16670",
+      "coelho": "679087",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:36:55.582Z"
+    },
+    {
+      "viva": "16485",
+      "coelho": "675706",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:37:02.652Z"
+    },
+    {
+      "viva": "16447",
+      "coelho": "654894",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-25T18:37:19.221Z"
+    },
+    {
+      "viva": "16197",
+      "coelho": "676692",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:37:46.584Z"
+    },
+    {
+      "viva": "14858",
+      "coelho": "680804",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:38:40.469Z"
+    },
+    {
+      "viva": "14449",
+      "coelho": "680126",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:39:15.872Z"
+    },
+    {
+      "viva": "14374",
+      "coelho": "664659",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:41:40.013Z"
+    },
+    {
+      "viva": "13552",
+      "coelho": "660463",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:42:15.806Z"
+    },
+    {
+      "viva": "13416",
+      "coelho": "644559",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "alphaville-1",
+      "labeled_at": "2026-10-25T18:44:08.547Z"
+    },
+    {
+      "viva": "12762",
+      "coelho": "636606",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:44:24.182Z"
+    },
+    {
+      "viva": "10755",
+      "coelho": "504962",
+      "source": "label-site:b_94b5",
+      "status": "confirmed",
+      "condo": "tambore-xi",
+      "labeled_at": "2026-10-25T18:45:13.769Z"
+    }
+  ],
+  "negatives": [],
+  "nomatch_live": [
+    {
+      "viva": "11115",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "1115",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-24",
+      "source": "label-site:u_x9B9",
+      "by": "u_x9B9V5zBoqNJds97jjZZ2g"
+    },
+    {
+      "viva": "1148",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "12030",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "12229",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-24",
+      "source": "label-site:u_x9B9",
+      "by": "u_x9B9V5zBoqNJds97jjZZ2g"
+    },
+    {
+      "viva": "12414",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-24",
+      "source": "label-site:u_x9B9",
+      "by": "u_x9B9V5zBoqNJds97jjZZ2g"
+    },
+    {
+      "viva": "12752",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-24",
+      "source": "label-site:u_x9B9",
+      "by": "u_x9B9V5zBoqNJds97jjZZ2g"
+    },
+    {
+      "viva": "14138",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "14533",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "15008",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "15510",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "15776",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "16113",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "16607",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "16870",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17076",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17391",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17465",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17480",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17596",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17599",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17670",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17747",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17775",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17804",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17826",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "1786",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "17916",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "18293",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "18316",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "18325",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "18347",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "18360",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "18369",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "18403",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "18404",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "18454",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "18487",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "4509",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "4666",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "5380",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "6001",
+      "condo": "tambore-xi",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "8527",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "8748",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "9281",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    },
+    {
+      "viva": "9624",
+      "condo": "alphaville-1",
+      "as_of": "2026-10-25",
+      "source": "label-site:b_94b5",
+      "by": "b_94b553b6a3e815bd4e3e8dd6"
+    }
+  ]
 }
