@@ -68,3 +68,7 @@ Arquivos da base: `data/ground_truth.json`, `scripts/lib/ground_truth.py`, `scri
 6. **Verificação geométrica moderna** (LoMa / ALIKED+LightGlue no Mac via MPS; RoMa v2 se houver GPU), matriz fundamental
    MAGSAC++, teste espelhado, máscara da marca d'água da Coelho.
 7. Máscara de piscina (SAM 3), texto da descrição, VLM como desempate. Ver o relatório para os detalhes.
+
+**Rodada 5 (filtro de fotos genéricas, `scripts/photo_idf.py`)**: foto que casa (SSCD ≥ τ) com ≥3 anúncios distintos (outro site + mesmo site) é descartada da contagem.
+Decisão (`--decision`): acurácia held-out 0,943 ± 0,019 (antes 0,901 ± 0,016), R@1 nos positivos vivos 1,000. Atenção: `nomatch_live` = "a casa não estava entre as 3
+candidatas mostradas", não "não está na Coelho"; 12229→647221 e 18360→685893 são a mesma casa (conferido nas fotos), então a especificidade não é verdade-terreno.
