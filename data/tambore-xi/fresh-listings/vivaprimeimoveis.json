@@ -1,41 +1,15 @@
 {
-  "scraped_at": "2026-10-24T03:38:20.445Z",
+  "scraped_at": "2026-10-25T14:59:58.934Z",
   "compound": "tambore-xi",
   "site": "vivaprimeimoveis",
   "source_inventory": "data/tambore-xi/live-listing-inventory/vivaprimeimoveis.json",
   "source_url": "https://www.vivaprimeimoveis.com.br/imoveis?busca=venda&finalidade=venda&tipo=casa&cidade=&empreendimento=tambore-11",
-  "declared_count": 29,
-  "total_inventory_listings": 29,
-  "total_listings": 29,
+  "declared_count": 30,
+  "total_inventory_listings": 30,
+  "total_listings": 30,
   "total_pages": 3,
   "errors": [],
   "listings": [
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/15061",
-      "propertyCode": "15061",
-      "page": 1,
-      "price": null,
-      "transaction": null,
-      "condo": null,
-      "description": null,
-      "area_terreno": null,
-      "images": [],
-      "warnings": [
-        "server error page (listing probably removed)"
-      ],
-      "detailedData": {
-        "title": null,
-        "description": null,
-        "specs": {
-          "dormitorios": null,
-          "suites": null,
-          "banheiros": null,
-          "vagas": null,
-          "area_construida": null,
-          "area_total": null
-        }
-      }
-    },
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17651",
       "propertyCode": "17651",
@@ -78,15 +52,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17651/ibv34Y69Gh1P1o89OF5_1765168a60ab042295.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17651/ibv34Y69Gh1P1o89OF5_1765168a60b7369b12.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17651/ibv34Y69Gh1P1o89OF5_1765168a60ad87646c.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17651/ibv34Y69Gh1P1o89OF5_1765168a60bad6a19d.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17651/ibv34Y69Gh1P1o89OF5_1765168a60bad6a19d.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -143,15 +109,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16870/iz6J8472w1Lo_1687066cde5aa1b02b.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16870/iz6J8472w1Lo_1687066cde5ab2f138.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16870/iz6J8472w1Lo_1687066cde5ac1b9b8.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16870/iz6J8472w1Lo_1687066cde5aead86e.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16870/iz6J8472w1Lo_1687066cde5aead86e.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -163,6 +121,58 @@
           "banheiros": 5,
           "vagas": 4,
           "area_construida": "400m²",
+          "area_total": "420m²"
+        }
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-3-dormitorios-tambore-santana-de-parnaiba/18454",
+      "propertyCode": "18454",
+      "page": 1,
+      "price": "R$ 5.700.000,00",
+      "transaction": "venda",
+      "condo": null,
+      "description": "Belíssima Casa à Venda no Tamboré 11\r\n\r\nResidência moderna e sofisticada, com ambientes planejados para oferecer conforto, praticidade e excelente integração entre os espaços.\r\n\r\nA casa conta com sala para 3 ambientes, cozinha totalmente montada, 3 suítes, escritório e armários planejados em diversos ambientes.\r\n\r\nNa área externa, o destaque fica por conta da piscina integrada ao spa, pergolado, sauna úmida e churrasqueira gourmet, criando um espaço perfeito para momentos de lazer e confraternização.\r\n\r\nA residência conta ainda com garagem para 4 carros, paisagismo completo e projeto de iluminação interna e externa.\r\n\r\nUma excelente oportunidade para quem busca uma casa completa, sofisticada e pronta para desfrutar, em um dos condomínios mais desejados de Alphaville.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+      "area_terreno": "420m²",
+      "images": [
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a5d9db6e5.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a6077a3ef.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a5c61c43e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a615ec9be.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a5e876ed7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a5f9ad5b0.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a6892caee.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a72b9e369.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a703ab32e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a6c55e76e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a6f609514.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a6e65a4d3.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a6aad89a9.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a66f3f842.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a67b6734a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a71332f88.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a71f7bce7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a745bdfc9.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a7536cbe0.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a63f0cd23.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a69c3872f.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a75ff3c85.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a651a25cc.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a739d75fc.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a6299a947.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a661899c6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18454/i45o2189Z1n17D5X3Vv59_184546aa2a45ba181b.jpg"
+      ],
+      "warnings": [],
+      "detailedData": {
+        "title": "Casa, Tambore, Santana de Parnaiba, Código: 18454 - Viva Prime Imóveis - Imobiliária em Alphaville - SP",
+        "description": "Belíssima Casa à Venda no Tamboré 11\r\n\r\nResidência moderna e sofisticada, com ambientes planejados para oferecer conforto, praticidade e excelente integração entre os espaços.\r\n\r\nA casa conta com sala para 3 ambientes, cozinha totalmente montada, 3 suítes, escritório e armários planejados em diversos ambientes.\r\n\r\nNa área externa, o destaque fica por conta da piscina integrada ao spa, pergolado, sauna úmida e churrasqueira gourmet, criando um espaço perfeito para momentos de lazer e confraternização.\r\n\r\nA residência conta ainda com garagem para 4 carros, paisagismo completo e projeto de iluminação interna e externa.\r\n\r\nUma excelente oportunidade para quem busca uma casa completa, sofisticada e pronta para desfrutar, em um dos condomínios mais desejados de Alphaville.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+        "specs": {
+          "dormitorios": 3,
+          "suites": 3,
+          "banheiros": 4,
+          "vagas": 4,
+          "area_construida": "365m²",
           "area_total": "420m²"
         }
       }
@@ -210,15 +220,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/10755/iVwlpK8P11I667m_1075566b26a4763951.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/10755/iVwlpK8P11I667m_1075566b26a2865539.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/10755/iVwlpK8P11I667m_1075566b26a2464831.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/10755/iVwlpK8P11I667m_1075566b26a4a4fcbb.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/10755/iVwlpK8P11I667m_1075566b26a4a4fcbb.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -277,15 +279,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17747/ij4zha4kGRZTn8a_1774768d1701c44f77.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17747/ij4zha4kGRZTn8a_1774768d170266b93f.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17747/ij4zha4kGRZTn8a_1774768d1703e4c7a3.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17747/ij4zha4kGRZTn8a_1774768d17048301b0.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17747/ij4zha4kGRZTn8a_1774768d17048301b0.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -324,15 +318,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17826/ijxBNJ6683863rW5_1782668f2523fb144e.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17826/ijxBNJ6683863rW5_1782668f2514384906.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17826/ijxBNJ6683863rW5_1782668f2514f56e17.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17826/ijxBNJ6683863rW5_1782668f251908cd61.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17826/ijxBNJ6683863rW5_1782668f251908cd61.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -345,32 +331,6 @@
           "vagas": 3,
           "area_construida": "377m²",
           "area_total": "420m²"
-        }
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17646",
-      "propertyCode": "17646",
-      "page": 1,
-      "price": null,
-      "transaction": null,
-      "condo": null,
-      "description": null,
-      "area_terreno": null,
-      "images": [],
-      "warnings": [
-        "server error page (listing probably removed)"
-      ],
-      "detailedData": {
-        "title": null,
-        "description": null,
-        "specs": {
-          "dormitorios": null,
-          "suites": null,
-          "banheiros": null,
-          "vagas": null,
-          "area_construida": null,
-          "area_total": null
         }
       }
     },
@@ -409,15 +369,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/6001/ip9H0O4ycSd01e586_600164d24d0c54b88.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/6001/ip9H0O4ycSd01e586_600164d24d1ac8b29.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/6001/ip9H0O4ycSd01e586_600164d24ca8980ba.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/6001/ip9H0O4ycSd01e586_600164d24cff40204.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/6001/ip9H0O4ycSd01e586_600164d24cff40204.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -459,15 +411,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14449/ib53TTJi15166vJq4_14449665e16193d07c.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14449/ib53TTJi15166vJq4_14449665e16079bb36.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14449/iT93u94y572SzS5_1444965c0e71b92827.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14449/iT93u94y572SzS5_1444965c0e71747b76.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14449/iT93u94y572SzS5_1444965c0e71747b76.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -480,6 +424,58 @@
           "vagas": 4,
           "area_construida": "555m²",
           "area_total": "480m²"
+        }
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18360",
+      "propertyCode": "18360",
+      "page": 1,
+      "price": "R$ 6.500.000,00",
+      "transaction": "venda",
+      "condo": null,
+      "description": "Totalmente mobiliada, esta residência une sofisticação, conforto e exclusividade.\r\n\r\nCom pé-direito alto e ambientes amplos e integrados, a área social conecta sala, cozinha e espaço de lazer, que conta com uma belíssima piscina, ideal para receber familiares e amigos.\r\n\r\nSão 4 suítes, todas com ar-condicionado, incluindo uma ampla suíte máster, além de 3 vagas de garagem cobertas .\r\n\r\nUm imóvel pensado para quem busca praticidade, elegância e qualidade de vida desde o primeiro dia.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+      "area_terreno": "420m²",
+      "images": [
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d415a6564a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d4174db9cc.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d41ac88dd4.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d41cb57ec7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d428e5f53d.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d4129ca7cc.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d42828fdaa.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d42aa72d42.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d42b955c0b.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d41bb7f047.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d420363cc8.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d41f382aa4.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d4167c278b.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d4116465f6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d41073f105.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d40f602641.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d42630de09.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d4192554ea.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d419e407ba.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d4210470cd.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d422a686d1.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d41d9352a8.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d41384c2e0.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d421cc5ff7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d41e4b0b28.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d423c0ab54.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18360/iWxxZ1e584_183606a4d429b2fa8f.jpg"
+      ],
+      "warnings": [],
+      "detailedData": {
+        "title": "Casa, Tambore, Santana de Parnaiba, Código: 18360 - Viva Prime Imóveis - Imobiliária em Alphaville - SP",
+        "description": "Totalmente mobiliada, esta residência une sofisticação, conforto e exclusividade.\r\n\r\nCom pé-direito alto e ambientes amplos e integrados, a área social conecta sala, cozinha e espaço de lazer, que conta com uma belíssima piscina, ideal para receber familiares e amigos.\r\n\r\nSão 4 suítes, todas com ar-condicionado, incluindo uma ampla suíte máster, além de 3 vagas de garagem cobertas .\r\n\r\nUm imóvel pensado para quem busca praticidade, elegância e qualidade de vida desde o primeiro dia.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 3,
+          "area_construida": "350m²",
+          "area_total": "420m²"
         }
       }
     },
@@ -512,15 +508,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17599/i4x99t2PN6Z5N8ak3_175996895fc055af5a.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17599/i4x99t2PN6Z5N8ak3_175996895fc10d0283.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17599/i4x99t2PN6Z5N8ak3_175996895fc1c59de5.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17599/i4x99t2PN6Z5N8ak3_175996895fc2841908.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17599/i4x99t2PN6Z5N8ak3_175996895fc2841908.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -533,6 +521,76 @@
           "vagas": 4,
           "area_construida": "423m²",
           "area_total": "466m²"
+        }
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-3-dormitorios-tambore-santana-de-parnaiba/18329",
+      "propertyCode": "18329",
+      "page": 1,
+      "price": "R$ 6.600.000,00",
+      "transaction": "venda",
+      "condo": null,
+      "description": "Casa voltada para a face norte: sol na piscina até o final do dia!\r\n\r\nAmpla, elegante e com ambientes generosos dando a sensação de ter sido construída em dois terrenos. \r\n\r\nCada espaço foi pensado para proporcionar conforto, integração e praticidade no dia a dia.\r\n\r\nA área social conta com cozinha do dia a dia, cozinha gourmet e cozinha de apoio à churrasqueira, todas integradas à espaçosa sala de estar. \r\nUm dos grandes destaques é a lateral aberta da sala, que ganha um charme especial à noite com sua iluminação aconchegante.\r\n\r\nAlém de uma elegante sala de TV.\r\nSão 3 suítes, com possibilidade de criação de uma  4ª suíte. \r\nA suíte máster é um verdadeiro espetáculo: possui varanda fechada e walking closet .\r\n\r\nTodo o pavimento superior conta com carpete de altíssima qualidade, preservando o piso original já existente abaixo.\r\n\r\nA casa ainda oferece sala íntima com varanda, no piso superior.\r\n\r\nsuíte para funcionários.\r\ngaragem fechada para 3 veículos.\r\n\r\nUma excelente oportunidade no condomínio mais desejado de Alphaville atualmente, reunindo conforto, sofisticação e qualidade de vida em um só endereço.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+      "area_terreno": "560m²",
+      "images": [
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e31a7b70d.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e4966bebc.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e58220c16.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e429357b1.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e486bb9a2.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e469cda72.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e47817b95.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e2d0d2e86.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e53b5daa3.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e3b024596.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e3338cde7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e382809f5.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e39087a04.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e3de5e3d3.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e4b231dba.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e438588b6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e29e1d0e0.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e3736ec19.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e2bf838ec.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e3426fb40.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e4e4bfe22.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e4f48a5e6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e3bdb84a5.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e30393b7e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e3541ca47.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e3642afed.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e39fe09f4.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e2b09331f.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e3cc15a20.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e3f135e55.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e4004c7fd.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e41793044.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e44913aee.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e45baafb5.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e4a38a876.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e4c577e99.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e4d742809.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e51224f57.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e522bb9b6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e2e9a1029.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e54bc2d98.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e55b9e800.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e5949faa4.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e5a3cf45e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18329/ie4VC1q5XH5J435GF_183296a26e5b706ab1.jpg"
+      ],
+      "warnings": [],
+      "detailedData": {
+        "title": "Casa, Tambore, Santana de Parnaiba, Código: 18329 - Viva Prime Imóveis - Imobiliária em Alphaville - SP",
+        "description": "Casa voltada para a face norte: sol na piscina até o final do dia!\r\n\r\nAmpla, elegante e com ambientes generosos dando a sensação de ter sido construída em dois terrenos. \r\n\r\nCada espaço foi pensado para proporcionar conforto, integração e praticidade no dia a dia.\r\n\r\nA área social conta com cozinha do dia a dia, cozinha gourmet e cozinha de apoio à churrasqueira, todas integradas à espaçosa sala de estar. \r\nUm dos grandes destaques é a lateral aberta da sala, que ganha um charme especial à noite com sua iluminação aconchegante.\r\n\r\nAlém de uma elegante sala de TV.\r\nSão 3 suítes, com possibilidade de criação de uma  4ª suíte. \r\nA suíte máster é um verdadeiro espetáculo: possui varanda fechada e walking closet .\r\n\r\nTodo o pavimento superior conta com carpete de altíssima qualidade, preservando o piso original já existente abaixo.\r\n\r\nA casa ainda oferece sala íntima com varanda, no piso superior.\r\n\r\nsuíte para funcionários.\r\ngaragem fechada para 3 veículos.\r\n\r\nUma excelente oportunidade no condomínio mais desejado de Alphaville atualmente, reunindo conforto, sofisticação e qualidade de vida em um só endereço.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+        "specs": {
+          "dormitorios": 3,
+          "suites": 3,
+          "banheiros": 4,
+          "vagas": 3,
+          "area_construida": "645m²",
+          "area_total": "560m²"
         }
       }
     },
@@ -583,15 +641,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/15510/i6q32u9_15510682c974f61ed5.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/15510/i6q32u9_15510682c96e805805.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/15510/i6q32u9_15510682c963229cb5.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/15510/i6q32u9_15510682c98c1c9117.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/15510/i6q32u9_15510682c98c1c9117.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -608,9 +658,65 @@
       }
     },
     {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18404",
+      "propertyCode": "18404",
+      "page": 2,
+      "price": "R$ 6.700.000,00",
+      "transaction": "venda",
+      "condo": null,
+      "description": "Casa à venda no Tamboré 11 - Exclusividade, conforto e qualidade de vida\r\n\r\nDescubra o privilégio de viver em uma residência que combina arquitetura elegante, ambientes amplos e uma localização excepcional. Situada no renomado Tamboré 11, esta casa foi projetada para oferecer conforto, funcionalidade e momentos inesquecíveis em família.\r\n\r\nCom 483,64 m² de área construída, o imóvel dispõe de 4 suítes, sendo uma delas no pavimento térreo, proporcionando mais praticidade e acessibilidade. Os ambientes são bem distribuídos, com acabamentos de qualidade e integração perfeita entre as áreas internas e externas.\r\n\r\nA área de lazer é um dos grandes destaques da residência. O espaço gourmet com churrasqueira é ideal para receber amigos e familiares, enquanto a piscina aquecida, o jardim e a agradável vista para a mata criam um ambiente de tranquilidade e bem-estar.\r\n\r\nA casa ainda oferece aquecimento a gás, ar-condicionado, lareira, home theater, closet, cozinha planejada, armários sob medida, lavabo, lavanderia, despensa, dependência para funcionários, entradas de serviço e lateral, fechadura eletrônica, quintal e diversos outros diferenciais que tornam o dia a dia ainda mais confortável.\r\n\r\nO Condomínio Tamboré 11 oferece infraestrutura completa, com segurança e portaria 24 horas, quadras de tênis, poliesportiva e de areia, churrasqueira, salão de festas e áreas de convivência pensadas para toda a família.\r\n\r\nSua localização privilegiada garante fácil acesso às principais rodovias da região e está próxima de escolas, universidades, hospitais, farmácias, bancos, supermercados e shoppings, proporcionando praticidade sem abrir mão da tranquilidade.\r\n\r\n\r\nAgende sua visita e venha conhecer de perto todos os detalhes deste incrível imóvel.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+      "area_terreno": "617.15m²",
+      "images": [
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748df26c4de.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748cb9f0be1.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748cd918948.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748cc91ff7e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748d625b638.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748d5292f3d.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748d4237a1b.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748d72983f5.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748d9109457.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748d80a3213.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748dc31659d.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748cf71fc61.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748d071cced.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748ce9e5a45.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748d14d9943.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748d24bf74f.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748de1b6b4f.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748dd240203.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748c1a03b8d.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748c2aae4ff.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748c3a8b87e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748c4ad4b52.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748c5abe65d.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748c6d1253e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748c7c93625.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748c8ca0da7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748c9b72d18.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748caa0bc8c.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748d32a49b7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748da28af6a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18404/i7578y5sYO1BX4_184046a748db137416.jpg"
+      ],
+      "warnings": [],
+      "detailedData": {
+        "title": "Casa, Tambore, Santana de Parnaiba, Código: 18404 - Viva Prime Imóveis - Imobiliária em Alphaville - SP",
+        "description": "Casa à venda no Tamboré 11 - Exclusividade, conforto e qualidade de vida\r\n\r\nDescubra o privilégio de viver em uma residência que combina arquitetura elegante, ambientes amplos e uma localização excepcional. Situada no renomado Tamboré 11, esta casa foi projetada para oferecer conforto, funcionalidade e momentos inesquecíveis em família.\r\n\r\nCom 483,64 m² de área construída, o imóvel dispõe de 4 suítes, sendo uma delas no pavimento térreo, proporcionando mais praticidade e acessibilidade. Os ambientes são bem distribuídos, com acabamentos de qualidade e integração perfeita entre as áreas internas e externas.\r\n\r\nA área de lazer é um dos grandes destaques da residência. O espaço gourmet com churrasqueira é ideal para receber amigos e familiares, enquanto a piscina aquecida, o jardim e a agradável vista para a mata criam um ambiente de tranquilidade e bem-estar.\r\n\r\nA casa ainda oferece aquecimento a gás, ar-condicionado, lareira, home theater, closet, cozinha planejada, armários sob medida, lavabo, lavanderia, despensa, dependência para funcionários, entradas de serviço e lateral, fechadura eletrônica, quintal e diversos outros diferenciais que tornam o dia a dia ainda mais confortável.\r\n\r\nO Condomínio Tamboré 11 oferece infraestrutura completa, com segurança e portaria 24 horas, quadras de tênis, poliesportiva e de areia, churrasqueira, salão de festas e áreas de convivência pensadas para toda a família.\r\n\r\nSua localização privilegiada garante fácil acesso às principais rodovias da região e está próxima de escolas, universidades, hospitais, farmácias, bancos, supermercados e shoppings, proporcionando praticidade sem abrir mão da tranquilidade.\r\n\r\n\r\nAgende sua visita e venha conhecer de perto todos os detalhes deste incrível imóvel.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 4,
+          "area_construida": "483.64m²",
+          "area_total": "617.15m²"
+        }
+      }
+    },
+    {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/14374",
       "propertyCode": "14374",
-      "page": 1,
+      "page": 2,
       "price": "R$ 6.900.000,00",
       "transaction": "venda",
       "condo": null,
@@ -632,15 +738,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14374/i95Jg4nne_1437468c81be765a95.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14374/i95Jg4nne_1437468c81c001e3ca.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14374/i95Jg4nne_1437468c81bdb458d9.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14374/i95Jg4nne_1437468c81bf38e61b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14374/i95Jg4nne_1437468c81bf38e61b.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -698,15 +796,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17787/i8u8rHH9xUC6538_1778768ed5259e9dd7.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17787/i8u8rHH9xUC6538_1778768ed506999003.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17787/i8u8rHH9xUC6538_1778768ed5271414b4.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17787/i8u8rHH9xUC6538_1778768ed52a4b3e77.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17787/i8u8rHH9xUC6538_1778768ed52a4b3e77.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -718,6 +808,50 @@
           "banheiros": 6,
           "vagas": 4,
           "area_construida": "450m²",
+          "area_total": "420m²"
+        }
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18347",
+      "propertyCode": "18347",
+      "page": 2,
+      "price": "R$ 7.000.000,00",
+      "transaction": "venda",
+      "condo": null,
+      "description": "CASA À VENDA E LOCAÇÃO - TAMBORÉ 11\r\n\r\nExcelente residência de alto padrão, totalmente mobiliada, localizada em um dos condomínios mais desejados da região.\r\n\r\nCaracterísticas do imóvel:\r\n\r\n04 suítes, incluindo uma ampla suíte máster com hidromassagem;\r\n01 suíte para funcionária;\r\nEscritório;\r\nLavabo;\r\nCopa;\r\nDespensa;\r\nÁrea de serviço;\r\nCozinha integrada à área gourmet;\r\nEspaço gourmet com churrasqueira;\r\nPiscina com aquecimento solar;\r\nSauna;\r\nGaragem para 02 veículos cobertos e 03 descobertos.\r\n\r\nDiferenciais:\r\n\r\nImóvel entregue totalmente mobiliado;\r\nSuítes com persianas integradas e acionamento por controle remoto;\r\nAr-condicionado instalado;\r\nAquecimento solar;\r\nCisterna;\r\nLouças e metais de alto padrão;\r\nEscada em mármore com iluminação;\r\nPé-direito duplo;\r\nAmplo hall de entrada social;\r\nFechadura digital na porta principal;\r\nAcabamentos sofisticados e diversos detalhes que agregam conforto, segurança e exclusividade.\r\n\r\nUma residência moderna e elegante, projetada para proporcionar praticidade, bem-estar e excelente qualidade de vida.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+      "area_terreno": "420m²",
+      "images": [
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/i9QEoe13b_183476a91c29512da6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/itTl8bu63s89VsC6794M_183476a91d4a886d5e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393dc8791b8.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393e05aa3b9.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393c4e023b3.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393da38f36d.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393d781330f.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393db49563a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393d579f2cf.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393d684c60b.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393d2c4096a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393c7333d05.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393c604001e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393d3c78ee2.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393d498f8a1.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393dd997496.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/ith583PmFvu7z6b2_183476a393d84c0790.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/i9QEoe13b_183476a91c2a186617.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18347/itTl8bu63s89VsC6794M_183476a91d49a9ba9e.jpg"
+      ],
+      "warnings": [],
+      "detailedData": {
+        "title": "Casa, Tambore, Santana de Parnaiba, Código: 18347 - Viva Prime Imóveis - Imobiliária em Alphaville - SP",
+        "description": "CASA À VENDA E LOCAÇÃO - TAMBORÉ 11\r\n\r\nExcelente residência de alto padrão, totalmente mobiliada, localizada em um dos condomínios mais desejados da região.\r\n\r\nCaracterísticas do imóvel:\r\n\r\n04 suítes, incluindo uma ampla suíte máster com hidromassagem;\r\n01 suíte para funcionária;\r\nEscritório;\r\nLavabo;\r\nCopa;\r\nDespensa;\r\nÁrea de serviço;\r\nCozinha integrada à área gourmet;\r\nEspaço gourmet com churrasqueira;\r\nPiscina com aquecimento solar;\r\nSauna;\r\nGaragem para 02 veículos cobertos e 03 descobertos.\r\n\r\nDiferenciais:\r\n\r\nImóvel entregue totalmente mobiliado;\r\nSuítes com persianas integradas e acionamento por controle remoto;\r\nAr-condicionado instalado;\r\nAquecimento solar;\r\nCisterna;\r\nLouças e metais de alto padrão;\r\nEscada em mármore com iluminação;\r\nPé-direito duplo;\r\nAmplo hall de entrada social;\r\nFechadura digital na porta principal;\r\nAcabamentos sofisticados e diversos detalhes que agregam conforto, segurança e exclusividade.\r\n\r\nUma residência moderna e elegante, projetada para proporcionar praticidade, bem-estar e excelente qualidade de vida.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 5,
+          "vagas": 5,
+          "area_construida": "500m²",
           "area_total": "420m²"
         }
       }
@@ -771,15 +905,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17916/iV8V62824GufoKEA6frPs_179166a721d2b0084c.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17916/iV8V62824GufoKEA6frPs_179166a721d399f271.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17916/iV8V62824GufoKEA6frPs_179166a721d48c5623.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17916/iV8V62824GufoKEA6frPs_179166a721d55af6db.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17916/iV8V62824GufoKEA6frPs_179166a721d55af6db.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -792,58 +918,6 @@
           "vagas": 6,
           "area_construida": "400m²",
           "area_total": "555m²"
-        }
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/15859",
-      "propertyCode": "15859",
-      "page": 2,
-      "price": null,
-      "transaction": null,
-      "condo": null,
-      "description": null,
-      "area_terreno": null,
-      "images": [],
-      "warnings": [
-        "server error page (listing probably removed)"
-      ],
-      "detailedData": {
-        "title": null,
-        "description": null,
-        "specs": {
-          "dormitorios": null,
-          "suites": null,
-          "banheiros": null,
-          "vagas": null,
-          "area_construida": null,
-          "area_total": null
-        }
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18177",
-      "propertyCode": "18177",
-      "page": 2,
-      "price": null,
-      "transaction": null,
-      "condo": null,
-      "description": null,
-      "area_terreno": null,
-      "images": [],
-      "warnings": [
-        "server error page (listing probably removed)"
-      ],
-      "detailedData": {
-        "title": null,
-        "description": null,
-        "specs": {
-          "dormitorios": null,
-          "suites": null,
-          "banheiros": null,
-          "vagas": null,
-          "area_construida": null,
-          "area_total": null
         }
       }
     },
@@ -899,15 +973,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17480/idGe7Y55H_1748068d16db7ea0e3.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17480/idGe7Y55H_1748068d16dc4d1401.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17480/idGe7Y55H_1748068d16dd227285.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17480/idGe7Y55H_1748068d16dde562ea.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17480/idGe7Y55H_1748068d16dde562ea.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -920,32 +986,6 @@
           "vagas": 4,
           "area_construida": "476m²",
           "area_total": "420m²"
-        }
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/17359",
-      "propertyCode": "17359",
-      "page": 2,
-      "price": null,
-      "transaction": null,
-      "condo": null,
-      "description": null,
-      "area_terreno": null,
-      "images": [],
-      "warnings": [
-        "server error page (listing probably removed)"
-      ],
-      "detailedData": {
-        "title": null,
-        "description": null,
-        "specs": {
-          "dormitorios": null,
-          "suites": null,
-          "banheiros": null,
-          "vagas": null,
-          "area_construida": null,
-          "area_total": null
         }
       }
     },
@@ -996,15 +1036,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17804/in9jNwadxOz339mU5_178046a5515c63726c.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17804/in9jNwadxOz339mU5_178046a5515d63ebf4.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17804/in9jNwadxOz339mU5_178046a5515e4b5ac8.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17804/in9jNwadxOz339mU5_178046a5515f6841aa.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17804/in9jNwadxOz339mU5_178046a5515f6841aa.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -1077,15 +1109,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17391/i8185q8c711d14K7_1739169ea268c48cdb.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17391/i8185q8c711d14K7_1739169ea26b180da1.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17391/i8185q8c711d14K7_1739169ea26be1d66e.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17391/i8185q8c711d14K7_1739169ea28e7031eb.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17391/i8185q8c711d14K7_1739169ea28e7031eb.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -1147,15 +1171,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16485/iGg76CQ25B2cF5_1648569a5855b65cbf.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16485/iGg76CQ25B2cF5_1648569a58567cb9d6.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16485/iGg76CQ25B2cF5_1648569a584530cf9e.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16485/iGg76CQ25B2cF5_1648569a58621ec640.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16485/iGg76CQ25B2cF5_1648569a58621ec640.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -1172,54 +1188,70 @@
       }
     },
     {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/15910",
-      "propertyCode": "15910",
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18303",
+      "propertyCode": "18303",
       "page": 2,
-      "price": null,
-      "transaction": null,
+      "price": "R$ 10.900.000,00",
+      "transaction": "venda",
       "condo": null,
-      "description": null,
-      "area_terreno": null,
-      "images": [],
-      "warnings": [
-        "server error page (listing probably removed)"
+      "description": "Sofisticação Contemporânea no Tamboré 11\r\n\r\nUma residência exclusiva, totalmente mobiliada e decorada, onde arquitetura contemporânea, tecnologia e conforto se encontram em perfeita harmonia.\r\n\r\nCom 533 m² de área construída, este imóvel impressiona pelos ambientes amplos, integrados e pela execução impecável em cada detalhe.\r\n\r\nDestaques do imóvel\r\n\r\n 4 suítes, sendo 2 dormitórios em suíte americana\r\n 6 banheiros\r\n 4 vagas de garagem\r\n Living com conceito aberto e integração total dos ambientes\r\n Automação completa de som e iluminação\r\n Ar-condicionado inverter\r\n Home theater\r\n Lareira ecológica\r\n Piscina aquecida com cascata\r\n Acabamentos, mobiliário e decoração de altíssimo padrão\r\n\r\nLocalizada em um dos condomínios mais desejados da região, a residência oferece infraestrutura completa de lazer em estilo clube e segurança armada 24 horas.\r\n\r\nUm imóvel pensado para quem valoriza exclusividade, sofisticação e qualidade de vida.\r\n\r\n\r\n Agende sua visita e descubra uma nova experiência de morar.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+      "area_terreno": "560m²",
+      "images": [
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4cf4bd16b.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4c52189de.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4c0b9e45f.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4c1c666d7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4c4228b48.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4c2eb71a1.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4c7163fdc.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4c81952a1.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4c936bba0.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4ca62e5a7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4cb61f28b.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4cc590f14.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4cd55f4a0.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4ce75b98a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4c62ed6f6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4d92d0135.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4da328294.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4db18d549.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4dc75836b.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4dd6a82b7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4de78a3fb.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4df66e2f4.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4e044fe80.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4e16640f0.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4e271b77c.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4e369128c.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4e47347b6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4e58642f7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4e9713be6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4ea9c0988.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4ebbeeba4.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4ece6d141.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4e6a4b4d5.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4e7fa499a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4ee0971a7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4ef2766cb.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4d747cafd.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4d627d199.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4d8306223.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4d05a9059.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4d5368872.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4d4567ba5.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18303/io71nO4G54oE4kZ8PC_183036a0c4d1479c34.jpg"
       ],
+      "warnings": [],
       "detailedData": {
-        "title": null,
-        "description": null,
+        "title": "Casa, Tambore, Santana de Parnaiba, Código: 18303 - Viva Prime Imóveis - Imobiliária em Alphaville - SP",
+        "description": "Sofisticação Contemporânea no Tamboré 11\r\n\r\nUma residência exclusiva, totalmente mobiliada e decorada, onde arquitetura contemporânea, tecnologia e conforto se encontram em perfeita harmonia.\r\n\r\nCom 533 m² de área construída, este imóvel impressiona pelos ambientes amplos, integrados e pela execução impecável em cada detalhe.\r\n\r\nDestaques do imóvel\r\n\r\n 4 suítes, sendo 2 dormitórios em suíte americana\r\n 6 banheiros\r\n 4 vagas de garagem\r\n Living com conceito aberto e integração total dos ambientes\r\n Automação completa de som e iluminação\r\n Ar-condicionado inverter\r\n Home theater\r\n Lareira ecológica\r\n Piscina aquecida com cascata\r\n Acabamentos, mobiliário e decoração de altíssimo padrão\r\n\r\nLocalizada em um dos condomínios mais desejados da região, a residência oferece infraestrutura completa de lazer em estilo clube e segurança armada 24 horas.\r\n\r\nUm imóvel pensado para quem valoriza exclusividade, sofisticação e qualidade de vida.\r\n\r\n\r\n Agende sua visita e descubra uma nova experiência de morar.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
         "specs": {
-          "dormitorios": null,
-          "suites": null,
-          "banheiros": null,
-          "vagas": null,
-          "area_construida": null,
-          "area_total": null
-        }
-      }
-    },
-    {
-      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17600",
-      "propertyCode": "17600",
-      "page": 2,
-      "price": null,
-      "transaction": null,
-      "condo": null,
-      "description": null,
-      "area_terreno": null,
-      "images": [],
-      "warnings": [
-        "server error page (listing probably removed)"
-      ],
-      "detailedData": {
-        "title": null,
-        "description": null,
-        "specs": {
-          "dormitorios": null,
-          "suites": null,
-          "banheiros": null,
-          "vagas": null,
-          "area_construida": null,
-          "area_total": null
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 6,
+          "vagas": 6,
+          "area_construida": "533m²",
+          "area_total": "560m²"
         }
       }
     },
@@ -1307,15 +1339,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17121/i736u5r17T_17121673ccf7bf1c97.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17121/i736u5r17T_17121673cd30c479a0.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17121/i736u5r17T_17121673cd346cec5f.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17121/i736u5r17T_17121673cd3840d57b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/17121/i736u5r17T_17121673cd3840d57b.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -1334,7 +1358,7 @@
     {
       "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/16197",
       "propertyCode": "16197",
-      "page": 3,
+      "page": 2,
       "price": "R$ 12.500.000,00",
       "transaction": "venda",
       "condo": null,
@@ -1382,15 +1406,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16197/i7732VoG1295vq1x7rK56_1619769a060e64cd1c.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16197/i7732VoG1295vq1x7rK56_1619769a060f1a03d1.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16197/i7732VoG1295vq1x7rK56_1619769a0616a86dcf.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16197/i7732VoG1295vq1x7rK56_1619769a061751d938.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16197/i7732VoG1295vq1x7rK56_1619769a061751d938.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -1403,6 +1419,87 @@
           "vagas": 4,
           "area_construida": "610m²",
           "area_total": "900m²"
+        }
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18464",
+      "propertyCode": "18464",
+      "page": 3,
+      "price": "R$ 12.700.000,00",
+      "transaction": "venda",
+      "condo": null,
+      "description": "O ápice da sofisticação, conforto e tecnologia em uma residência completamente renovada.\r\n\r\nEsta magnífica residência no Tamboré 11 foi renovada em 2026 e reúne arquitetura contemporânea, ambientes sofisticados, tecnologia e uma vista permanente, proporcionando uma experiência única de moradia.\r\n\r\nCom 710 m² de área construída em um terreno de 540 m², a casa possui 4 suítes completas, amplos ambientes sociais e 5 vagas de garagem cobertas. A cozinha, com aproximadamente 35 m² e pé-direito duplo, é um dos grandes destaques do projeto.\r\n\r\nA residência é mobiliada e equipada, com marcenaria planejada de alto padrão, eletrodomésticos de qualidade e acabamentos premium.\r\n\r\nConforto e Tecnologia\r\n\r\n Automação total e elevador\r\n Aquecimento central e pressurização\r\n Carregamento para carro elétrico\r\n Isolamento acústico\r\n\r\nLazer e Entretenimento\r\n\r\n Subsolo para aproximadamente 80 convidados\r\n Cinema 4K para até 100 pessoas\r\n Bar, sinuca e palco\r\n Piscina climatizada\r\n\r\nA área social foi planejada para receber com conforto e elegância, enquanto os espaços de entretenimento proporcionam uma estrutura completa para momentos inesquecíveis com família e amigos.\r\n\r\nUma residência exclusiva, sofisticada e pronta para morar, ideal para quem busca alto padrão, privacidade, tecnologia e uma infraestrutura completa de lazer no Tamboré 11.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+      "area_terreno": "540m²",
+      "images": [
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9067efed2c8.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906f5a91037.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906f771f6eb.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906f888ab51.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906f4a029a7.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906f68803ff.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a907381a50a5.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9073bdcbca4.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90730de06c1.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90731d8dae2.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90732d899b6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90733ed82df.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9073ac9f4d4.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9072df4f519.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9072d0a56d8.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90738fcb061.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90739f68e0f.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906fc4df61a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906fe18cc47.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906fa788dbe.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906f980fadb.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906fb3c138d.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a907581a2845.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9075726cb16.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906fd22b5dd.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a906f3b9f0e8.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90734f4de0e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90735ff081f.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a907704102dd.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9076f652b28.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9076d7bbf78.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9076e6c8746.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9076c8f1d84.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9078b70f64a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9078a988366.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90788c2cdad.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90789972260.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90765ce2941.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90764bb3d52.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90763a91131.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90767e246c8.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90768ed8bfc.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90766c86725.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90769c5c341.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9076aa0c9d1.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9076b873aa4.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90782f18eb6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90780d4ad56.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90786f3d9c8.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9078401b681.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90781bcfbc1.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90784ea29e0.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90785e51137.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90762a007f3.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a9076198253f.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18464/iTvRLlqxL8GH5_184646a90787e61fbe.jpg"
+      ],
+      "warnings": [],
+      "detailedData": {
+        "title": "Casa, Tambore, Santana de Parnaiba, Código: 18464 - Viva Prime Imóveis - Imobiliária em Alphaville - SP",
+        "description": "O ápice da sofisticação, conforto e tecnologia em uma residência completamente renovada.\r\n\r\nEsta magnífica residência no Tamboré 11 foi renovada em 2026 e reúne arquitetura contemporânea, ambientes sofisticados, tecnologia e uma vista permanente, proporcionando uma experiência única de moradia.\r\n\r\nCom 710 m² de área construída em um terreno de 540 m², a casa possui 4 suítes completas, amplos ambientes sociais e 5 vagas de garagem cobertas. A cozinha, com aproximadamente 35 m² e pé-direito duplo, é um dos grandes destaques do projeto.\r\n\r\nA residência é mobiliada e equipada, com marcenaria planejada de alto padrão, eletrodomésticos de qualidade e acabamentos premium.\r\n\r\nConforto e Tecnologia\r\n\r\n Automação total e elevador\r\n Aquecimento central e pressurização\r\n Carregamento para carro elétrico\r\n Isolamento acústico\r\n\r\nLazer e Entretenimento\r\n\r\n Subsolo para aproximadamente 80 convidados\r\n Cinema 4K para até 100 pessoas\r\n Bar, sinuca e palco\r\n Piscina climatizada\r\n\r\nA área social foi planejada para receber com conforto e elegância, enquanto os espaços de entretenimento proporcionam uma estrutura completa para momentos inesquecíveis com família e amigos.\r\n\r\nUma residência exclusiva, sofisticada e pronta para morar, ideal para quem busca alto padrão, privacidade, tecnologia e uma infraestrutura completa de lazer no Tamboré 11.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 6,
+          "vagas": 5,
+          "area_construida": "710m²",
+          "area_total": "540m²"
         }
       }
     },
@@ -1439,15 +1536,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/13552/i6479yrad2511I7kUzmp6_1355266be5adb950c6.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/13552/i6479yrad2511I7kUzmp6_1355266be5acf3d9c4.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/13552/i6479yrad2511I7kUzmp6_1355266be5ac607542.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/13552/i6479yrad2511I7kUzmp6_1355266be5acb82afc.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/13552/i6479yrad2511I7kUzmp6_1355266be5acb82afc.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -1460,6 +1549,61 @@
           "vagas": 8,
           "area_construida": "610m²",
           "area_total": "620m²"
+        }
+      }
+    },
+    {
+      "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18487",
+      "propertyCode": "18487",
+      "page": 3,
+      "price": "R$ 14.900.000,00",
+      "transaction": "venda",
+      "condo": null,
+      "description": "Casa à venda no Tamboré 11, com entrega prevista para fevereiro de 2027.\r\n\r\nUma residência moderna e sofisticada, projetada para oferecer conforto, tecnologia e ambientes integrados, com arquitetura contemporânea e excelente aproveitamento dos espaços.\r\n\r\nO projeto conta com garagem para 6 veículos, sendo 3 vagas cobertas e 3 descobertas, além de elevador. A área social é ampla e integrada, reunindo lounge, sala de estar, sala de jantar e espaço gourmet, criando um ambiente perfeito para receber e desfrutar de momentos especiais.\r\n\r\nA casa possui ainda escritório, lavabos, cozinha integrada com despensa, área de serviço com espaço para pet e uma completa estrutura de lazer, com sauna seca, piscina descoberta, sala de cinema e sala de jogos infantil.\r\n\r\nSão 4 suítes, sendo uma sofisticada suíte master com closet. Para completar, a residência conta com academia com terraço no rooftop, proporcionando um espaço exclusivo para bem-estar e momentos de relaxamento.\r\n\r\nUm projeto pensado nos mínimos detalhes, que une arquitetura, conforto e lazer em uma residência de alto padrão no Tamboré 11.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+      "area_terreno": "583m²",
+      "images": [
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaeca2cf32.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaefb97ea6.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab0797647b.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf06ef61a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf124f2e0.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab08f7b177.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab08474083.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf1eaa32e.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab09975901.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf404833f.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf4c3d1b8.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab0c67dce5.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf5721284.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab0d292210.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf62e5bab.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab0dec65b2.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf791ff92.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab0f574f92.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf6e62305.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab0e9e6370.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab1025d10a.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf85312fc.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf34edb34.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab0aee17ff.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab06e9609d.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaeefe6ad3.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab06291d9b.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaed44b8ec.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9aaf2aac57c.jpg",
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/18487/iN95p8S8hcI94s35Q7I17_184876a9ab0a37591a.jpg"
+      ],
+      "warnings": [],
+      "detailedData": {
+        "title": "Casa, Tambore, Santana de Parnaiba, Código: 18487 - Viva Prime Imóveis - Imobiliária em Alphaville - SP",
+        "description": "Casa à venda no Tamboré 11, com entrega prevista para fevereiro de 2027.\r\n\r\nUma residência moderna e sofisticada, projetada para oferecer conforto, tecnologia e ambientes integrados, com arquitetura contemporânea e excelente aproveitamento dos espaços.\r\n\r\nO projeto conta com garagem para 6 veículos, sendo 3 vagas cobertas e 3 descobertas, além de elevador. A área social é ampla e integrada, reunindo lounge, sala de estar, sala de jantar e espaço gourmet, criando um ambiente perfeito para receber e desfrutar de momentos especiais.\r\n\r\nA casa possui ainda escritório, lavabos, cozinha integrada com despensa, área de serviço com espaço para pet e uma completa estrutura de lazer, com sauna seca, piscina descoberta, sala de cinema e sala de jogos infantil.\r\n\r\nSão 4 suítes, sendo uma sofisticada suíte master com closet. Para completar, a residência conta com academia com terraço no rooftop, proporcionando um espaço exclusivo para bem-estar e momentos de relaxamento.\r\n\r\nUm projeto pensado nos mínimos detalhes, que une arquitetura, conforto e lazer em uma residência de alto padrão no Tamboré 11.\n\nA região de Provence foi inspiração para o Tamboré 11\r\nViver em Tamboré é estar junto à natureza, com muito espaço, ar puro, tranquilidade e segurança, com todas as facilidades para você e sua família. Próximo à Reserva Biológica Tamboré, patrimônio do município de Santana de Parnaíba. São mais de 3.500.000m² de mata natural preservados. Assim, como em Provence, você estará cercado de ar puro e natureza exuberante.\r\n\r\nSegurança 24hs, fiação aterrada, praças contemplativas, quadras de tênis e quadra poliesportiva. Clube Provence com piscina externa e interna aquecida, jacuzzi, saunas, salão de festas, espaço gourmet, academia Reebok .",
+        "specs": {
+          "dormitorios": 4,
+          "suites": 4,
+          "banheiros": 6,
+          "vagas": 6,
+          "area_construida": "657m²",
+          "area_total": "583m²"
         }
       }
     },
@@ -1572,15 +1716,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16670/iHP7g7A9rj_166706807c28d5bfe6.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16670/iHP7g7A9rj_166706807c2c7c3ab1.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16670/iHP7g7A9rj_166706807c58bc4a93.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16670/iHP7g7A9rj_166706807b8d32ed8c.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/16670/iHP7g7A9rj_166706807b8d32ed8c.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -1624,15 +1760,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/12762/iGV252F6_127625f3c279f32147.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/12762/iGV252F6_127625f3c27a380093.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/12762/iGV252F6_127625f3c27b036d72.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/12762/iGV252F6_127625f3c27b35001a.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/12762/iGV252F6_127625f3c27b35001a.jpg"
       ],
       "warnings": [],
       "detailedData": {
@@ -1701,15 +1829,7 @@
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14858/iCMq4mr3_148586a47d39b95bf9.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14858/iCMq4mr3_148586a47d3afaecaa.jpg",
         "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14858/iCMq4mr3_148586a47d3fc0fd63.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14858/iCMq4mr3_148586a47ccfa56526.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27f013ffc1.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f27ef7bb2fe.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_15817.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/iWjN1doC5_757168f280550152b.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_27599.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_41121.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/igvivaimo7571_39302.jpg",
-        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/7571/i0YS370_75715faab79c905ae.jpg"
+        "https://www.vivaprimeimoveis.com.br/vista.imobi/fotos/14858/iCMq4mr3_148586a47ccfa56526.jpg"
       ],
       "warnings": [],
       "detailedData": {

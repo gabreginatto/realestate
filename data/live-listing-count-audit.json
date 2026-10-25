@@ -1,4 +1,436 @@
 {
-  "generated_at": "2026-10-24T03:32:16.232Z",
-  "compounds": {}
+  "generated_at": "2026-10-25T14:58:49.443Z",
+  "compounds": {
+    "tambore-xi": {
+      "vivaprimeimoveis": {
+        "listing_file": "data/tambore-xi/listings/vivaprimeimoveis_listings.json",
+        "search_url": "https://www.vivaprimeimoveis.com.br/imoveis?busca=venda&finalidade=venda&tipo=casa&cidade=&empreendimento=tambore-11",
+        "local_count": 0,
+        "local_unique_codes": 0,
+        "live_declared_count": 30,
+        "live_count": 30,
+        "live_unique_codes": 30,
+        "delta_live_vs_local": 30,
+        "missing_from_live_count": 0,
+        "new_on_live_count": 30,
+        "missing_from_live": [],
+        "new_on_live": [
+          "10755",
+          "12762",
+          "13552",
+          "14374",
+          "14449",
+          "14858",
+          "15510",
+          "16197",
+          "16485",
+          "16670",
+          "16870",
+          "17121",
+          "17391",
+          "17480",
+          "17599",
+          "17651",
+          "17747",
+          "17787",
+          "17804",
+          "17826",
+          "17916",
+          "18303",
+          "18329",
+          "18347",
+          "18360",
+          "18404",
+          "18454",
+          "18464",
+          "18487",
+          "6001"
+        ],
+        "pages": [
+          {
+            "page": 1,
+            "links": 84,
+            "new_codes": 12
+          },
+          {
+            "page": 2,
+            "links": 84,
+            "new_codes": 12
+          },
+          {
+            "page": 3,
+            "links": 42,
+            "new_codes": 6
+          }
+        ],
+        "live_listings": [
+          {
+            "code": "17651",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17651",
+            "page": 1
+          },
+          {
+            "code": "16870",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/16870",
+            "page": 1
+          },
+          {
+            "code": "18454",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-3-dormitorios-tambore-santana-de-parnaiba/18454",
+            "page": 1
+          },
+          {
+            "code": "10755",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/10755",
+            "page": 1
+          },
+          {
+            "code": "17747",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17747",
+            "page": 1
+          },
+          {
+            "code": "17826",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17826",
+            "page": 1
+          },
+          {
+            "code": "6001",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/6001",
+            "page": 1
+          },
+          {
+            "code": "14449",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/14449",
+            "page": 1
+          },
+          {
+            "code": "18360",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18360",
+            "page": 1
+          },
+          {
+            "code": "17599",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-3-dormitorios-tambore-santana-de-parnaiba/17599",
+            "page": 1
+          },
+          {
+            "code": "18329",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-3-dormitorios-tambore-santana-de-parnaiba/18329",
+            "page": 1
+          },
+          {
+            "code": "15510",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/15510",
+            "page": 1
+          },
+          {
+            "code": "18404",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18404",
+            "page": 2
+          },
+          {
+            "code": "14374",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/14374",
+            "page": 2
+          },
+          {
+            "code": "17787",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17787",
+            "page": 2
+          },
+          {
+            "code": "18347",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18347",
+            "page": 2
+          },
+          {
+            "code": "17916",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/17916",
+            "page": 2
+          },
+          {
+            "code": "17480",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/17480",
+            "page": 2
+          },
+          {
+            "code": "17804",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17804",
+            "page": 2
+          },
+          {
+            "code": "17391",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17391",
+            "page": 2
+          },
+          {
+            "code": "16485",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/16485",
+            "page": 2
+          },
+          {
+            "code": "18303",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18303",
+            "page": 2
+          },
+          {
+            "code": "17121",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/17121",
+            "page": 2
+          },
+          {
+            "code": "16197",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/16197",
+            "page": 2
+          },
+          {
+            "code": "18464",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18464",
+            "page": 3
+          },
+          {
+            "code": "13552",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/13552",
+            "page": 3
+          },
+          {
+            "code": "18487",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/18487",
+            "page": 3
+          },
+          {
+            "code": "16670",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/16670",
+            "page": 3
+          },
+          {
+            "code": "12762",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-4-dormitorios-tambore-santana-de-parnaiba/12762",
+            "page": 3
+          },
+          {
+            "code": "14858",
+            "url": "https://www.vivaprimeimoveis.com.br/imovel/tambore-11-5-dormitorios-tambore-santana-de-parnaiba/14858",
+            "page": 3
+          }
+        ]
+      },
+      "coelhodafonseca": {
+        "listing_file": "data/tambore-xi/listings/coelhodafonseca_listings.json",
+        "search_url": "https://www.coelhodafonseca.com.br/search?category=Alphaville&transaction=Comprar&purpose=Residencial&location=enterprise_name%3ATambor%C3%A9+XI&propertyType=Casa+em+Condom%C3%ADnio",
+        "local_count": 0,
+        "local_unique_codes": 0,
+        "live_declared_count": 31,
+        "live_count": 31,
+        "live_unique_codes": 31,
+        "delta_live_vs_local": 31,
+        "missing_from_live_count": 0,
+        "new_on_live_count": 31,
+        "missing_from_live": [],
+        "new_on_live": [
+          "504962",
+          "592004",
+          "617568",
+          "636606",
+          "644999",
+          "654085",
+          "654261",
+          "659243",
+          "659869",
+          "660463",
+          "663432",
+          "664659",
+          "665289",
+          "669495",
+          "674951",
+          "675706",
+          "676321",
+          "676692",
+          "678679",
+          "679087",
+          "680126",
+          "680804",
+          "681848",
+          "682207",
+          "682681",
+          "684965",
+          "685893",
+          "688142",
+          "688583",
+          "689026",
+          "690747"
+        ],
+        "pages": [
+          {
+            "page": 1,
+            "links": 60,
+            "new_codes": 30
+          },
+          {
+            "page": 2,
+            "links": 2,
+            "new_codes": 1
+          }
+        ],
+        "live_listings": [
+          {
+            "code": "688142",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-6-vagas-720-metros-cf688142?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "654085",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-400-metros-cf654085?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "617568",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-430-metros-cf617568?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "654261",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-3-dormitorios-3-suites-3-vagas-389-metros-cf654261?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "504962",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-5-vagas-416-metros-cf504962?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "680804",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-10-vagas-900-metros-cf680804?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "679087",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-6-vagas-1100-metros-cf679087?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "636606",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-13-vagas-627-metros-cf636606?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "660463",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-8-vagas-563-metros-cf660463?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "688583",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-2-vagas-639-metros-cf688583?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "676692",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-6-dormitorios-5-suites-5-vagas-606-metros-cf676692?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "682681",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-5-dormitorios-4-suites-3-vagas-792-metros-cf682681?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "690747",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-450-metros-cf690747?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "689026",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-530-metros-cf689026?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "669495",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-5-dormitorios-5-suites-6-vagas-524-metros-cf669495?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "681848",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-5-dormitorios-4-suites-6-vagas-535-metros-cf681848?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "675706",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-478-metros-cf675706?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "659869",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-5-vagas-514-metros-cf659869?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "676321",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-5-dormitorios-5-suites-8-vagas-698-metros-cf676321?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "684965",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-6-vagas-577-metros-cf684965?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "659243",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-438-metros-cf659243?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "674951",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-5-dormitorios-5-suites-5-vagas-466-metros-cf674951?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "663432",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-3-dormitorios-3-suites-3-vagas-645-metros-cf663432?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "682207",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-424-metros-cf682207?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "664659",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-390-metros-cf664659?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "685893",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-6-vagas-342-metros-cf685893?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "680126",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-12-vagas-555-metros-cf680126?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "678679",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-3-dormitorios-3-suites-4-vagas-334-metros-cf678679?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "644999",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-3-dormitorios-3-suites-4-vagas-304-metros-cf644999?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "665289",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-4-vagas-347-metros-cf665289?transaction=comprar",
+            "page": 1
+          },
+          {
+            "code": "592004",
+            "url": "https://www.coelhodafonseca.com.br/santana-de-parnaiba/casa-em-condominio-4-dormitorios-4-suites-5-vagas-372-metros-cf592004?transaction=comprar",
+            "page": 2
+          }
+        ]
+      }
+    }
+  }
 }

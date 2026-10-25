@@ -48,6 +48,31 @@ def photo_maxima(allp, root=None):
     return out
 
 
+COMPOUNDS = ("alphaville-1", "tambore-xi")
+
+
+def load_live(root):
+    """All live viva x live coelho pairs per compound (no precomputed pair file), metadata scores per pair.
+
+    Live = viva on today's search inventory and coelho in the fresh scrape, both with photos under root.
+    """
+    from metadata_ranker import DEFAULT_WEIGHTS, rank_all
+    from lib.listings import load_pool
+
+    viva_ph, coelho_ph = set(list_listings(root, VIVA)), set(list_listings(root, COELHO))
+    allp, meta = {}, {}
+    for comp in COMPOUNDS:
+        inv = json.loads((ROOT / "data" / comp / "live-listing-inventory/vivaprimeimoveis.json").read_text())
+        on_search = {str(x["code"]) for x in inv["listings"]}
+        data = load_pool(comp)
+        data["viva"] = [x for x in data["viva"] if x["code"] in on_search and x["code"] in viva_ph]
+        data["coelho"] = [x for x in data["coelho"] if x.get("in_fresh") and x["code"] in coelho_ph]
+        for v, cs in rank_all(data, DEFAULT_WEIGHTS, top_n=10**6).items():
+            meta[v] = {c["coelho"]: c["score"] for c in cs}
+            allp[v] = {c: {} for c in meta[v]}
+    return allp, meta
+
+
 def score(m, cfg, tau):
     kind, k = cfg
     if kind == "count":
@@ -72,10 +97,13 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--photos-root", type=Path, default=ROOT / "data/photos", help="e.g. data/photos-clean")
     ap.add_argument("--out", type=Path, default=ROOT / "data/candidates/topk-agg-v1.json")
+    ap.add_argument("--live", action="store_true", help="every live viva x live coelho pair, both compounds")
     ap.add_argument("--config", help="force aggregator instead of the LOO pick: count | topk1 | topk2 | topk3 | topk5")
     args = ap.parse_args()
-    allp, meta, _ = load_r3()
+    allp, meta = load_live(args.photos_root) if args.live else load_r3()[:2]
     gt = set(load_ground_truth())
+    if args.live:  # only pairs whose both sides are live can be found
+        gt = {(v, c) for v, c in gt if v in allp and c in allp[v]}
     gv = sorted({v for v, _ in gt})
     pm = photo_maxima(allp, args.photos_root)
     if args.photos_root.resolve() != (ROOT / "data/photos").resolve():

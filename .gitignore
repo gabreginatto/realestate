@@ -121,4 +121,6 @@ data/photo_types/
 firebase/public/
 firebase-debug.log
 data/photos-clean/
+data/photos-fresh/
 firebase/.firebase/
+data/_snapshots/

@@ -69,7 +69,7 @@ a.lnk{color:var(--accent);font-weight:600;text-decoration:underline;text-underli
 .pair .sc{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);background:var(--scrim);color:#fff;font:11px var(--font-num);padding:1px 6px;border-radius:9px}
 .pairs{display:flex;flex-direction:column;gap:6px}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700}
-.nophoto{color:var(--muted);font-size:13px}
+.nophoto,.hint{color:var(--muted);font-size:13px}
 .primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 .primary[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:var(--surface)}
 .dec{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
@@ -175,6 +175,7 @@ function buildCard(it) {
     it.context.forEach((s, k) => ctx.append(tagged(s, (it.context_t || [])[k])));
     card.append(ctx);
   }
+  if (it.candidates.length > 1) card.append(el("div", "hint", "A mesma casa pode estar anunciada mais de uma vez na Coelho: marque todas as que forem ela."));
   const candBtns = [];
   it.candidates.forEach((c, i) => {
     const b = el("section", "cand");
@@ -206,35 +207,49 @@ function buildCard(it) {
 
   const all = [...candBtns, no, un, ob];
   const send = (decision, coelho) => save(it.viva, decision, coelho, note.value.trim());
-  candBtns.forEach(b => b.onclick = () => send("match", b.dataset.coelho));
+  const toggle = code => {
+    const l = labels.get(it.viva);
+    const set = new Set(l && l.decision === "match" ? matchCodes(l) : []);
+    if (set.has(code)) {
+      if (set.size === 1) { toast("Para desfazer, escolha outra opção."); return; }
+      set.delete(code);
+    } else set.add(code);
+    send("match", [...set].sort().join(","));
+  };
+  candBtns.forEach(b => b.onclick = () => toggle(b.dataset.coelho));
   no.onclick = () => send("no_match", null);
   un.onclick = () => send("unsure", null);
   ob.onclick = () => {
     const v = oi.value.trim();
     if (!/^\d{4,8}$/.test(v)) { toast("Digite só os números do código Coelho."); return; }
-    send("match", v);
+    const l = labels.get(it.viva);
+    if (l && l.decision === "match" && matchCodes(l).includes(v)) return;
+    toggle(v);
   };
   cards.set(it.viva, { card, saved, candBtns, no, un, ob, oi, note, all });
   return card;
 }
+
+function matchCodes(l) { return l && l.coelho ? l.coelho.split(",") : []; }
 
 function paintCard(code) {
   const c = cards.get(code); if (!c) return;
   const l = labels.get(code);
   c.all.forEach(b => b.disabled = !db);
   c.candBtns.forEach(b => {
-    const on = !!l && l.decision === "match" && l.coelho === b.dataset.coelho;
+    const on = !!l && l.decision === "match" && matchCodes(l).includes(b.dataset.coelho);
     b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "✓ É esta" : "É esta";
   });
   c.no.setAttribute("aria-pressed", String(!!l && l.decision === "no_match"));
   c.un.setAttribute("aria-pressed", String(!!l && l.decision === "unsure"));
   if (!l) { delete c.card.dataset.state; c.saved.textContent = ""; return; }
   c.card.dataset.state = l.decision;
-  const txt = { match: "Está na Coelho: " + l.coelho, no_match: "Não está na Coelho", unsure: "Não sei" }[l.decision] || l.decision;
+  const txt = { match: "Está na Coelho: " + matchCodes(l).join(", "), no_match: "Não está na Coelho", unsure: "Não sei" }[l.decision] || l.decision;
   c.saved.textContent = txt;
   if (l.note) c.saved.append(" ", Object.assign(el("span"), { textContent: "— " + l.note }));
   if (document.activeElement !== c.note && !c.note.value) c.note.value = l.note || "";
-  if (l.decision === "match" && !c.candBtns.some(b => b.dataset.coelho === l.coelho) && document.activeElement !== c.oi && !c.oi.value) c.oi.value = l.coelho;
+  const extra = matchCodes(l).filter(k => !c.candBtns.some(b => b.dataset.coelho === k));
+  if (l.decision === "match" && extra.length && document.activeElement !== c.oi && !c.oi.value) c.oi.value = extra[0];
 }
 
 function refresh() {

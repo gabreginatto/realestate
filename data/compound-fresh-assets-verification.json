@@ -1,156 +1,33 @@
 {
-  "generated_at": "2026-10-24T04:02:32.609Z",
+  "generated_at": "2026-10-25T15:05:03.067Z",
   "bucket": "realestate-475615-data",
   "prefix": "compounds",
   "require_gcs": false,
   "require_selected": false,
   "require_mosaics": false,
   "compounds": {
-    "alphaville-1": {
-      "vivaprimeimoveis": {
-        "listings": 76,
-        "local_expected_files": 2674,
-        "gcs_expected_files": 2674,
-        "issues": [
-          {
-            "severity": "error",
-            "code": "18240",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "17266",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "18155",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "17996",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "12252",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "18115",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "17316",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "12814",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "14184",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "1695",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "17948",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "8188",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "13920",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "16385",
-            "type": "listing_has_no_scraped_image_urls"
-          }
-        ],
-        "missing_gcs_files": []
-      },
-      "coelhodafonseca": {
-        "listings": 66,
-        "local_expected_files": 1910,
-        "gcs_expected_files": 1910,
-        "issues": [],
-        "missing_gcs_files": []
-      }
-    },
     "tambore-xi": {
       "vivaprimeimoveis": {
-        "listings": 29,
-        "local_expected_files": 984,
-        "gcs_expected_files": 984,
-        "issues": [
-          {
-            "severity": "error",
-            "code": "15061",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "17646",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "15859",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "18177",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "17359",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "15910",
-            "type": "listing_has_no_scraped_image_urls"
-          },
-          {
-            "severity": "error",
-            "code": "17600",
-            "type": "listing_has_no_scraped_image_urls"
-          }
-        ],
+        "listings": 30,
+        "local_expected_files": 1086,
+        "gcs_expected_files": 1086,
+        "issues": [],
         "missing_gcs_files": []
       },
       "coelhodafonseca": {
-        "listings": 26,
-        "local_expected_files": 712,
-        "gcs_expected_files": 712,
+        "listings": 31,
+        "local_expected_files": 861,
+        "gcs_expected_files": 861,
         "issues": [],
         "missing_gcs_files": []
       }
     }
   },
   "totals": {
-    "listings": 197,
-    "local_expected_files": 6280,
-    "gcs_expected_files": 6280,
-    "issues": 21,
+    "listings": 61,
+    "local_expected_files": 1947,
+    "gcs_expected_files": 1947,
+    "issues": 0,
     "missing_gcs_files": 0
   }
 }

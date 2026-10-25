@@ -37,9 +37,17 @@ Este arquivo é a memória do ciclo. Qualquer sessão nova (no Mac ou na nuvem) 
 | 3 ❌ | `r3b-hungarian` (1:1 por condomínio) — +1 casa, falso alarme igual | 0,957 | — | — | 0,973 | 47 |
 | 4 ✅ | `r4-topk-agg` (contagem de fotos da Viva com máx. SSCD ≥ 0,356 [p99 dos pares sem gabarito]; desempate por metadados) | **0,979 (LOO 0,979)** | — | — | 0,989 | 47 |
 
+| 4b | `r4-live-count` (só raspagem de 25/10/2026, anúncios vivos nas duas pontas, Alphaville 1 + Tamboré XI; arquivo antigo descartado) | **1,000 (LOO 1,000)** | — | — | 1,000 | 32 |
+
 Decisão "está na Coelho?" ainda não validada — não há rótulos negativos (o número anterior media outra coisa).
 Lista para revisão em `data/review/to-label-r3.json`. Par 12252↔681867 restaurado como confirmado (a galeria da Viva tem 2 fotos de outra casa, 674139).
-Rodadas usadas: 4 de 8.
+Rodadas usadas: 4 de 8 (4b é a mesma técnica sobre dados novos, não conta como rodada).
+
+**25/10/2026: arquivo antigo abandonado.** As fotos antigas misturavam casas e incluíam anúncios vendidos. Agora só vale a raspagem do dia:
+`scripts/audit-live-listing-counts.js` (lista viva das buscas) → detalhes → fotos → `scripts/fresh_photos.py` (`data/photos-fresh`) →
+`topk_agg.py --live --photos-root data/photos-fresh` → `build_label_page.py --live`. Dados anteriores em `data/_snapshots/2026-10-24/` (fora do git).
+Hoje: Viva 76 + 30, Coelho 75 + 31 anúncios vivos; 32 pares confirmados seguem vivos nas duas pontas. A Coelho anuncia a mesma casa mais de uma vez
+(fotos diferentes), por isso a página aceita várias Coelho por Viva (`coelho` = códigos separados por vírgula).
 
 Erros da rodada 0: 13572 (certo em 14º), 14127 (3º), 14138 (2º), 17378 (2º; o 1º é o par de 17388 → provável anúncio duplicado na Viva).
 

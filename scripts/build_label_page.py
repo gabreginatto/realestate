@@ -3,6 +3,8 @@
 Usage: python scripts/build_label_page.py OUTDIR [--pairs 3] [--cands 3] [--context 4]
 Items: vivas in data/review/to-label-r3.json; candidates from --candidates (default: the clean-photo r4 count run).
 Photos come from data/photos-clean (foreign-listing photos removed).
+--live: items = every viva in --candidates (live listings) except those already confirmed against a live coelho;
+        review-list vivas first, then newest codes first. Use with --photos-root data/photos-fresh.
 """
 import argparse
 import hashlib
@@ -15,6 +17,7 @@ import numpy as np
 from PIL import Image, ImageOps
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from lib.ground_truth import load_ground_truth  # noqa: E402
 from lib.listings import load_pool  # noqa: E402
 from lib.photo_fingerprints import fingerprint_files  # noqa: E402
 from lib.photo_types import photo_types  # noqa: E402
@@ -81,6 +84,8 @@ def main():
     ap.add_argument("--context", type=int, default=4)
     ap.add_argument("--candidates", type=Path, default=ROOT / "data/candidates/topk-agg-clean-count-v1.json")
     ap.add_argument("--html", type=Path, default=ROOT / "scripts/label_page_template.html")
+    ap.add_argument("--live", action="store_true", help="all live vivas not yet confirmed (see docstring)")
+    ap.add_argument("--photos-root", type=Path, default=PHOTOS, help="e.g. data/photos-fresh (new scrapes only)")
     a = ap.parse_args()
     npairs = [int(x) for x in a.pairs.split(",")]
     a.outdir.mkdir(parents=True, exist_ok=True)
@@ -91,11 +96,16 @@ def main():
         if extra not in vivas:
             vivas.append(extra)
     cands = json.loads(a.candidates.read_text())["candidates"]
-    pool = load_pool()
+    if a.live:
+        done = {v for v, c in load_ground_truth() if v in cands and any(x["coelho"] == c for x in cands[v])}
+        rest = sorted((v for v in cands if v not in done and v not in vivas), key=lambda v: -int(v))
+        vivas = [v for v in vivas if v in cands and v not in done] + rest
+    pool = {s: [x for comp in ("alphaville-1", "tambore-xi") for x in load_pool(comp)[s]] for s in ("viva", "coelho")}
     meta = {s: {x["code"]: x for x in pool[s]} for s in ("viva", "coelho")}
-    vl, cl = list_listings(PHOTOS, VIVA), list_listings(PHOTOS, COELHO)
+    root = a.photos_root.resolve()
+    vl, cl = list_listings(root, VIVA), list_listings(root, COELHO)
     need = [p for v in vivas for p in vl.get(v, [])]
-    need += [p for v in vivas for c in cands[v][: a.cands] for p in cl.get(c["coelho"], [])]
+    need += [p for v in vivas for c in cands.get(v, [])[: a.cands] for p in cl.get(c["coelho"], [])]
     fps = fingerprint_files(need, CACHE)
     types = photo_types(sorted({p for p in need if p.parent.parent.name == VIVA}), VIVA)
     types.update(photo_types(sorted({p for p in need if p.parent.parent.name == COELHO}), COELHO))
@@ -114,7 +124,7 @@ def main():
         ctx = [store.add(p) for p in vf_ctx]
         ctx_t = [tag(p) for p in vf_ctx]
         cs = []
-        for rk, c in enumerate(cands[v][: a.cands]):
+        for rk, c in enumerate(cands.get(v, [])[: a.cands]):
             cf = [p for p in cl.get(c["coelho"], []) if p in fps]
             pairs = []
             if vf and cf:

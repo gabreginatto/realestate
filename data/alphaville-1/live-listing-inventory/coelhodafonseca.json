@@ -1,405 +1,385 @@
 {
-  "scraped_at": "2026-05-10T20:28:02.242Z",
+  "scraped_at": "2026-10-25T14:42:26.479Z",
   "compound": "alphaville-1",
   "site": "coelhodafonseca",
   "source_url": "https://www.coelhodafonseca.com.br/search?category=Alphaville&transaction=Comprar&purpose=Residencial&location=enterprise_name%3AAlphaville+1&propertyType=Casa+em+Condom%C3%ADnio",
-  "declared_count": 79,
-  "total_listings": 79,
-  "total_unique_codes": 79,
+  "declared_count": 75,
+  "total_listings": 75,
+  "total_unique_codes": 75,
   "listings": [
     {
-      "code": "663777",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-8-vagas-950-metros-cf663777",
-      "page": 1
-    },
-    {
       "code": "652122",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-1183-metros-cf652122",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-1183-metros-cf652122?transaction=comprar",
       "page": 1
     },
     {
       "code": "616435",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-12-vagas-1090-metros-cf616435",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-12-vagas-1090-metros-cf616435?transaction=comprar",
       "page": 1
     },
     {
       "code": "356129",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-619-metros-cf356129",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-619-metros-cf356129?transaction=comprar",
+      "page": 1
+    },
+    {
+      "code": "654894",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-7-vagas-783-metros-cf654894?transaction=comprar",
       "page": 1
     },
     {
       "code": "661093",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-3-suites-13-vagas-593-metros-cf661093",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-3-suites-13-vagas-593-metros-cf661093?transaction=comprar",
       "page": 1
     },
     {
       "code": "448313",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-5-vagas-646-metros-cf448313",
-      "page": 1
-    },
-    {
-      "code": "663984",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-9-vagas-600-metros-cf663984",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-5-vagas-646-metros-cf448313?transaction=comprar",
       "page": 1
     },
     {
       "code": "677791",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-450-metros-cf677791",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-465-metros-cf677791?transaction=comprar",
+      "page": 1
+    },
+    {
+      "code": "663984",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-9-vagas-600-metros-cf663984?transaction=comprar",
       "page": 1
     },
     {
       "code": "302330",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-6-dormitorios-6-suites-4-vagas-424-metros-cf302330",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-6-dormitorios-6-suites-4-vagas-424-metros-cf302330?transaction=comprar",
       "page": 1
     },
     {
-      "code": "628299",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-5-vagas-600-metros-cf628299",
-      "page": 1
-    },
-    {
-      "code": "432594",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-554-metros-cf432594",
+      "code": "687641",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-453-metros-cf687641?transaction=comprar",
       "page": 1
     },
     {
       "code": "597308",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-10-vagas-987-metros-cf597308",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-10-vagas-987-metros-cf597308?transaction=comprar",
       "page": 1
     },
     {
-      "code": "643279",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-784-metros-cf643279",
+      "code": "663462",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-5-vagas-550-metros-cf663462?transaction=comprar",
       "page": 1
     },
     {
-      "code": "395516",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-10-vagas-1160-metros-cf395516",
+      "code": "689645",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-12-vagas-1403-metros-cf689645?transaction=comprar",
       "page": 1
     },
     {
       "code": "673351",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-700-metros-cf673351",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-700-metros-cf673351?transaction=comprar",
+      "page": 1
+    },
+    {
+      "code": "643279",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-784-metros-cf643279?transaction=comprar",
       "page": 1
     },
     {
       "code": "497009",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-12-vagas-1120-metros-cf497009",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-12-vagas-1120-metros-cf497009?transaction=comprar",
       "page": 1
     },
     {
       "code": "670241",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-6-vagas-700-metros-cf670241",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-6-vagas-700-metros-cf670241?transaction=comprar",
+      "page": 1
+    },
+    {
+      "code": "663614",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-9-vagas-740-metros-cf663614?transaction=comprar",
+      "page": 1
+    },
+    {
+      "code": "672254",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-4-vagas-550-metros-cf672254?transaction=comprar",
       "page": 1
     },
     {
       "code": "656562",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-734-metros-cf656562",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-734-metros-cf656562?transaction=comprar",
       "page": 1
     },
     {
       "code": "352241",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-713-metros-cf352241",
-      "page": 1
-    },
-    {
-      "code": "671661",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-770-metros-cf671661",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-713-metros-cf352241?transaction=comprar",
       "page": 1
     },
     {
       "code": "459916",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-10-vagas-739-metros-cf459916",
-      "page": 1
-    },
-    {
-      "code": "445169",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-639-metros-cf445169",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-10-vagas-739-metros-cf459916?transaction=comprar",
       "page": 1
     },
     {
       "code": "494094",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-6-dormitorios-6-suites-6-vagas-1360-metros-cf494094",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-6-dormitorios-6-suites-6-vagas-1360-metros-cf494094?transaction=comprar",
+      "page": 1
+    },
+    {
+      "code": "684485",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-680-metros-cf684485?transaction=comprar",
+      "page": 1
+    },
+    {
+      "code": "671661",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-770-metros-cf671661?transaction=comprar",
+      "page": 1
+    },
+    {
+      "code": "445169",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-639-metros-cf445169?transaction=comprar",
       "page": 1
     },
     {
       "code": "617978",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-580-metros-cf617978",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-580-metros-cf617978?transaction=comprar",
       "page": 1
     },
     {
       "code": "677355",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-750-metros-cf677355",
-      "page": 1
-    },
-    {
-      "code": "685118",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-600-metros-cf685118",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-750-metros-cf677355?transaction=comprar",
       "page": 1
     },
     {
       "code": "644559",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-622-metros-cf644559",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-622-metros-cf644559?transaction=comprar",
       "page": 1
     },
     {
       "code": "674557",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-5-vagas-979-metros-cf674557",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-5-vagas-979-metros-cf674557?transaction=comprar",
       "page": 1
+    },
+    {
+      "code": "661174",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-665-metros-cf661174?transaction=comprar",
+      "page": 2
     },
     {
       "code": "565110",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-4-vagas-800-metros-cf565110",
-      "page": 1
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-4-vagas-800-metros-cf565110?transaction=comprar",
+      "page": 2
     },
     {
       "code": "663487",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-480-metros-cf663487",
-      "page": 1
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-480-metros-cf663487?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "647221",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-3-suites-6-vagas-579-metros-cf647221?transaction=comprar",
+      "page": 2
     },
     {
       "code": "660804",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-6-vagas-502-metros-cf660804",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-6-vagas-502-metros-cf660804?transaction=comprar",
       "page": 2
     },
     {
       "code": "433739",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-530-metros-cf433739",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-530-metros-cf433739?transaction=comprar",
       "page": 2
     },
     {
       "code": "356006",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-6-vagas-655-metros-cf356006",
-      "page": 2
-    },
-    {
-      "code": "688696",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-10-vagas-716-metros-cf688696",
-      "page": 2
-    },
-    {
-      "code": "675789",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-600-metros-cf675789",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-6-vagas-655-metros-cf356006?transaction=comprar",
       "page": 2
     },
     {
       "code": "358601",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-7-vagas-834-metros-cf358601",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-7-vagas-834-metros-cf358601?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "688696",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-10-vagas-716-metros-cf688696?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "675789",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-600-metros-cf675789?transaction=comprar",
       "page": 2
     },
     {
       "code": "675453",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-630-metros-cf675453",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-630-metros-cf675453?transaction=comprar",
       "page": 2
     },
     {
       "code": "569097",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-560-metros-cf569097",
-      "page": 2
-    },
-    {
-      "code": "471646",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-8-vagas-500-metros-cf471646",
-      "page": 2
-    },
-    {
-      "code": "648903",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-9-vagas-563-metros-cf648903",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-560-metros-cf569097?transaction=comprar",
       "page": 2
     },
     {
       "code": "379860",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-500-metros-cf379860",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-500-metros-cf379860?transaction=comprar",
       "page": 2
     },
     {
       "code": "661014",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-3-suites-3-vagas-583-metros-cf661014",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-3-suites-3-vagas-583-metros-cf661014?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "628299",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-5-vagas-600-metros-cf628299?transaction=comprar",
       "page": 2
     },
     {
       "code": "429709",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-380-metros-cf429709",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-380-metros-cf429709?transaction=comprar",
       "page": 2
     },
     {
       "code": "686049",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-454-metros-cf686049",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-454-metros-cf686049?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "654086",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-3-suites-9-vagas-497-metros-cf654086?transaction=comprar",
       "page": 2
     },
     {
       "code": "686383",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-740-metros-cf686383",
-      "page": 2
-    },
-    {
-      "code": "660536",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-490-metros-cf660536",
-      "page": 2
-    },
-    {
-      "code": "653980",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-530-metros-cf653980",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-740-metros-cf686383?transaction=comprar",
       "page": 2
     },
     {
       "code": "448325",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-4-suites-4-vagas-420-metros-cf448325",
-      "page": 2
-    },
-    {
-      "code": "461901",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-1-suites-4-vagas-262-metros-cf461901",
-      "page": 2
-    },
-    {
-      "code": "660904",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-3-suites-6-vagas-750-metros-cf660904",
-      "page": 2
-    },
-    {
-      "code": "436907",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-3-suites-4-vagas-567-metros-cf436907",
-      "page": 2
-    },
-    {
-      "code": "687658",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-3-suites-4-vagas-450-metros-cf687658",
-      "page": 2
-    },
-    {
-      "code": "677257",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-665-metros-cf677257",
-      "page": 2
-    },
-    {
-      "code": "392768",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-5-vagas-468-metros-cf392768",
-      "page": 2
-    },
-    {
-      "code": "381684",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-502-metros-cf381684",
-      "page": 2
-    },
-    {
-      "code": "680210",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-1-suites-2-vagas-600-metros-cf680210",
-      "page": 2
-    },
-    {
-      "code": "650074",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-4-vagas-420-metros-cf650074",
-      "page": 2
-    },
-    {
-      "code": "682781",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-2-vagas-446-metros-cf682781",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-4-suites-4-vagas-420-metros-cf448325?transaction=comprar",
       "page": 2
     },
     {
       "code": "358241",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-547-metros-cf358241",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-547-metros-cf358241?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "660904",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-3-suites-6-vagas-750-metros-cf660904?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "687658",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-3-suites-4-vagas-450-metros-cf687658?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "677257",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-665-metros-cf677257?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "606206",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-450-metros-cf606206?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "392768",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-5-vagas-468-metros-cf392768?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "650074",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-4-vagas-420-metros-cf650074?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "381684",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-502-metros-cf381684?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "680210",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-1-suites-2-vagas-600-metros-cf680210?transaction=comprar",
+      "page": 2
+    },
+    {
+      "code": "682781",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-5-suites-2-vagas-446-metros-cf682781?transaction=comprar",
       "page": 2
     },
     {
       "code": "639051",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-6-vagas-411-metros-cf639051",
-      "page": 2
-    },
-    {
-      "code": "683046",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-10-vagas-328-metros-cf683046",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-6-vagas-411-metros-cf639051?transaction=comprar",
       "page": 3
     },
     {
-      "code": "649921",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-3-suites-5-vagas-377-metros-cf649921",
+      "code": "683046",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-10-vagas-328-metros-cf683046?transaction=comprar",
       "page": 3
     },
     {
       "code": "353414",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-9-vagas-373-metros-cf353414",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-9-vagas-373-metros-cf353414?transaction=comprar",
       "page": 3
     },
     {
       "code": "352803",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-6-vagas-395-metros-cf352803",
-      "page": 3
-    },
-    {
-      "code": "687641",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-453-metros-cf687641",
-      "page": 3
-    },
-    {
-      "code": "681867",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-451-metros-cf681867",
-      "page": 3
-    },
-    {
-      "code": "354149",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-1-suites-4-vagas-344-metros-cf354149",
-      "page": 3
-    },
-    {
-      "code": "425516",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-4-vagas-314-metros-cf425516",
-      "page": 3
-    },
-    {
-      "code": "422399",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-3-suites-4-vagas-404-metros-cf422399",
-      "page": 3
-    },
-    {
-      "code": "685663",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-3-suites-4-vagas-395-metros-cf685663",
-      "page": 3
-    },
-    {
-      "code": "665488",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-450-metros-cf665488",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-6-vagas-395-metros-cf352803?transaction=comprar",
       "page": 3
     },
     {
       "code": "642743",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-10-vagas-367-metros-cf642743",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-10-vagas-367-metros-cf642743?transaction=comprar",
       "page": 3
     },
     {
-      "code": "642663",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-3-vagas-430-metros-cf642663",
+      "code": "354149",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-1-suites-4-vagas-344-metros-cf354149?transaction=comprar",
+      "page": 3
+    },
+    {
+      "code": "425516",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-4-vagas-314-metros-cf425516?transaction=comprar",
+      "page": 3
+    },
+    {
+      "code": "685663",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-3-dormitorios-3-suites-4-vagas-395-metros-cf685663?transaction=comprar",
+      "page": 3
+    },
+    {
+      "code": "671267",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-4-vagas-350-metros-cf671267?transaction=comprar",
+      "page": 3
+    },
+    {
+      "code": "665488",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-450-metros-cf665488?transaction=comprar",
       "page": 3
     },
     {
       "code": "502738",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-3-vagas-580-metros-cf502738",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-3-vagas-580-metros-cf502738?transaction=comprar",
       "page": 3
     },
     {
-      "code": "660058",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-2-suites-4-vagas-330-metros-cf660058",
-      "page": 3
-    },
-    {
-      "code": "403934",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-442-metros-cf403934",
-      "page": 3
-    },
-    {
-      "code": "351722",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-5-vagas-552-metros-cf351722",
-      "page": 3
-    },
-    {
-      "code": "674139",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-457-metros-cf674139",
+      "code": "422399",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-5-dormitorios-3-suites-4-vagas-404-metros-cf422399?transaction=comprar",
       "page": 3
     },
     {
       "code": "661974",
-      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-450-metros-cf661974",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-450-metros-cf661974?transaction=comprar",
+      "page": 3
+    },
+    {
+      "code": "403934",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-4-vagas-442-metros-cf403934?transaction=comprar",
+      "page": 3
+    },
+    {
+      "code": "674139",
+      "url": "https://www.coelhodafonseca.com.br/barueri/casa-em-condominio-4-dormitorios-4-suites-6-vagas-457-metros-cf674139?transaction=comprar",
       "page": 3
     }
   ]

@@ -1,11 +1,19 @@
 {
-  "generated_at": "2026-10-24T04:02:24.475Z",
+  "generated_at": "2026-10-25T15:01:03.548Z",
   "compounds": {
     "tambore-xi": {
+      "vivaprimeimoveis": {
+        "listings": 30,
+        "downloaded": 1085,
+        "cached": 0,
+        "failed": 0,
+        "failures": [],
+        "output_dir": "data/tambore-xi/fresh-images/vivaprimeimoveis"
+      },
       "coelhodafonseca": {
-        "listings": 26,
-        "downloaded": 1,
-        "cached": 710,
+        "listings": 31,
+        "downloaded": 860,
+        "cached": 0,
         "failed": 0,
         "failures": [],
         "output_dir": "data/tambore-xi/fresh-images/coelhodafonseca"

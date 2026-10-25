@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execFile } = require('child_process');
 
 const REPO_ROOT = path.join(__dirname, '..');
 const DATA_ROOT = path.join(REPO_ROOT, 'data');
@@ -44,13 +45,35 @@ const COMPOUND_SEARCH_FALLBACKS = {
   },
 };
 
-async function fetchText(url) {
-  const response = await fetch(url, {
-    headers: {
-      'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/124 Safari/537.36',
-      accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    },
+const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/124 Safari/537.36';
+
+// vivaprimeimoveis.com.br serves an incomplete certificate chain: Node's fetch rejects it
+// while curl (which follows the AIA issuer) accepts it, so fall back to curl (verification on).
+function curlText(url) {
+  return new Promise((resolve, reject) => {
+    execFile('curl', ['-sL', '--max-time', '60', '-A', USER_AGENT, '-w', '\n%{http_code}', url],
+      { maxBuffer: 64 * 1024 * 1024 }, (err, stdout) => {
+        if (err) return reject(err);
+        const cut = stdout.lastIndexOf('\n');
+        const status = Number(stdout.slice(cut + 1));
+        if (status !== 200) return reject(new Error(`HTTP ${status} for ${url}`));
+        return resolve(stdout.slice(0, cut));
+      });
   });
+}
+
+async function fetchText(url) {
+  let response;
+  try {
+    response = await fetch(url, {
+      headers: {
+        'user-agent': USER_AGENT,
+        accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      },
+    });
+  } catch (err) {
+    return curlText(url);
+  }
   if (!response.ok) {
     throw new Error(`HTTP ${response.status} for ${url}`);
   }
@@ -306,10 +329,10 @@ function writeInventory(compound, site, summary) {
 }
 
 async function auditSite(compound, site, maxPages) {
-  const envelope = primaryListingEnvelope(compound, site);
-  if (!envelope) {
-    return { error: 'No local listing file found' };
-  }
+  // No local listing file is fine: the live search pages are the source of truth,
+  // so fall back to an empty envelope and the built-in per-compound search config.
+  const envelope = primaryListingEnvelope(compound, site)
+    || { file: path.join(DATA_ROOT, compound, 'listings', site.listingFile), data: {}, listings: [] };
 
   const searchUrl = searchUrlFor(compound, envelope, site);
   if (!searchUrl) {

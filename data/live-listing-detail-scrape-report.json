@@ -1,40 +1,22 @@
 {
-  "generated_at": "2026-10-24T03:32:16.284Z",
+  "generated_at": "2026-10-25T14:58:51.956Z",
   "compounds": {
-    "alphaville-1": {
-      "vivaprimeimoveis": {
-        "output_file": "data/alphaville-1/fresh-listings/vivaprimeimoveis.json",
-        "scraped": 76,
-        "inventory": 76,
-        "with_images": 62,
-        "image_count": 2673,
-        "errors": 0
-      },
-      "coelhodafonseca": {
-        "output_file": "data/alphaville-1/fresh-listings/coelhodafonseca.json",
-        "scraped": 66,
-        "inventory": 79,
-        "with_images": 66,
-        "image_count": 1909,
-        "errors": 13
-      }
-    },
     "tambore-xi": {
       "vivaprimeimoveis": {
         "output_file": "data/tambore-xi/fresh-listings/vivaprimeimoveis.json",
-        "scraped": 29,
-        "inventory": 29,
-        "with_images": 22,
-        "image_count": 983,
+        "scraped": 30,
+        "inventory": 30,
+        "with_images": 30,
+        "image_count": 1085,
         "errors": 0
       },
       "coelhodafonseca": {
         "output_file": "data/tambore-xi/fresh-listings/coelhodafonseca.json",
-        "scraped": 26,
-        "inventory": 28,
-        "with_images": 26,
-        "image_count": 711,
-        "errors": 2
+        "scraped": 31,
+        "inventory": 31,
+        "with_images": 31,
+        "image_count": 860,
+        "errors": 0
       }
     }
   }
