@@ -3,7 +3,8 @@
     python scripts/benchmark.py r5            # SSCD count (data/candidates/topk-agg-live-idf-v1.json)
     python scripts/benchmark.py r6            # r5 count + ALIKED/LightGlue verifier (compound pool)
     python scripts/benchmark.py r7            # same scorer on the enlarged Coelho pool (builds data/candidates/r7-inventory-v1.json)
-    python scripts/benchmark.py custom --cands FILE --scorer sscd|lg [--pool compound|extended]
+    python scripts/benchmark.py r8            # r7 + per-Coelho normalization of the verifier score (see NORMS)
+    python scripts/benchmark.py custom --cands FILE --scorer sscd|lg [--pool compound|extended] [--norm none|mutual|diff]
 
 Frozen sets (data/benchmark/frozen-v1.json, created once, never edited by hand):
   P      59 live GT positive pairs.
@@ -14,6 +15,9 @@ Frozen sets (data/benchmark/frozen-v1.json, created once, never edited by hand):
   U      the 42 unresolved vivas (no_match vivas minus 12229, 18360, 8748, 16113).
 Metrics: R@1 on P (ranking file); T = score threshold with <= 2% FPR on H; recall on P_hard at T (T chosen by 2-fold CV
 by viva; "rec_hard_cv"); FPR on H and S; number of U vivas with a candidate above T.
+rec_diff (round 8): recall at T on the P pairs with no copied photo (max SSCD over all photo pairs < 0.50), scored with all photos
+(17 pairs; the "different photographer" case). A secondary line repeats the metrics with the two suspected-wrong H labels removed
+(18454-678679, 17480-675706); the frozen file and the labels are NOT changed.
 Gates: R@1(P) == 1.000 and FPR(H) <= 2%.  Push rec_hard_cv up.
 """
 import argparse
@@ -47,10 +51,18 @@ VERIFY_V1 = ROOT / "data/r6/verify-v1.json"
 EXTRAS = ("r7-extra", "r7-extra-b")  # enlarged Coelho pool: lot<=2% + same suites candidates (tier A, 79 listings)
 DROP_SSCD, DROP_PDQ, MIN_LEFT, FPR = 0.25, 31, 3, 0.02
 RESOLVED = {"12229", "18360", "8748", "16113"}
+DIFF_SSCD = 0.50
+H_SUSPECT = {("18454", "678679"), ("17480", "675706")}
+# Per-Coelho normalization of the verifier score s(v,c), against o(v,c) = best score of any OTHER live Viva for the same Coelho c
+# (the full-gallery scores of the pairs the benchmark itself scores, Ctx.bench_pairs; the final list uses every cached pair):
+#   mutual: s if s >= o else 0 (v must be the best Viva for c)      diff: s - 0.5 * o
+# For P_hard the gate/penalty uses the full-gallery score of v (s_all), the value kept is the P_hard-photo score.
+NORMS = ("none", "mutual", "diff")
 METHODS = {
     "r5": dict(cands=R5, scorer="sscd", pool="compound"),
     "r6": dict(cands=ROOT / "data/candidates/r6-lightglue-v1.json", scorer="lg", pool="compound"),
     "r7": dict(cands=ROOT / "data/candidates/r7-inventory-v1.json", scorer="lg", pool="extended"),
+    "r8": dict(cands=ROOT / "data/candidates/r8-normalized-v1.json", scorer="lg", pool="extended", norm="mutual"),
 }
 
 
@@ -64,12 +76,15 @@ def threshold(neg, fpr=FPR):
 class Ctx:
     """Photos, fingerprints, generic-photo sets and pair scorers over one pool (compound = r5/r6 pool, extended = + extra Coelho)."""
 
-    def __init__(self, pool_kind, root=ROOT / "data/photos-fresh"):
+    def __init__(self, pool_kind, root=ROOT / "data/photos-fresh", norm="none", extras=EXTRAS):
+        self.norm = norm
+        self.scope = None  # set of "v|c" keys that count as "other vivas" in the normalization (None: every cached full-gallery score)
+        self._idx = (None, {})
         self.root = root.resolve()
         self.tau = json.loads(R5.read_text())["tau"]
         self.allp, self.meta = load_live(root)
         self.pool = {"viva": {}, "coelho": {}}
-        for comp in COMPOUNDS + (EXTRAS if pool_kind == "extended" else ()):
+        for comp in COMPOUNDS + (tuple(extras) if pool_kind == "extended" else ()):
             p = load_pool(comp)
             for site in ("viva", "coelho"):
                 for x in p[site]:
@@ -116,7 +131,27 @@ class Ctx:
 
     # ---------------------------------------------------------------- scorers
     def score(self, scorer, v, c, vph=None):
-        return self.score_sscd(v, c, vph) if scorer == "sscd" else self.score_lg(v, c, vph)["max"]
+        if scorer == "sscd":
+            return self.score_sscd(v, c, vph)
+        s = self.score_lg(v, c, vph)["max"]
+        return s if self.norm == "none" else self.normalize(v, c, s, self.score_lg(v, c)["max"] if vph is not None else s)
+
+    def other_best(self, v, c):
+        """Best cached full-gallery verifier score of any live Viva other than v against Coelho c."""
+        if self._idx[0] != (len(self.lg_cache), len(self.scope or ())):
+            idx = {}
+            for k, r in self.lg_cache.items():
+                vv, cc, mode = k.split("|")
+                if mode == "all" and vv in self.pool["viva"] and (self.scope is None or f"{vv}|{cc}" in self.scope):
+                    idx.setdefault(cc, {})[vv] = r["max"]
+            self._idx = ((len(self.lg_cache), len(self.scope or ())), idx)
+        return max((s for vv, s in self._idx[1].get(c, {}).items() if vv != v), default=0)
+
+    def normalize(self, v, c, s, s_all):
+        o = self.other_best(v, c)
+        if self.norm == "mutual":
+            return s if s_all >= o else 0
+        return s - 0.5 * o
 
     def score_sscd(self, v, c, vph=None):
         """r5: number of Viva photos (non-generic) with max SSCD >= tau vs non-generic Coelho photos."""
@@ -166,6 +201,19 @@ class Ctx:
     def save_cache(self):
         BENCH.mkdir(parents=True, exist_ok=True)
         LG_CACHE.write_text(json.dumps(self.lg_cache))
+
+    def bench_pairs(self, fz):
+        """The pairs the benchmark itself scores (P, H, S and the r6/r7 verifier shortlist of every P/U viva): the fixed set of
+        "other vivas" for the normalization, so that the metrics do not depend on how many extra pairs happen to be cached."""
+        pairs = {tuple(x) for k in ("P", "H", "S") for x in fz[k]}
+        P_by_v = {}
+        for v, c in fz["P"]:
+            P_by_v.setdefault(v, set()).add(c)
+        for v in sorted({v for v, _ in fz["P"]} | set(fz["U"])):
+            rej = set(fz["rejected"].get(v, [])) - P_by_v.get(v, set())
+            pairs |= {(v, c) for c in self.lg_candidates(v, None, rej)}
+            pairs |= {(v, c) for c in self.lg_candidates(v)}
+        return {f"{v}|{c}" for v, c in pairs}
 
     # ---------------------------------------------------------------- candidate generation for the unresolved vivas
     def meta_rank(self, v):
@@ -231,7 +279,7 @@ def build_ranking(ctx, fz, scorer, T):
         ver = {}
         if scorer == "lg" and v in need:
             for c in ctx.lg_candidates(v, cnt, set(fz["rejected"].get(v, [])) - ({c for vv, c in fz["P"] if vv == v})):
-                ver[c] = ctx.score_lg(v, c)["max"]
+                ver[c] = ctx.score(scorer, v, c)
             ctx.save_cache()
         rows = [{"coelho": c, "score": (1e6 if ver.get(c, 0) > T else 0.0) + cnt[c] * 1000 + min(999.0, float(ver.get(c, 0))), "meta": mrow[c]} for c in ctx.allp[v]]
         cands[v] = sorted(rows, key=lambda r: (-r["score"], -r["meta"]))
@@ -247,59 +295,75 @@ def run(method, a):
         build_frozen()
     fz = json.loads(FROZEN.read_text())
     t0 = time.time()
-    ctx = Ctx(cfg["pool"])
+    norm = a.norm or cfg.get("norm", "none")
+    ctx = Ctx(cfg["pool"], norm=norm)
     sc = cfg["scorer"]
+    if norm != "none" and sc == "lg":
+        ctx.scope = ctx.bench_pairs(fz)
     P = [tuple(x) for x in fz["P"]]
     H = [tuple(x) for x in fz["H"] if x[0] in ctx.allp and x[1] in ctx.allp[x[0]]]
     S = [tuple(x) for x in fz["S"] if x[0] in ctx.allp and x[1] in ctx.allp[x[0]]]
     ph = {tuple(k.split("|")): v for k, v in fz["P_hard"].items() if v["n_left"] >= MIN_LEFT}
     cands_file = Path(cfg["cands"])
-    if method == "r7" or (method == "custom" and a.build):
+    # raw scores first so that the normalization sees every pair the benchmark scores
+    for p in P + H + S:
+        ctx.score_lg(*p) if sc == "lg" else None
+    ctx.save_cache()
+    if method in ("r7", "r8") or (method == "custom" and a.build):
         cands = build_ranking(ctx, fz, sc, threshold([ctx.score(sc, *p) for p in H]))
-        cands_file.write_text(json.dumps({"method": f"{method}-ranking", "tau": ctx.tau, "candidates": cands}))
+        cands_file.write_text(json.dumps({"method": f"{method}-ranking", "norm": norm, "tau": ctx.tau, "candidates": cands}))
         ctx.save_cache()
     else:
         cands = json.loads(cands_file.read_text())["candidates"]
     r1 = evaluate(cands, set(P))[0]["R@1"]
-    # pair scores
     sH = {p: ctx.score(sc, *p) for p in H}
     sS = {p: ctx.score(sc, *p) for p in S}
     sP = {p: ctx.score(sc, *p) for p in P}
     sPh = {p: ctx.score(sc, p[0], p[1], {q for q in ctx.vl[p[0]] if q.name in set(v["photos"])}) for p, v in ph.items()}
+    diff = [p for p in P if ctx.sscd_matrix(*p)[0].max() < DIFF_SSCD]
+    sPd = {p: sP[p] for p in diff}
     ctx.save_cache()
-    T = threshold(list(sH.values()))
-    vs = sorted({p[0] for p in list(sH) + list(sPh)})
-    folds = [set(vs[0::2]), set(vs[1::2])]
-    tp = fp = nh = 0
-    for i in (0, 1):
-        Ti = threshold([s for p, s in sH.items() if p[0] not in folds[i]])
-        tp += sum(s > Ti for p, s in sPh.items() if p[0] in folds[i])
-        fp += sum(s > Ti for p, s in sH.items() if p[0] in folds[i])
-        nh += sum(p[0] in folds[i] for p in sH)
-    # unresolved vivas: any candidate above T
-    fires = {}
+    bestU = {}
     for v in fz["U"]:
         rej = set(fz["rejected"].get(v, []))
-        if sc == "sscd":
-            pick = list(ctx.allp[v])
-        else:
-            pick = ctx.lg_candidates(v)
-        best = max(((ctx.score(sc, v, c), c) for c in pick if c not in rej), default=(0, None))
-        if best[0] > T:
-            fires[v] = best
+        pick = list(ctx.allp[v]) if sc == "sscd" else ctx.lg_candidates(v)
+        bestU[v] = max(((ctx.score(sc, v, c), c) for c in pick if c not in rej), default=(0, None))
     ctx.save_cache()
     left = [v["n_left"] for v in ph.values()]
-    m = {"R@1_P": round(r1, 4), "T": T, "rec_P": round(float(np.mean([s > T for s in sP.values()])), 4),
-         "rec_hard_cv": round(tp / max(1, len(sPh)), 4), "rec_hard": round(float(np.mean([s > T for s in sPh.values()])), 4),
-         "n_hard": len(sPh), "hard_left_mean": round(float(np.mean(left)), 1), "hard_left_min": int(min(left)),
-         "FPR_H": round(float(np.mean([s > T for s in sH.values()])), 4), "FPR_H_cv": round(fp / max(1, nh), 4),
-         "FPR_S": round(float(np.mean([s > T for s in sS.values()])), 4), "n_H": len(H), "n_S": len(S),
-         "fires_U": len(fires), "n_U": len(fz["U"])}
+
+    def metrics(excl):
+        h = {p: s for p, s in sH.items() if p not in excl}
+        T = threshold(list(h.values()))
+        vs = sorted({p[0] for p in list(h) + list(sPh)})
+        folds = [set(vs[0::2]), set(vs[1::2])]
+        cv = {"hard": [0, len(sPh)], "diff": [0, len(sPd)], "fp": [0, 0]}
+        for i in (0, 1):
+            Ti = threshold([s for p, s in h.items() if p[0] not in folds[i]])
+            cv["hard"][0] += sum(s > Ti for p, s in sPh.items() if p[0] in folds[i])
+            cv["diff"][0] += sum(s > Ti for p, s in sPd.items() if p[0] in folds[i])
+            cv["fp"][0] += sum(s > Ti for p, s in h.items() if p[0] in folds[i])
+            cv["fp"][1] += sum(p[0] in folds[i] for p in h)
+        fires = {v: x for v, x in bestU.items() if x[0] > T}
+        frac = lambda d: float(np.mean([s > T for s in d.values()])) if d else 0.0  # noqa: E731
+        return T, fires, {
+            "T": T, "rec_P": round(frac(sP), 4), "rec_hard_cv": round(cv["hard"][0] / max(1, cv["hard"][1]), 4),
+            "rec_hard": round(frac(sPh), 4), "rec_diff": round(frac(sPd), 4), "rec_diff_cv": round(cv["diff"][0] / max(1, cv["diff"][1]), 4),
+            "FPR_H": round(frac(h), 4), "FPR_H_cv": round(cv["fp"][0] / max(1, cv["fp"][1]), 4), "FPR_S": round(frac(sS), 4),
+            "fires_U": len(fires)}
+
+    T, fires, m = metrics(set())
+    _, fires_x, mx = metrics(H_SUSPECT)
+    m.update({"R@1_P": round(r1, 4), "n_hard": len(sPh), "n_diff": len(sPd), "hard_left_mean": round(float(np.mean(left)), 1),
+              "hard_left_min": int(min(left)), "n_H": len(H), "n_S": len(S), "n_U": len(fz["U"]), "norm": norm})
+    m["excl_H_suspect"] = mx
     gate = "PASS" if m["R@1_P"] == 1.0 and m["FPR_H"] <= FPR else "FAIL"
-    line = (f"benchmark {a.label or method} [{gate}] R@1(P)={m['R@1_P']:.3f} rec_hard_cv={m['rec_hard_cv']:.3f} (n={m['n_hard']}, "
-            f"photos left mean {m['hard_left_mean']}) T={T:g} FPR_H={m['FPR_H']:.3f} (cv {m['FPR_H_cv']:.3f}, n={len(H)}) "
-            f"FPR_S={m['FPR_S']:.3f} (n={len(S)}) rec_P={m['rec_P']:.3f} fires_U={m['fires_U']}/{m['n_U']}")
+    line = (f"benchmark {a.label or method} [{gate}] norm={norm} R@1(P)={m['R@1_P']:.3f} rec_hard_cv={m['rec_hard_cv']:.3f} (n={m['n_hard']}, "
+            f"photos left mean {m['hard_left_mean']}) rec_diff={m['rec_diff']:.3f} (n={m['n_diff']}, cv {m['rec_diff_cv']:.3f}) T={T:g} "
+            f"FPR_H={m['FPR_H']:.3f} (cv {m['FPR_H_cv']:.3f}, n={len(H)}) FPR_S={m['FPR_S']:.3f} (n={len(S)}) rec_P={m['rec_P']:.3f} "
+            f"fires_U={m['fires_U']}/{m['n_U']}")
     print(line)
+    print(f"  without the 2 suspect H labels: T={mx['T']:g} rec_hard_cv={mx['rec_hard_cv']:.3f} rec_hard={mx['rec_hard']:.3f} "
+          f"rec_diff={mx['rec_diff']:.3f} FPR_H={mx['FPR_H']:.3f} FPR_S={mx['FPR_S']:.3f} fires_U={mx['fires_U']}")
     if a.verbose:
         for v, (s, c) in sorted(fires.items()):
             mv, mc = ctx.pool["viva"][v], ctx.pool["coelho"][c]
@@ -321,6 +385,7 @@ def main():
     ap.add_argument("--cands", type=Path)
     ap.add_argument("--scorer", choices=["sscd", "lg"], default="lg")
     ap.add_argument("--pool", choices=["compound", "extended"], default="compound")
+    ap.add_argument("--norm", choices=NORMS, default=None, help="per-Coelho normalization of the verifier score (default: the method's)")
     ap.add_argument("--build", action="store_true", help="custom: (re)build the ranking file with the scorer")
     ap.add_argument("--refreeze", action="store_true", help="rebuild data/benchmark/frozen-v1.json (changes the benchmark!)")
     ap.add_argument("--no-history", action="store_true")

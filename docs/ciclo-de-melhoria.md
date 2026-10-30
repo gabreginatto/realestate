@@ -83,3 +83,31 @@ candidatas mostradas", não "não está na Coelho"; 12229→647221 e 18360→685
   fotos baixadas só das 79 mais plausíveis (construída ≤20%, preço ≤15%): `data/r7-extra`, `data/r7-extra-b`. As outras 189 ficaram sem fotos (a CDN entrega ~0,5 MB/s).
 - **Benchmark congelado** `python scripts/benchmark.py r5|r6|r7` (conjuntos em `data/benchmark/frozen-v1.json`; P, H, S, P_hard, U; portões: R@1(P)=1,000 e FPR(H)≤2%).
   Métrica a empurrar: `rec_hard_cv` (recall em P_hard, fotos com SSCD≥0,25 ou PDQ≤31 removidas).
+
+## Rodada 8 e lista final (31/10/2026)
+
+**Alteração única:** normalização por Coelho no verificador ("melhor mútuo"): `score'(v,c) = s(v,c)` se `v` é a Viva de maior score para `c`, senão 0
+(`benchmark.py r8`, `--norm mutual|diff`). As "outras Viva" são os pares que o próprio benchmark pontua (`Ctx.bench_pairs`), para que a métrica
+não dependa de quantos pares extras estão no cache. Alternativa `s − 0,5·melhor-outra` testada e descartada.
+
+```
+bench-r7 [PASS] R@1(P)=1.000 rec_hard_cv=0.702 rec_diff=0.941 (16/17) T=51 FPR_H=0.015 FPR_S=0.028 fires_U=2/42
+bench-r8 [PASS] R@1(P)=1.000 rec_hard_cv=0.719 rec_diff=1.000 (17/17) T=46 FPR_H=0.015 FPR_S=0.011 fires_U=3/42   (mutual, mantida)
+r8-diff  [PASS] R@1(P)=1.000 rec_hard_cv=0.684 rec_diff=0.941 T=32 FPR_H=0.015 FPR_S=0.011 fires_U=4/42           (descartada)
+sem os 2 H suspeitos (18454↔678679, 17480↔675706; só relatório, rótulos intactos): r7 T=43 hard_cv=0.737 diff=1.000 | r8 T=31 hard_cv=0.737 diff=1.000 FPR_S=0.028
+```
+
+- Mantida pelos critérios do ciclo (R@1(P)=1, FPR_H ≤ 2 %, rec_diff e rec_hard_cv sobem), **mas o ganho é de 1 par em cada** (regra 7 do ciclo: 1 par não é melhora
+  firme). O ganho real é FPR_S 2,8 % → 1,1 %. `rec_diff` (novo, P sem nenhuma cópia, SSCD máx < 0,50, todas as fotos) é o par 2075↔502738 (49 → acima de T = 46).
+- **Limite do método:** a normalização só é válida com a matriz Viva × Coelho completa. Com o cache da varredura completa das 42 Viva do limbo (≈1.700 pares a mais)
+  quase todo par H perde a disputa e T colapsa para 0 (23/42 disparos): "melhor mútuo" é estatística de ruído e não serve sozinho como limiar. Na lista final o limiar
+  continua T = 46 (calibrado no benchmark) e o "melhor mútuo" vale sobre todos os pares pontuados.
+- Limbo: 3 disparos acima de T (9624→352241, 18404→351828, 18369→565110), os dois primeiros já vistos e falsos; 18369→565110 tem construída 302 vs 800 m².
+- **189 candidatas da rodada 7 sem foto**: fotos baixadas (`data/r7-extra-c`, 5.3 mil fotos; a CDN bloqueia por ~2 min depois de ~150 MB, retomei com atraso maior)
+  e pontuadas contra as Viva do limbo com lote ≤ 2 % e mesmas suítes (335 pares, 163 candidatas). **Nenhum acerto real**: o único par acima de T é 1786→505106 (49);
+  vi as galerias: casa térrea com piscina oval e escada externa vs sobrado com piso de mármore e piscina retangular (mesma construtora de parquet e janelas).
+- **Lista final** `data/output/viva-not-at-coelho.csv|json` (`scripts/r8_final_list.py`): 106 Viva vivas = 59 `confirmed_at_coelho`, 3 `likely_at_coelho`
+  (12229→647221, 18360→685893, 8748→661974, fotos copiadas ou score ≥ 349), 44 `not_found_at_coelho` ordenadas por confiança (7 alta, 14 média, 23 baixa).
+  A confiança é heurística (melhor score bruto vs T, candidatas com metadado compatível não pontuadas, se a corretora já viu a Viva); 6 Viva já foram confirmadas em
+  anúncios da Coelho que saíram do ar (14533, 1148, 5380, 8527, 12030, 14138). Casos acima de T julgados por mim a olho estão em `notes`.
+- Limite: "não está na Coelho" vale para as 374 casas Alphaville da Coelho com fotos (106 dos dois condomínios + 268 candidatas da rodada 7; o inventário tem 1.226), não para toda a Coelho.
