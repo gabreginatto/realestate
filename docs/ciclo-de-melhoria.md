@@ -72,3 +72,14 @@ Arquivos da base: `data/ground_truth.json`, `scripts/lib/ground_truth.py`, `scri
 **Rodada 5 (filtro de fotos genéricas, `scripts/photo_idf.py`)**: foto que casa (SSCD ≥ τ) com ≥3 anúncios distintos (outro site + mesmo site) é descartada da contagem.
 Decisão (`--decision`): acurácia held-out 0,943 ± 0,019 (antes 0,901 ± 0,016), R@1 nos positivos vivos 1,000. Atenção: `nomatch_live` = "a casa não estava entre as 3
 candidatas mostradas", não "não está na Coelho"; 12229→647221 e 18360→685893 são a mesma casa (conferido nas fotos), então a especificidade não é verdade-terreno.
+
+## Rodada 7 (inventário da Coelho) e benchmark congelado (30/10/2026)
+
+- **Inventário da Coelho está completo por condomínio**: Alphaville 1 declara 76 casas em condomínio (raspamos 75; +1 hoje, 585452), Tamboré XI declara 31 (raspamos 31).
+  Paginação, venda e filtros conferem. O que falta é outra coisa: a Viva só foi raspada nesses dois condomínios, e a Coelho tem 1.226 casas à venda na categoria Alphaville
+  (≈40 condomínios; só 106 estão no nosso conjunto). Casas da Viva "Alphaville 1/Tamboré XI" podem estar na Coelho sob outro nome de condomínio.
+- Rastreamento: `scripts/r7_coelho_inventory.py` (cartões da busca, 30/página, 2 s entre páginas) → `data/r7/inv-alphaville-all.json`;
+  `scripts/r7_select_candidates.py` (preço/construída/suítes) → 656 casas, detalhes raspados; 268 têm terreno ≤2% e mesmas suítes de algum dos 46 no_match;
+  fotos baixadas só das 79 mais plausíveis (construída ≤20%, preço ≤15%): `data/r7-extra`, `data/r7-extra-b`. As outras 189 ficaram sem fotos (a CDN entrega ~0,5 MB/s).
+- **Benchmark congelado** `python scripts/benchmark.py r5|r6|r7` (conjuntos em `data/benchmark/frozen-v1.json`; P, H, S, P_hard, U; portões: R@1(P)=1,000 e FPR(H)≤2%).
+  Métrica a empurrar: `rec_hard_cv` (recall em P_hard, fotos com SSCD≥0,25 ou PDQ≤31 removidas).
