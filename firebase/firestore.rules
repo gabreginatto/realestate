@@ -3,9 +3,8 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Open link, no login: anyone may read and write labels, but only well-formed ones.
     // coelho: one code or several comma-separated (the same house can be listed more than once at Coelho).
-    match /labels/{viva} {
-      allow read: if true;
-      allow create, update: if request.resource.data.keys().hasOnly(['viva', 'decision', 'coelho', 'note', 'by', 'at'])
+    function validLabel(viva) {
+      return request.resource.data.keys().hasOnly(['viva', 'decision', 'coelho', 'note', 'by', 'at'])
         && request.resource.data.keys().hasAll(['viva', 'decision', 'coelho', 'note', 'by', 'at'])
         && viva.matches('^[0-9]{1,8}$')
         && request.resource.data.viva == viva
@@ -15,6 +14,16 @@ service cloud.firestore {
         && request.resource.data.note is string && request.resource.data.note.size() <= 500
         && request.resource.data.by is string && request.resource.data.by.size() <= 64
         && request.resource.data.at is string && request.resource.data.at.size() <= 40;
+    }
+    match /labels/{viva} {
+      allow read: if true;
+      allow create, update: if validLabel(viva);
+      allow delete: if false;
+    }
+    // Round 6 second pass (different-shoot candidates): same schema, separate collection.
+    match /labels_r6/{viva} {
+      allow read: if true;
+      allow create, update: if validLabel(viva);
       allow delete: if false;
     }
     match /{document=**} {

@@ -588,322 +588,834 @@
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "597308",
+        "497009",
+        "689645"
+      ],
+      "rejected_coelho": [
+        "597308",
+        "497009",
+        "689645"
+      ]
     },
     {
       "viva": "1115",
       "condo": "alphaville-1",
       "as_of": "2026-10-24",
       "source": "label-site:u_x9B9",
-      "by": "u_x9B9V5zBoqNJds97jjZZ2g"
+      "by": "u_x9B9V5zBoqNJds97jjZZ2g",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "674557",
+        "358601",
+        "677257"
+      ],
+      "rejected_coelho": [
+        "674557",
+        "358601",
+        "677257"
+      ]
     },
     {
       "viva": "1148",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "433739",
+        "381684",
+        "672254"
+      ],
+      "rejected_coelho": [
+        "433739",
+        "381684",
+        "672254"
+      ]
     },
     {
       "viva": "12030",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "663984",
+        "448313",
+        "628299"
+      ],
+      "rejected_coelho": [
+        "663984",
+        "448313",
+        "628299"
+      ]
     },
     {
       "viva": "12229",
       "condo": "alphaville-1",
       "as_of": "2026-10-24",
       "source": "label-site:u_x9B9",
-      "by": "u_x9B9V5zBoqNJds97jjZZ2g"
+      "by": "u_x9B9V5zBoqNJds97jjZZ2g",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "647221",
+        "672254",
+        "433739"
+      ],
+      "needs_recheck": true,
+      "recheck_coelho": [
+        "647221"
+      ],
+      "rejected_coelho": [
+        "672254",
+        "433739"
+      ]
     },
     {
       "viva": "12414",
       "condo": "alphaville-1",
       "as_of": "2026-10-24",
       "source": "label-site:u_x9B9",
-      "by": "u_x9B9V5zBoqNJds97jjZZ2g"
+      "by": "u_x9B9V5zBoqNJds97jjZZ2g",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "379860",
+        "665488",
+        "569097"
+      ],
+      "rejected_coelho": [
+        "379860",
+        "665488",
+        "569097"
+      ]
     },
     {
       "viva": "12752",
       "condo": "alphaville-1",
       "as_of": "2026-10-24",
       "source": "label-site:u_x9B9",
-      "by": "u_x9B9V5zBoqNJds97jjZZ2g"
+      "by": "u_x9B9V5zBoqNJds97jjZZ2g",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "494094",
+        "616435",
+        "652122"
+      ],
+      "rejected_coelho": [
+        "494094",
+        "616435",
+        "652122"
+      ]
     },
     {
       "viva": "14138",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "671267",
+        "650074",
+        "639051"
+      ],
+      "rejected_coelho": [
+        "671267",
+        "650074",
+        "639051"
+      ]
     },
     {
       "viva": "14533",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "628299",
+        "356129",
+        "433739"
+      ],
+      "rejected_coelho": [
+        "628299",
+        "356129",
+        "433739"
+      ]
     },
     {
       "viva": "15008",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "644559",
+        "569097",
+        "663487"
+      ],
+      "rejected_coelho": [
+        "644559",
+        "569097",
+        "663487"
+      ]
     },
     {
       "viva": "15510",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "617568",
+        "659243",
+        "682207"
+      ],
+      "rejected_coelho": [
+        "617568",
+        "659243",
+        "682207"
+      ]
     },
     {
       "viva": "15776",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "565110",
+        "670241",
+        "654894"
+      ],
+      "rejected_coelho": [
+        "565110",
+        "670241",
+        "654894"
+      ]
     },
     {
       "viva": "16113",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "639051",
+        "686049",
+        "661014"
+      ],
+      "rejected_coelho": [
+        "639051",
+        "686049",
+        "661014"
+      ]
     },
     {
       "viva": "16607",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "433739",
+        "356129",
+        "661174"
+      ],
+      "rejected_coelho": [
+        "433739",
+        "356129",
+        "661174"
+      ]
     },
     {
       "viva": "16870",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "674951",
+        "654085",
+        "664659"
+      ],
+      "rejected_coelho": [
+        "674951",
+        "654085",
+        "664659"
+      ]
     },
     {
       "viva": "17076",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "683046",
+        "671267",
+        "642743"
+      ],
+      "rejected_coelho": [
+        "683046",
+        "671267",
+        "642743"
+      ]
     },
     {
       "viva": "17391",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "682207",
+        "659243",
+        "504962"
+      ],
+      "rejected_coelho": [
+        "682207",
+        "659243",
+        "504962"
+      ]
     },
     {
       "viva": "17465",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "379860",
+        "663487",
+        "687641"
+      ],
+      "rejected_coelho": [
+        "379860",
+        "663487",
+        "687641"
+      ]
     },
     {
       "viva": "17480",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "659243",
+        "674951",
+        "675706"
+      ],
+      "rejected_coelho": [
+        "659243",
+        "674951",
+        "675706"
+      ]
     },
     {
       "viva": "17596",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "687658",
+        "569097",
+        "663487"
+      ],
+      "rejected_coelho": [
+        "687658",
+        "569097",
+        "663487"
+      ]
     },
     {
       "viva": "17599",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "617568",
+        "654261",
+        "644999"
+      ],
+      "rejected_coelho": [
+        "617568",
+        "654261",
+        "644999"
+      ]
     },
     {
       "viva": "17670",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "663984",
+        "379860",
+        "663487"
+      ],
+      "rejected_coelho": [
+        "663984",
+        "379860",
+        "663487"
+      ]
     },
     {
       "viva": "17747",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "664659",
+        "654085",
+        "682207"
+      ],
+      "rejected_coelho": [
+        "664659",
+        "654085",
+        "682207"
+      ]
     },
     {
       "viva": "17775",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "660804",
+        "448313",
+        "379860"
+      ],
+      "rejected_coelho": [
+        "660804",
+        "448313",
+        "379860"
+      ]
     },
     {
       "viva": "17804",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "674951",
+        "689026",
+        "681848"
+      ],
+      "rejected_coelho": [
+        "674951",
+        "689026",
+        "681848"
+      ]
     },
     {
       "viva": "17826",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "664659",
+        "654085",
+        "665289"
+      ],
+      "rejected_coelho": [
+        "664659",
+        "654085",
+        "665289"
+      ]
     },
     {
       "viva": "1786",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "433739",
+        "429709",
+        "353414"
+      ],
+      "rejected_coelho": [
+        "433739",
+        "429709",
+        "353414"
+      ]
     },
     {
       "viva": "17916",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "674951",
+        "669495",
+        "681848"
+      ],
+      "rejected_coelho": [
+        "674951",
+        "669495",
+        "681848"
+      ]
     },
     {
       "viva": "18293",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "628299",
+        "675453",
+        "661174"
+      ],
+      "rejected_coelho": [
+        "628299",
+        "675453",
+        "661174"
+      ]
     },
     {
       "viva": "18316",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "448313",
+        "663984",
+        "684485"
+      ],
+      "rejected_coelho": [
+        "448313",
+        "663984",
+        "684485"
+      ]
     },
     {
       "viva": "18325",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "677257",
+        "688696",
+        "459916"
+      ],
+      "rejected_coelho": [
+        "677257",
+        "688696",
+        "459916"
+      ]
     },
     {
       "viva": "18347",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "659243",
+        "504962",
+        "682207"
+      ],
+      "rejected_coelho": [
+        "659243",
+        "504962",
+        "682207"
+      ]
     },
     {
       "viva": "18360",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "685893",
+        "665289",
+        "664659"
+      ],
+      "needs_recheck": true,
+      "recheck_coelho": [
+        "685893"
+      ],
+      "rejected_coelho": [
+        "665289",
+        "664659"
+      ]
     },
     {
       "viva": "18369",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "683046",
+        "685663",
+        "687658"
+      ],
+      "rejected_coelho": [
+        "683046",
+        "685663",
+        "687658"
+      ]
     },
     {
       "viva": "18403",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "680210",
+        "672254",
+        "650074"
+      ],
+      "rejected_coelho": [
+        "680210",
+        "672254",
+        "650074"
+      ]
     },
     {
       "viva": "18404",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "689026",
+        "659869",
+        "690747"
+      ],
+      "rejected_coelho": [
+        "689026",
+        "659869",
+        "690747"
+      ]
     },
     {
       "viva": "18454",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "678679",
+        "665289",
+        "644999"
+      ],
+      "rejected_coelho": [
+        "678679",
+        "665289",
+        "644999"
+      ]
     },
     {
       "viva": "18487",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "688142",
+        "684965",
+        "688583"
+      ],
+      "rejected_coelho": [
+        "688142",
+        "684965",
+        "688583"
+      ]
     },
     {
       "viva": "4509",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "644559",
+        "606206",
+        "661974"
+      ],
+      "rejected_coelho": [
+        "644559",
+        "606206",
+        "661974"
+      ]
     },
     {
       "viva": "4666",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "647221",
+        "677257",
+        "672254"
+      ],
+      "rejected_coelho": [
+        "647221",
+        "677257",
+        "672254"
+      ]
     },
     {
       "viva": "5380",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "502738",
+        "677257",
+        "688696"
+      ],
+      "rejected_coelho": [
+        "502738",
+        "677257",
+        "688696"
+      ]
     },
     {
       "viva": "6001",
       "condo": "tambore-xi",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "680126",
+        "617568",
+        "689026"
+      ],
+      "rejected_coelho": [
+        "680126",
+        "617568",
+        "689026"
+      ]
     },
     {
       "viva": "8527",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "403934",
+        "665488",
+        "448325"
+      ],
+      "rejected_coelho": [
+        "403934",
+        "665488",
+        "448325"
+      ]
     },
     {
       "viva": "8748",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "665488",
+        "403934",
+        "663487"
+      ],
+      "rejected_coelho": [
+        "665488",
+        "403934",
+        "663487"
+      ]
     },
     {
       "viva": "9281",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "425516",
+        "685663",
+        "354149"
+      ],
+      "rejected_coelho": [
+        "425516",
+        "685663",
+        "354149"
+      ]
     },
     {
       "viva": "9624",
       "condo": "alphaville-1",
       "as_of": "2026-10-25",
       "source": "label-site:b_94b5",
-      "by": "b_94b553b6a3e815bd4e3e8dd6"
+      "by": "b_94b553b6a3e815bd4e3e8dd6",
+      "semantics": "not_in_shown_top3",
+      "shown_coelho": [
+        "356129",
+        "445169",
+        "654894"
+      ],
+      "rejected_coelho": [
+        "356129",
+        "445169",
+        "654894"
+      ]
     }
   ]
 }

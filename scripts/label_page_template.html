@@ -115,6 +115,7 @@ textarea{min-height:56px;resize:vertical}
 
 <script type="application/json" id="items">__ITEMS__</script>
 <script>
+const COLL = window.LABEL_COLLECTION || "labels";
 const ITEMS = JSON.parse(document.getElementById("items").textContent);
 const $ = (s, r = document) => r.querySelector(s);
 const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
@@ -186,7 +187,7 @@ function buildCard(it) {
     if (c.pairs.length) {
       const cols = el("div", "cols"); cols.append(el("span", null, "Viva"), el("span", null, "Coelho"));
       const ps = el("div", "pairs");
-      c.pairs.forEach(p => { const d = el("div", "pair"); d.append(tagged(p.viva, p.vt), tagged(p.coelho, p.ct), el("span", "sc", p.sscd.toFixed(2))); ps.append(d); });
+      c.pairs.forEach(p => { const d = el("div", "pair"); d.append(tagged(p.viva, p.vt), tagged(p.coelho, p.ct), el("span", "sc", p.label || p.sscd.toFixed(2))); ps.append(d); });
       b.append(cols, ps);
     } else b.append(el("div", "nophoto", "Sem fotos para comparar."));
     const btn = el("button", "primary", "É esta"); btn.type = "button"; btn.setAttribute("aria-pressed", "false");
@@ -278,7 +279,7 @@ async function save(viva, decision, coelho, note) {
   touched.add(viva);
   const c = cards.get(viva); c.all.forEach(b => b.disabled = true);
   try {
-    await db.collection("labels").doc(viva).set({ viva, decision, coelho: coelho || null, note: note || "", by: uid, at: new Date().toISOString() });
+    await db.collection(COLL).doc(viva).set({ viva, decision, coelho: coelho || null, note: note || "", by: uid, at: new Date().toISOString() });
     toast("Salvo: " + viva, true);
   } catch (e) {
     toast("Não foi possível salvar (" + ((e && e.code) || "erro") + "). Tente de novo.");
@@ -314,8 +315,8 @@ async function firestoreBackend() {
   }
   // Same minimal surface as the claude.use("db") collection API used below.
   const adapter = { collection: () => ({
-    doc: d => ({ set: data => fs.setDoc(fs.doc(fdb, "labels", d), data) }),
-    onSnapshot: (ok, err) => fs.onSnapshot(fs.collection(fdb, "labels"), ok, err),
+    doc: d => ({ set: data => fs.setDoc(fs.doc(fdb, COLL, d), data) }),
+    onSnapshot: (ok, err) => fs.onSnapshot(fs.collection(fdb, COLL), ok, err),
   }) };
   return { db: adapter, uid: id };
 }
@@ -332,7 +333,7 @@ async function firestoreBackend() {
   } catch (e) { db = null; console.error(e); toast("Não foi possível conectar ao salvamento."); }
   if (!db) { $("#banner").hidden = window.LABEL_BACKEND === "firestore"; ITEMS.forEach(it => paintCard(it.viva)); return; }
   ITEMS.forEach(it => paintCard(it.viva));
-  db.collection("labels").onSnapshot(snap => {
+  db.collection(COLL).onSnapshot(snap => {
     const next = new Map();
     snap.docs.forEach(d => { const v = d.data(); if (v) next.set(d.id, v); });
     const changed = new Set([...labels.keys(), ...next.keys()]);
